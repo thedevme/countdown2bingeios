@@ -1,0 +1,33 @@
+{
+  "configurations" : [
+    {
+      "id" : "1",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Countdown2Binge.xcodeproj",
+      "identifier" : "YOUR_TARGET_ID",
+      "name" : "Countdown2Binge"
+    },
+    "testExecutionOrdering" : "alphabetical",
+    "testTimeoutsEnabled" : true,
+    "defaultTestExecutionTimeAllowance" : 60,
+    "maximumTestExecutionTimeAllowance" : 120
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Countdown2Binge.xcodeproj",
+        "identifier" : "Countdown2BingeTests",
+        "name" : "Countdown2BingeTests"
+      }
+    }
+  ],
+  "version" : 1
+}
