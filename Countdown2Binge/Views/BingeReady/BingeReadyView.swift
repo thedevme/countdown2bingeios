@@ -4,9 +4,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// The Binge Ready screen showing all seasons ready to watch.
 struct BingeReadyView: View {
+    @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: BingeReadyViewModel
     @State private var selectedItem: BingeReadyItem?
 
@@ -37,8 +39,12 @@ struct BingeReadyView: View {
                 viewModel.loadSeasons()
             }
             .navigationDestination(item: $selectedItem) { item in
-                // Navigate to show detail
-                ShowDetailPlaceholderView(show: item.show)
+                ShowDetailView(
+                    viewModel: ShowDetailViewModel(
+                        show: item.show,
+                        repository: ShowRepository(modelContext: modelContext)
+                    )
+                )
             }
         }
     }
@@ -261,34 +267,6 @@ private struct BingeReadyRow: View {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
         return formatter.localizedString(for: date, relativeTo: Date())
-    }
-}
-
-// MARK: - Placeholder for Show Detail Navigation
-
-private struct ShowDetailPlaceholderView: View {
-    let show: Show
-
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
-            VStack(spacing: 16) {
-                Text(show.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-
-                Text("Show Detail")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-        }
-        .navigationTitle(show.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(Color.black, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
     }
 }
 

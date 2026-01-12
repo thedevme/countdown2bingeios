@@ -12,6 +12,7 @@ struct TimelineView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \FollowedShow.followedAt, order: .reverse)
     private var followedShows: [FollowedShow]
+    @State private var selectedShow: Show?
 
     private let timelineService = TimelineService()
 
@@ -53,7 +54,10 @@ struct TimelineView: View {
                             ForEach(groupedShows, id: \.category) { section in
                                 TimelineSectionView(
                                     category: section.category,
-                                    entries: section.entries
+                                    entries: section.entries,
+                                    onShowSelected: { show in
+                                        selectedShow = show
+                                    }
                                 )
                             }
 
@@ -63,6 +67,14 @@ struct TimelineView: View {
                 }
             }
             .navigationBarHidden(true)
+            .navigationDestination(item: $selectedShow) { show in
+                ShowDetailView(
+                    viewModel: ShowDetailViewModel(
+                        show: show,
+                        repository: ShowRepository(modelContext: modelContext)
+                    )
+                )
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -136,6 +148,7 @@ private struct LoadingStateView: View {
 struct TimelineSectionView: View {
     let category: TimelineCategory
     let entries: [TimelineEntry]
+    let onShowSelected: (Show) -> Void
 
     private var sectionIcon: String {
         switch category {
@@ -184,6 +197,9 @@ struct TimelineSectionView: View {
                 HStack(spacing: 16) {
                     ForEach(entries) { entry in
                         ShowCardView(entry: entry, accentColor: accentColor)
+                            .onTapGesture {
+                                onShowSelected(entry.show)
+                            }
                     }
                 }
                 .padding(.horizontal, 24)

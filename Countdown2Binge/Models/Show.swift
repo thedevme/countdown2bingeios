@@ -22,7 +22,7 @@ enum ShowStatus: String, Codable {
 }
 
 /// Represents a TV show with all its metadata.
-struct Show: Identifiable, Codable, Equatable {
+struct Show: Identifiable, Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let overview: String?
@@ -53,6 +53,10 @@ struct Show: Identifiable, Codable, Equatable {
 
     static func == (lhs: Show, rhs: Show) -> Bool {
         lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
