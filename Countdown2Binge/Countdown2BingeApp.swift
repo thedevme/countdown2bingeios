@@ -10,8 +10,11 @@ import SwiftData
 
 @main
 struct Countdown2BingeApp: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     let modelContainer: ModelContainer
     let backgroundTaskService: BackgroundTaskService?
+    let stateRefreshService: StateRefreshService?
 
     private static var isRunningTests: Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil ||
@@ -39,21 +42,33 @@ struct Countdown2BingeApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
 
-        // Skip background task service during tests
+        // Skip services during tests
         if Self.isRunningTests {
             backgroundTaskService = nil
+            stateRefreshService = nil
         } else {
             backgroundTaskService = BackgroundTaskService(modelContainer: modelContainer)
             backgroundTaskService?.registerBackgroundTasks()
+            stateRefreshService = StateRefreshService(modelContainer: modelContainer)
         }
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                    // Schedule background refresh when app launches (not during tests)
+                .task {
+                    // Refresh shows on app launch
+                    await stateRefreshService?.onAppLaunch()
+                    // Schedule background refresh
                     backgroundTaskService?.scheduleShowRefresh()
+                }
+                .onChange(of: scenePhase) { oldPhase, newPhase in
+                    if newPhase == .active && oldPhase == .background {
+                        // App came to foreground - refresh states
+                        Task {
+                            await stateRefreshService?.onAppForeground()
+                        }
+                    }
                 }
         }
         .modelContainer(modelContainer)

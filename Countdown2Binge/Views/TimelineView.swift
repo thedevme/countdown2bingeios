@@ -64,6 +64,9 @@ struct TimelineView: View {
                             Spacer(minLength: 100)
                         }
                     }
+                    .refreshable {
+                        await refreshShows()
+                    }
                 }
             }
             .navigationBarHidden(true)
@@ -77,6 +80,16 @@ struct TimelineView: View {
             }
         }
         .preferredColorScheme(.dark)
+    }
+
+    // MARK: - Refresh
+
+    private func refreshShows() async {
+        let refreshService = StateRefreshService(
+            modelContainer: modelContext.container,
+            tmdbService: TMDBService()
+        )
+        await refreshService.refreshWithAPIData()
     }
 }
 
