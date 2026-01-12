@@ -83,7 +83,15 @@ final class TimelineService: TimelineServiceProtocol {
         let state = show.lifecycleState
 
         switch state {
-        case .completed, .cancelled:
+        case .cancelled:
+            return .bingeReady
+
+        case .completed:
+            // If inProduction is true, show is coming back but no season data yet
+            // Show in Anticipated (TBD) so user knows more is expected
+            if show.inProduction {
+                return .anticipated
+            }
             return .bingeReady
 
         case .airing:
@@ -94,6 +102,7 @@ final class TimelineService: TimelineServiceProtocol {
             if show.daysUntilPremiere != nil {
                 return .premieringSoon
             }
+            // Show in TBD - we have upcoming season but no premiere date
             return .anticipated
         }
     }

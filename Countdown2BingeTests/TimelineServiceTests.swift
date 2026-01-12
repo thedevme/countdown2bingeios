@@ -16,10 +16,16 @@ struct TimelineServiceTests {
 
     // MARK: - Category Tests
 
-    @Test("Completed show is categorized as Binge Ready")
-    func completedShow_isBingeReady() {
+    @Test("Completed show not in production is categorized as Binge Ready")
+    func completedShow_notInProduction_isBingeReady() {
         let show = makeShow(status: .ended, seasonComplete: true)
         #expect(service.categorize(show) == .bingeReady)
+    }
+
+    @Test("Completed show in production is categorized as Anticipated")
+    func completedShow_inProduction_isAnticipated() {
+        let show = makeShow(status: .returning, seasonComplete: true)
+        #expect(service.categorize(show) == .anticipated)
     }
 
     @Test("Cancelled show is categorized as Binge Ready")
@@ -40,10 +46,16 @@ struct TimelineServiceTests {
         #expect(service.categorize(show) == .premieringSoon)
     }
 
-    @Test("Show with no season is categorized as Anticipated")
-    func showWithNoSeason_isAnticipated() {
-        let show = makeShowWithNoSeasons()
+    @Test("Show with no season and returning status is categorized as Anticipated")
+    func showWithNoSeason_returning_isAnticipated() {
+        let show = makeShowWithNoSeasons(status: .returning)
         #expect(service.categorize(show) == .anticipated)
+    }
+
+    @Test("Show with no season and ended status goes to Binge Ready")
+    func showWithNoSeason_ended_isBingeReady() {
+        let show = makeShowWithNoSeasons(status: .ended)
+        #expect(service.categorize(show) == .bingeReady)
     }
 
     @Test("Show with no premiere date is categorized as Anticipated")
@@ -86,7 +98,7 @@ struct TimelineServiceTests {
 
     @Test("Anticipated show has no countdown")
     func anticipatedShow_hasNoCountdown() {
-        let show = makeShowWithNoSeasons()
+        let show = makeShowWithNoSeasons(status: .returning)
         let entry = service.createEntry(for: show)
 
         #expect(entry.countdown == nil)
@@ -119,7 +131,7 @@ struct TimelineServiceTests {
         let bingeReady = makeShow(id: 1, name: "Completed Show", status: .ended, seasonComplete: true)
         let airing = makeShow(id: 2, name: "Airing Show", status: .returning, seasonComplete: false, hasAiredEpisodes: true)
         let premiering = makeShow(id: 3, name: "Upcoming Show", status: .returning, seasonComplete: false, hasFuturePremiere: true)
-        let anticipated = makeShowWithNoSeasons(id: 4, name: "TBD Show")
+        let anticipated = makeShowWithNoSeasons(id: 4, name: "TBD Show", status: .returning)
 
         let grouped = service.groupByCategory([bingeReady, airing, premiering, anticipated])
 
@@ -141,7 +153,7 @@ struct TimelineServiceTests {
 
     @Test("Categories are sorted by display order")
     func categoriesSortedByDisplayOrder() {
-        let anticipated = makeShowWithNoSeasons(id: 1, name: "TBD")
+        let anticipated = makeShowWithNoSeasons(id: 1, name: "TBD", status: .returning)
         let bingeReady = makeShow(id: 2, name: "Done", status: .ended, seasonComplete: true)
         let airing = makeShow(id: 3, name: "Current", status: .returning, seasonComplete: false, hasAiredEpisodes: true)
 
@@ -322,7 +334,7 @@ extension TimelineServiceTests {
         )
     }
 
-    func makeShowWithNoSeasons(id: Int = 1, name: String = "TBD Show") -> Show {
+    func makeShowWithNoSeasons(id: Int = 1, name: String = "TBD Show", status: ShowStatus = .returning) -> Show {
         Show(
             id: id,
             name: name,
@@ -330,13 +342,13 @@ extension TimelineServiceTests {
             posterPath: nil,
             backdropPath: nil,
             firstAirDate: nil,
-            status: .planned,
+            status: status,
             genres: [],
             networks: [],
             seasons: [],
             numberOfSeasons: 0,
             numberOfEpisodes: 0,
-            inProduction: false
+            inProduction: status == .returning || status == .inProduction
         )
     }
 }

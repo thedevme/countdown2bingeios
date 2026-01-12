@@ -16,10 +16,10 @@ enum MarkWatchedResult: Equatable {
 }
 
 /// Errors that can occur when marking watched
-enum MarkWatchedError: Error, LocalizedError {
+enum MarkWatchedError: Error, LocalizedError, Equatable {
     case showNotFound
     case seasonNotFound
-    case saveFailed(Error)
+    case saveFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -27,9 +27,13 @@ enum MarkWatchedError: Error, LocalizedError {
             return "Show not found"
         case .seasonNotFound:
             return "Season not found"
-        case .saveFailed(let error):
-            return "Failed to save: \(error.localizedDescription)"
+        case .saveFailed(let message):
+            return "Failed to save: \(message)"
         }
+    }
+
+    static func saveFailed(_ error: Error) -> MarkWatchedError {
+        .saveFailed(error.localizedDescription)
     }
 }
 

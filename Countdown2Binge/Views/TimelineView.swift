@@ -19,7 +19,9 @@ struct TimelineView: View {
     private var groupedShows: [(category: TimelineCategory, entries: [TimelineEntry])] {
         let shows = followedShows.compactMap { $0.cachedData?.toShow() }
         let grouped = timelineService.groupByCategory(shows)
+        // Exclude bingeReady - those shows appear in the Binge Ready tab, not Timeline
         return timelineService.sortedCategories(from: grouped)
+            .filter { $0.category != .bingeReady }
     }
 
     var body: some View {
