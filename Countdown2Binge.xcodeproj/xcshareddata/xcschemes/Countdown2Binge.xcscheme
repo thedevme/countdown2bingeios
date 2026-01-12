@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1600"
-   version = "1.7">
+   LastUpgradeVersion = "2620"
+   version = "1.8">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Countdown2Binge"
+               BlueprintIdentifier = "4685E21E2F13D67800FBE262"
                BuildableName = "Countdown2Binge.app"
                BlueprintName = "Countdown2Binge"
                ReferencedContainer = "container:Countdown2Binge.xcodeproj">
@@ -28,7 +28,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "NO"
       parallelizeTesting = "NO">
       <Testables>
          <TestableReference
@@ -37,7 +36,7 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Countdown2BingeTests"
+               BlueprintIdentifier = "4685E22D2F13D67A00FBE262"
                BuildableName = "Countdown2BingeTests.xctest"
                BlueprintName = "Countdown2BingeTests"
                ReferencedContainer = "container:Countdown2Binge.xcodeproj">
@@ -59,7 +58,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Countdown2Binge"
+            BlueprintIdentifier = "4685E21E2F13D67800FBE262"
             BuildableName = "Countdown2Binge.app"
             BlueprintName = "Countdown2Binge"
             ReferencedContainer = "container:Countdown2Binge.xcodeproj">
@@ -76,7 +75,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Countdown2Binge"
+            BlueprintIdentifier = "4685E21E2F13D67800FBE262"
             BuildableName = "Countdown2Binge.app"
             BlueprintName = "Countdown2Binge"
             ReferencedContainer = "container:Countdown2Binge.xcodeproj">

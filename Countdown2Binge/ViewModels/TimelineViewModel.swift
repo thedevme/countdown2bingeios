@@ -35,9 +35,9 @@ final class TimelineViewModel {
 
     // MARK: - Initialization
 
-    init(repository: ShowRepositoryProtocol, timelineService: TimelineServiceProtocol = TimelineService()) {
+    init(repository: ShowRepositoryProtocol, timelineService: TimelineServiceProtocol? = nil) {
         self.repository = repository
-        self.timelineService = timelineService
+        self.timelineService = timelineService ?? TimelineService()
     }
 
     // MARK: - Computed Properties

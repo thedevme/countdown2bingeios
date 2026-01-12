@@ -13,9 +13,9 @@ final class StateRefreshService {
     private let modelContainer: ModelContainer
     private let tmdbService: TMDBServiceProtocol
 
-    init(modelContainer: ModelContainer, tmdbService: TMDBServiceProtocol = TMDBService()) {
+    init(modelContainer: ModelContainer, tmdbService: TMDBServiceProtocol? = nil) {
         self.modelContainer = modelContainer
-        self.tmdbService = tmdbService
+        self.tmdbService = tmdbService ?? TMDBService()
     }
 
     // MARK: - Refresh All Shows
