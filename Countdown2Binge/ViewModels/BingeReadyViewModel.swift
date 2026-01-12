@@ -40,14 +40,25 @@ final class BingeReadyViewModel {
     /// Error state
     var error: Error?
 
+    /// Item currently being marked as watched
+    var markingWatchedItemId: String?
+
+    /// Result of the last mark watched action (for feedback)
+    var lastMarkWatchedResult: MarkWatchedResult?
+
+    /// Show confirmation alert for this item
+    var itemToMarkWatched: BingeReadyItem?
+
     // MARK: - Dependencies
 
     private let repository: ShowRepositoryProtocol
+    private let markWatchedUseCase: MarkWatchedUseCaseProtocol
 
     // MARK: - Initialization
 
-    init(repository: ShowRepositoryProtocol) {
+    init(repository: ShowRepositoryProtocol, markWatchedUseCase: MarkWatchedUseCaseProtocol? = nil) {
         self.repository = repository
+        self.markWatchedUseCase = markWatchedUseCase ?? MarkWatchedUseCase(repository: repository)
     }
 
     // MARK: - Computed Properties
@@ -78,9 +89,9 @@ final class BingeReadyViewModel {
         var items: [BingeReadyItem] = []
 
         for show in allShows {
-            // Get seasons that are complete (all episodes aired)
+            // Get seasons that are binge ready (complete and not watched)
             let readySeasons = show.seasons.filter { season in
-                season.seasonNumber > 0 && season.isComplete
+                season.seasonNumber > 0 && season.isBingeReady
             }
 
             for season in readySeasons {
@@ -101,5 +112,54 @@ final class BingeReadyViewModel {
     /// Refresh seasons (can be called on pull-to-refresh)
     func refresh() async {
         loadSeasons()
+    }
+
+    // MARK: - Mark Watched
+
+    /// Check if an item is currently being marked
+    func isMarking(item: BingeReadyItem) -> Bool {
+        markingWatchedItemId == item.id
+    }
+
+    /// Request to mark an item as watched (shows confirmation)
+    func requestMarkWatched(_ item: BingeReadyItem) {
+        itemToMarkWatched = item
+    }
+
+    /// Cancel the mark watched request
+    func cancelMarkWatched() {
+        itemToMarkWatched = nil
+    }
+
+    /// Confirm and execute marking a season as watched
+    func confirmMarkWatched() async {
+        guard let item = itemToMarkWatched else { return }
+
+        itemToMarkWatched = nil
+        markingWatchedItemId = item.id
+        error = nil
+
+        do {
+            let result = try await markWatchedUseCase.execute(
+                showId: item.show.id,
+                seasonNumber: item.season.seasonNumber
+            )
+            lastMarkWatchedResult = result
+
+            // Reload the list to reflect the change
+            loadSeasons()
+
+            // Clear result after delay
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                if lastMarkWatchedResult == result {
+                    lastMarkWatchedResult = nil
+                }
+            }
+        } catch {
+            self.error = error
+        }
+
+        markingWatchedItemId = nil
     }
 }

@@ -356,4 +356,5 @@ private class MockShowRepository: ShowRepositoryProtocol {
     func fetchBingeReadySeasons() -> [Season] { [] }
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { false }
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
 }

@@ -46,36 +46,67 @@ struct BingeReadyView: View {
                     )
                 )
             }
+            .confirmationDialog(
+                "Mark as Watched",
+                isPresented: .init(
+                    get: { viewModel.itemToMarkWatched != nil },
+                    set: { if !$0 { viewModel.cancelMarkWatched() } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Mark Watched") {
+                    Task {
+                        await viewModel.confirmMarkWatched()
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    viewModel.cancelMarkWatched()
+                }
+            } message: {
+                if let item = viewModel.itemToMarkWatched {
+                    Text("Mark \(item.show.name) Season \(item.season.seasonNumber) as watched?")
+                }
+            }
         }
     }
 
     // MARK: - Content
 
     private var bingeReadyContent: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                // Summary header
+        List {
+            // Summary header
+            Section {
                 summaryHeader
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .padding(.bottom, 24)
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 24, trailing: 20))
 
-                // Season list
+            // Season list
+            Section {
                 ForEach(viewModel.bingeReadyItems) { item in
-                    BingeReadyRow(item: item)
-                        .onTapGesture {
-                            selectedItem = item
-                        }
-
-                    if item.id != viewModel.bingeReadyItems.last?.id {
-                        Divider()
-                            .background(Color.white.opacity(0.08))
-                            .padding(.leading, 100)
+                    BingeReadyRow(
+                        item: item,
+                        isMarking: viewModel.isMarking(item: item)
+                    )
+                    .onTapGesture {
+                        selectedItem = item
                     }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button {
+                            viewModel.requestMarkWatched(item)
+                        } label: {
+                            Label("Watched", systemImage: "checkmark.circle.fill")
+                        }
+                        .tint(Color(red: 0.45, green: 0.90, blue: 0.70))
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    .listRowSeparator(.hidden)
                 }
             }
-            .padding(.bottom, 40)
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
     }
 
     // MARK: - Summary Header
@@ -183,6 +214,7 @@ private struct SummaryItem: View {
 
 private struct BingeReadyRow: View {
     let item: BingeReadyItem
+    var isMarking: Bool = false
 
     var body: some View {
         HStack(spacing: 14) {
@@ -190,6 +222,7 @@ private struct BingeReadyRow: View {
             posterImage
                 .frame(width: 68, height: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .opacity(isMarking ? 0.5 : 1)
 
             // Info
             VStack(alignment: .leading, spacing: 6) {
@@ -218,13 +251,19 @@ private struct BingeReadyRow: View {
                     }
                 }
             }
+            .opacity(isMarking ? 0.5 : 1)
 
             Spacer()
 
-            // Binge ready indicator
-            Image(systemName: "checkmark.circle.fill")
-                .font(.title3)
-                .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70))
+            // Binge ready indicator or loading
+            if isMarking {
+                ProgressView()
+                    .tint(Color(red: 0.45, green: 0.90, blue: 0.70))
+            } else {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70))
+            }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -300,6 +339,7 @@ private class MockBingeRepository: ShowRepositoryProtocol {
     func fetchBingeReadySeasons() -> [Season] { [] }
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { false }
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
 }
 
 private class MockEmptyBingeRepository: ShowRepositoryProtocol {
@@ -310,4 +350,5 @@ private class MockEmptyBingeRepository: ShowRepositoryProtocol {
     func fetchBingeReadySeasons() -> [Season] { [] }
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { false }
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
 }

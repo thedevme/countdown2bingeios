@@ -73,6 +73,20 @@ struct ShowDetailView: View {
         } message: {
             Text("Stop following \(viewModel.show.name)?")
         }
+        .confirmationDialog(
+            "Mark as Watched",
+            isPresented: $viewModel.showMarkWatchedConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Mark Watched") {
+                Task {
+                    await viewModel.markSeasonWatched()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Mark \(viewModel.show.name) Season \(viewModel.selectedSeasonNumber) as watched?")
+        }
         .onChange(of: viewModel.didRemoveShow) { _, didRemove in
             if didRemove {
                 dismiss()
@@ -267,6 +281,36 @@ struct ShowDetailView: View {
                 .background(Color.white.opacity(0.1))
 
             if viewModel.isFollowed {
+                // Mark Watched button (if season is binge ready)
+                if viewModel.canMarkSelectedSeasonWatched {
+                    Button {
+                        viewModel.showMarkWatchedConfirmation = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            if viewModel.isMarkingWatched {
+                                ProgressView()
+                                    .tint(.black)
+                                    .scaleEffect(0.8)
+                            } else {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
+
+                            Text("Mark Season \(viewModel.selectedSeasonNumber) Watched")
+                        }
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color(red: 0.45, green: 0.90, blue: 0.70))
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(viewModel.isMarkingWatched)
+                }
+
                 // Remove button
                 Button {
                     showRemoveConfirmation = true
@@ -514,4 +558,5 @@ private class MockDetailRepository: ShowRepositoryProtocol {
     func fetchBingeReadySeasons() -> [Season] { [] }
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { true }
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
 }

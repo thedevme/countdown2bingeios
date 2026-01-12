@@ -28,6 +28,15 @@ final class ShowDetailViewModel {
     /// Loading state for add action
     var isAdding: Bool = false
 
+    /// Loading state for mark watched action
+    var isMarkingWatched: Bool = false
+
+    /// Show confirmation for mark watched
+    var showMarkWatchedConfirmation: Bool = false
+
+    /// Result of mark watched action (for feedback)
+    var markWatchedResult: MarkWatchedResult?
+
     /// Error state
     var error: Error?
 
@@ -37,12 +46,14 @@ final class ShowDetailViewModel {
     // MARK: - Dependencies
 
     private let repository: ShowRepositoryProtocol
+    private let markWatchedUseCase: MarkWatchedUseCaseProtocol
 
     // MARK: - Initialization
 
-    init(show: Show, repository: ShowRepositoryProtocol) {
+    init(show: Show, repository: ShowRepositoryProtocol, markWatchedUseCase: MarkWatchedUseCaseProtocol? = nil) {
         self.show = show
         self.repository = repository
+        self.markWatchedUseCase = markWatchedUseCase ?? MarkWatchedUseCase(repository: repository)
         self.isFollowed = repository.isShowFollowed(tmdbId: show.id)
 
         // Default to current/latest season
@@ -123,6 +134,12 @@ final class ShowDetailViewModel {
         }
     }
 
+    /// Whether the selected season can be marked as watched
+    var canMarkSelectedSeasonWatched: Bool {
+        guard isFollowed, let season = selectedSeason else { return false }
+        return season.isBingeReady
+    }
+
     // MARK: - Actions
 
     /// Select a different season
@@ -164,5 +181,34 @@ final class ShowDetailViewModel {
         }
 
         isRemoving = false
+    }
+
+    /// Mark the selected season as watched
+    func markSeasonWatched() async {
+        guard canMarkSelectedSeasonWatched, !isMarkingWatched else { return }
+
+        isMarkingWatched = true
+        error = nil
+        showMarkWatchedConfirmation = false
+
+        do {
+            let result = try await markWatchedUseCase.execute(
+                showId: show.id,
+                seasonNumber: selectedSeasonNumber
+            )
+            markWatchedResult = result
+
+            // Clear result after delay
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                if markWatchedResult == result {
+                    markWatchedResult = nil
+                }
+            }
+        } catch {
+            self.error = error
+        }
+
+        isMarkingWatched = false
     }
 }

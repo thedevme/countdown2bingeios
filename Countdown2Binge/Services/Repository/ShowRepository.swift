@@ -15,6 +15,7 @@ protocol ShowRepositoryProtocol {
     func fetchBingeReadySeasons() -> [Season]
     func delete(_ show: Show) async throws
     func isShowFollowed(tmdbId: Int) -> Bool
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws
 }
 
 /// Repository for managing shows with higher-level domain operations.
@@ -84,9 +85,9 @@ final class ShowRepository: ShowRepositoryProtocol {
         var bingeReadySeasons: [Season] = []
 
         for show in allShows {
-            // Get seasons that are complete (all episodes aired)
+            // Get seasons that are binge ready (complete and not watched)
             let readySeasons = show.seasons.filter { season in
-                season.seasonNumber > 0 && season.isComplete
+                season.seasonNumber > 0 && season.isBingeReady
             }
             bingeReadySeasons.append(contentsOf: readySeasons)
         }
@@ -111,5 +112,24 @@ final class ShowRepository: ShowRepositoryProtocol {
     /// Check if a show is currently followed
     func isShowFollowed(tmdbId: Int) -> Bool {
         (try? store.isFollowing(showId: tmdbId)) ?? false
+    }
+
+    // MARK: - Mark Season Watched
+
+    /// Mark a specific season as watched
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {
+        guard var show = fetchShow(byTmdbId: showId) else {
+            throw StoreError.showNotFound
+        }
+
+        // Find and update the season
+        guard let seasonIndex = show.seasons.firstIndex(where: { $0.seasonNumber == seasonNumber }) else {
+            throw StoreError.showNotFound
+        }
+
+        show.seasons[seasonIndex].watchedDate = Date()
+
+        // Save the updated show
+        try store.updateCache(for: showId, with: show)
     }
 }

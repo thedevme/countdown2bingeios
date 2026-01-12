@@ -6,7 +6,7 @@
 import Foundation
 
 /// Represents a season of a TV show.
-struct Season: Identifiable, Codable, Equatable {
+struct Season: Identifiable, Codable, Equatable, Hashable {
     let id: Int
     let seasonNumber: Int
     let name: String
@@ -15,6 +15,14 @@ struct Season: Identifiable, Codable, Equatable {
     let airDate: Date?
     let episodeCount: Int
     var episodes: [Episode]
+
+    /// Date when user marked this season as watched (nil = not watched)
+    var watchedDate: Date?
+
+    /// Whether this season has been marked as watched
+    var isWatched: Bool {
+        watchedDate != nil
+    }
 
     /// The finale episode (last episode of the season)
     var finale: Episode? {
@@ -59,5 +67,16 @@ struct Season: Identifiable, Codable, Equatable {
     /// Number of episodes that have aired
     var airedEpisodeCount: Int {
         episodes.filter { $0.hasAired }.count
+    }
+
+    /// Whether season is ready to binge (complete and not yet watched)
+    var isBingeReady: Bool {
+        isComplete && !isWatched
+    }
+
+    // MARK: - Hashable
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
