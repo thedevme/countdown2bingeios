@@ -10,6 +10,11 @@
 
 ---
 
+When a phase completes successfully:
+- Print the line exactly: PHASE COMPLETE — READY FOR REVIEW
+- Immediately output the terminal bell character once (\a)
+- Do not begin the next phase automatically
+
 Always use the design skill when changing the UI
 
 After completing a task that involves tool use, provide a quick summary of the work you've done
