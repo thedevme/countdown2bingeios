@@ -24,6 +24,14 @@ struct BingeReadyItem: Identifiable, Equatable, Hashable {
     }
 }
 
+/// A group of binge-ready seasons for a single show
+struct BingeReadyShowGroup: Identifiable {
+    let show: Show
+    let seasons: [Season]
+
+    var id: Int { show.id }
+}
+
 /// ViewModel for the Binge Ready screen.
 /// Manages the list of seasons that are ready to binge.
 @MainActor
@@ -76,6 +84,26 @@ final class BingeReadyViewModel {
     /// Total episodes across all binge-ready seasons
     var totalEpisodes: Int {
         bingeReadyItems.reduce(0) { $0 + $1.season.episodeCount }
+    }
+
+    /// Items grouped by show for card stack display
+    var groupedByShow: [BingeReadyShowGroup] {
+        let grouped = Dictionary(grouping: bingeReadyItems) { $0.show.id }
+        return grouped.compactMap { (showId, items) -> BingeReadyShowGroup? in
+            guard let firstItem = items.first else { return nil }
+            let seasons = items.map { $0.season }.sorted { $0.seasonNumber > $1.seasonNumber }
+            return BingeReadyShowGroup(
+                show: firstItem.show,
+                seasons: seasons
+            )
+        }.sorted { group1, group2 in
+            // Sort by most recent finale date across all seasons in the group
+            let date1 = group1.seasons.compactMap { $0.finaleDate }.max()
+            let date2 = group2.seasons.compactMap { $0.finaleDate }.max()
+            guard let d1 = date1 else { return false }
+            guard let d2 = date2 else { return true }
+            return d1 > d2
+        }
     }
 
     // MARK: - Load Seasons
@@ -161,5 +189,42 @@ final class BingeReadyViewModel {
         }
 
         markingWatchedItemId = nil
+    }
+
+    /// Mark a season as watched (called from card stack swipe down)
+    func markSeasonWatched(showId: Int, seasonNumber: Int) async {
+        let itemId = "\(showId)-\(seasonNumber)"
+        markingWatchedItemId = itemId
+        error = nil
+
+        do {
+            let result = try await markWatchedUseCase.execute(
+                showId: showId,
+                seasonNumber: seasonNumber
+            )
+            lastMarkWatchedResult = result
+            loadSeasons()
+
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                if lastMarkWatchedResult == result {
+                    lastMarkWatchedResult = nil
+                }
+            }
+        } catch {
+            self.error = error
+        }
+
+        markingWatchedItemId = nil
+    }
+
+    /// Delete a show (called from card stack swipe up)
+    func deleteShow(_ show: Show) async {
+        do {
+            try await repository.delete(show)
+            loadSeasons()
+        } catch {
+            self.error = error
+        }
     }
 }

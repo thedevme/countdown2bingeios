@@ -11,6 +11,8 @@ struct BingeReadyView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: BingeReadyViewModel
     @State private var selectedItem: BingeReadyItem?
+    @State private var selectedSeasons: [Int: Int] = [:] // showId -> seasonNumber
+    @State private var showDeleteConfirmation: Show?
 
     var body: some View {
         NavigationStack {
@@ -73,40 +75,74 @@ struct BingeReadyView: View {
     // MARK: - Content
 
     private var bingeReadyContent: some View {
-        List {
-            // Summary header
-            Section {
+        ScrollView {
+            VStack(spacing: 32) {
+                // Summary header
                 summaryHeader
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 24, trailing: 20))
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
 
-            // Season list
-            Section {
-                ForEach(viewModel.bingeReadyItems) { item in
-                    BingeReadyRow(
-                        item: item,
-                        isMarking: viewModel.isMarking(item: item)
-                    )
-                    .onTapGesture {
-                        selectedItem = item
+                // Card stacks grouped by show
+                VStack(spacing: 40) {
+                    ForEach(viewModel.groupedByShow) { group in
+                        SeasonCardStack(
+                            seasons: group.seasons,
+                            showName: group.show.name,
+                            selectedSeasonNumber: selectedSeasonBinding(for: group),
+                            onMarkAllComplete: { seasonNumber in
+                                Task {
+                                    await viewModel.markSeasonWatched(
+                                        showId: group.show.id,
+                                        seasonNumber: seasonNumber
+                                    )
+                                }
+                            },
+                            onDeleteShow: {
+                                showDeleteConfirmation = group.show
+                            }
+                        )
+                        .padding(.horizontal, 20)
                     }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button {
-                            viewModel.requestMarkWatched(item)
-                        } label: {
-                            Label("Watched", systemImage: "checkmark.circle.fill")
-                        }
-                        .tint(Color(red: 0.45, green: 0.90, blue: 0.70))
-                    }
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    .listRowSeparator(.hidden)
                 }
             }
+            .padding(.bottom, 40)
         }
-        .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .confirmationDialog(
+            "Remove Show",
+            isPresented: .init(
+                get: { showDeleteConfirmation != nil },
+                set: { if !$0 { showDeleteConfirmation = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Remove", role: .destructive) {
+                if let show = showDeleteConfirmation {
+                    Task {
+                        await viewModel.deleteShow(show)
+                    }
+                }
+                showDeleteConfirmation = nil
+            }
+            Button("Cancel", role: .cancel) {
+                showDeleteConfirmation = nil
+            }
+        } message: {
+            if let show = showDeleteConfirmation {
+                Text("Stop following \(show.name)?")
+            }
+        }
+    }
+
+    private func selectedSeasonBinding(for group: BingeReadyShowGroup) -> Binding<Int> {
+        Binding(
+            get: {
+                selectedSeasons[group.show.id] ?? group.seasons.first?.seasonNumber ?? 1
+            },
+            set: { newValue in
+                selectedSeasons[group.show.id] = newValue
+            }
+        )
     }
 
     // MARK: - Summary Header
@@ -207,105 +243,6 @@ private struct SummaryItem: View {
                 .tracking(1)
                 .foregroundStyle(.white.opacity(0.4))
         }
-    }
-}
-
-// MARK: - Binge Ready Row
-
-private struct BingeReadyRow: View {
-    let item: BingeReadyItem
-    var isMarking: Bool = false
-
-    var body: some View {
-        HStack(spacing: 14) {
-            // Poster
-            posterImage
-                .frame(width: 68, height: 100)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .opacity(isMarking ? 0.5 : 1)
-
-            // Info
-            VStack(alignment: .leading, spacing: 6) {
-                // Show name
-                Text(item.show.name)
-                    .font(.body)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-
-                // Season
-                Text("Season \(item.season.seasonNumber)")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.7))
-
-                // Episode count and status
-                HStack(spacing: 12) {
-                    Label("\(item.season.episodeCount) episodes", systemImage: "play.rectangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.5))
-
-                    if let finaleDate = item.season.finaleDate {
-                        Text("Finished \(formatRelativeDate(finaleDate))")
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.4))
-                    }
-                }
-            }
-            .opacity(isMarking ? 0.5 : 1)
-
-            Spacer()
-
-            // Binge ready indicator or loading
-            if isMarking {
-                ProgressView()
-                    .tint(Color(red: 0.45, green: 0.90, blue: 0.70))
-            } else {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70))
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
-        .contentShape(Rectangle())
-    }
-
-    @ViewBuilder
-    private var posterImage: some View {
-        // Try season poster first, fall back to show poster
-        let posterPath = item.season.posterPath ?? item.show.posterPath
-
-        if let url = TMDBConfiguration.imageURL(path: posterPath, size: .posterSmall) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                default:
-                    posterPlaceholder
-                }
-            }
-        } else {
-            posterPlaceholder
-        }
-    }
-
-    private var posterPlaceholder: some View {
-        ZStack {
-            Color.white.opacity(0.08)
-
-            Text(String(item.show.name.prefix(1)))
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundStyle(.white.opacity(0.2))
-        }
-    }
-
-    private func formatRelativeDate(_ date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
