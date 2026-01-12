@@ -42,9 +42,7 @@ struct ShowDetailView: View {
                         }
 
                         // Actions section
-                        if viewModel.isFollowed {
-                            actionsSection
-                        }
+                        actionsSection
 
                         Spacer(minLength: 40)
                     }
@@ -268,32 +266,65 @@ struct ShowDetailView: View {
             Divider()
                 .background(Color.white.opacity(0.1))
 
-            Button {
-                showRemoveConfirmation = true
-            } label: {
-                HStack(spacing: 8) {
-                    if viewModel.isRemoving {
-                        ProgressView()
-                            .tint(.red.opacity(0.8))
-                            .scaleEffect(0.8)
-                    } else {
-                        Image(systemName: "minus.circle")
-                    }
+            if viewModel.isFollowed {
+                // Remove button
+                Button {
+                    showRemoveConfirmation = true
+                } label: {
+                    HStack(spacing: 8) {
+                        if viewModel.isRemoving {
+                            ProgressView()
+                                .tint(.red.opacity(0.8))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "minus.circle")
+                        }
 
-                    Text("Remove Show")
+                        Text("Remove Show")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.red.opacity(0.8))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.red.opacity(0.1))
+                    )
                 }
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundStyle(.red.opacity(0.8))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.red.opacity(0.1))
-                )
+                .buttonStyle(.plain)
+                .disabled(viewModel.isRemoving)
+            } else {
+                // Add button
+                Button {
+                    Task {
+                        await viewModel.addShow()
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        if viewModel.isAdding {
+                            ProgressView()
+                                .tint(.white)
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "plus.circle.fill")
+                        }
+
+                        Text("Add to My Shows")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.white)
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(viewModel.isAdding)
             }
-            .buttonStyle(.plain)
-            .disabled(viewModel.isRemoving)
         }
     }
 

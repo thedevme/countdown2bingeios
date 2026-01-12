@@ -25,6 +25,9 @@ final class ShowDetailViewModel {
     /// Loading state for remove action
     var isRemoving: Bool = false
 
+    /// Loading state for add action
+    var isAdding: Bool = false
+
     /// Error state
     var error: Error?
 
@@ -126,6 +129,23 @@ final class ShowDetailViewModel {
     func selectSeason(_ number: Int) {
         guard regularSeasons.contains(where: { $0.seasonNumber == number }) else { return }
         selectedSeasonNumber = number
+    }
+
+    /// Add (follow) this show
+    func addShow() async {
+        guard !isFollowed, !isAdding else { return }
+
+        isAdding = true
+        error = nil
+
+        do {
+            try await repository.save(show)
+            isFollowed = true
+        } catch {
+            self.error = error
+        }
+
+        isAdding = false
     }
 
     /// Remove (unfollow) this show

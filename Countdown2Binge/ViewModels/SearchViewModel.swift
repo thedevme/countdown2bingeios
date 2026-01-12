@@ -24,6 +24,12 @@ final class SearchViewModel {
     /// ID of the most recently added show (for success feedback)
     var recentlyAddedShowId: Int?
 
+    /// Show selected for detail navigation
+    var selectedShow: Show?
+
+    /// ID of show currently being loaded for detail view
+    var loadingDetailId: Int?
+
     // MARK: - Dependencies
 
     private let tmdbService: TMDBServiceProtocol
@@ -138,6 +144,30 @@ final class SearchViewModel {
     /// - Returns: `true` if the show is being added
     func isAdding(tmdbId: Int) -> Bool {
         addingShowIds.contains(tmdbId)
+    }
+
+    // MARK: - Show Detail
+
+    /// Fetch full show details and set for navigation
+    /// - Parameter tmdbId: The TMDB ID to fetch
+    func selectShow(tmdbId: Int) async {
+        guard loadingDetailId == nil else { return }
+
+        loadingDetailId = tmdbId
+
+        do {
+            let show = try await tmdbService.getShowDetails(id: tmdbId)
+            selectedShow = show
+        } catch {
+            self.error = error
+        }
+
+        loadingDetailId = nil
+    }
+
+    /// Check if a show is currently loading for detail view
+    func isLoadingDetail(tmdbId: Int) -> Bool {
+        loadingDetailId == tmdbId
     }
 
     // MARK: - Clear

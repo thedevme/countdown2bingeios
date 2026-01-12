@@ -229,24 +229,31 @@ struct ShowCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Poster placeholder
+            // Poster
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color(hex: "1A1A1A"),
-                                Color(hex: "151515")
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                // Show initial as placeholder
-                Text(String(entry.show.name.prefix(1)))
-                    .font(.system(size: 32, weight: .bold, design: .serif))
-                    .foregroundColor(Color(hex: "2A2A2A"))
+                // Poster image or placeholder
+                if let url = TMDBConfiguration.imageURL(path: entry.show.posterPath, size: .poster) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure:
+                            posterPlaceholder
+                        case .empty:
+                            posterPlaceholder
+                                .overlay(
+                                    ProgressView()
+                                        .tint(Color(hex: "666666"))
+                                )
+                        @unknown default:
+                            posterPlaceholder
+                        }
+                    }
+                } else {
+                    posterPlaceholder
+                }
 
                 // Countdown badge
                 if let countdown = entry.countdown {
@@ -311,6 +318,23 @@ struct ShowCardView: View {
         case .airingNow: return "Currently airing"
         case .premieringSoon: return "Coming soon"
         case .anticipated: return "Date TBD"
+        }
+    }
+
+    private var posterPlaceholder: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(hex: "1A1A1A"),
+                    Color(hex: "151515")
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            Text(String(entry.show.name.prefix(1)))
+                .font(.system(size: 32, weight: .bold, design: .serif))
+                .foregroundColor(Color(hex: "2A2A2A"))
         }
     }
 }

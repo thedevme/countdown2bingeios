@@ -7,15 +7,19 @@ import SwiftUI
 
 /// The main search screen for finding and adding TV shows.
 struct SearchView: View {
+    @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: SearchViewModel
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background
+                // Background - tappable to dismiss keyboard
                 Color.black
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        isSearchFocused = false
+                    }
 
                 VStack(spacing: 0) {
                     // Search field
@@ -33,6 +37,14 @@ struct SearchView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Color.black, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .navigationDestination(item: $viewModel.selectedShow) { show in
+                ShowDetailView(
+                    viewModel: ShowDetailViewModel(
+                        show: show,
+                        repository: ShowRepository(modelContext: modelContext)
+                    )
+                )
+            }
         }
         .onChange(of: viewModel.searchQuery) {
             Task {
@@ -166,12 +178,20 @@ struct SearchView: View {
                     SearchResultRow(
                         result: result,
                         isFollowed: viewModel.isFollowed(tmdbId: result.id),
-                        isLoading: viewModel.isAdding(tmdbId: result.id)
-                    ) {
-                        Task {
-                            await viewModel.addShow(tmdbId: result.id)
+                        isLoading: viewModel.isAdding(tmdbId: result.id),
+                        isLoadingDetail: viewModel.isLoadingDetail(tmdbId: result.id),
+                        onTap: {
+                            isSearchFocused = false
+                            Task {
+                                await viewModel.selectShow(tmdbId: result.id)
+                            }
+                        },
+                        onAdd: {
+                            Task {
+                                await viewModel.addShow(tmdbId: result.id)
+                            }
                         }
-                    }
+                    )
 
                     if result.id != viewModel.searchResults.last?.id {
                         Divider()
@@ -182,7 +202,7 @@ struct SearchView: View {
             }
             .padding(.horizontal, 20)
         }
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.immediately)
     }
 }
 
@@ -192,53 +212,71 @@ private struct SearchResultRow: View {
     let result: TMDBShowSummary
     let isFollowed: Bool
     let isLoading: Bool
+    let isLoadingDetail: Bool
+    let onTap: () -> Void
     let onAdd: () -> Void
 
     var body: some View {
-        HStack(spacing: 14) {
-            // Poster
-            posterImage
-                .frame(width: 56, height: 84)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        Button(action: onTap) {
+            HStack(spacing: 14) {
+                // Poster
+                ZStack {
+                    posterImage
+                        .frame(width: 56, height: 84)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
-            // Info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(result.name)
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
+                    if isLoadingDetail {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(.black.opacity(0.5))
+                            .frame(width: 56, height: 84)
 
-                HStack(spacing: 6) {
-                    if let year = extractYear(from: result.firstAirDate) {
-                        Text(year)
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.5))
-                    }
-
-                    if let rating = result.voteAverage, rating > 0 {
-                        HStack(spacing: 3) {
-                            Image(systemName: "star.fill")
-                                .font(.caption2)
-                            Text(String(format: "%.1f", rating))
-                                .font(.caption)
-                        }
-                        .foregroundStyle(.white.opacity(0.5))
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(0.8)
                     }
                 }
+
+                // Info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(result.name)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+
+                    HStack(spacing: 6) {
+                        if let year = extractYear(from: result.firstAirDate) {
+                            Text(year)
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+
+                        if let rating = result.voteAverage, rating > 0 {
+                            HStack(spacing: 3) {
+                                Image(systemName: "star.fill")
+                                    .font(.caption2)
+                                Text(String(format: "%.1f", rating))
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                }
+
+                Spacer()
+
+                // Add button
+                AddButton(
+                    isAdded: isFollowed,
+                    isLoading: isLoading,
+                    action: onAdd
+                )
             }
-
-            Spacer()
-
-            // Add button
-            AddButton(
-                isAdded: isFollowed,
-                isLoading: isLoading,
-                action: onAdd
-            )
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, 14)
-        .contentShape(Rectangle())
+        .buttonStyle(.plain)
+        .disabled(isLoadingDetail)
     }
 
     @ViewBuilder
