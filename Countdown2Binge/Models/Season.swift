@@ -69,6 +69,19 @@ struct Season: Identifiable, Codable, Equatable, Hashable {
         episodes.filter { $0.hasAired }.count
     }
 
+    /// Number of episodes that have been watched
+    var watchedEpisodeCount: Int {
+        episodes.filter { $0.isWatched }.count
+    }
+
+    /// Whether all aired episodes have been watched
+    var allAiredEpisodesWatched: Bool {
+        guard !episodes.isEmpty else { return false }
+        let airedEpisodes = episodes.filter { $0.hasAired }
+        guard !airedEpisodes.isEmpty else { return false }
+        return airedEpisodes.allSatisfy { $0.isWatched }
+    }
+
     /// Whether season is ready to binge (complete and not yet watched)
     var isBingeReady: Bool {
         isComplete && !isWatched

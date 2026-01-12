@@ -14,7 +14,7 @@ final class ShowDetailViewModel {
     // MARK: - Properties
 
     /// The show being displayed
-    let show: Show
+    var show: Show
 
     /// Currently selected season number
     var selectedSeasonNumber: Int
@@ -37,6 +37,9 @@ final class ShowDetailViewModel {
     /// Result of mark watched action (for feedback)
     var markWatchedResult: MarkWatchedResult?
 
+    /// Whether the episode list is expanded
+    var isEpisodeListExpanded: Bool = true
+
     /// Error state
     var error: Error?
 
@@ -47,13 +50,20 @@ final class ShowDetailViewModel {
 
     private let repository: ShowRepositoryProtocol
     private let markWatchedUseCase: MarkWatchedUseCaseProtocol
+    private let markEpisodeWatchedUseCase: MarkEpisodeWatchedUseCaseProtocol
 
     // MARK: - Initialization
 
-    init(show: Show, repository: ShowRepositoryProtocol, markWatchedUseCase: MarkWatchedUseCaseProtocol? = nil) {
+    init(
+        show: Show,
+        repository: ShowRepositoryProtocol,
+        markWatchedUseCase: MarkWatchedUseCaseProtocol? = nil,
+        markEpisodeWatchedUseCase: MarkEpisodeWatchedUseCaseProtocol? = nil
+    ) {
         self.show = show
         self.repository = repository
         self.markWatchedUseCase = markWatchedUseCase ?? MarkWatchedUseCase(repository: repository)
+        self.markEpisodeWatchedUseCase = markEpisodeWatchedUseCase ?? MarkEpisodeWatchedUseCase(repository: repository)
         self.isFollowed = repository.isShowFollowed(tmdbId: show.id)
 
         // Default to current/latest season
@@ -210,5 +220,50 @@ final class ShowDetailViewModel {
         }
 
         isMarkingWatched = false
+    }
+
+    /// Toggle episode list expansion
+    func toggleEpisodeList() {
+        isEpisodeListExpanded.toggle()
+    }
+
+    /// Toggle an episode's watched status
+    func toggleEpisodeWatched(_ episode: Episode) async {
+        guard isFollowed, episode.hasAired else { return }
+
+        let newWatchedState = !episode.isWatched
+
+        // Update local state immediately for responsive UI
+        updateLocalEpisodeWatchedState(
+            seasonNumber: episode.seasonNumber,
+            episodeNumber: episode.episodeNumber,
+            watched: newWatchedState
+        )
+
+        do {
+            try await markEpisodeWatchedUseCase.execute(
+                showId: show.id,
+                seasonNumber: episode.seasonNumber,
+                episodeNumber: episode.episodeNumber,
+                watched: newWatchedState
+            )
+        } catch {
+            // Revert on error
+            updateLocalEpisodeWatchedState(
+                seasonNumber: episode.seasonNumber,
+                episodeNumber: episode.episodeNumber,
+                watched: !newWatchedState
+            )
+            self.error = error
+        }
+    }
+
+    /// Update local episode watched state for immediate UI feedback
+    private func updateLocalEpisodeWatchedState(seasonNumber: Int, episodeNumber: Int, watched: Bool) {
+        guard let seasonIndex = show.seasons.firstIndex(where: { $0.seasonNumber == seasonNumber }),
+              let episodeIndex = show.seasons[seasonIndex].episodes.firstIndex(where: { $0.episodeNumber == episodeNumber }) else {
+            return
+        }
+        show.seasons[seasonIndex].episodes[episodeIndex].watchedDate = watched ? Date() : nil
     }
 }

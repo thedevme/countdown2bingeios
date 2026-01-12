@@ -8,16 +8,16 @@ import SwiftUI
 /// Detail view for a single TV show.
 /// Displays backdrop, title, status, season info, countdown, and actions.
 struct ShowDetailView: View {
-    @Bindable var viewModel: ShowDetailViewModel
+    @State private var viewModel: ShowDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showRemoveConfirmation: Bool = false
 
-    var body: some View {
-        ZStack {
-            // Background
-            Color.black
-                .ignoresSafeArea()
+    init(viewModel: ShowDetailViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
 
+    var body: some View {
+        GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
                     // Backdrop header
@@ -31,6 +31,11 @@ struct ShowDetailView: View {
                         // Season info section
                         seasonSection
 
+                        // Episode list (for followed shows with episodes)
+                        if viewModel.isFollowed, let season = viewModel.selectedSeason, !season.episodes.isEmpty {
+                            episodeListSection
+                        }
+
                         // Countdown section
                         if viewModel.countdownInfo != nil {
                             countdownSection
@@ -43,22 +48,17 @@ struct ShowDetailView: View {
 
                         // Actions section
                         actionsSection
-
-                        Spacer(minLength: 40)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 24)
+                    .padding(.bottom, 40)
                 }
+                .frame(width: geometry.size.width)
             }
-            .ignoresSafeArea(edges: .top)
         }
+        .background(Color.black)
+        .scrollIndicators(.hidden)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("")
-            }
-        }
         .confirmationDialog(
             "Remove Show",
             isPresented: $showRemoveConfirmation,
@@ -244,6 +244,23 @@ struct ShowDetailView: View {
                     )
             )
         }
+    }
+
+    // MARK: - Episode List Section
+
+    private var episodeListSection: some View {
+        EpisodeListView(
+            episodes: viewModel.selectedSeason?.episodes ?? [],
+            isExpanded: viewModel.isEpisodeListExpanded,
+            onToggleExpand: {
+                viewModel.toggleEpisodeList()
+            },
+            onToggleWatched: { episode in
+                Task {
+                    await viewModel.toggleEpisodeWatched(episode)
+                }
+            }
+        )
     }
 
     // MARK: - Season Picker
@@ -559,4 +576,5 @@ private class MockDetailRepository: ShowRepositoryProtocol {
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { true }
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
+    func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws {}
 }

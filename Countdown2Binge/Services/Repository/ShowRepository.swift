@@ -16,6 +16,7 @@ protocol ShowRepositoryProtocol {
     func delete(_ show: Show) async throws
     func isShowFollowed(tmdbId: Int) -> Bool
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws
+    func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws
 }
 
 /// Repository for managing shows with higher-level domain operations.
@@ -128,6 +129,31 @@ final class ShowRepository: ShowRepositoryProtocol {
         }
 
         show.seasons[seasonIndex].watchedDate = Date()
+
+        // Save the updated show
+        try store.updateCache(for: showId, with: show)
+    }
+
+    // MARK: - Mark Episode Watched
+
+    /// Mark a specific episode as watched or unwatched
+    func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws {
+        guard var show = fetchShow(byTmdbId: showId) else {
+            throw StoreError.showNotFound
+        }
+
+        // Find the season
+        guard let seasonIndex = show.seasons.firstIndex(where: { $0.seasonNumber == seasonNumber }) else {
+            throw StoreError.showNotFound
+        }
+
+        // Find the episode
+        guard let episodeIndex = show.seasons[seasonIndex].episodes.firstIndex(where: { $0.episodeNumber == episodeNumber }) else {
+            throw StoreError.showNotFound
+        }
+
+        // Update the episode
+        show.seasons[seasonIndex].episodes[episodeIndex].watchedDate = watched ? Date() : nil
 
         // Save the updated show
         try store.updateCache(for: showId, with: show)

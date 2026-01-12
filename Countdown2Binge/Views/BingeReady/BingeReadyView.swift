@@ -340,6 +340,7 @@ private class MockBingeRepository: ShowRepositoryProtocol {
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { false }
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
+    func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws {}
 }
 
 private class MockEmptyBingeRepository: ShowRepositoryProtocol {
@@ -351,4 +352,5 @@ private class MockEmptyBingeRepository: ShowRepositoryProtocol {
     func delete(_ show: Show) async throws {}
     func isShowFollowed(tmdbId: Int) -> Bool { false }
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
+    func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws {}
 }
