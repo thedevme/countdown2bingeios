@@ -28,6 +28,7 @@ struct Show: Identifiable, Codable, Equatable, Hashable {
     let overview: String?
     let posterPath: String?
     let backdropPath: String?
+    let logoPath: String?
     let firstAirDate: Date?
     let status: ShowStatus
     let genres: [Genre]

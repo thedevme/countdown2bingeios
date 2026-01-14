@@ -140,6 +140,7 @@ final class CachedShowDataXCTests: XCTestCase {
             overview: "New overview",
             posterPath: original.posterPath,
             backdropPath: original.backdropPath,
+            logoPath: original.logoPath,
             firstAirDate: original.firstAirDate,
             status: .ended,
             genres: original.genres,
@@ -198,6 +199,7 @@ extension CachedShowDataXCTests {
             overview: "A great show",
             posterPath: "/poster.jpg",
             backdropPath: "/backdrop.jpg",
+            logoPath: "/logo.png",
             firstAirDate: pastDate,
             status: .returning,
             genres: [
@@ -249,6 +251,7 @@ extension CachedShowDataXCTests {
             overview: nil,
             posterPath: nil,
             backdropPath: nil,
+            logoPath: nil,
             firstAirDate: pastDate,
             status: status,
             genres: [],

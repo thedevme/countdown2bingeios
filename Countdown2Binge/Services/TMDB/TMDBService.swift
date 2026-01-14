@@ -60,6 +60,9 @@ final class TMDBService: TMDBServiceProtocol {
         let endpoint = TMDBEndpoint.tvDetails(id: id)
         let details: TMDBShowDetails = try await fetch(endpoint)
 
+        // Fetch logo in parallel with seasons
+        async let logoPath = getShowLogo(id: id)
+
         // Then fetch episode details for each season (excluding specials)
         let regularSeasons = details.seasons.filter { $0.seasonNumber > 0 }
         var seasons: [Season] = []
@@ -74,7 +77,24 @@ final class TMDBService: TMDBServiceProtocol {
             }
         }
 
-        return TMDBMapper.map(details, seasons: seasons)
+        return TMDBMapper.map(details, seasons: seasons, logoPath: await logoPath)
+    }
+
+    /// Get the best available logo for a show
+    func getShowLogo(id: Int) async -> String? {
+        do {
+            let endpoint = TMDBEndpoint.tvImages(id: id)
+            let images: TMDBImagesResponse = try await fetch(endpoint)
+
+            // Prefer English logos, then fallback to any available
+            let englishLogos = images.logos.filter { $0.iso6391 == "en" }
+            let bestLogo = englishLogos.first ?? images.logos.first
+
+            return bestLogo?.filePath
+        } catch {
+            // Logo fetch failed, return nil (will fall back to text)
+            return nil
+        }
     }
 
     /// Get detailed season info including episodes

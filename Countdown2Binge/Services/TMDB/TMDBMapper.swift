@@ -21,13 +21,14 @@ enum TMDBMapper {
 
     // MARK: - Show Mapping
 
-    static func map(_ details: TMDBShowDetails, seasons: [Season]) -> Show {
+    static func map(_ details: TMDBShowDetails, seasons: [Season], logoPath: String? = nil) -> Show {
         Show(
             id: details.id,
             name: details.name,
             overview: details.overview,
             posterPath: details.posterPath,
             backdropPath: details.backdropPath,
+            logoPath: logoPath,
             firstAirDate: parseDate(details.firstAirDate),
             status: ShowStatus(rawValue: details.status) ?? .planned,
             genres: details.genres.map { Genre(id: $0.id, name: $0.name) },

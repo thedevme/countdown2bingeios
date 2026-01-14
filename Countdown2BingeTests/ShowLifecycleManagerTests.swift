@@ -194,6 +194,7 @@ private func makeShow(status: ShowStatus, seasons: [Season]) -> Show {
         overview: nil,
         posterPath: nil,
         backdropPath: nil,
+        logoPath: nil,
         firstAirDate: nil,
         status: status,
         genres: [],

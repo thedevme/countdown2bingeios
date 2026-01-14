@@ -40,7 +40,7 @@ enum TMDBConfiguration {
             case .backdrop: "/w780"
             case .backdropSmall: "/w300"
             case .still: "/w300"
-            case .logo: "/w92"
+            case .logo: "/w500"
             case .original: "/original"
             }
         }

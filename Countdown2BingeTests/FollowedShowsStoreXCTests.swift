@@ -281,6 +281,7 @@ extension FollowedShowsStoreXCTests {
             overview: nil,
             posterPath: nil,
             backdropPath: nil,
+            logoPath: nil,
             firstAirDate: pastDate,
             status: status,
             genres: [],

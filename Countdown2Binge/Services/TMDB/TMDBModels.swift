@@ -136,3 +136,24 @@ struct TMDBEpisode: Codable {
         case stillPath = "still_path"
     }
 }
+
+// MARK: - Images Response
+
+struct TMDBImagesResponse: Codable {
+    let logos: [TMDBImage]
+}
+
+struct TMDBImage: Codable {
+    let filePath: String
+    let aspectRatio: Double
+    let width: Int
+    let height: Int
+    let iso6391: String?
+
+    enum CodingKeys: String, CodingKey {
+        case filePath = "file_path"
+        case aspectRatio = "aspect_ratio"
+        case width, height
+        case iso6391 = "iso_639_1"
+    }
+}

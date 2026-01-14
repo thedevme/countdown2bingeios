@@ -280,6 +280,7 @@ struct BingeReadyCardView: View {
                     overview: "Mark leads a team...",
                     posterPath: nil,
                     backdropPath: nil,
+                    logoPath: nil,
                     firstAirDate: Date(),
                     status: .returning,
                     genres: [],

@@ -15,6 +15,7 @@ final class CachedShowData {
     var overview: String?
     var posterPath: String?
     var backdropPath: String?
+    var logoPath: String?
     var firstAirDate: Date?
     var statusRaw: String
     var numberOfSeasons: Int
@@ -39,6 +40,7 @@ final class CachedShowData {
         self.overview = show.overview
         self.posterPath = show.posterPath
         self.backdropPath = show.backdropPath
+        self.logoPath = show.logoPath
         self.firstAirDate = show.firstAirDate
         self.statusRaw = show.status.rawValue
         self.numberOfSeasons = show.numberOfSeasons
@@ -63,6 +65,7 @@ final class CachedShowData {
         self.overview = show.overview
         self.posterPath = show.posterPath
         self.backdropPath = show.backdropPath
+        self.logoPath = show.logoPath
         self.firstAirDate = show.firstAirDate
         self.statusRaw = show.status.rawValue
         self.numberOfSeasons = show.numberOfSeasons
@@ -109,6 +112,7 @@ extension CachedShowData {
             overview: overview,
             posterPath: posterPath,
             backdropPath: backdropPath,
+            logoPath: logoPath,
             firstAirDate: firstAirDate,
             status: status,
             genres: genres,

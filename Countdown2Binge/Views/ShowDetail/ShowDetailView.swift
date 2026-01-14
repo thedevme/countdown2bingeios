@@ -528,6 +528,7 @@ private struct SeasonPickerButton: View {
                     overview: "Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives.",
                     posterPath: nil,
                     backdropPath: nil,
+                    logoPath: nil,
                     firstAirDate: Date(),
                     status: .returning,
                     genres: [],

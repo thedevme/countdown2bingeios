@@ -350,6 +350,7 @@ private func makeShow(
         overview: nil,
         posterPath: nil,
         backdropPath: nil,
+        logoPath: nil,
         firstAirDate: nil,
         status: status,
         genres: [],

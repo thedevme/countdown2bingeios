@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Countdown2Binge.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>10</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>9F41C6A2E89BEC20C5F38F2650175C1D74D6E18A</string>
+				<key>dateExpires</key>
+				<string>3/6/26</string>
+				<key>type</key>
+				<string>Cloud Managed Apple Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>BCKVL9BZPW.io.DesignToSwiftUI.Countdown2Binge</string>
+				<key>beta-reports-active</key>
+				<true/>
+				<key>com.apple.developer.team-identifier</key>
+				<string>BCKVL9BZPW</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>Countdown2Binge.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>c5abb1f9-9841-4437-94d1-4ea2f48f0efe</string>
+				<key>dateExpires</key>
+				<string>9/20/26</string>
+				<key>name</key>
+				<string>iOS Team Store Provisioning Profile: io.DesignToSwiftUI.Countdown2Binge</string>
+			</dict>
+			<key>symbols</key>
+			<true/>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>BCKVL9BZPW</string>
+				<key>name</key>
+				<string>Cocoa Academy LLC</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>2.0.3</string>
+		</dict>
+	</array>
+</dict>
+</plist>
