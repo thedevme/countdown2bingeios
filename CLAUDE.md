@@ -12,7 +12,7 @@
 
 When a phase completes successfully:
 - Print the line exactly: PHASE COMPLETE — READY FOR REVIEW
-- Immediately output the terminal bell character once (\a)
+- Run: `afplay /System/Library/Sounds/Glass.aiff && osascript -e 'display notification "Ready for review" with title "Phase Complete"'`
 - Do not begin the next phase automatically
 
 Always use the design skill when changing the UI

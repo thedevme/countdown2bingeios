@@ -54,14 +54,19 @@ struct Season: Identifiable, Codable, Equatable, Hashable {
     /// Days until the finale airs (nil if complete or no date)
     var daysUntilFinale: Int? {
         guard let finaleDate, !isComplete else { return nil }
-        let days = Calendar.current.dateComponents([.day], from: Date(), to: finaleDate).day
-        return days
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let finale = calendar.startOfDay(for: finaleDate)
+        return calendar.dateComponents([.day], from: today, to: finale).day
     }
 
     /// Days until the season premiere (nil if already started or no date)
     var daysUntilPremiere: Int? {
         guard let airDate, !hasStarted else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: airDate).day
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let premiere = calendar.startOfDay(for: airDate)
+        return calendar.dateComponents([.day], from: today, to: premiere).day
     }
 
     /// Number of episodes that have aired

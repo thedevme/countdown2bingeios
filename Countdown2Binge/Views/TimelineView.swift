@@ -13,69 +13,135 @@ struct TimelineView: View {
     @Query(sort: \FollowedShow.followedAt, order: .reverse)
     private var followedShows: [FollowedShow]
     @State private var selectedShow: Show?
+    @State private var lastRefreshed: Date? = Date()
+
+    // Section expand/collapse state (both sections sync together)
+    // Default to compact (collapsed) view
+    @State private var isSectionsExpanded: Bool = false
+
+    // Hero card stack index
+    @State private var heroCardIndex: Int = 0
+
+    // Refresh state
+    @State private var isRefreshing: Bool = false
+
+    // Full timeline navigation
+    @State private var showFullTimeline: Bool = false
 
     private let timelineService = TimelineService()
+    private let maxCardsPerSection = 3
 
-    private var groupedShows: [(category: TimelineCategory, entries: [TimelineEntry])] {
-        let shows = followedShows.compactMap { $0.cachedData?.toShow() }
-        let grouped = timelineService.groupByCategory(shows)
-        // Exclude bingeReady - those shows appear in the Binge Ready tab, not Timeline
-        return timelineService.sortedCategories(from: grouped)
-            .filter { $0.category != .bingeReady }
+    // MARK: - Computed Properties
+
+    private var allShows: [Show] {
+        followedShows.compactMap { $0.cachedData?.toShow() }
     }
 
-    /// Whether cached data has been loaded for followed shows
     private var hasCachedData: Bool {
         followedShows.contains { $0.cachedData != nil }
+    }
+
+    /// Currently airing shows sorted by soonest finale (for hero card stack)
+    private var airingShowsWithFinale: [(show: Show, daysUntilFinale: Int)] {
+        let airingShows = allShows.filter { $0.lifecycleState == .airing }
+        return airingShows
+            .compactMap { show -> (Show, Int)? in
+                guard let days = show.daysUntilFinale else { return nil }
+                return (show, days)
+            }
+            .sorted { $0.1 < $1.1 }
+    }
+
+    /// Current hero show based on card stack index
+    private var currentHeroShow: (show: Show, daysUntilFinale: Int)? {
+        guard !airingShowsWithFinale.isEmpty,
+              heroCardIndex < airingShowsWithFinale.count else { return nil }
+        return airingShowsWithFinale[heroCardIndex]
+    }
+
+    /// Ending soon entries (currently airing shows sorted by days until finale)
+    private var endingSoonEntries: [(show: Show, daysUntilFinale: Int)] {
+        airingShowsWithFinale
+    }
+
+    /// Premiering soon entries (sorted by days until premiere)
+    private var premieringSoonEntries: [TimelineEntry] {
+        let grouped = timelineService.groupByCategory(allShows)
+        return grouped[.premieringSoon] ?? []
+    }
+
+    /// Anticipated entries (shows with dates first, then TBD)
+    private var anticipatedEntries: [TimelineEntry] {
+        let grouped = timelineService.groupByCategory(allShows)
+        let entries = grouped[.anticipated] ?? []
+
+        // Sort: shows with expected dates first, then TBD (alphabetical)
+        return entries.sorted { entry1, entry2 in
+            let hasDate1 = entry1.show.upcomingSeason?.airDate != nil
+            let hasDate2 = entry2.show.upcomingSeason?.airDate != nil
+
+            if hasDate1 && !hasDate2 { return true }
+            if !hasDate1 && hasDate2 { return false }
+            return entry1.show.name < entry2.show.name
+        }
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                // Deep background with subtle gradient
-                LinearGradient(
-                    colors: [
-                        Color(hex: "0A0A0A"),
-                        Color(hex: "0F0F0F"),
-                        Color(hex: "0A0A0A")
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                // Background
+                Color.black.ignoresSafeArea()
 
-                if followedShows.isEmpty {
-                    EmptyStateView()
-                } else if !hasCachedData {
-                    // Has followed shows but no cached data yet
-                    LoadingStateView()
-                } else if groupedShows.isEmpty {
-                    // Has cached data but all shows are in Binge Ready tab
-                    AllBingeReadyStateView()
-                } else {
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 40) {
-                            // Header
-                            HeaderView()
-                                .padding(.horizontal, 24)
-                                .padding(.top, 16)
-
-                            // Timeline sections
-                            ForEach(groupedShows, id: \.category) { section in
-                                TimelineSectionView(
-                                    category: section.category,
-                                    entries: section.entries,
-                                    onShowSelected: { show in
-                                        selectedShow = show
-                                    }
-                                )
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // Header
+                        TimelineHeaderView(
+                            lastUpdated: lastRefreshed,
+                            isRefreshing: isRefreshing,
+                            onRefresh: {
+                                Task {
+                                    await refreshShows()
+                                }
+                            },
+                            onViewEntireTimeline: {
+                                showFullTimeline = true
                             }
+                        )
 
-                            Spacer(minLength: 100)
+                        // Hero section (swipeable card stack)
+                        HeroCardStack(
+                            shows: airingShowsWithFinale,
+                            currentIndex: $heroCardIndex,
+                            onShowTap: { show in
+                                selectedShow = show
+                            }
+                        )
+
+                        // Slot machine countdown (syncs with current card)
+                        if let hero = currentHeroShow {
+                            SlotMachineCountdown(
+                                days: hero.daysUntilFinale,
+                                targetDate: Date().addingTimeInterval(Double(hero.daysUntilFinale) * 86400)
+                            )
                         }
-                    }
-                    .refreshable {
-                        await refreshShows()
+
+                        // Vertical connector from hero to sections
+                        verticalConnector
+                            .frame(height: 60)
+
+                        // ENDING SOON Section
+                        endingSoonSection
+
+                        // PREMIERING SOON Section
+                        premieringSoonSection
+
+                        // ANTICIPATED Section
+                        anticipatedSection
+
+                        // Footer
+                        TimelineFooterView(onViewFullTimeline: {
+                            showFullTimeline = true
+                        })
                     }
                 }
             }
@@ -88,324 +154,290 @@ struct TimelineView: View {
                     )
                 )
             }
+            .navigationDestination(isPresented: $showFullTimeline) {
+                FullTimelineView()
+            }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            SoundManager.warmUp()
+        }
+    }
+
+    // MARK: - Ending Soon Section
+
+    private var endingSoonSection: some View {
+        ZStack(alignment: .topLeading) {
+            // Connector line running through entire section
+            GeometryReader { geometry in
+                Path { path in
+                    path.move(to: CGPoint(x: 40, y: 48))
+                    path.addLine(to: CGPoint(x: 40, y: geometry.size.height))
+                }
+                .stroke(
+                    Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.8),
+                    style: StrokeStyle(lineWidth: 2, dash: [4, 4])
+                )
+            }
+            .frame(width: 80)
+
+            VStack(spacing: 0) {
+                TimelineSectionHeader(
+                    title: "ENDING SOON",
+                    totalCount: endingSoonEntries.count,
+                    isExpanded: $isSectionsExpanded,
+                    showDisclosure: true,
+                    style: .endingSoon
+                )
+
+                Group {
+                    if isSectionsExpanded {
+                        if endingSoonEntries.isEmpty {
+                            VStack(spacing: 30) {
+                                ForEach(0..<3, id: \.self) { index in
+                                    EmptySlotCard(
+                                        style: .endingSoon,
+                                        isFirst: index == 0,
+                                        isLast: index == 2
+                                    )
+                                    .frame(height: 190)
+                                }
+                            }
+                        } else {
+                            VStack(spacing: 30) {
+                                let displayEntries = Array(endingSoonEntries.prefix(maxCardsPerSection))
+                                ForEach(Array(displayEntries.enumerated()), id: \.element.show.id) { index, entry in
+                                    TimelineShowCard(
+                                        show: entry.show,
+                                        seasonNumber: entry.show.currentSeason?.seasonNumber ?? 1,
+                                        style: .endingSoon,
+                                        daysUntil: entry.daysUntilFinale,
+                                        expectedYear: nil,
+                                        isFirst: index == 0,
+                                        isLast: index == displayEntries.count - 1
+                                    )
+                                    .frame(height: 190)
+                                    .onTapGesture {
+                                        selectedShow = entry.show
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if endingSoonEntries.isEmpty {
+                            EmptyPortraitSlots(style: .endingSoon)
+                        } else {
+                            CompactPosterRow(
+                                shows: endingSoonEntries.map { $0.show },
+                                style: .endingSoon,
+                                onShowTap: { show in
+                                    selectedShow = show
+                                }
+                            )
+                        }
+                    }
+                }
+                .animation(.easeInOut(duration: 0.3), value: isSectionsExpanded)
+            }
+        }
+    }
+
+    // MARK: - Premiering Soon Section
+
+    private var premieringSoonSection: some View {
+        ZStack(alignment: .topLeading) {
+            // Connector line running through entire section
+            GeometryReader { geometry in
+                Path { path in
+                    path.move(to: CGPoint(x: 40, y: 48)) // Start below header badge
+                    path.addLine(to: CGPoint(x: 40, y: geometry.size.height))
+                }
+                .stroke(
+                    Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.8),
+                    style: StrokeStyle(lineWidth: 2, dash: [4, 4])
+                )
+            }
+            .frame(width: 80)
+
+            VStack(spacing: 0) {
+                TimelineSectionHeader(
+                    title: "PREMIERING SOON",
+                    totalCount: premieringSoonEntries.count,
+                    isExpanded: $isSectionsExpanded,
+                    showDisclosure: true,
+                    style: .premiering
+                )
+
+                Group {
+                if isSectionsExpanded {
+                    // Expanded: Show full timeline cards with landscape backdrops
+                    if premieringSoonEntries.isEmpty {
+                        // Empty slots
+                        VStack(spacing: 30) {
+                            ForEach(0..<3, id: \.self) { index in
+                                EmptySlotCard(
+                                    style: .premiering,
+                                    isFirst: index == 0,
+                                    isLast: index == 2
+                                )
+                                .frame(height: 190)
+                            }
+                        }
+                    } else {
+                        // Show cards (max 3)
+                        VStack(spacing: 30) {
+                            let displayEntries = Array(premieringSoonEntries.prefix(maxCardsPerSection))
+                            ForEach(Array(displayEntries.enumerated()), id: \.element.id) { index, entry in
+                                TimelineShowCard(
+                                    show: entry.show,
+                                    seasonNumber: entry.show.upcomingSeason?.seasonNumber ?? entry.show.currentSeason?.seasonNumber ?? 1,
+                                    style: .premiering,
+                                    daysUntil: entry.countdown?.days,
+                                    expectedYear: nil,
+                                    isFirst: index == 0,
+                                    isLast: index == displayEntries.count - 1
+                                )
+                                .frame(height: 190)
+                                .onTapGesture {
+                                    selectedShow = entry.show
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Collapsed: Show compact portrait posters or empty portrait slots
+                    if premieringSoonEntries.isEmpty {
+                        // Empty portrait slots when collapsed
+                        EmptyPortraitSlots(style: .premiering)
+                    } else {
+                        CompactPosterRow(
+                            shows: premieringSoonEntries.map { $0.show },
+                            style: .premiering,
+                            onShowTap: { show in
+                                selectedShow = show
+                            }
+                        )
+                    }
+                }
+                }
+                .animation(.easeInOut(duration: 0.3), value: isSectionsExpanded)
+            }
+        }
+    }
+
+    // MARK: - Anticipated Section
+
+    private var anticipatedSection: some View {
+        ZStack(alignment: .topLeading) {
+            // Connector line running through entire section
+            GeometryReader { geometry in
+                Path { path in
+                    path.move(to: CGPoint(x: 40, y: 48)) // Start below header badge
+                    path.addLine(to: CGPoint(x: 40, y: geometry.size.height))
+                }
+                .stroke(
+                    Color(white: 0.4).opacity(0.8),
+                    style: StrokeStyle(lineWidth: 2, dash: [4, 4])
+                )
+            }
+            .frame(width: 80)
+
+            VStack(spacing: 0) {
+                TimelineSectionHeader(
+                    title: "ANTICIPATED",
+                    totalCount: anticipatedEntries.count,
+                    isExpanded: $isSectionsExpanded,
+                    showDisclosure: false,
+                    style: .anticipated
+                )
+
+                Group {
+                    if isSectionsExpanded {
+                        // Expanded: Show full timeline cards with landscape backdrops
+                        if anticipatedEntries.isEmpty {
+                            // Empty slots
+                            VStack(spacing: 30) {
+                                ForEach(0..<3, id: \.self) { index in
+                                    EmptySlotCard(
+                                        style: .anticipated,
+                                        isFirst: index == 0,
+                                        isLast: index == 2
+                                    )
+                                    .frame(height: 190)
+                                }
+                            }
+                        } else {
+                            // Show cards (max 3)
+                            VStack(spacing: 30) {
+                                let displayEntries = Array(anticipatedEntries.prefix(maxCardsPerSection))
+                                ForEach(Array(displayEntries.enumerated()), id: \.element.id) { index, entry in
+                                    let expectedYear = Calendar.current.component(.year, from: entry.show.upcomingSeason?.airDate ?? Date())
+                                    let hasDate = entry.show.upcomingSeason?.airDate != nil
+
+                                    TimelineShowCard(
+                                        show: entry.show,
+                                        seasonNumber: entry.show.upcomingSeason?.seasonNumber ?? entry.show.currentSeason?.seasonNumber ?? 1,
+                                        style: .anticipated,
+                                        daysUntil: nil,
+                                        expectedYear: hasDate ? expectedYear : nil,
+                                        isFirst: index == 0,
+                                        isLast: index == displayEntries.count - 1
+                                    )
+                                    .frame(height: 190)
+                                    .onTapGesture {
+                                        selectedShow = entry.show
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Collapsed: Show compact portrait posters or empty portrait slots
+                        if anticipatedEntries.isEmpty {
+                            // Empty portrait slots when collapsed
+                            EmptyPortraitSlots(style: .anticipated)
+                        } else {
+                            CompactPosterRow(
+                                shows: anticipatedEntries.map { $0.show },
+                                style: .anticipated,
+                                onShowTap: { show in
+                                    selectedShow = show
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: isSectionsExpanded)
+        }
+    }
+
+    // MARK: - Vertical Connector
+
+    private var verticalConnector: some View {
+        GeometryReader { geometry in
+            Path { path in
+                let x = geometry.size.width / 2
+                path.move(to: CGPoint(x: x, y: 0))
+                path.addLine(to: CGPoint(x: x, y: geometry.size.height))
+            }
+            .stroke(
+                Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.8),
+                style: StrokeStyle(lineWidth: 2, dash: [4, 4])
+            )
+        }
     }
 
     // MARK: - Refresh
 
     private func refreshShows() async {
+        isRefreshing = true
         let refreshService = StateRefreshService(
             modelContainer: modelContext.container,
             tmdbService: TMDBService()
         )
         await refreshService.refreshWithAPIData()
-    }
-}
-
-// MARK: - Header View
-
-private struct HeaderView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("COUNTDOWN")
-                .font(.system(size: 11, weight: .semibold, design: .default))
-                .tracking(3)
-                .foregroundColor(Color(hex: "D4A574"))
-
-            Text("Your Shows")
-                .font(.system(size: 34, weight: .bold, design: .serif))
-                .foregroundColor(.white)
-        }
-    }
-}
-
-// MARK: - Empty State
-
-private struct EmptyStateView: View {
-    var body: some View {
-        VStack(spacing: 24) {
-            ZStack {
-                Circle()
-                    .fill(Color(hex: "1A1A1A"))
-                    .frame(width: 120, height: 120)
-
-                Image(systemName: "tv")
-                    .font(.system(size: 40, weight: .light))
-                    .foregroundColor(Color(hex: "D4A574"))
-            }
-
-            VStack(spacing: 12) {
-                Text("No Shows Yet")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .foregroundColor(.white)
-
-                Text("Follow shows to track when\nthey're ready to binge.")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(Color(hex: "666666"))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-            }
-        }
-        .padding(40)
-    }
-}
-
-// MARK: - Loading State
-
-private struct LoadingStateView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .tint(Color(hex: "D4A574"))
-
-            Text("Loading your shows...")
-                .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(hex: "666666"))
-        }
-    }
-}
-
-// MARK: - All Binge Ready State
-
-private struct AllBingeReadyStateView: View {
-    var body: some View {
-        VStack(spacing: 24) {
-            ZStack {
-                Circle()
-                    .fill(Color(hex: "1A1A1A"))
-                    .frame(width: 120, height: 120)
-
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 40, weight: .light))
-                    .foregroundColor(Color(hex: "4CAF50"))
-            }
-
-            VStack(spacing: 12) {
-                Text("All Caught Up!")
-                    .font(.system(size: 24, weight: .semibold, design: .serif))
-                    .foregroundColor(.white)
-
-                Text("All your shows are ready to binge.\nCheck the Binge Ready tab.")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(Color(hex: "666666"))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-            }
-        }
-        .padding(40)
-    }
-}
-
-// MARK: - Timeline Section
-
-struct TimelineSectionView: View {
-    let category: TimelineCategory
-    let entries: [TimelineEntry]
-    let onShowSelected: (Show) -> Void
-
-    private var sectionIcon: String {
-        switch category {
-        case .bingeReady: return "checkmark.circle.fill"
-        case .airingNow: return "play.circle.fill"
-        case .premieringSoon: return "calendar.circle.fill"
-        case .anticipated: return "sparkles"
-        }
-    }
-
-    private var accentColor: Color {
-        switch category {
-        case .bingeReady: return Color(hex: "4CAF50")
-        case .airingNow: return Color(hex: "D4A574")
-        case .premieringSoon: return Color(hex: "64B5F6")
-        case .anticipated: return Color(hex: "9E9E9E")
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Section header
-            HStack(spacing: 10) {
-                Image(systemName: sectionIcon)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(accentColor)
-
-                Text(category.rawValue.uppercased())
-                    .font(.system(size: 12, weight: .semibold))
-                    .tracking(1.5)
-                    .foregroundColor(Color(hex: "888888"))
-
-                Text("·")
-                    .foregroundColor(Color(hex: "444444"))
-
-                Text("\(entries.count)")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color(hex: "666666"))
-
-                Spacer()
-            }
-            .padding(.horizontal, 24)
-
-            // Horizontal scroll of cards
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(entries) { entry in
-                        ShowCardView(entry: entry, accentColor: accentColor)
-                            .onTapGesture {
-                                onShowSelected(entry.show)
-                            }
-                    }
-                }
-                .padding(.horizontal, 24)
-            }
-        }
-    }
-}
-
-// MARK: - Show Card
-
-struct ShowCardView: View {
-    let entry: TimelineEntry
-    let accentColor: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Poster
-            ZStack {
-                // Poster image or placeholder
-                if let url = TMDBConfiguration.imageURL(path: entry.show.posterPath, size: .poster) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        case .failure:
-                            posterPlaceholder
-                        case .empty:
-                            posterPlaceholder
-                                .overlay(
-                                    ProgressView()
-                                        .tint(Color(hex: "666666"))
-                                )
-                        @unknown default:
-                            posterPlaceholder
-                        }
-                    }
-                } else {
-                    posterPlaceholder
-                }
-
-                // Countdown badge
-                if let countdown = entry.countdown {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            CountdownBadgeView(countdown: countdown, accentColor: accentColor)
-                                .padding(12)
-                        }
-                    }
-                }
-
-                // Binge ready checkmark
-                if entry.category == .bingeReady {
-                    VStack {
-                        HStack {
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .fill(accentColor)
-                                    .frame(width: 28, height: 28)
-
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 12, weight: .bold))
-                                    .foregroundColor(.black)
-                            }
-                            .padding(12)
-                        }
-                        Spacer()
-                    }
-                }
-            }
-            .frame(width: 140, height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-            // Show info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.show.name)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-                    .lineLimit(1)
-
-                if let countdown = entry.countdown {
-                    Text(countdown.description)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(accentColor)
-                } else {
-                    Text(statusText)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color(hex: "666666"))
-                }
-            }
-            .padding(.top, 12)
-            .frame(width: 140, alignment: .leading)
-        }
-    }
-
-    private var statusText: String {
-        switch entry.category {
-        case .bingeReady: return "Ready to binge"
-        case .airingNow: return "Currently airing"
-        case .premieringSoon: return "Coming soon"
-        case .anticipated: return "Date TBD"
-        }
-    }
-
-    private var posterPlaceholder: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(hex: "1A1A1A"),
-                    Color(hex: "151515")
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            Text(String(entry.show.name.prefix(1)))
-                .font(.system(size: 32, weight: .bold, design: .serif))
-                .foregroundColor(Color(hex: "2A2A2A"))
-        }
-    }
-}
-
-// MARK: - Countdown Badge
-
-struct CountdownBadgeView: View {
-    let countdown: CountdownInfo
-    let accentColor: Color
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Text("\(countdown.days)")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
-
-            Text("days")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundColor(Color(hex: "AAAAAA"))
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(
-            Capsule()
-                .fill(Color.black.opacity(0.8))
-                .overlay(
-                    Capsule()
-                        .strokeBorder(accentColor.opacity(0.3), lineWidth: 1)
-                )
-        )
+        lastRefreshed = Date()
+        isRefreshing = false
     }
 }
 
@@ -439,12 +471,7 @@ extension Color {
 
 // MARK: - Preview
 
-#Preview("Timeline with Shows") {
-    TimelineView()
-        .modelContainer(for: [FollowedShow.self, CachedShowData.self], inMemory: true)
-}
-
-#Preview("Empty State") {
+#Preview("Timeline") {
     TimelineView()
         .modelContainer(for: [FollowedShow.self, CachedShowData.self], inMemory: true)
 }
