@@ -36,6 +36,7 @@ protocol TMDBServiceProtocol {
     func getSeasonDetails(tvId: Int, seasonNumber: Int) async throws -> Season
     func getTrendingShows() async throws -> [TMDBShowSummary]
     func getAiringShows(page: Int) async throws -> TMDBSearchResponse
+    func getShowsByGenre(genreIds: [Int], page: Int) async throws -> TMDBSearchResponse
     func getShowLogo(id: Int) async -> String?
 }
 
@@ -67,6 +68,12 @@ final class TMDBService: TMDBServiceProtocol {
     /// Get currently airing TV shows
     func getAiringShows(page: Int = 1) async throws -> TMDBSearchResponse {
         let endpoint = TMDBEndpoint.discoverAiring(page: page)
+        return try await fetch(endpoint)
+    }
+
+    /// Get TV shows by genre
+    func getShowsByGenre(genreIds: [Int], page: Int = 1) async throws -> TMDBSearchResponse {
+        let endpoint = TMDBEndpoint.discoverByGenre(genreIds: genreIds, page: page)
         return try await fetch(endpoint)
     }
 

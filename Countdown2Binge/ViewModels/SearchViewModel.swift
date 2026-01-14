@@ -9,12 +9,16 @@ import SwiftUI
 /// Genre categories for filtering
 enum ShowCategory: String, CaseIterable, Identifiable {
     case all = "All"
-    case sciFi = "Sci-Fi"
-    case drama = "Drama"
-    case action = "Action"
+    case actionAdventure = "Action & Adventure"
+    case animation = "Animation"
     case comedy = "Comedy"
-    case horror = "Horror"
-    case thriller = "Thriller"
+    case crime = "Crime"
+    case documentary = "Documentary"
+    case drama = "Drama"
+    case family = "Family"
+    case mystery = "Mystery"
+    case sciFiFantasy = "Sci-Fi & Fantasy"
+    case western = "Western"
 
     var id: String { rawValue }
 
@@ -22,12 +26,16 @@ enum ShowCategory: String, CaseIterable, Identifiable {
     var genreIds: [Int] {
         switch self {
         case .all: return []
-        case .sciFi: return [10765] // Sci-Fi & Fantasy
-        case .drama: return [18]
-        case .action: return [10759] // Action & Adventure
+        case .actionAdventure: return [10759]
+        case .animation: return [16]
         case .comedy: return [35]
-        case .horror: return [9648, 27] // Mystery, Horror (TV doesn't have horror, so using mystery)
-        case .thriller: return [80, 9648] // Crime, Mystery
+        case .crime: return [80]
+        case .documentary: return [99]
+        case .drama: return [18]
+        case .family: return [10751]
+        case .mystery: return [9648]
+        case .sciFiFantasy: return [10765]
+        case .western: return [37]
         }
     }
 }
@@ -63,6 +71,18 @@ final class SearchViewModel {
     /// Whether more airing shows can be loaded
     var canLoadMoreAiringShows: Bool {
         airingShowsPage < airingShowsTotalPages && !isLoadingAiring
+    }
+
+    /// Shows by genre from TMDB
+    var genreShows: [TMDBShowSummary] = []
+    var isLoadingGenre: Bool = false
+    private var genreShowsPage: Int = 1
+    private var genreShowsTotalPages: Int = 1
+    private var currentGenreIds: [Int] = []
+
+    /// Whether more genre shows can be loaded
+    var canLoadMoreGenreShows: Bool {
+        genreShowsPage < genreShowsTotalPages && !isLoadingGenre
     }
 
     /// Set of TMDB IDs currently being added (for loading state)
@@ -300,6 +320,60 @@ final class SearchViewModel {
         }
 
         isLoadingAiring = false
+    }
+
+    // MARK: - Genre Shows
+
+    /// Load shows by genre from TMDB
+    func loadGenreShows(genreIds: [Int]) async {
+        // Reset if different genre
+        if currentGenreIds != genreIds {
+            genreShows = []
+            genreShowsPage = 1
+            genreShowsTotalPages = 1
+            currentGenreIds = genreIds
+        }
+
+        guard genreShows.isEmpty else { return }
+
+        isLoadingGenre = true
+
+        do {
+            let response = try await tmdbService.getShowsByGenre(genreIds: genreIds, page: 1)
+            genreShowsTotalPages = response.totalPages
+            genreShows = response.results
+        } catch {
+            // Silently fail
+        }
+
+        isLoadingGenre = false
+    }
+
+    /// Load more genre shows (pagination)
+    func loadMoreGenreShows() async {
+        guard canLoadMoreGenreShows else { return }
+
+        isLoadingGenre = true
+        let nextPage = genreShowsPage + 1
+
+        do {
+            let response = try await tmdbService.getShowsByGenre(genreIds: currentGenreIds, page: nextPage)
+            genreShowsPage = nextPage
+            genreShowsTotalPages = response.totalPages
+            genreShows.append(contentsOf: response.results)
+        } catch {
+            // Silently fail
+        }
+
+        isLoadingGenre = false
+    }
+
+    /// Clear genre shows when navigating away
+    func clearGenreShows() {
+        genreShows = []
+        genreShowsPage = 1
+        genreShowsTotalPages = 1
+        currentGenreIds = []
     }
 
     /// Helper to fetch days left for a list of shows

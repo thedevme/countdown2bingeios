@@ -13,6 +13,7 @@ enum TMDBEndpoint {
     case tvImages(id: Int)
     case trendingTV
     case discoverAiring(page: Int)
+    case discoverByGenre(genreIds: [Int], page: Int)
 
     var path: String {
         switch self {
@@ -28,6 +29,8 @@ enum TMDBEndpoint {
             return "/trending/tv/week"
         case .discoverAiring:
             return "/tv/on_the_air"
+        case .discoverByGenre:
+            return "/discover/tv"
         }
     }
 
@@ -49,6 +52,11 @@ enum TMDBEndpoint {
             break
         case .discoverAiring(let page):
             items.append(URLQueryItem(name: "page", value: String(page)))
+        case .discoverByGenre(let genreIds, let page):
+            items.append(URLQueryItem(name: "with_genres", value: genreIds.map(String.init).joined(separator: "|")))
+            items.append(URLQueryItem(name: "page", value: String(page)))
+            items.append(URLQueryItem(name: "sort_by", value: "popularity.desc"))
+            items.append(URLQueryItem(name: "include_adult", value: "false"))
         }
 
         return items

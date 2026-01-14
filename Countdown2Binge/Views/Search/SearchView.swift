@@ -26,10 +26,18 @@ struct SearchView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
+                        // Page title
+                        Text("SEARCH")
+                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+                            .padding(.bottom, 12)
+
                         // Search field
                         searchField
                             .padding(.horizontal, 20)
-                            .padding(.top, 8)
                             .padding(.bottom, 20)
 
                         // Content based on search state
@@ -44,10 +52,8 @@ struct SearchView: View {
                 }
                 .scrollDismissesKeyboard(.immediately)
             }
-            .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color.black, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .navigationDestination(item: $viewModel.selectedShow) { show in
                 ShowDetailView(
@@ -137,7 +143,7 @@ struct SearchView: View {
                 .padding(.horizontal, 20)
 
             // Trending Shows Section
-            if !viewModel.filteredTrendingShows.isEmpty {
+            if !viewModel.trendingShows.isEmpty {
                 trendingShowsSection
             }
 
@@ -147,7 +153,7 @@ struct SearchView: View {
             }
 
             // Empty state if nothing to show
-            if viewModel.filteredTrendingShows.isEmpty && viewModel.airingShows.isEmpty && !viewModel.isLoadingTrending {
+            if viewModel.trendingShows.isEmpty && viewModel.airingShows.isEmpty && !viewModel.isLoadingTrending {
                 emptyLandingView
             }
         }
@@ -165,16 +171,17 @@ struct SearchView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(ShowCategory.allCases.prefix(5)) { category in
-                        CategoryChip(
-                            title: category.rawValue,
-                            isSelected: viewModel.selectedCategory == category,
-                            accentColor: accentColor
-                        ) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                viewModel.selectedCategory = category
-                            }
+                    // Skip "All" category (index 0) - only show specific genres
+                    ForEach(Array(ShowCategory.allCases.dropFirst()), id: \.self) { category in
+                        NavigationLink {
+                            GenreListView(viewModel: viewModel, category: category)
+                        } label: {
+                            CategoryChipLabel(
+                                title: category.rawValue,
+                                accentColor: accentColor
+                            )
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -210,7 +217,7 @@ struct SearchView: View {
                 ],
                 spacing: 12
             ) {
-                ForEach(viewModel.filteredTrendingShows.prefix(4), id: \.show.id) { item in
+                ForEach(viewModel.trendingShows.prefix(4), id: \.show.id) { item in
                     TrendingShowCard(
                         show: item.show,
                         logoPath: item.logoPath,
@@ -372,34 +379,29 @@ struct SearchView: View {
     }
 }
 
-// MARK: - Category Chip
+// MARK: - Category Chip Label (for NavigationLink)
 
-private struct CategoryChip: View {
+private struct CategoryChipLabel: View {
     let title: String
-    let isSelected: Bool
     let accentColor: Color
-    let action: () -> Void
 
     private let backgroundColor = Color(red: 0x27/255, green: 0x27/255, blue: 0x2A/255)
     private let borderColor = Color(red: 0x32/255, green: 0x32/255, blue: 0x34/255)
 
     var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(isSelected ? .black : .white)
-                .frame(height: 40)
-                .padding(.horizontal, 18)
-                .background(
-                    Capsule()
-                        .fill(isSelected ? accentColor : backgroundColor)
-                )
-                .overlay(
-                    Capsule()
-                        .strokeBorder(isSelected ? Color.clear : borderColor, lineWidth: 1)
-                )
-        }
-        .buttonStyle(.plain)
+        Text(title)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundStyle(.white)
+            .frame(height: 40)
+            .padding(.horizontal, 18)
+            .background(
+                Capsule()
+                    .fill(backgroundColor)
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(borderColor, lineWidth: 1)
+            )
     }
 }
 
@@ -569,6 +571,10 @@ private class MockTMDBService: TMDBServiceProtocol {
     }
 
     func getAiringShows(page: Int) async throws -> TMDBSearchResponse {
+        TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
+    }
+
+    func getShowsByGenre(genreIds: [Int], page: Int) async throws -> TMDBSearchResponse {
         TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
     }
 

@@ -21,18 +21,29 @@ struct BingeReadyView: View {
                 Color.black
                     .ignoresSafeArea()
 
-                if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
-                    loadingView
-                } else if !viewModel.hasItems {
-                    emptyStateView
-                } else {
-                    bingeReadyContent
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Page title
+                        Text("BINGE READY")
+                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+                            .padding(.bottom, 20)
+
+                        if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
+                            loadingView
+                        } else if !viewModel.hasItems {
+                            emptyStateView
+                        } else {
+                            bingeReadyContentInner
+                        }
+                    }
                 }
             }
-            .navigationTitle("Binge Ready")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color.black, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .refreshable {
                 await viewModel.refresh()
@@ -75,42 +86,38 @@ struct BingeReadyView: View {
 
     // MARK: - Content
 
-    private var bingeReadyContent: some View {
-        ScrollView {
-            VStack(spacing: 32) {
-                // Summary header
-                summaryHeader
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
+    private var bingeReadyContentInner: some View {
+        VStack(spacing: 32) {
+            // Summary header
+            summaryHeader
+                .padding(.horizontal, 20)
 
-                // Card stacks grouped by show
-                VStack(spacing: 40) {
-                    ForEach(viewModel.groupedByShow) { group in
-                        SeasonCardStack(
-                            seasons: group.seasons,
-                            showName: group.show.name,
-                            selectedSeasonNumber: selectedSeasonBinding(for: group),
-                            onMarkAllComplete: { seasonNumber in
-                                Task {
-                                    await viewModel.markSeasonWatched(
-                                        showId: group.show.id,
-                                        seasonNumber: seasonNumber
-                                    )
-                                }
-                            },
-                            onDeleteShow: {
-                                Task {
-                                    await viewModel.deleteShow(group.show)
-                                }
+            // Card stacks grouped by show
+            VStack(spacing: 40) {
+                ForEach(viewModel.groupedByShow) { group in
+                    SeasonCardStack(
+                        seasons: group.seasons,
+                        showName: group.show.name,
+                        selectedSeasonNumber: selectedSeasonBinding(for: group),
+                        onMarkAllComplete: { seasonNumber in
+                            Task {
+                                await viewModel.markSeasonWatched(
+                                    showId: group.show.id,
+                                    seasonNumber: seasonNumber
+                                )
                             }
-                        )
-                        .padding(.horizontal, 20)
-                    }
+                        },
+                        onDeleteShow: {
+                            Task {
+                                await viewModel.deleteShow(group.show)
+                            }
+                        }
+                    )
+                    .padding(.horizontal, 20)
                 }
             }
-            .padding(.bottom, 40)
         }
-        .scrollContentBackground(.hidden)
+        .padding(.bottom, 40)
     }
 
     private func selectedSeasonBinding(for group: BingeReadyShowGroup) -> Binding<Int> {
