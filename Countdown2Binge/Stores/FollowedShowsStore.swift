@@ -27,6 +27,7 @@ enum StoreError: Error, LocalizedError {
 /// Protocol for followed shows storage (enables testing with mocks)
 protocol FollowedShowsStoreProtocol {
     func follow(showId: Int) throws
+    func followWithCache(showId: Int, show: Show) throws
     func unfollow(showId: Int) throws
     func isFollowing(showId: Int) throws -> Bool
     func getFollowedShow(id: Int) throws -> FollowedShow?
@@ -54,6 +55,34 @@ final class FollowedShowsStore: FollowedShowsStoreProtocol {
 
         let followedShow = FollowedShow(tmdbId: showId)
         modelContext.insert(followedShow)
+
+        do {
+            try modelContext.save()
+        } catch {
+            throw StoreError.saveFailed(error)
+        }
+    }
+
+    /// Follow a show and populate cache atomically (single save)
+    func followWithCache(showId: Int, show: Show) throws {
+        // Check if already following
+        if try isFollowing(showId: showId) {
+            // If already following, just update cache
+            try updateCache(for: showId, with: show)
+            return
+        }
+
+        // Create FollowedShow and CachedShowData
+        let followedShow = FollowedShow(tmdbId: showId)
+        let cachedData = CachedShowData(from: show)
+
+        // Insert BOTH models into context explicitly
+        modelContext.insert(followedShow)
+        modelContext.insert(cachedData)
+
+        // Set up the relationship AFTER both are in context
+        followedShow.cachedData = cachedData
+        followedShow.lastRefreshedAt = Date()
 
         do {
             try modelContext.save()

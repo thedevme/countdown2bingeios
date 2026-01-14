@@ -15,23 +15,21 @@ struct HeroShowCard: View {
             if let show = show {
                 // Hero card with show poster
                 Group {
-                    if let url = TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster) {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 280, height: 365)
-                                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                            case .failure, .empty:
-                                artworkPlaceholder
-                            @unknown default:
-                                artworkPlaceholder
+                    let url = TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster)
+                    CachedAsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 280, height: 365)
+                            .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                    } placeholder: {
+                        ZStack {
+                            artworkPlaceholder
+                            if url != nil {
+                                ProgressView()
+                                    .tint(.white.opacity(0.5))
                             }
                         }
-                    } else {
-                        artworkPlaceholder
                     }
                 }
                 .frame(width: 280, height: 365)
@@ -40,20 +38,26 @@ struct HeroShowCard: View {
                 // Empty hero placeholder
                 ZStack {
                     RoundedRectangle(cornerRadius: 32, style: .continuous)
-                        .fill(Color(white: 0.95))
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(white: 0.15), Color(white: 0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
 
                     VStack(spacing: 8) {
                         Image(systemName: "tv")
                             .font(.system(size: 48))
-                            .foregroundStyle(Color(white: 0.7))
+                            .foregroundStyle(Color(white: 0.4))
 
                         Text("No Shows Airing")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(Color(white: 0.5))
+                            .foregroundStyle(Color(white: 0.4))
                     }
                 }
                 .frame(width: 280, height: 365)
-                .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+                .shadow(color: .black.opacity(0.3), radius: 20, y: 10)
             }
         }
         .padding(.vertical, 20)

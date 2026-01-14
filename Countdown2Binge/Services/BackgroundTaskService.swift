@@ -9,7 +9,7 @@ import SwiftData
 
 /// Background task identifiers
 enum BackgroundTaskIdentifier {
-    static let showRefresh = "com.countdown2binge.showRefresh"
+    static let showRefresh = "io.countdown2binge.showRefresh"
 }
 
 /// Service for managing background refresh of show data

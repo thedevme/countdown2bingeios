@@ -132,21 +132,19 @@ private struct CompactPosterCard: View {
 
     @ViewBuilder
     private var posterImage: some View {
-        if let url = TMDBConfiguration.imageURL(path: show.posterPath, size: .poster) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure, .empty:
-                    posterPlaceholder
-                @unknown default:
-                    posterPlaceholder
+        let url = TMDBConfiguration.imageURL(path: show.posterPath, size: .poster)
+        CachedAsyncImage(url: url) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        } placeholder: {
+            ZStack {
+                posterPlaceholder
+                if url != nil {
+                    ProgressView()
+                        .tint(.white.opacity(0.5))
                 }
             }
-        } else {
-            posterPlaceholder
         }
     }
 

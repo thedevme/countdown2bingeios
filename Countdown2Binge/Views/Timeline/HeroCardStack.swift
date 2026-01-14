@@ -90,22 +90,14 @@ struct HeroCardStack: View {
         let effectPosition = stackPosition + dragProgress
 
         Group {
-            if let url = TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: cardWidth, height: cardHeight)
-                            .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
-                    case .failure, .empty:
-                        cardPlaceholder(for: show)
-                    @unknown default:
-                        cardPlaceholder(for: show)
-                    }
-                }
-            } else {
+            let url = TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster)
+            CachedAsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: cardWidth, height: cardHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
+            } placeholder: {
                 cardPlaceholder(for: show)
             }
         }
@@ -193,20 +185,26 @@ struct HeroCardStack: View {
 
     private var emptyPlaceholder: some View {
         RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-            .fill(Color(white: 0.95))
+            .fill(
+                LinearGradient(
+                    colors: [Color(white: 0.15), Color(white: 0.1)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
             .frame(width: cardWidth, height: cardHeight)
             .overlay(
                 VStack(spacing: 8) {
                     Image(systemName: "tv")
                         .font(.system(size: 48))
-                        .foregroundStyle(Color(white: 0.7))
+                        .foregroundStyle(Color(white: 0.4))
 
                     Text("No Shows Airing")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Color(white: 0.5))
+                        .foregroundStyle(Color(white: 0.4))
                 }
             )
-            .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+            .shadow(color: .black.opacity(0.3), radius: 20, y: 10)
     }
 }
 

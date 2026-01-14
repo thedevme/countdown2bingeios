@@ -35,12 +35,11 @@ final class ShowRepository: ShowRepositoryProtocol {
 
     // MARK: - Save
 
-    /// Save a show to the repository (follow and cache)
+    /// Save a show to the repository (follow and cache atomically)
     func save(_ show: Show) async throws {
-        // Follow the show if not already followed
-        try store.follow(showId: show.id)
-        // Update the cache with full show data
-        try store.updateCache(for: show.id, with: show)
+        // Follow and cache in a single save to avoid race condition
+        // where @Query fires before cachedData is populated
+        try store.followWithCache(showId: show.id, show: show)
     }
 
     // MARK: - Fetch All
