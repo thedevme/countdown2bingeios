@@ -13,16 +13,23 @@ struct SlotMachineCountdown: View {
     private var dateLabel: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
-        return "TODAY \u{2022} \(formatter.string(from: Date()).uppercased())"
+        return formatter.string(from: Date()).uppercased()
     }
 
     var body: some View {
         VStack(spacing: 16) {
-            // Date label
-            Text(dateLabel)
-                .font(.system(size: 10, weight: .medium))
-                .tracking(2)
-                .foregroundStyle(Color(white: 0.45))
+            // Today and date labels
+            VStack(spacing: 0) {
+                Text("TODAY")
+                    .font(.system(size: 10, weight: .medium))
+                    .tracking(2)
+                    .foregroundStyle(Color(white: 0.45))
+
+                Text(dateLabel)
+                    .font(.system(size: 12, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(Color(white: 0.45))
+            }
 
             // Slot machine reel (horizontal)
             SlotMachineReel(value: days)
@@ -61,7 +68,7 @@ private struct SlotMachineReel: View {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .strokeBorder(Color(hex: "252525"), lineWidth: 1)
                 )
-                .frame(width: cellWidth, height: cellHeight + 24)
+                .frame(width: cellWidth, height: cellHeight)
 
             // Scrolling number row
             HStack(spacing: 0) {
@@ -90,14 +97,14 @@ private struct SlotMachineReel: View {
                 .frame(width: cellWidth * CGFloat(visibleRange * 2 + 1))
             )
         }
-        .frame(width: cellWidth * CGFloat(visibleRange * 2 + 1), height: cellHeight + 24)
+        .frame(width: cellWidth * CGFloat(visibleRange * 2 + 1), height: cellHeight)
         .clipped()
     }
 
     private func numberCell(for number: Int) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 0) {
             Text(String(format: "%02d", number))
-                .font(.system(size: 56, weight: .heavy))
+                .font(.system(size: 65, weight: .heavy, design: .default).width(.condensed))
                 .monospacedDigit()
                 .foregroundStyle(.white)
 

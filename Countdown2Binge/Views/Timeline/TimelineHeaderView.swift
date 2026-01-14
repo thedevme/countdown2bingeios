@@ -30,7 +30,7 @@ struct TimelineHeaderView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 8) {
             // Top row: Avatar, greeting, notification
             HStack {
                 // Profile avatar
@@ -84,29 +84,11 @@ struct TimelineHeaderView: View {
                     .foregroundStyle(Color(hex: "555555"))
             }
 
-            // View Entire Timeline button
-            Button(action: onViewEntireTimeline) {
-                HStack(spacing: 8) {
-                    Text("VIEW ENTIRE TIMELINE")
-                        .font(.system(size: 12, weight: .semibold))
-                        .tracking(1.5)
-
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 11, weight: .semibold))
-                }
-                .foregroundStyle(.white.opacity(0.9))
-                .frame(maxWidth: .infinity)
-                .frame(height: 70)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(hex: "0D0D0D"))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(Color(hex: "252525"), lineWidth: 1)
-                )
-            }
-            .padding(.horizontal, -4)
+            // Section title
+            Text("CURRENTLY AIRING")
+                .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
