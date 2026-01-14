@@ -28,14 +28,14 @@ struct ContentView: View {
                 .tag(Tab.timeline)
 
             // Binge Ready Tab
-            BingeReadyView(viewModel: makeBingeReadyViewModel())
+            BingeReadyTab(modelContext: modelContext)
                 .tabItem {
                     Label("Binge Ready", systemImage: "checkmark.circle")
                 }
                 .tag(Tab.bingeReady)
 
             // Search Tab
-            SearchView(viewModel: makeSearchViewModel())
+            SearchTab(modelContext: modelContext)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
@@ -45,24 +45,6 @@ struct ContentView: View {
         .onAppear {
             configureTabBarAppearance()
         }
-    }
-
-    // MARK: - ViewModel Factories
-
-    private func makeBingeReadyViewModel() -> BingeReadyViewModel {
-        let repository = ShowRepository(modelContext: modelContext)
-        return BingeReadyViewModel(repository: repository)
-    }
-
-    private func makeSearchViewModel() -> SearchViewModel {
-        let repository = ShowRepository(modelContext: modelContext)
-        let tmdbService = TMDBService()
-        let addShowUseCase = AddShowUseCase(tmdbService: tmdbService, repository: repository)
-        return SearchViewModel(
-            tmdbService: tmdbService,
-            addShowUseCase: addShowUseCase,
-            repository: repository
-        )
     }
 
     // MARK: - Tab Bar Appearance
@@ -86,6 +68,54 @@ struct ContentView: View {
 
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+}
+
+// MARK: - Tab Wrappers
+
+/// Wrapper view that persists the BingeReadyViewModel
+private struct BingeReadyTab: View {
+    let modelContext: ModelContext
+    @State private var viewModel: BingeReadyViewModel?
+
+    var body: some View {
+        Group {
+            if let viewModel = viewModel {
+                BingeReadyView(viewModel: viewModel)
+            } else {
+                Color.black
+                    .onAppear {
+                        let repository = ShowRepository(modelContext: modelContext)
+                        viewModel = BingeReadyViewModel(repository: repository)
+                    }
+            }
+        }
+    }
+}
+
+/// Wrapper view that persists the SearchViewModel
+private struct SearchTab: View {
+    let modelContext: ModelContext
+    @State private var viewModel: SearchViewModel?
+
+    var body: some View {
+        Group {
+            if let viewModel = viewModel {
+                SearchView(viewModel: viewModel)
+            } else {
+                Color.black
+                    .onAppear {
+                        let repository = ShowRepository(modelContext: modelContext)
+                        let tmdbService = TMDBService()
+                        let addShowUseCase = AddShowUseCase(tmdbService: tmdbService, repository: repository)
+                        viewModel = SearchViewModel(
+                            tmdbService: tmdbService,
+                            addShowUseCase: addShowUseCase,
+                            repository: repository
+                        )
+                    }
+            }
+        }
     }
 }
 

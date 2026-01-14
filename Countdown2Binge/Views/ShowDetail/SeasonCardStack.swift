@@ -20,6 +20,7 @@ struct SeasonCardStack: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging: Bool = false
     @State private var swipeDirection: SwipeDirection? = nil
+    @State private var showRemoveConfirmation: Bool = false
 
     private let swipeThreshold: CGFloat = 80
 
@@ -166,14 +167,20 @@ struct SeasonCardStack: View {
                 // Left hint - previous season
                 if let prevIndex = seasons.firstIndex(where: { $0.seasonNumber == selectedSeasonNumber }),
                    prevIndex > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.caption2)
-                        Text("S\(seasons[prevIndex - 1].seasonNumber)")
-                            .font(.caption2)
-                            .fontWeight(.medium)
+                    Button {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                            goToPreviousSeason()
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.caption2)
+                            Text("S\(seasons[prevIndex - 1].seasonNumber)")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundStyle(.white.opacity(0.3))
                     }
-                    .foregroundStyle(.white.opacity(0.3))
                 } else {
                     Spacer().frame(width: 40)
                 }
@@ -199,43 +206,114 @@ struct SeasonCardStack: View {
                 // Right hint - next season
                 if let nextIndex = seasons.firstIndex(where: { $0.seasonNumber == selectedSeasonNumber }),
                    nextIndex < seasons.count - 1 {
-                    HStack(spacing: 4) {
-                        Text("S\(seasons[nextIndex + 1].seasonNumber)")
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                        Image(systemName: "chevron.right")
-                            .font(.caption2)
+                    Button {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                            goToNextSeason()
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("S\(seasons[nextIndex + 1].seasonNumber)")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(.white.opacity(0.3))
                     }
-                    .foregroundStyle(.white.opacity(0.3))
                 } else {
                     Spacer().frame(width: 40)
                 }
             }
 
-            // Vertical hints row
-            HStack(spacing: 24) {
-                // Down hint - mark complete
-                if season.isBingeReady {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.down")
+            // Action buttons row
+            HStack(spacing: 12) {
+                if showRemoveConfirmation {
+                    // Inline confirmation
+                    Text("Remove show?")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.6))
+
+                    Button {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            showRemoveConfirmation = false
+                        }
+                        onDeleteShow()
+                    } label: {
+                        Text("Yes")
                             .font(.caption2)
-                        Text("Complete")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(.red)
+                            )
+                    }
+
+                    Button {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            showRemoveConfirmation = false
+                        }
+                    } label: {
+                        Text("No")
                             .font(.caption2)
                             .fontWeight(.medium)
+                            .foregroundStyle(.white.opacity(0.6))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(.white.opacity(0.1))
+                            )
                     }
-                    .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.6))
-                }
+                } else {
+                    // Mark complete button
+                    if season.isBingeReady {
+                        Button {
+                            onMarkAllComplete(selectedSeasonNumber)
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle")
+                                    .font(.caption2)
+                                Text("Complete")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.8))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.15))
+                            )
+                        }
+                    }
 
-                // Up hint - remove
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.up")
-                        .font(.caption2)
-                    Text("Remove")
-                        .font(.caption2)
-                        .fontWeight(.medium)
+                    // Remove button
+                    Button {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            showRemoveConfirmation = true
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "xmark.circle")
+                                .font(.caption2)
+                            Text("Remove")
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundStyle(.red.opacity(0.7))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(.red.opacity(0.1))
+                        )
+                    }
                 }
-                .foregroundStyle(.red.opacity(0.4))
             }
+            .animation(.easeOut(duration: 0.2), value: showRemoveConfirmation)
         }
         .padding(.top, 4)
     }

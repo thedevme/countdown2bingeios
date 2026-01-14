@@ -12,7 +12,7 @@ struct BingeReadyView: View {
     @Bindable var viewModel: BingeReadyViewModel
     @State private var selectedItem: BingeReadyItem?
     @State private var selectedSeasons: [Int: Int] = [:] // showId -> seasonNumber
-    @State private var showDeleteConfirmation: Show?
+    @State private var hasLoadedOnce: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -21,7 +21,7 @@ struct BingeReadyView: View {
                 Color.black
                     .ignoresSafeArea()
 
-                if viewModel.isLoading && !viewModel.hasItems {
+                if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
                     loadingView
                 } else if !viewModel.hasItems {
                     emptyStateView
@@ -39,6 +39,7 @@ struct BingeReadyView: View {
             }
             .onAppear {
                 viewModel.loadSeasons()
+                hasLoadedOnce = true
             }
             .navigationDestination(item: $selectedItem) { item in
                 ShowDetailView(
@@ -98,7 +99,9 @@ struct BingeReadyView: View {
                                 }
                             },
                             onDeleteShow: {
-                                showDeleteConfirmation = group.show
+                                Task {
+                                    await viewModel.deleteShow(group.show)
+                                }
                             }
                         )
                         .padding(.horizontal, 20)
@@ -108,30 +111,6 @@ struct BingeReadyView: View {
             .padding(.bottom, 40)
         }
         .scrollContentBackground(.hidden)
-        .confirmationDialog(
-            "Remove Show",
-            isPresented: .init(
-                get: { showDeleteConfirmation != nil },
-                set: { if !$0 { showDeleteConfirmation = nil } }
-            ),
-            titleVisibility: .visible
-        ) {
-            Button("Remove", role: .destructive) {
-                if let show = showDeleteConfirmation {
-                    Task {
-                        await viewModel.deleteShow(show)
-                    }
-                }
-                showDeleteConfirmation = nil
-            }
-            Button("Cancel", role: .cancel) {
-                showDeleteConfirmation = nil
-            }
-        } message: {
-            if let show = showDeleteConfirmation {
-                Text("Stop following \(show.name)?")
-            }
-        }
     }
 
     private func selectedSeasonBinding(for group: BingeReadyShowGroup) -> Binding<Int> {

@@ -24,6 +24,11 @@ struct TimelineView: View {
             .filter { $0.category != .bingeReady }
     }
 
+    /// Whether cached data has been loaded for followed shows
+    private var hasCachedData: Bool {
+        followedShows.contains { $0.cachedData != nil }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -41,9 +46,12 @@ struct TimelineView: View {
 
                 if followedShows.isEmpty {
                     EmptyStateView()
-                } else if groupedShows.isEmpty {
+                } else if !hasCachedData {
                     // Has followed shows but no cached data yet
                     LoadingStateView()
+                } else if groupedShows.isEmpty {
+                    // Has cached data but all shows are in Binge Ready tab
+                    AllBingeReadyStateView()
                 } else {
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 40) {
@@ -155,6 +163,37 @@ private struct LoadingStateView: View {
                 .font(.system(size: 14, weight: .regular))
                 .foregroundColor(Color(hex: "666666"))
         }
+    }
+}
+
+// MARK: - All Binge Ready State
+
+private struct AllBingeReadyStateView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(Color(hex: "1A1A1A"))
+                    .frame(width: 120, height: 120)
+
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 40, weight: .light))
+                    .foregroundColor(Color(hex: "4CAF50"))
+            }
+
+            VStack(spacing: 12) {
+                Text("All Caught Up!")
+                    .font(.system(size: 24, weight: .semibold, design: .serif))
+                    .foregroundColor(.white)
+
+                Text("All your shows are ready to binge.\nCheck the Binge Ready tab.")
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(Color(hex: "666666"))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+            }
+        }
+        .padding(40)
     }
 }
 
