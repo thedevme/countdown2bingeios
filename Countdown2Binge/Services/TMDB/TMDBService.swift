@@ -34,6 +34,9 @@ protocol TMDBServiceProtocol {
     func searchShows(query: String, page: Int) async throws -> TMDBSearchResponse
     func getShowDetails(id: Int) async throws -> Show
     func getSeasonDetails(tvId: Int, seasonNumber: Int) async throws -> Season
+    func getTrendingShows() async throws -> [TMDBShowSummary]
+    func getAiringShows(page: Int) async throws -> TMDBSearchResponse
+    func getShowLogo(id: Int) async -> String?
 }
 
 /// Service for interacting with the TMDB API
@@ -51,6 +54,19 @@ final class TMDBService: TMDBServiceProtocol {
     /// Search for TV shows by query
     func searchShows(query: String, page: Int = 1) async throws -> TMDBSearchResponse {
         let endpoint = TMDBEndpoint.searchTV(query: query, page: page)
+        return try await fetch(endpoint)
+    }
+
+    /// Get trending TV shows for the week
+    func getTrendingShows() async throws -> [TMDBShowSummary] {
+        let endpoint = TMDBEndpoint.trendingTV
+        let response: TMDBSearchResponse = try await fetch(endpoint)
+        return response.results
+    }
+
+    /// Get currently airing TV shows
+    func getAiringShows(page: Int = 1) async throws -> TMDBSearchResponse {
+        let endpoint = TMDBEndpoint.discoverAiring(page: page)
         return try await fetch(endpoint)
     }
 

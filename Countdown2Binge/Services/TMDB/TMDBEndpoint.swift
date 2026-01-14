@@ -11,6 +11,8 @@ enum TMDBEndpoint {
     case tvDetails(id: Int)
     case seasonDetails(tvId: Int, seasonNumber: Int)
     case tvImages(id: Int)
+    case trendingTV
+    case discoverAiring(page: Int)
 
     var path: String {
         switch self {
@@ -22,6 +24,10 @@ enum TMDBEndpoint {
             return "/tv/\(tvId)/season/\(seasonNumber)"
         case .tvImages(let id):
             return "/tv/\(id)/images"
+        case .trendingTV:
+            return "/trending/tv/week"
+        case .discoverAiring:
+            return "/tv/on_the_air"
         }
     }
 
@@ -39,6 +45,10 @@ enum TMDBEndpoint {
             break
         case .tvImages:
             items.append(URLQueryItem(name: "include_image_language", value: "en,null"))
+        case .trendingTV:
+            break
+        case .discoverAiring(let page):
+            items.append(URLQueryItem(name: "page", value: String(page)))
         }
 
         return items

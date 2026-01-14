@@ -6,6 +6,32 @@
 import Foundation
 import SwiftUI
 
+/// Genre categories for filtering
+enum ShowCategory: String, CaseIterable, Identifiable {
+    case all = "All"
+    case sciFi = "Sci-Fi"
+    case drama = "Drama"
+    case action = "Action"
+    case comedy = "Comedy"
+    case horror = "Horror"
+    case thriller = "Thriller"
+
+    var id: String { rawValue }
+
+    /// TMDB genre IDs for this category
+    var genreIds: [Int] {
+        switch self {
+        case .all: return []
+        case .sciFi: return [10765] // Sci-Fi & Fantasy
+        case .drama: return [18]
+        case .action: return [10759] // Action & Adventure
+        case .comedy: return [35]
+        case .horror: return [9648, 27] // Mystery, Horror (TV doesn't have horror, so using mystery)
+        case .thriller: return [80, 9648] // Crime, Mystery
+        }
+    }
+}
+
 /// ViewModel for the search screen.
 /// Handles searching TMDB and adding shows to the user's followed list.
 @MainActor
@@ -17,6 +43,27 @@ final class SearchViewModel {
     var searchResults: [TMDBShowSummary] = []
     var isSearching: Bool = false
     var error: Error?
+
+    /// Selected category filter
+    var selectedCategory: ShowCategory = .all
+
+    /// Trending shows for landing page with logo paths
+    var trendingShows: [(show: TMDBShowSummary, logoPath: String?)] = []
+    var isLoadingTrending: Bool = false
+
+    /// Shows that are ending soon (from followed shows)
+    var endingSoonShows: [(show: Show, daysLeft: Int)] = []
+
+    /// Currently airing shows from TMDB with days until finale
+    var airingShows: [(show: TMDBShowSummary, daysLeft: Int?)] = []
+    var isLoadingAiring: Bool = false
+    private var airingShowsPage: Int = 1
+    private var airingShowsTotalPages: Int = 1
+
+    /// Whether more airing shows can be loaded
+    var canLoadMoreAiringShows: Bool {
+        airingShowsPage < airingShowsTotalPages && !isLoadingAiring
+    }
 
     /// Set of TMDB IDs currently being added (for loading state)
     var addingShowIds: Set<Int> = []
@@ -178,5 +225,141 @@ final class SearchViewModel {
         searchResults = []
         error = nil
         searchTask?.cancel()
+    }
+
+    // MARK: - Trending Shows
+
+    /// Load trending TV shows from TMDB with logos
+    func loadTrendingShows() async {
+        guard trendingShows.isEmpty else { return }
+
+        isLoadingTrending = true
+
+        do {
+            let shows = try await tmdbService.getTrendingShows()
+
+            // Fetch logos for top shows
+            var results: [(show: TMDBShowSummary, logoPath: String?)] = []
+
+            for summary in shows.prefix(10) {
+                let logoPath = await tmdbService.getShowLogo(id: summary.id)
+                results.append((show: summary, logoPath: logoPath))
+            }
+
+            trendingShows = results
+        } catch {
+            // Silently fail - trending is not critical
+        }
+
+        isLoadingTrending = false
+    }
+
+    // MARK: - Airing Shows
+
+    /// Load currently airing shows from TMDB with finale dates
+    func loadAiringShows() async {
+        guard airingShows.isEmpty else { return }
+
+        isLoadingAiring = true
+        airingShowsPage = 1
+
+        do {
+            let response = try await tmdbService.getAiringShows(page: 1)
+            airingShowsTotalPages = response.totalPages
+
+            // Only fetch details for the first 3 shows (displayed on landing page)
+            let showsWithDetails = await fetchDaysLeftForShows(Array(response.results.prefix(3)))
+            // Rest of shows without details fetch (faster loading)
+            let remainingShows = response.results.dropFirst(3).map { (show: $0, daysLeft: nil as Int?) }
+
+            airingShows = showsWithDetails + remainingShows
+        } catch {
+            // Silently fail - airing shows is not critical
+        }
+
+        isLoadingAiring = false
+    }
+
+    /// Load more airing shows (pagination)
+    func loadMoreAiringShows() async {
+        guard canLoadMoreAiringShows else { return }
+
+        isLoadingAiring = true
+        let nextPage = airingShowsPage + 1
+
+        do {
+            let response = try await tmdbService.getAiringShows(page: nextPage)
+            airingShowsPage = nextPage
+            airingShowsTotalPages = response.totalPages
+
+            // Don't fetch details for paginated results (faster loading)
+            let newResults = response.results.map { (show: $0, daysLeft: nil as Int?) }
+            airingShows.append(contentsOf: newResults)
+        } catch {
+            // Silently fail
+        }
+
+        isLoadingAiring = false
+    }
+
+    /// Helper to fetch days left for a list of shows
+    private func fetchDaysLeftForShows(_ shows: [TMDBShowSummary]) async -> [(show: TMDBShowSummary, daysLeft: Int?)] {
+        let today = Date()
+        var results: [(show: TMDBShowSummary, daysLeft: Int?)] = []
+
+        for summary in shows {
+            do {
+                let details = try await tmdbService.getShowDetails(id: summary.id)
+                // Find current airing season's finale date
+                if let currentSeason = details.seasons.first(where: { $0.isAiring }),
+                   let finaleDate = currentSeason.finaleDate {
+                    let days = Calendar.current.dateComponents([.day], from: today, to: finaleDate).day ?? 0
+                    results.append((show: summary, daysLeft: max(0, days)))
+                } else {
+                    results.append((show: summary, daysLeft: nil))
+                }
+            } catch {
+                results.append((show: summary, daysLeft: nil))
+            }
+        }
+
+        return results
+    }
+
+    // MARK: - Ending Soon Shows
+
+    /// Load shows that are ending soon from followed shows
+    func loadEndingSoonShows() {
+        let allShows = repository.fetchTimelineShows()
+        let today = Date()
+
+        var endingSoon: [(show: Show, daysLeft: Int)] = []
+
+        for show in allShows {
+            // Find the current airing season
+            if let currentSeason = show.seasons.first(where: { $0.isAiring }) {
+                if let finaleDate = currentSeason.finaleDate {
+                    let days = Calendar.current.dateComponents([.day], from: today, to: finaleDate).day ?? 0
+                    if days >= 0 && days <= 30 {
+                        endingSoon.append((show: show, daysLeft: days))
+                    }
+                }
+            }
+        }
+
+        // Sort by days left
+        endingSoonShows = endingSoon.sorted { $0.daysLeft < $1.daysLeft }
+    }
+
+    // MARK: - Category Filtering
+
+    /// Filter results by selected category
+    var filteredTrendingShows: [(show: TMDBShowSummary, logoPath: String?)] {
+        guard selectedCategory != .all else { return trendingShows }
+
+        return trendingShows.filter { item in
+            guard let genreIds = item.show.genreIds else { return false }
+            return !Set(genreIds).isDisjoint(with: Set(selectedCategory.genreIds))
+        }
     }
 }

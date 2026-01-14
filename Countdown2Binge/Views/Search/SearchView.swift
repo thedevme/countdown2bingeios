@@ -11,26 +11,38 @@ struct SearchView: View {
     @Bindable var viewModel: SearchViewModel
     @FocusState private var isSearchFocused: Bool
 
+    // App's teal accent color
+    private let accentColor = Color(red: 0.22, green: 0.85, blue: 0.66)
+
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background - tappable to dismiss keyboard
+                // Background
                 Color.black
                     .ignoresSafeArea()
                     .onTapGesture {
                         isSearchFocused = false
                     }
 
-                VStack(spacing: 0) {
-                    // Search field
-                    searchField
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-                        .padding(.bottom, 16)
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Search field
+                        searchField
+                            .padding(.horizontal, 20)
+                            .padding(.top, 8)
+                            .padding(.bottom, 20)
 
-                    // Content
-                    contentView
+                        // Content based on search state
+                        if viewModel.searchQuery.isEmpty {
+                            landingContent
+                        } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
+                            noResultsView
+                        } else {
+                            searchResultsContent
+                        }
+                    }
                 }
+                .scrollDismissesKeyboard(.immediately)
             }
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.large)
@@ -51,6 +63,10 @@ struct SearchView: View {
                 await viewModel.search()
             }
         }
+        .task {
+            await viewModel.loadTrendingShows()
+            await viewModel.loadAiringShows()
+        }
     }
 
     // MARK: - Search Field
@@ -61,7 +77,7 @@ struct SearchView: View {
                 .font(.body)
                 .foregroundStyle(.white.opacity(0.5))
 
-            TextField("Search TV shows...", text: $viewModel.searchQuery)
+            TextField("Search shows to binge", text: $viewModel.searchQuery)
                 .textFieldStyle(.plain)
                 .font(.body)
                 .foregroundStyle(.white)
@@ -78,6 +94,16 @@ struct SearchView: View {
                         .foregroundStyle(.white.opacity(0.5))
                 }
                 .buttonStyle(.plain)
+            } else {
+                // Filter button
+                Button {
+                    // TODO: Show filter options
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.body)
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .buttonStyle(.plain)
             }
 
             if viewModel.isSearching {
@@ -87,13 +113,13 @@ struct SearchView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 14)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.white.opacity(0.08))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(
                     isSearchFocused ? Color.white.opacity(0.2) : Color.clear,
                     lineWidth: 1
@@ -102,24 +128,167 @@ struct SearchView: View {
         .animation(.easeInOut(duration: 0.15), value: isSearchFocused)
     }
 
-    // MARK: - Content
+    // MARK: - Landing Content (Empty Query State)
 
-    @ViewBuilder
-    private var contentView: some View {
-        if viewModel.searchQuery.isEmpty {
-            emptyQueryView
-        } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
-            noResultsView
-        } else {
-            resultsListView
+    private var landingContent: some View {
+        VStack(alignment: .leading, spacing: 28) {
+            // Category filter chips
+            categoryChips
+                .padding(.horizontal, 20)
+
+            // Trending Shows Section
+            if !viewModel.filteredTrendingShows.isEmpty {
+                trendingShowsSection
+            }
+
+            // Airing Now Section
+            if !viewModel.airingShows.isEmpty {
+                airingShowsSection
+            }
+
+            // Empty state if nothing to show
+            if viewModel.filteredTrendingShows.isEmpty && viewModel.airingShows.isEmpty && !viewModel.isLoadingTrending {
+                emptyLandingView
+            }
+        }
+        .padding(.bottom, 25)
+    }
+
+    // MARK: - Category Chips
+
+    private var categoryChips: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("BROWSE BY CATEGORY")
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(1.5)
+                .foregroundStyle(.white.opacity(0.5))
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(ShowCategory.allCases.prefix(5)) { category in
+                        CategoryChip(
+                            title: category.rawValue,
+                            isSelected: viewModel.selectedCategory == category,
+                            accentColor: accentColor
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                viewModel.selectedCategory = category
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    // MARK: - Empty Query State
+    // MARK: - Trending Shows Section
 
-    private var emptyQueryView: some View {
-        VStack(spacing: 16) {
+    private var trendingShowsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section header
+            HStack {
+                Text("TRENDING SHOWS")
+                    .font(.system(size: 13, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                Button("SEE ALL") {
+                    // TODO: Navigate to full trending list
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(accentColor)
+            }
+            .padding(.horizontal, 20)
+
+            // Grid of trending shows
+            LazyVGrid(
+                columns: [
+                    GridItem(.flexible(), spacing: 12),
+                    GridItem(.flexible(), spacing: 12)
+                ],
+                spacing: 12
+            ) {
+                ForEach(viewModel.filteredTrendingShows.prefix(4), id: \.show.id) { item in
+                    TrendingShowCard(
+                        show: item.show,
+                        logoPath: item.logoPath,
+                        seasonNumber: 1,
+                        isFollowed: viewModel.isFollowed(tmdbId: item.show.id),
+                        isLoading: viewModel.isAdding(tmdbId: item.show.id),
+                        onTap: {
+                            isSearchFocused = false
+                            Task {
+                                await viewModel.selectShow(tmdbId: item.show.id)
+                            }
+                        },
+                        onAdd: {
+                            Task {
+                                await viewModel.addShow(tmdbId: item.show.id)
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+    }
+
+    // MARK: - Airing Shows Section
+
+    private var airingShowsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section header
+            HStack {
+                Text("AIRING NOW")
+                    .font(.system(size: 13, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(.white)
+
+                Spacer()
+
+                NavigationLink {
+                    AiringNowListView(viewModel: viewModel)
+                } label: {
+                    Text("SEE ALL")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(accentColor)
+                }
+            }
+            .padding(.horizontal, 20)
+
+            // Airing show cards
+            VStack(spacing: 12) {
+                ForEach(viewModel.airingShows.prefix(3), id: \.show.id) { item in
+                    AiringShowCard(
+                        show: item.show,
+                        daysLeft: item.daysLeft,
+                        isFollowed: viewModel.isFollowed(tmdbId: item.show.id),
+                        isLoading: viewModel.isAdding(tmdbId: item.show.id),
+                        onTap: {
+                            Task {
+                                await viewModel.selectShow(tmdbId: item.show.id)
+                            }
+                        },
+                        onAdd: {
+                            Task {
+                                await viewModel.addShow(tmdbId: item.show.id)
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+    }
+
+    // MARK: - Empty Landing View
+
+    private var emptyLandingView: some View {
+        VStack(spacing: 12) {
             Spacer()
+                .frame(height: 60)
 
             Image(systemName: "tv")
                 .font(.system(size: 56))
@@ -137,7 +306,6 @@ struct SearchView: View {
             }
 
             Spacer()
-            Spacer()
         }
         .frame(maxWidth: .infinity)
     }
@@ -145,8 +313,9 @@ struct SearchView: View {
     // MARK: - No Results State
 
     private var noResultsView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             Spacer()
+                .frame(height: 80)
 
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
@@ -164,45 +333,73 @@ struct SearchView: View {
             }
 
             Spacer()
-            Spacer()
         }
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Results List
+    // MARK: - Search Results Content
 
-    private var resultsListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(viewModel.searchResults) { result in
-                    SearchResultRow(
-                        result: result,
-                        isFollowed: viewModel.isFollowed(tmdbId: result.id),
-                        isLoading: viewModel.isAdding(tmdbId: result.id),
-                        isLoadingDetail: viewModel.isLoadingDetail(tmdbId: result.id),
-                        onTap: {
-                            isSearchFocused = false
-                            Task {
-                                await viewModel.selectShow(tmdbId: result.id)
-                            }
-                        },
-                        onAdd: {
-                            Task {
-                                await viewModel.addShow(tmdbId: result.id)
-                            }
+    private var searchResultsContent: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible(), spacing: 12)
+            ],
+            spacing: 12
+        ) {
+            ForEach(viewModel.searchResults) { result in
+                TrendingShowCard(
+                    show: result,
+                    logoPath: nil,
+                    seasonNumber: nil,
+                    isFollowed: viewModel.isFollowed(tmdbId: result.id),
+                    isLoading: viewModel.isAdding(tmdbId: result.id),
+                    onTap: {
+                        isSearchFocused = false
+                        Task {
+                            await viewModel.selectShow(tmdbId: result.id)
                         }
-                    )
-
-                    if result.id != viewModel.searchResults.last?.id {
-                        Divider()
-                            .background(Color.white.opacity(0.08))
-                            .padding(.leading, 88)
+                    },
+                    onAdd: {
+                        Task {
+                            await viewModel.addShow(tmdbId: result.id)
+                        }
                     }
-                }
+                )
             }
-            .padding(.horizontal, 20)
         }
-        .scrollDismissesKeyboard(.immediately)
+        .padding(.horizontal, 20)
+    }
+}
+
+// MARK: - Category Chip
+
+private struct CategoryChip: View {
+    let title: String
+    let isSelected: Bool
+    let accentColor: Color
+    let action: () -> Void
+
+    private let backgroundColor = Color(red: 0x27/255, green: 0x27/255, blue: 0x2A/255)
+    private let borderColor = Color(red: 0x32/255, green: 0x32/255, blue: 0x34/255)
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(isSelected ? .black : .white)
+                .frame(height: 40)
+                .padding(.horizontal, 18)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? accentColor : backgroundColor)
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(isSelected ? Color.clear : borderColor, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -213,6 +410,7 @@ private struct SearchResultRow: View {
     let isFollowed: Bool
     let isLoading: Bool
     let isLoadingDetail: Bool
+    let accentColor: Color
     let onTap: () -> Void
     let onAdd: () -> Void
 
@@ -266,17 +464,42 @@ private struct SearchResultRow: View {
                 Spacer()
 
                 // Add button
-                AddButton(
-                    isAdded: isFollowed,
-                    isLoading: isLoading,
-                    action: onAdd
-                )
+                addButton
             }
             .padding(.vertical, 14)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .disabled(isLoadingDetail)
+    }
+
+    private var addButton: some View {
+        Button(action: onAdd) {
+            HStack(spacing: 6) {
+                if isLoading {
+                    ProgressView()
+                        .tint(isFollowed ? .white.opacity(0.6) : accentColor)
+                        .scaleEffect(0.7)
+                } else {
+                    Image(systemName: isFollowed ? "checkmark" : "plus")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
+
+                Text(isFollowed ? "Added" : "Add")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            }
+            .foregroundStyle(isFollowed ? .white.opacity(0.6) : accentColor)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .strokeBorder(isFollowed ? .white.opacity(0.2) : accentColor, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(isLoading || isFollowed)
     }
 
     @ViewBuilder
@@ -315,7 +538,7 @@ private struct SearchResultRow: View {
 
 // MARK: - Preview
 
-#Preview("Empty State") {
+#Preview("Search Landing") {
     SearchView(
         viewModel: SearchViewModel(
             tmdbService: MockTMDBService(),
@@ -339,6 +562,18 @@ private class MockTMDBService: TMDBServiceProtocol {
 
     func getSeasonDetails(tvId: Int, seasonNumber: Int) async throws -> Season {
         fatalError("Not implemented")
+    }
+
+    func getTrendingShows() async throws -> [TMDBShowSummary] {
+        []
+    }
+
+    func getAiringShows(page: Int) async throws -> TMDBSearchResponse {
+        TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
+    }
+
+    func getShowLogo(id: Int) async -> String? {
+        nil
     }
 }
 
