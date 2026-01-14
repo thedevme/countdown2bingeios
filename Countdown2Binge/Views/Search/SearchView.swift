@@ -241,7 +241,7 @@ struct SearchView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Section header
             HStack {
-                Text("AIRING NOW")
+                Text("ENDING SOON")
                     .font(.system(size: 13, weight: .bold))
                     .tracking(1)
                     .foregroundStyle(.white)

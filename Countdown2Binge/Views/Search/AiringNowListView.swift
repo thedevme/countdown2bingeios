@@ -65,7 +65,7 @@ struct AiringNowListView: View {
                 }
             }
         }
-        .navigationTitle("Airing Now")
+        .navigationTitle("Ending Soon")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color.black, for: .navigationBar)

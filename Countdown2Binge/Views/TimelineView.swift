@@ -29,6 +29,7 @@ struct TimelineView: View {
     @State private var showFullTimeline: Bool = false
 
     private let timelineService = TimelineService()
+    private let maxEndingSoonCards = 5
     private let maxCardsPerSection = 3
 
     // MARK: - Computed Properties
@@ -129,13 +130,13 @@ struct TimelineView: View {
                         verticalConnector
                             .frame(height: 60)
 
-                        // ENDING SOON Section
+                        // ENDING SOON Section (5 shows max)
                         endingSoonSection
 
-                        // PREMIERING SOON Section
+                        // PREMIERING SOON Section (3 shows max)
                         premieringSoonSection
 
-                        // ANTICIPATED Section
+                        // ANTICIPATED Section (3 shows max)
                         anticipatedSection
 
                         // Footer
@@ -205,7 +206,7 @@ struct TimelineView: View {
                             }
                         } else {
                             VStack(spacing: 30) {
-                                let displayEntries = Array(endingSoonEntries.prefix(maxCardsPerSection))
+                                let displayEntries = Array(endingSoonEntries.prefix(maxEndingSoonCards))
                                 ForEach(Array(displayEntries.enumerated()), id: \.element.show.id) { index, entry in
                                     TimelineShowCard(
                                         show: entry.show,
