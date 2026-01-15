@@ -116,7 +116,7 @@ final class ShowRepository: ShowRepositoryProtocol {
 
     // MARK: - Mark Season Watched
 
-    /// Mark a specific season as watched
+    /// Mark a specific season as watched (including all aired episodes)
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {
         guard var show = fetchShow(byTmdbId: showId) else {
             throw StoreError.showNotFound
@@ -127,7 +127,15 @@ final class ShowRepository: ShowRepositoryProtocol {
             throw StoreError.showNotFound
         }
 
-        show.seasons[seasonIndex].watchedDate = Date()
+        let now = Date()
+        show.seasons[seasonIndex].watchedDate = now
+
+        // Also mark all aired episodes as watched
+        for episodeIndex in show.seasons[seasonIndex].episodes.indices {
+            if show.seasons[seasonIndex].episodes[episodeIndex].hasAired {
+                show.seasons[seasonIndex].episodes[episodeIndex].watchedDate = now
+            }
+        }
 
         // Save the updated show
         try store.updateCache(for: showId, with: show)

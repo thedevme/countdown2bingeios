@@ -14,6 +14,7 @@ struct TimelineView: View {
     private var followedShows: [FollowedShow]
     @State private var selectedShow: Show?
     @State private var lastRefreshed: Date? = Date()
+    @Bindable private var settings = AppSettings.shared
 
     // Section expand/collapse state (both sections sync together)
     // Default to compact (collapsed) view
@@ -29,62 +30,74 @@ struct TimelineView: View {
     @State private var showFullTimeline: Bool = false
 
     private let timelineService = TimelineService()
-    private let maxEndingSoonCards = 5
     private let maxCardsPerSection = 3
 
-    // MARK: - Computed Properties
+    // MARK: - Cached Computed Data (to avoid recalculation)
 
+    /// All shows converted from cache - computed once per data change
     private var allShows: [Show] {
         followedShows.compactMap { $0.cachedData?.toShow() }
     }
 
-    private var hasCachedData: Bool {
-        followedShows.contains { $0.cachedData != nil }
+    /// Grouped timeline entries - computed once, used for both sections
+    private var groupedEntries: [TimelineCategory: [TimelineEntry]] {
+        timelineService.groupByCategory(allShows)
     }
 
-    /// Currently airing shows sorted by soonest finale (for hero card stack)
-    private var airingShowsWithFinale: [(show: Show, daysUntilFinale: Int)] {
-        let airingShows = allShows.filter { $0.lifecycleState == .airing }
-        return airingShows
-            .compactMap { show -> (Show, Int)? in
-                guard let days = show.daysUntilFinale else { return nil }
-                return (show, days)
+    /// Currently airing shows sorted by soonest finale (TBD shows at end)
+    private var airingShows: [(show: Show, daysUntilFinale: Int?, episodesUntilFinale: Int?, finaleDate: Date?)] {
+        let airing = allShows.filter { $0.lifecycleState == .airing }
+        return airing
+            .map { show in
+                (show, show.daysUntilFinale, show.episodesUntilFinale, show.currentSeason?.finaleDate)
             }
-            .sorted { $0.1 < $1.1 }
+            .sorted { lhs, rhs in
+                switch (lhs.daysUntilFinale, rhs.daysUntilFinale) {
+                case let (l?, r?): return l < r
+                case (_?, nil): return true
+                case (nil, _?): return false
+                case (nil, nil): return lhs.show.name < rhs.show.name
+                }
+            }
     }
 
     /// Current hero show based on card stack index
-    private var currentHeroShow: (show: Show, daysUntilFinale: Int)? {
-        guard !airingShowsWithFinale.isEmpty,
-              heroCardIndex < airingShowsWithFinale.count else { return nil }
-        return airingShowsWithFinale[heroCardIndex]
+    private var currentHeroShow: (show: Show, daysUntilFinale: Int?, episodesUntilFinale: Int?, finaleDate: Date?)? {
+        guard !airingShows.isEmpty, heroCardIndex < airingShows.count else { return nil }
+        return airingShows[heroCardIndex]
     }
 
-    /// Ending soon entries (currently airing shows sorted by days until finale)
-    private var endingSoonEntries: [(show: Show, daysUntilFinale: Int)] {
-        airingShowsWithFinale
+    /// The countdown value based on the display mode setting
+    private var countdownValue: Int? {
+        guard let hero = currentHeroShow else { return nil }
+        return settings.countdownDisplayMode == .days ? hero.daysUntilFinale : hero.episodesUntilFinale
     }
 
-    /// Premiering soon entries (sorted by days until premiere)
+    /// Premiering soon entries (uses cached groupedEntries)
     private var premieringSoonEntries: [TimelineEntry] {
-        let grouped = timelineService.groupByCategory(allShows)
-        return grouped[.premieringSoon] ?? []
+        groupedEntries[.premieringSoon] ?? []
     }
 
-    /// Anticipated entries (shows with dates first, then TBD)
+    /// Anticipated entries (uses cached groupedEntries)
     private var anticipatedEntries: [TimelineEntry] {
-        let grouped = timelineService.groupByCategory(allShows)
-        let entries = grouped[.anticipated] ?? []
-
-        // Sort: shows with expected dates first, then TBD (alphabetical)
+        let entries = groupedEntries[.anticipated] ?? []
         return entries.sorted { entry1, entry2 in
             let hasDate1 = entry1.show.upcomingSeason?.airDate != nil
             let hasDate2 = entry2.show.upcomingSeason?.airDate != nil
-
             if hasDate1 && !hasDate2 { return true }
             if !hasDate1 && hasDate2 { return false }
             return entry1.show.name < entry2.show.name
         }
+    }
+
+    /// True if any section has at least one show (used to hide empty sections)
+    private var hasAnyShows: Bool {
+        !airingShows.isEmpty || !premieringSoonEntries.isEmpty || !anticipatedEntries.isEmpty
+    }
+
+    /// True if user has no followed shows at all (show empty timeline for onboarding)
+    private var hasNoFollowedShows: Bool {
+        followedShows.isEmpty
     }
 
     var body: some View {
@@ -111,18 +124,22 @@ struct TimelineView: View {
 
                         // Hero section (swipeable card stack)
                         HeroCardStack(
-                            shows: airingShowsWithFinale,
+                            shows: airingShows,
                             currentIndex: $heroCardIndex,
                             onShowTap: { show in
                                 selectedShow = show
                             }
                         )
 
+                        // Connector from cards to countdown
+                        verticalConnector
+                            .frame(height: 50)
+
                         // Slot machine countdown (syncs with current card)
-                        if let hero = currentHeroShow {
+                        if currentHeroShow != nil {
                             SlotMachineCountdown(
-                                days: hero.daysUntilFinale,
-                                targetDate: Date().addingTimeInterval(Double(hero.daysUntilFinale) * 86400)
+                                value: countdownValue,
+                                displayMode: settings.countdownDisplayMode
                             )
                         }
 
@@ -130,14 +147,22 @@ struct TimelineView: View {
                         verticalConnector
                             .frame(height: 60)
 
-                        // ENDING SOON Section (5 shows max)
-                        endingSoonSection
-
-                        // PREMIERING SOON Section (3 shows max)
-                        premieringSoonSection
-
-                        // ANTICIPATED Section (3 shows max)
-                        anticipatedSection
+                        if hasNoFollowedShows {
+                            // No followed shows - show empty timeline for onboarding
+                            premieringSoonSection
+                            anticipatedSection
+                        } else if hasAnyShows {
+                            // Has shows in categories - only show sections with content
+                            if !premieringSoonEntries.isEmpty {
+                                premieringSoonSection
+                            }
+                            if !anticipatedEntries.isEmpty {
+                                anticipatedSection
+                            }
+                        } else {
+                            // Has followed shows but none in timeline categories
+                            noTimelineShowsView
+                        }
 
                         // Footer
                         TimelineFooterView(onViewFullTimeline: {
@@ -162,84 +187,6 @@ struct TimelineView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             SoundManager.warmUp()
-        }
-    }
-
-    // MARK: - Ending Soon Section
-
-    private var endingSoonSection: some View {
-        ZStack(alignment: .topLeading) {
-            // Connector line running through entire section
-            GeometryReader { geometry in
-                Path { path in
-                    path.move(to: CGPoint(x: 40, y: 48))
-                    path.addLine(to: CGPoint(x: 40, y: geometry.size.height))
-                }
-                .stroke(
-                    Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.8),
-                    style: StrokeStyle(lineWidth: 2, dash: [4, 4])
-                )
-            }
-            .frame(width: 80)
-
-            VStack(spacing: 0) {
-                TimelineSectionHeader(
-                    title: "ENDING SOON",
-                    totalCount: endingSoonEntries.count,
-                    isExpanded: $isSectionsExpanded,
-                    showDisclosure: true,
-                    style: .endingSoon
-                )
-
-                Group {
-                    if isSectionsExpanded {
-                        if endingSoonEntries.isEmpty {
-                            VStack(spacing: 30) {
-                                ForEach(0..<3, id: \.self) { index in
-                                    EmptySlotCard(
-                                        style: .endingSoon,
-                                        isFirst: index == 0,
-                                        isLast: index == 2
-                                    )
-                                    .frame(height: 190)
-                                }
-                            }
-                        } else {
-                            VStack(spacing: 30) {
-                                let displayEntries = Array(endingSoonEntries.prefix(maxEndingSoonCards))
-                                ForEach(Array(displayEntries.enumerated()), id: \.element.show.id) { index, entry in
-                                    TimelineShowCard(
-                                        show: entry.show,
-                                        seasonNumber: entry.show.currentSeason?.seasonNumber ?? 1,
-                                        style: .endingSoon,
-                                        daysUntil: entry.daysUntilFinale,
-                                        expectedYear: nil,
-                                        isFirst: index == 0,
-                                        isLast: index == displayEntries.count - 1
-                                    )
-                                    .frame(height: 190)
-                                    .onTapGesture {
-                                        selectedShow = entry.show
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        if endingSoonEntries.isEmpty {
-                            EmptyPortraitSlots(style: .endingSoon)
-                        } else {
-                            CompactPosterRow(
-                                shows: endingSoonEntries.map { $0.show },
-                                style: .endingSoon,
-                                onShowTap: { show in
-                                    selectedShow = show
-                                }
-                            )
-                        }
-                    }
-                }
-                .animation(.easeInOut(duration: 0.3), value: isSectionsExpanded)
-            }
         }
     }
 
@@ -410,6 +357,31 @@ struct TimelineView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: isSectionsExpanded)
         }
+    }
+
+    // MARK: - No Timeline Shows View
+
+    /// Shown when user has followed shows but none fall into timeline categories
+    private var noTimelineShowsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 44))
+                .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.5))
+
+            VStack(spacing: 8) {
+                Text("Nothing on the Timeline")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+
+                Text("Your followed shows aren't currently\nairing or premiering soon")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.white.opacity(0.5))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 60)
     }
 
     // MARK: - Vertical Connector

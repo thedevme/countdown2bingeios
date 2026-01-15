@@ -24,14 +24,35 @@ struct Season: Identifiable, Codable, Equatable, Hashable {
         watchedDate != nil
     }
 
-    /// The finale episode (last episode of the season)
-    var finale: Episode? {
+    /// The last episode in the list (may not be the actual finale)
+    var lastEpisode: Episode? {
         episodes.max(by: { $0.episodeNumber < $1.episodeNumber })
     }
 
-    /// Date when the season finale airs
+    /// Whether TMDB has added episode types (any non-standard type found)
+    private var hasEpisodeTypes: Bool {
+        episodes.contains { $0.episodeType != .standard }
+    }
+
+    /// The finale episode
+    var finale: Episode? {
+        guard let last = lastEpisode else { return nil }
+        // If explicitly marked as finale, use it
+        if last.episodeType.isFinale { return last }
+        // If TMDB has typed episodes but last isn't finale, no finale known yet
+        if hasEpisodeTypes { return nil }
+        // Legacy fallback: no episode types in data, use last episode
+        return last
+    }
+
+    /// Date when the season finale airs (nil if finale not confirmed)
     var finaleDate: Date? {
         finale?.airDate
+    }
+
+    /// Whether the finale date is known (either marked or season complete)
+    var hasConfirmedFinale: Bool {
+        finale != nil
     }
 
     /// Whether all episodes have aired
@@ -69,18 +90,34 @@ struct Season: Identifiable, Codable, Equatable, Hashable {
         return calendar.dateComponents([.day], from: today, to: premiere).day
     }
 
+    /// Episodes until the finale airs (nil if complete or no finale)
+    var episodesUntilFinale: Int? {
+        guard let finale, !isComplete else { return nil }
+        let finaleNumber = finale.episodeNumber
+        let lastAiredNumber = episodes.filter { $0.hasAired }.map { $0.episodeNumber }.max() ?? 0
+        let remaining = finaleNumber - lastAiredNumber
+        return remaining > 0 ? remaining : nil
+    }
+
     /// Number of episodes that have aired
     var airedEpisodeCount: Int {
         episodes.filter { $0.hasAired }.count
     }
 
     /// Number of episodes that have been watched
+    /// If season is marked watched, returns all aired episodes (or all episodes if complete)
     var watchedEpisodeCount: Int {
-        episodes.filter { $0.isWatched }.count
+        // If season marked as watched, all aired episodes are considered watched
+        if isWatched {
+            return isComplete ? episodeCount : airedEpisodeCount
+        }
+        return episodes.filter { $0.isWatched }.count
     }
 
     /// Whether all aired episodes have been watched
     var allAiredEpisodesWatched: Bool {
+        // If season is marked as watched, all aired episodes are considered watched
+        if isWatched { return true }
         guard !episodes.isEmpty else { return false }
         let airedEpisodes = episodes.filter { $0.hasAired }
         guard !airedEpisodes.isEmpty else { return false }

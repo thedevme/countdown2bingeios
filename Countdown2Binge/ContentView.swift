@@ -16,6 +16,7 @@ struct ContentView: View {
         case timeline
         case bingeReady
         case search
+        case settings
     }
 
     var body: some View {
@@ -40,6 +41,13 @@ struct ContentView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
                 .tag(Tab.search)
+
+            // Settings Tab
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(Tab.settings)
         }
         .tint(.white)
         .onAppear {

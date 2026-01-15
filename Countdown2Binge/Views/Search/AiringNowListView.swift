@@ -109,6 +109,10 @@ private class PreviewTMDBService: TMDBServiceProtocol {
         TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
     }
 
+    func getShowsByGenre(genreIds: [Int], page: Int) async throws -> TMDBSearchResponse {
+        TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
+    }
+
     func getShowLogo(id: Int) async -> String? {
         nil
     }

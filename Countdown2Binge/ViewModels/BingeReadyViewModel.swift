@@ -25,11 +25,15 @@ struct BingeReadyItem: Identifiable, Equatable, Hashable {
 }
 
 /// A group of binge-ready seasons for a single show
-struct BingeReadyShowGroup: Identifiable {
+struct BingeReadyShowGroup: Identifiable, Equatable {
     let show: Show
     let seasons: [Season]
 
     var id: Int { show.id }
+
+    static func == (lhs: BingeReadyShowGroup, rhs: BingeReadyShowGroup) -> Bool {
+        lhs.show.id == rhs.show.id && lhs.seasons.map(\.id) == rhs.seasons.map(\.id)
+    }
 }
 
 /// ViewModel for the Binge Ready screen.
@@ -56,6 +60,9 @@ final class BingeReadyViewModel {
 
     /// Show confirmation alert for this item
     var itemToMarkWatched: BingeReadyItem?
+
+    /// Trigger to force view refresh after marking watched
+    var refreshTrigger: Int = 0
 
     // MARK: - Dependencies
 
@@ -91,6 +98,7 @@ final class BingeReadyViewModel {
         let grouped = Dictionary(grouping: bingeReadyItems) { $0.show.id }
         return grouped.compactMap { (showId, items) -> BingeReadyShowGroup? in
             guard let firstItem = items.first else { return nil }
+            // Sort seasons by highest season number first (most recent season on top)
             let seasons = items.map { $0.season }.sorted { $0.seasonNumber > $1.seasonNumber }
             return BingeReadyShowGroup(
                 show: firstItem.show,
@@ -115,11 +123,14 @@ final class BingeReadyViewModel {
 
         let allShows = repository.fetchAllShows()
         var items: [BingeReadyItem] = []
+        let includeAiring = AppSettings.shared.showAiringSeasonsInBingeReady
 
         for show in allShows {
-            // Get seasons that are binge ready (complete and not watched)
+            // Get seasons that are complete (or airing if setting enabled)
+            // Keep watched seasons so users can see their progress
             let readySeasons = show.seasons.filter { season in
-                season.seasonNumber > 0 && season.isBingeReady
+                guard season.seasonNumber > 0 else { return false }
+                return season.isComplete || (includeAiring && season.isAiring)
             }
 
             for season in readySeasons {
@@ -203,7 +214,9 @@ final class BingeReadyViewModel {
                 seasonNumber: seasonNumber
             )
             lastMarkWatchedResult = result
-            loadSeasons()
+            // Don't reload - keep season in stack
+            // Trigger view refresh to update progress bar
+            refreshTrigger += 1
 
             Task {
                 try? await Task.sleep(for: .seconds(3))

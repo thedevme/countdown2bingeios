@@ -107,6 +107,7 @@ struct TrendingShowCard: View {
             } placeholder: {
                 posterPlaceholder
             }
+            .drawingGroup() // Rasterizes for smoother scrolling
         } else {
             posterPlaceholder
         }

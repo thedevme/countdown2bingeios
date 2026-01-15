@@ -87,7 +87,8 @@ enum TMDBMapper {
             overview: episode.overview,
             airDate: parseDate(episode.airDate),
             stillPath: episode.stillPath,
-            runtime: episode.runtime
+            runtime: episode.runtime,
+            episodeType: EpisodeType(rawValue: episode.episodeType ?? "standard") ?? .standard
         )
     }
 }

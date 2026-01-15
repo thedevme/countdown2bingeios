@@ -11,8 +11,49 @@ struct BingeReadyView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: BingeReadyViewModel
     @State private var selectedItem: BingeReadyItem?
-    @State private var selectedSeasons: [Int: Int] = [:] // showId -> seasonNumber
+    @State private var selectedIndices: [Int: Int] = [:] // showId -> card index
+    @State private var currentShowIndex: Int = 0
+    @State private var navigationDirection: NavigationDirection = .right
+    @State private var isScrollingToShow: Bool = false
     @State private var hasLoadedOnce: Bool = false
+    @State private var animatedWatchedCount: Int = 0
+    @State private var markedWatchedSeasonIds: Set<Int> = [] // Track seasons marked watched this session
+
+    private enum NavigationDirection {
+        case left, right
+    }
+
+    /// Cache groups to avoid repeated computed property access
+    private var groups: [BingeReadyShowGroup] {
+        viewModel.groupedByShow
+    }
+
+    private var currentGroup: BingeReadyShowGroup? {
+        guard !groups.isEmpty, currentShowIndex < groups.count else { return nil }
+        return groups[currentShowIndex]
+    }
+
+    private var currentSeason: Season? {
+        guard let group = currentGroup else { return nil }
+        let seasonIndex = selectedIndices[group.show.id] ?? 0
+        guard seasonIndex < group.seasons.count else { return group.seasons.first }
+        return group.seasons[seasonIndex]
+    }
+
+    private var currentWatchedCount: Int {
+        guard let season = currentSeason else { return 0 }
+        // If marked watched this session, return aired episode count
+        if markedWatchedSeasonIds.contains(season.id) {
+            return season.isComplete ? season.episodeCount : season.airedEpisodeCount
+        }
+        return season.watchedEpisodeCount
+    }
+
+    private var currentTotalCount: Int {
+        guard let season = currentSeason else { return 0 }
+        // Always show total episode count (premiere to finale)
+        return season.episodeCount
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,36 +62,89 @@ struct BingeReadyView: View {
                 Color.black
                     .ignoresSafeArea()
 
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // Page title
+                VStack(spacing: 0) {
+                    // Header row
+                    HStack {
                         Text("BINGE READY")
-                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 16)
-                            .padding(.bottom, 20)
+                            .font(.system(size: 13, weight: .semibold))
+                            .tracking(1.5)
+                            .foregroundStyle(.white.opacity(0.5))
 
-                        if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
-                            loadingView
-                        } else if !viewModel.hasItems {
-                            emptyStateView
-                        } else {
-                            bingeReadyContentInner
+                        Spacer()
+
+                        Button {
+                            // Info action
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.white.opacity(0.5))
                         }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+
+                    if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
+                        Spacer()
+                        loadingView
+                        Spacer()
+                    } else if !viewModel.hasItems {
+                        emptyStateView
+                    } else {
+                        // Main content
+                        Spacer()
+                        cardStackContent
+                            .id(currentShowIndex)
+                            .transition(navigationDirection == .right ? .cardDropFromTop : .cardDropFromBottom)
+
+                        // Progress bar (outside of id'd content so it animates)
+                        EpisodeProgressBar(watchedCount: animatedWatchedCount, totalCount: currentTotalCount)
+                            .padding(.horizontal, 30)
+                            .padding(.top, 24)
+
+                        Spacer()
+
+                        // Bottom show selector
+                        showSelector
+                    }
                 }
+                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentShowIndex)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .refreshable {
-                await viewModel.refresh()
-            }
             .onAppear {
                 viewModel.loadSeasons()
                 hasLoadedOnce = true
+                // Initialize watched count
+                animatedWatchedCount = currentWatchedCount
+            }
+            .onChange(of: viewModel.groupedByShow.count) { _, newCount in
+                if currentShowIndex >= newCount && newCount > 0 {
+                    currentShowIndex = newCount - 1
+                }
+            }
+            .onChange(of: viewModel.groupedByShow) { _, newGroups in
+                // Clamp season indices when seasons are removed
+                for group in newGroups {
+                    if let currentIndex = selectedIndices[group.show.id],
+                       currentIndex >= group.seasons.count {
+                        selectedIndices[group.show.id] = max(0, group.seasons.count - 1)
+                    }
+                }
+                // Update watched count immediately when data changes
+                animatedWatchedCount = currentWatchedCount
+            }
+            .onChange(of: currentShowIndex) { _, _ in
+                // Reset watched count immediately when changing shows
+                animatedWatchedCount = currentWatchedCount
+            }
+            .onChange(of: selectedIndices) { _, _ in
+                // Update watched count when changing seasons within a show
+                animatedWatchedCount = currentWatchedCount
+            }
+            .onChange(of: viewModel.refreshTrigger) { _, _ in
+                // Animate to full count after marking watched (all episodes become watched)
+                animatedWatchedCount = currentTotalCount
             }
             .navigationDestination(item: $selectedItem) { item in
                 ShowDetailView(
@@ -84,79 +178,150 @@ struct BingeReadyView: View {
         }
     }
 
-    // MARK: - Content
+    // MARK: - Card Stack Content
 
-    private var bingeReadyContentInner: some View {
-        VStack(spacing: 32) {
-            // Summary header
-            summaryHeader
-                .padding(.horizontal, 20)
-
-            // Card stacks grouped by show
-            VStack(spacing: 40) {
-                ForEach(viewModel.groupedByShow) { group in
-                    SeasonCardStack(
-                        seasons: group.seasons,
-                        showName: group.show.name,
-                        selectedSeasonNumber: selectedSeasonBinding(for: group),
-                        onMarkAllComplete: { seasonNumber in
-                            Task {
-                                await viewModel.markSeasonWatched(
-                                    showId: group.show.id,
-                                    seasonNumber: seasonNumber
-                                )
-                            }
-                        },
-                        onDeleteShow: {
-                            Task {
-                                await viewModel.deleteShow(group.show)
-                            }
-                        }
-                    )
+    @ViewBuilder
+    private var cardStackContent: some View {
+        if let group = currentGroup {
+            VStack(spacing: 24) {
+                // Large show name
+                Text(group.show.name.uppercased())
+                    .font(.system(size: 32, weight: .heavy, design: .default).width(.condensed))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
                     .padding(.horizontal, 20)
+
+                // Card stack
+                BingeReadyCardStack(
+                    seasons: group.seasons,
+                    show: group.show,
+                    currentIndex: selectedIndexBinding(for: group),
+                    onMarkWatched: { season in
+                        // Track this season as marked watched for this session
+                        markedWatchedSeasonIds.insert(season.id)
+                        Task {
+                            await viewModel.markSeasonWatched(
+                                showId: group.show.id,
+                                seasonNumber: season.seasonNumber
+                            )
+                        }
+                    },
+                    onDeleteShow: {
+                        Task {
+                            await viewModel.deleteShow(group.show)
+                        }
+                    },
+                    onTapCard: {
+                        let seasonIndex = selectedIndices[group.show.id] ?? 0
+                        let season = seasonIndex < group.seasons.count ? group.seasons[seasonIndex] : group.seasons.first!
+                        selectedItem = BingeReadyItem(show: group.show, season: season)
+                    }
+                )
+            }
+        }
+    }
+
+    private func selectedIndexBinding(for group: BingeReadyShowGroup) -> Binding<Int> {
+        Binding(
+            get: {
+                selectedIndices[group.show.id] ?? 0
+            },
+            set: { newValue in
+                selectedIndices[group.show.id] = newValue
+            }
+        )
+    }
+
+    /// Scrolls through intermediate shows to reach the target index
+    private func scrollToShow(index targetIndex: Int) {
+        // Don't scroll if already at target or currently scrolling
+        guard targetIndex != currentShowIndex, !isScrollingToShow else { return }
+
+        isScrollingToShow = true
+        let direction: NavigationDirection = targetIndex > currentShowIndex ? .right : .left
+        let step = direction == .right ? 1 : -1
+
+        // Calculate indices to scroll through
+        var indicesToVisit: [Int] = []
+        var current = currentShowIndex
+        while current != targetIndex {
+            current += step
+            indicesToVisit.append(current)
+        }
+
+        // Animate through each show with decreasing delays
+        // Fast scroll through middle ones, slower on the last one
+        let totalSteps = indicesToVisit.count
+        var accumulatedDelay: Double = 0
+
+        for (i, nextIndex) in indicesToVisit.enumerated() {
+            let isLastStep = i == totalSteps - 1
+            // Faster for intermediate steps, slower for final landing
+            let stepDuration: Double = isLastStep ? 0.35 : 0.12
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + accumulatedDelay) {
+                navigationDirection = direction
+                withAnimation(.spring(response: isLastStep ? 0.5 : 0.25, dampingFraction: 0.8)) {
+                    currentShowIndex = nextIndex
+                }
+
+                if isLastStep {
+                    isScrollingToShow = false
+                }
+            }
+
+            accumulatedDelay += stepDuration
+        }
+    }
+
+    // MARK: - Show Selector
+
+    private var showSelector: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
+                        showSelectorItem(group: group, index: index)
+                            .id(index)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
+            }
+            .onChange(of: currentShowIndex) { _, newIndex in
+                withAnimation {
+                    proxy.scrollTo(newIndex, anchor: .center)
                 }
             }
         }
-        .padding(.bottom, 40)
     }
 
-    private func selectedSeasonBinding(for group: BingeReadyShowGroup) -> Binding<Int> {
-        Binding(
-            get: {
-                selectedSeasons[group.show.id] ?? group.seasons.first?.seasonNumber ?? 1
-            },
-            set: { newValue in
-                selectedSeasons[group.show.id] = newValue
+    private func showSelectorItem(group: BingeReadyShowGroup, index: Int) -> some View {
+        let isSelected = index == currentShowIndex
+        let posterURL = TMDBConfiguration.imageURL(path: group.show.posterPath, size: .posterSmall)
+
+        return Button {
+            scrollToShow(index: index)
+        } label: {
+            CachedAsyncImage(url: posterURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white.opacity(0.1))
             }
-        )
-    }
-
-    // MARK: - Summary Header
-
-    private var summaryHeader: some View {
-        HStack(spacing: 24) {
-            SummaryItem(
-                value: "\(viewModel.itemCount)",
-                label: viewModel.itemCount == 1 ? "SEASON" : "SEASONS"
+            .frame(width: 56, height: 84)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .drawingGroup() // Rasterizes for smooth scrolling
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? .white : Color.clear, lineWidth: 2)
             )
-
-            Rectangle()
-                .fill(Color.white.opacity(0.15))
-                .frame(width: 1, height: 32)
-
-            SummaryItem(
-                value: "\(viewModel.totalEpisodes)",
-                label: "EPISODES"
-            )
-
-            Spacer()
+            .opacity(isSelected ? 1.0 : 0.6)
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 20)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.white.opacity(0.04))
-        )
+        .buttonStyle(.plain)
     }
 
     // MARK: - Loading View
@@ -209,29 +374,6 @@ struct BingeReadyView: View {
     }
 }
 
-// MARK: - Summary Item
-
-private struct SummaryItem: View {
-    let value: String
-    let label: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-                .monospacedDigit()
-                .foregroundStyle(.white)
-
-            Text(label)
-                .font(.caption2)
-                .fontWeight(.semibold)
-                .tracking(1)
-                .foregroundStyle(.white.opacity(0.4))
-        }
-    }
-}
-
 // MARK: - Preview
 
 #Preview("With Items") {
@@ -276,4 +418,49 @@ private class MockEmptyBingeRepository: ShowRepositoryProtocol {
     func isShowFollowed(tmdbId: Int) -> Bool { false }
     func markSeasonWatched(showId: Int, seasonNumber: Int) async throws {}
     func markEpisodeWatched(showId: Int, seasonNumber: Int, episodeNumber: Int, watched: Bool) async throws {}
+}
+
+// MARK: - Card Drop Transitions
+
+extension AnyTransition {
+    /// Cards drop from top (navigating right/forward)
+    static var cardDropFromTop: AnyTransition {
+        .asymmetric(
+            insertion: .modifier(
+                active: CardDropModifier(offset: -250, opacity: 0, scale: 0.8),
+                identity: CardDropModifier(offset: 0, opacity: 1, scale: 1)
+            ),
+            removal: .modifier(
+                active: CardDropModifier(offset: 350, opacity: 0, scale: 0.8),
+                identity: CardDropModifier(offset: 0, opacity: 1, scale: 1)
+            )
+        )
+    }
+
+    /// Cards rise from bottom (navigating left/backward)
+    static var cardDropFromBottom: AnyTransition {
+        .asymmetric(
+            insertion: .modifier(
+                active: CardDropModifier(offset: 250, opacity: 0, scale: 0.8),
+                identity: CardDropModifier(offset: 0, opacity: 1, scale: 1)
+            ),
+            removal: .modifier(
+                active: CardDropModifier(offset: -350, opacity: 0, scale: 0.8),
+                identity: CardDropModifier(offset: 0, opacity: 1, scale: 1)
+            )
+        )
+    }
+}
+
+private struct CardDropModifier: ViewModifier {
+    let offset: CGFloat
+    let opacity: Double
+    let scale: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .offset(y: offset)
+            .opacity(opacity)
+            .scaleEffect(scale)
+    }
 }

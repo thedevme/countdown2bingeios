@@ -5,34 +5,30 @@
 
 import SwiftUI
 
-/// Slot machine style countdown showing days until event with horizontal scrolling animation
+/// Slot machine style countdown showing days or episodes until event with horizontal scrolling animation
 struct SlotMachineCountdown: View {
-    let days: Int
-    let targetDate: Date
+    let value: Int?
+    let displayMode: CountdownDisplayMode
 
-    private var dateLabel: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: Date()).uppercased()
+    private var subtitle: String {
+        switch displayMode {
+        case .days: return "EPISODE IN"
+        case .episodes: return "IN"
+        }
     }
 
     var body: some View {
         VStack(spacing: 16) {
-            // Today and date labels
-            VStack(spacing: 0) {
-                Text("TODAY")
-                    .font(.system(size: 10, weight: .medium))
-                    .tracking(2)
+            VStack(spacing: -4) {
+                Text("FINALE")
+                    .font(.system(size: 28, weight: .heavy).width(.condensed))
                     .foregroundStyle(Color(white: 0.45))
-
-                Text(dateLabel)
-                    .font(.system(size: 12, weight: .bold))
-                    .tracking(2)
+                Text(subtitle)
+                    .font(.system(size: 12, weight: .regular).width(.condensed))
                     .foregroundStyle(Color(white: 0.45))
             }
 
-            // Slot machine reel (horizontal)
-            SlotMachineReel(value: days)
+            SlotMachineReel(value: value, displayMode: displayMode)
         }
         .padding(.vertical, 20)
     }
@@ -40,7 +36,8 @@ struct SlotMachineCountdown: View {
 
 /// Horizontal reel that scrolls numbers left/right
 private struct SlotMachineReel: View {
-    let value: Int
+    let value: Int?
+    let displayMode: CountdownDisplayMode
 
     // How many numbers visible on each side of center
     private let visibleRange = 2
@@ -48,15 +45,24 @@ private struct SlotMachineReel: View {
     private let cellWidth: CGFloat = 85
     // Height of the cell
     private let cellHeight: CGFloat = 100
-    // Maximum number to display
+    // Maximum number to display (0-99 + TBD at 100)
     private let maxNumber = 99
+    private let tbdIndex = 100
+    // Pre-computed reversed indices for performance
+    private let reversedIndices = Array((0...100).reversed())
+
+    // The display value - nil means TBD (position 100)
+    private var displayValue: Int {
+        value ?? tbdIndex
+    }
 
     // Calculate the X offset to center the current value
-    // HStack is centered by ZStack, so item at index maxNumber/2 is at center
-    // To show item N at center, we need to shift by (centerIndex - N) * cellWidth
+    // Numbers are reversed (100 at position 0, 0 at position 100)
+    // So position of displayValue = tbdIndex - displayValue
     private var xOffset: CGFloat {
-        let centerIndex = CGFloat(maxNumber) / 2.0
-        return (centerIndex - CGFloat(value)) * cellWidth
+        let centerIndex = CGFloat(tbdIndex) / 2.0
+        let position = CGFloat(tbdIndex - displayValue)
+        return (centerIndex - position) * cellWidth
     }
 
     var body: some View {
@@ -70,14 +76,15 @@ private struct SlotMachineReel: View {
                 )
                 .frame(width: cellWidth, height: cellHeight)
 
-            // Scrolling number row
+            // Scrolling number row (largest on left, smallest on right)
             HStack(spacing: 0) {
-                ForEach(0...maxNumber, id: \.self) { number in
+                ForEach(reversedIndices, id: \.self) { number in
                     numberCell(for: number)
                 }
             }
+            .drawingGroup()
             .offset(x: xOffset)
-            .animation(.timingCurve(0.0, 0.0, 0.15, 1, duration: 0.6), value: value)
+            .animation(.easeOut(duration: 0.4), value: displayValue)
             .mask(
                 // Fade out numbers at edges
                 LinearGradient(
@@ -102,13 +109,18 @@ private struct SlotMachineReel: View {
     }
 
     private func numberCell(for number: Int) -> some View {
-        VStack(spacing: 0) {
-            Text(String(format: "%02d", number))
-                .font(.system(size: 65, weight: .heavy, design: .default).width(.condensed))
-                .monospacedDigit()
-                .foregroundStyle(.white)
+        VStack(spacing: 2) {
+            if number == tbdIndex {
+                Text("TBD")
+                    .font(.system(size: 55, weight: .heavy, design: .default).width(.condensed))
+                    .foregroundStyle(.white)
+            } else {
+                Text(String(format: "%02d", number))
+                    .font(.system(size: 65, weight: .heavy, design: .default).width(.condensed))
+                    .foregroundStyle(.white)
+            }
 
-            Text("DAYS")
+            Text(displayMode.unit)
                 .font(.system(size: 9, weight: .semibold))
                 .tracking(1.5)
                 .foregroundStyle(Color(white: 0.5))
@@ -119,14 +131,33 @@ private struct SlotMachineReel: View {
 
 // MARK: - Previews
 
-#Preview("Static") {
+#Preview("Days") {
     ZStack {
         Color.black.ignoresSafeArea()
         VStack {
-            SlotMachineCountdown(
-                days: 17,
-                targetDate: Date().addingTimeInterval(86400 * 17)
-            )
+            SlotMachineCountdown(value: 17, displayMode: .days)
+            Spacer()
+        }
+        .padding(.top, 100)
+    }
+}
+
+#Preview("Episodes") {
+    ZStack {
+        Color.black.ignoresSafeArea()
+        VStack {
+            SlotMachineCountdown(value: 5, displayMode: .episodes)
+            Spacer()
+        }
+        .padding(.top, 100)
+    }
+}
+
+#Preview("TBD") {
+    ZStack {
+        Color.black.ignoresSafeArea()
+        VStack {
+            SlotMachineCountdown(value: nil, displayMode: .days)
             Spacer()
         }
         .padding(.top, 100)
@@ -135,22 +166,19 @@ private struct SlotMachineReel: View {
 
 #Preview("Animated") {
     struct AnimatedPreview: View {
-        @State private var days = 5
+        @State private var value = 5
 
         var body: some View {
             ZStack {
                 Color.black.ignoresSafeArea()
                 VStack(spacing: 40) {
-                    SlotMachineCountdown(
-                        days: days,
-                        targetDate: Date().addingTimeInterval(86400 * Double(days))
-                    )
+                    SlotMachineCountdown(value: value, displayMode: .days)
 
                     HStack(spacing: 20) {
-                        Button("5") { days = 5 }
-                        Button("15") { days = 15 }
-                        Button("25") { days = 25 }
-                        Button("42") { days = 42 }
+                        Button("5") { value = 5 }
+                        Button("15") { value = 15 }
+                        Button("25") { value = 25 }
+                        Button("42") { value = 42 }
                     }
                     .font(.title)
                     .foregroundStyle(.white)

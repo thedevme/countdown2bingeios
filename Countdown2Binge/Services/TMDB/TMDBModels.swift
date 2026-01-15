@@ -127,6 +127,7 @@ struct TMDBEpisode: Codable {
     let airDate: String?
     let stillPath: String?
     let runtime: Int?
+    let episodeType: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name, overview, runtime
@@ -134,6 +135,7 @@ struct TMDBEpisode: Codable {
         case seasonNumber = "season_number"
         case airDate = "air_date"
         case stillPath = "still_path"
+        case episodeType = "episode_type"
     }
 }
 

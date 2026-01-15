@@ -76,6 +76,11 @@ extension Show {
         currentSeason?.daysUntilFinale
     }
 
+    /// Episodes until the current season finale
+    var episodesUntilFinale: Int? {
+        currentSeason?.episodesUntilFinale
+    }
+
     /// Days until the next season premiere
     var daysUntilPremiere: Int? {
         upcomingSeason?.daysUntilPremiere ?? currentSeason?.daysUntilPremiere

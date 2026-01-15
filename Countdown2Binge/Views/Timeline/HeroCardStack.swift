@@ -7,7 +7,7 @@ import SwiftUI
 
 /// Swipeable card stack showing currently airing shows with soonest finales
 struct HeroCardStack: View {
-    let shows: [(show: Show, daysUntilFinale: Int)]
+    let shows: [(show: Show, daysUntilFinale: Int?, episodesUntilFinale: Int?, finaleDate: Date?)]
     @Binding var currentIndex: Int
     let onShowTap: (Show) -> Void
 
@@ -102,6 +102,7 @@ struct HeroCardStack: View {
             }
         }
         .frame(width: cardWidth, height: cardHeight)
+        .drawingGroup()
         .scaleEffect(scale(for: effectPosition))
         .offset(x: offset(for: stackPosition, dragOffset: dragOffset, isFrontCard: isFrontCard))
         .rotation3DEffect(.degrees(rotation(for: effectPosition)), axis: (x: 0, y: 1, z: 0))
@@ -235,7 +236,7 @@ struct HeroCardStack: View {
                                 numberOfSeasons: 2,
                                 numberOfEpisodes: 20,
                                 inProduction: true
-                            ), 17),
+                            ), 17, 3, Date().addingTimeInterval(86400 * 17)),
                             (Show(
                                 id: 2,
                                 name: "The Bear",
@@ -251,7 +252,7 @@ struct HeroCardStack: View {
                                 numberOfSeasons: 3,
                                 numberOfEpisodes: 30,
                                 inProduction: true
-                            ), 24),
+                            ), 24, 5, Date().addingTimeInterval(86400 * 24)),
                             (Show(
                                 id: 3,
                                 name: "Andor",
@@ -267,7 +268,7 @@ struct HeroCardStack: View {
                                 numberOfSeasons: 2,
                                 numberOfEpisodes: 12,
                                 inProduction: true
-                            ), 31)
+                            ), nil, nil, nil)  // TBD show
                         ],
                         currentIndex: $currentIndex,
                         onShowTap: { _ in }

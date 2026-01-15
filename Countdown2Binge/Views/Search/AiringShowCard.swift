@@ -140,6 +140,7 @@ struct AiringShowCard: View {
             } placeholder: {
                 backdropPlaceholder
             }
+            .drawingGroup() // Rasterizes for smoother scrolling
         } else {
             backdropPlaceholder
         }
