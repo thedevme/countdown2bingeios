@@ -32,6 +32,8 @@ platform :ios do
         ],
         fail_build: true
       )
+      # Shutdown simulators after tests
+      sh("xcrun simctl shutdown all")
     end
 
     # Increment build number (based on TestFlight build number + 1)
@@ -99,6 +101,9 @@ platform :ios do
         "Countdown2BingeUITests/TimelineUITests"
       ]
     )
+
+    # Shutdown simulators after tests
+    sh("xcrun simctl shutdown all")
 
     UI.success("All tests passed!")
   end
