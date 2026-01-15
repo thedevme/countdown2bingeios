@@ -14,6 +14,7 @@ struct BingeReadyCardStack: View {
     let seasons: [Season]
     let show: Show
     @Binding var currentIndex: Int
+    let cardSize: CGSize
     let onMarkWatched: (Season) -> Void
     let onDeleteShow: () -> Void
     let onTapCard: () -> Void
@@ -25,13 +26,16 @@ struct BingeReadyCardStack: View {
     // Confirmation state
     @State private var showDeleteConfirmation: Bool = false
 
-    // Layout constants - fanned card display
-    private let fanSpread: CGFloat = 28           // Horizontal spread between cards (tighter)
-    private let fanRotation: Double = 5           // Rotation angle per position (degrees)
-    private let fanYOffset: CGFloat = 8           // Vertical drop per position
-    private let scaleStep: CGFloat = 0.06         // Scale reduction per position
-    private let swipeThreshold: CGFloat = 100
-    private let maxVisibleCards: Int = 5          // Show up to 5 cards
+    // Scale factor for responsive sizing
+    private var scaleFactor: CGFloat { cardSize.width / BingeReadyPosterCard.defaultWidth }
+
+    // Layout constants - fanned card display (scaled)
+    private var fanSpread: CGFloat { 28 * scaleFactor }      // Horizontal spread between cards
+    private let fanRotation: Double = 5                       // Rotation angle per position (degrees)
+    private var fanYOffset: CGFloat { 8 * scaleFactor }      // Vertical drop per position
+    private let scaleStep: CGFloat = 0.06                     // Scale reduction per position
+    private var swipeThreshold: CGFloat { 80 * scaleFactor } // Swipe threshold
+    private let maxVisibleCards: Int = 5                      // Show up to 5 cards
 
     private enum GestureDirection {
         case horizontal
@@ -39,7 +43,7 @@ struct BingeReadyCardStack: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 20 * scaleFactor) {
             // Card stack - fanned display
             ZStack {
                 ForEach(Array(seasons.enumerated()), id: \.element.id) { index, season in
@@ -54,7 +58,8 @@ struct BingeReadyCardStack: View {
                         BingeReadyPosterCard(
                             season: season,
                             show: show,
-                            isTopCard: isFrontCard
+                            isTopCard: isFrontCard,
+                            cardSize: cardSize
                         )
                         .drawingGroup() // Rasterizes entire card for smoother animation
                         .scaleEffect(scale(for: position))
@@ -73,8 +78,8 @@ struct BingeReadyCardStack: View {
                 }
             }
             .frame(
-                width: BingeReadyPosterCard.cardWidth + 120, // Extra space for fanned cards
-                height: BingeReadyPosterCard.cardHeight + 40
+                width: cardSize.width + (120 * scaleFactor), // Extra space for fanned cards
+                height: cardSize.height + (40 * scaleFactor)
             )
             .gesture(swipeGesture)
 
@@ -282,6 +287,7 @@ struct BingeReadyCardStack: View {
                     ],
                     show: Show(id: 1, name: "The Last of Us", overview: nil, posterPath: nil, backdropPath: nil, logoPath: nil, firstAirDate: nil, status: .returning, genres: [], networks: [], seasons: [], numberOfSeasons: 2, numberOfEpisodes: 33, inProduction: true),
                     currentIndex: $currentIndex,
+                    cardSize: CGSize(width: BingeReadyPosterCard.defaultWidth, height: BingeReadyPosterCard.defaultHeight),
                     onMarkWatched: { _ in },
                     onDeleteShow: {},
                     onTapCard: {}
@@ -306,6 +312,7 @@ struct BingeReadyCardStack: View {
                     ],
                     show: Show(id: 2, name: "Yellowstone", overview: nil, posterPath: nil, backdropPath: nil, logoPath: nil, firstAirDate: nil, status: .returning, genres: [], networks: [], seasons: [], numberOfSeasons: 4, numberOfEpisodes: 40, inProduction: true),
                     currentIndex: $currentIndex,
+                    cardSize: CGSize(width: BingeReadyPosterCard.defaultWidth, height: BingeReadyPosterCard.defaultHeight),
                     onMarkWatched: { _ in },
                     onDeleteShow: {},
                     onTapCard: {}

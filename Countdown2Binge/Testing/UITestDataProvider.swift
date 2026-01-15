@@ -20,6 +20,8 @@ enum UITestScenario: String {
     case hasActiveShows = "HasActiveShows"
     case thePittScenario = "ThePittScenario"
     case airingOnlyNoBottomSections = "AiringOnlyNoBottomSections"
+    case hasBingeReadySeasons = "HasBingeReadySeasons"
+    case noBingeReadySeasons = "NoBingeReadySeasons"
 }
 
 /// Provides mock data for UI testing
@@ -209,6 +211,37 @@ struct UITestDataProvider {
                 makeMockShow(
                     id: 1,
                     name: "Airing Only Show",
+                    status: .returning,
+                    seasons: [makeMockSeason(seasonNumber: 1, isComplete: false, hasStarted: true)]
+                )
+            ]
+
+        case .hasBingeReadySeasons:
+            // Shows with complete seasons ready to binge
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Binge Ready Show",
+                    status: .returning,
+                    seasons: [
+                        makeMockSeason(seasonNumber: 1, isComplete: true, hasStarted: true),
+                        makeMockSeason(seasonNumber: 2, isComplete: true, hasStarted: true)
+                    ]
+                ),
+                makeMockShow(
+                    id: 2,
+                    name: "Another Binge Show",
+                    status: .returning,
+                    seasons: [makeMockSeason(seasonNumber: 1, isComplete: true, hasStarted: true)]
+                )
+            ]
+
+        case .noBingeReadySeasons:
+            // No binge-ready seasons (all airing or incomplete)
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Still Airing",
                     status: .returning,
                     seasons: [makeMockSeason(seasonNumber: 1, isComplete: false, hasStarted: true)]
                 )

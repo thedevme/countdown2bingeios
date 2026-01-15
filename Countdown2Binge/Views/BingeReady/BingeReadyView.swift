@@ -57,57 +57,61 @@ struct BingeReadyView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                Color.black
-                    .ignoresSafeArea()
+            GeometryReader { geometry in
+                let cardSize = calculateCardSize(for: geometry.size)
 
-                VStack(spacing: 0) {
-                    // Header row
-                    HStack {
-                        Text("BINGE READY")
-                            .font(.system(size: 13, weight: .semibold))
-                            .tracking(1.5)
-                            .foregroundStyle(.white.opacity(0.5))
+                ZStack {
+                    // Background
+                    Color.black
+                        .ignoresSafeArea()
 
-                        Spacer()
-
-                        Button {
-                            // Info action
-                        } label: {
-                            Image(systemName: "info.circle")
-                                .font(.system(size: 20))
+                    VStack(spacing: 0) {
+                        // Header row
+                        HStack {
+                            Text("BINGE READY")
+                                .font(.system(size: 13, weight: .semibold))
+                                .tracking(1.5)
                                 .foregroundStyle(.white.opacity(0.5))
+
+                            Spacer()
+
+                            Button {
+                                // Info action
+                            } label: {
+                                Image(systemName: "info.circle")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(.white.opacity(0.5))
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+
+                        if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
+                            Spacer()
+                            loadingView
+                            Spacer()
+                        } else if !viewModel.hasItems {
+                            emptyStateView
+                        } else {
+                            // Main content
+                            Spacer()
+                            cardStackContent(cardSize: cardSize)
+                                .id(currentShowIndex)
+                                .transition(navigationDirection == .right ? .cardDropFromTop : .cardDropFromBottom)
+
+                            // Progress bar (outside of id'd content so it animates)
+                            EpisodeProgressBar(watchedCount: animatedWatchedCount, totalCount: currentTotalCount)
+                                .padding(.horizontal, 30)
+                                .padding(.top, 24 * (cardSize.width / BingeReadyPosterCard.defaultWidth))
+
+                            Spacer()
+
+                            // Bottom show selector
+                            showSelector
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 12)
-
-                    if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
-                        Spacer()
-                        loadingView
-                        Spacer()
-                    } else if !viewModel.hasItems {
-                        emptyStateView
-                    } else {
-                        // Main content
-                        Spacer()
-                        cardStackContent
-                            .id(currentShowIndex)
-                            .transition(navigationDirection == .right ? .cardDropFromTop : .cardDropFromBottom)
-
-                        // Progress bar (outside of id'd content so it animates)
-                        EpisodeProgressBar(watchedCount: animatedWatchedCount, totalCount: currentTotalCount)
-                            .padding(.horizontal, 30)
-                            .padding(.top, 24)
-
-                        Spacer()
-
-                        // Bottom show selector
-                        showSelector
-                    }
+                    .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentShowIndex)
                 }
-                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentShowIndex)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -178,15 +182,57 @@ struct BingeReadyView: View {
         }
     }
 
+    // MARK: - Card Size Calculation
+
+    /// Calculate card size based on available screen space
+    private func calculateCardSize(for screenSize: CGSize) -> CGSize {
+        let aspectRatio = BingeReadyPosterCard.defaultHeight / BingeReadyPosterCard.defaultWidth // ~1.5
+
+        // Reserve space for: header (~50), show name (~60), progress bar (~80), bottom selector (~120)
+        let reservedHeight: CGFloat = 310
+        let availableHeight = screenSize.height - reservedHeight
+
+        // Reserve horizontal padding for fanned cards
+        let horizontalPadding: CGFloat = 80
+        let availableWidth = screenSize.width - horizontalPadding
+
+        // Calculate max card dimensions that fit
+        let maxHeightBasedOnWidth = availableWidth * aspectRatio
+        let maxWidthBasedOnHeight = availableHeight / aspectRatio
+
+        // Use the smaller dimension to ensure it fits
+        let cardWidth: CGFloat
+        let cardHeight: CGFloat
+
+        if maxHeightBasedOnWidth <= availableHeight {
+            // Width is the constraint
+            cardWidth = min(availableWidth, BingeReadyPosterCard.defaultWidth)
+            cardHeight = cardWidth * aspectRatio
+        } else {
+            // Height is the constraint
+            cardHeight = min(availableHeight, BingeReadyPosterCard.defaultHeight)
+            cardWidth = cardHeight / aspectRatio
+        }
+
+        // Ensure minimum size for usability
+        let minWidth: CGFloat = 200
+        let finalWidth = max(minWidth, cardWidth)
+        let finalHeight = finalWidth * aspectRatio
+
+        return CGSize(width: finalWidth, height: finalHeight)
+    }
+
     // MARK: - Card Stack Content
 
     @ViewBuilder
-    private var cardStackContent: some View {
+    private func cardStackContent(cardSize: CGSize) -> some View {
         if let group = currentGroup {
-            VStack(spacing: 24) {
+            let scaleFactor = cardSize.width / BingeReadyPosterCard.defaultWidth
+
+            VStack(spacing: 24 * scaleFactor) {
                 // Large show name
                 Text(group.show.name.uppercased())
-                    .font(.system(size: 32, weight: .heavy, design: .default).width(.condensed))
+                    .font(.system(size: 32 * scaleFactor, weight: .heavy, design: .default).width(.condensed))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -197,6 +243,7 @@ struct BingeReadyView: View {
                     seasons: group.seasons,
                     show: group.show,
                     currentIndex: selectedIndexBinding(for: group),
+                    cardSize: cardSize,
                     onMarkWatched: { season in
                         // Track this season as marked watched for this session
                         markedWatchedSeasonIds.insert(season.id)
