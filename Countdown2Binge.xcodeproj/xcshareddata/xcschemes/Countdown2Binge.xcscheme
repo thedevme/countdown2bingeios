@@ -42,6 +42,18 @@
                ReferencedContainer = "container:Countdown2Binge.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4685E2372F13D67A00FBE262"
+               BuildableName = "Countdown2BingeUITests.xctest"
+               BlueprintName = "Countdown2BingeUITests"
+               ReferencedContainer = "container:Countdown2Binge.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

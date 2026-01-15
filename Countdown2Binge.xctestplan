@@ -27,6 +27,14 @@
         "identifier" : "Countdown2BingeTests",
         "name" : "Countdown2BingeTests"
       }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Countdown2Binge.xcodeproj",
+        "identifier" : "Countdown2BingeUITests",
+        "name" : "Countdown2BingeUITests"
+      }
     }
   ],
   "version" : 1

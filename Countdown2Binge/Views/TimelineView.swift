@@ -35,8 +35,12 @@ struct TimelineView: View {
     // MARK: - Cached Computed Data (to avoid recalculation)
 
     /// All shows converted from cache - computed once per data change
+    /// In UI testing mode, returns mock data for the current scenario
     private var allShows: [Show] {
-        followedShows.compactMap { $0.cachedData?.toShow() }
+        if UITestDataProvider.isUITesting {
+            return UITestDataProvider.showsForCurrentScenario()
+        }
+        return followedShows.compactMap { $0.cachedData?.toShow() }
     }
 
     /// Grouped timeline entries - computed once, used for both sections
@@ -96,8 +100,12 @@ struct TimelineView: View {
     }
 
     /// True if user has no followed shows at all (show empty timeline for onboarding)
+    /// In UI testing mode, checks if the scenario is NoFollowedShows
     private var hasNoFollowedShows: Bool {
-        followedShows.isEmpty
+        if UITestDataProvider.isUITesting {
+            return UITestDataProvider.currentScenario == .noFollowedShows
+        }
+        return followedShows.isEmpty
     }
 
     var body: some View {
@@ -123,13 +131,23 @@ struct TimelineView: View {
                         )
 
                         // Hero section (swipeable card stack)
-                        HeroCardStack(
-                            shows: airingShows,
-                            currentIndex: $heroCardIndex,
-                            onShowTap: { show in
-                                selectedShow = show
+                        ZStack {
+                            // UI Test marker - zero-size text that XCUITest can find
+                            if !airingShows.isEmpty {
+                                Text("EndingSoon")
+                                    .accessibilityIdentifier("EndingSoonSection")
+                                    .frame(width: 0, height: 0)
+                                    .opacity(0)
                             }
-                        )
+
+                            HeroCardStack(
+                                shows: airingShows,
+                                currentIndex: $heroCardIndex,
+                                onShowTap: { show in
+                                    selectedShow = show
+                                }
+                            )
+                        }
 
                         // Connector from cards to countdown
                         verticalConnector
@@ -149,6 +167,8 @@ struct TimelineView: View {
 
                         if hasNoFollowedShows {
                             // No followed shows - show empty timeline for onboarding
+                            // UI Test marker for empty state
+                            Text("").accessibilityIdentifier("EmptySlotCards").frame(width: 0, height: 0)
                             premieringSoonSection
                             anticipatedSection
                         } else if hasAnyShows {
@@ -162,6 +182,11 @@ struct TimelineView: View {
                         } else {
                             // Has followed shows but none in timeline categories
                             noTimelineShowsView
+                            // UI Test marker
+                            Text("NoTimeline")
+                                .accessibilityIdentifier("NoTimelineShowsView")
+                                .frame(width: 0, height: 0)
+                                .opacity(0)
                         }
 
                         // Footer
