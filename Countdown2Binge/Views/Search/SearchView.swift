@@ -16,41 +16,39 @@ struct SearchView: View {
 
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    // Background
-                    Color.black
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            isSearchFocused = false
+            ZStack {
+                // Background
+                Color.black
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        isSearchFocused = false
+                    }
+
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Page title
+                        Text("SEARCH")
+                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                            .foregroundStyle(.white)
+                            .accessibilityAddTraits(.isHeader)
+
+                        // Search field
+                        searchField
+                            .padding(.bottom, 20)
+
+                        // Content based on search state
+                        if viewModel.searchQuery.isEmpty {
+                            landingContent
+                        } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
+                            noResultsView
+                        } else {
+                            searchResultsContent
                         }
-
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            // Page title
-                            Text("SEARCH")
-                                .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
-                                .foregroundStyle(.white)
-                                .accessibilityAddTraits(.isHeader)
-
-                            // Search field
-                            searchField
-                                .padding(.bottom, 20)
-
-                            // Content based on search state
-                            if viewModel.searchQuery.isEmpty {
-                                landingContent
-                            } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
-                                noResultsView
-                            } else {
-                                searchResultsContent
-                            }
-                        }
-                        .padding(.top, 16)
                     }
                     .padding(.horizontal)
-                    .scrollDismissesKeyboard(.immediately)
+                    .padding(.top, 16)
                 }
+                .scrollDismissesKeyboard(.immediately)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
