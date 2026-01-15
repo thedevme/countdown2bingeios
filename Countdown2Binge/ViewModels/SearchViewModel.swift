@@ -152,6 +152,19 @@ final class SearchViewModel {
         isSearching = true
         error = nil
 
+        #if DEBUG
+        // In demo mode, filter demo shows by query
+        if DemoModeProvider.shared.isEnabled {
+            let lowercaseQuery = query.lowercased()
+            searchResults = DemoModeProvider.shared.demoSearchResults.filter {
+                $0.name.lowercased().contains(lowercaseQuery) ||
+                ($0.overview?.lowercased().contains(lowercaseQuery) ?? false)
+            }
+            isSearching = false
+            return
+        }
+        #endif
+
         do {
             let response = try await tmdbService.searchShows(query: query, page: 1)
             searchResults = response.results
@@ -222,6 +235,16 @@ final class SearchViewModel {
 
         loadingDetailId = tmdbId
 
+        #if DEBUG
+        // In demo mode, return demo show details directly
+        if DemoModeProvider.shared.isEnabled,
+           let demoShow = DemoModeProvider.shared.demoShow(for: tmdbId) {
+            selectedShow = demoShow
+            loadingDetailId = nil
+            return
+        }
+        #endif
+
         do {
             let show = try await tmdbService.getShowDetails(id: tmdbId)
             selectedShow = show
@@ -254,6 +277,15 @@ final class SearchViewModel {
         guard trendingShows.isEmpty else { return }
 
         isLoadingTrending = true
+
+        #if DEBUG
+        // In demo mode, show all demo shows as trending
+        if DemoModeProvider.shared.isEnabled {
+            trendingShows = DemoModeProvider.shared.demoSearchResults.map { (show: $0, logoPath: nil) }
+            isLoadingTrending = false
+            return
+        }
+        #endif
 
         do {
             let shows = try await tmdbService.getTrendingShows()

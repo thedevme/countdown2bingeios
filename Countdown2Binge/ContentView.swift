@@ -11,6 +11,9 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab: Tab = .timeline
+    #if DEBUG
+    @State private var showDemoIndicator = false
+    #endif
 
     enum Tab: Hashable {
         case timeline
@@ -20,7 +23,8 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        ZStack {
+            TabView(selection: $selectedTab) {
             // Timeline Tab
             TimelineView()
                 .tabItem {
@@ -48,11 +52,32 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gearshape")
                 }
                 .tag(Tab.settings)
+            }
+            .tint(.white)
+            .onAppear {
+                configureTabBarAppearance()
+            }
+
+            #if DEBUG
+            // Demo mode indicator (only in debug builds)
+            if showDemoIndicator {
+                DemoModeIndicator()
+            }
+            #endif
         }
-        .tint(.white)
-        .onAppear {
-            configureTabBarAppearance()
+        #if DEBUG
+        .onShake {
+            DemoModeProvider.shared.toggle()
+            showDemoIndicator = DemoModeProvider.shared.isEnabled
+
+            // Hide indicator after delay if still in demo mode
+            if showDemoIndicator {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    showDemoIndicator = false
+                }
+            }
         }
+        #endif
     }
 
     // MARK: - Tab Bar Appearance

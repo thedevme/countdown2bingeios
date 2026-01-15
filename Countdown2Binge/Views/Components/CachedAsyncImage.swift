@@ -12,6 +12,12 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     let content: (Image) -> Content
     let placeholder: () -> Placeholder
 
+    /// Check for demo image from asset catalog
+    private var demoImage: UIImage? {
+        guard let imageName = DemoModeProvider.demoImageName(from: url?.absoluteString) else { return nil }
+        return UIImage(named: imageName)
+    }
+
     // Check cache immediately during view init
     private var cachedImage: UIImage? {
         guard let url = url else { return nil }
@@ -33,19 +39,22 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
 
     var body: some View {
         Group {
-            if let image = cachedImage ?? loadedImage {
+            // Demo images take priority
+            if let image = demoImage {
+                content(Image(uiImage: image))
+            } else if let image = cachedImage ?? loadedImage {
                 content(Image(uiImage: image))
             } else {
                 placeholder()
             }
         }
         .onAppear {
-            if cachedImage == nil && loadedImage == nil {
+            if demoImage == nil && cachedImage == nil && loadedImage == nil {
                 loadImage()
             }
         }
         .onChange(of: url) { _, newURL in
-            if newURL != nil && cachedImage == nil && loadedImage == nil {
+            if newURL != nil && demoImage == nil && cachedImage == nil && loadedImage == nil {
                 loadImage()
             }
         }
@@ -53,6 +62,9 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
 
     private func loadImage() {
         guard let url = url, !isLoading else { return }
+
+        // Don't fetch demo images from network
+        if url.absoluteString.hasPrefix("demo://") { return }
 
         // Double-check cache
         if let cached = ImageCache.shared.get(for: url) {
