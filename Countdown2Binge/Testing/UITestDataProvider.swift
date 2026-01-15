@@ -19,6 +19,7 @@ enum UITestScenario: String {
     case hasShowsButNoneActive = "HasShowsButNoneActive"
     case hasActiveShows = "HasActiveShows"
     case thePittScenario = "ThePittScenario"
+    case airingOnlyNoBottomSections = "AiringOnlyNoBottomSections"
 }
 
 /// Provides mock data for UI testing
@@ -198,6 +199,18 @@ struct UITestDataProvider {
                         makeMockSeason(seasonNumber: 2, isComplete: false, hasStarted: true),
                         makeMockAnnouncedSeason(seasonNumber: 3)
                     ]
+                )
+            ]
+
+        case .airingOnlyNoBottomSections:
+            // Only an airing show - no premiering soon or anticipated
+            // Tests that connector below countdown is hidden when no bottom sections
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Airing Only Show",
+                    status: .returning,
+                    seasons: [makeMockSeason(seasonNumber: 1, isComplete: false, hasStarted: true)]
                 )
             ]
         }

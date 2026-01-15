@@ -118,4 +118,54 @@ final class TimelineUITests: XCTestCase {
         XCTAssertFalse(nothingText.exists,
                        "The Pitt should NOT be hidden - it must appear in Ending Soon")
     }
+
+    // MARK: - Connector Visibility Tests
+
+    /// SCENARIO: Airing show exists but no premiering soon or anticipated shows
+    /// EXPECTED: Dashed connector line below countdown should be hidden
+    @MainActor
+    func testAiringOnlyNoBottomSections_connectorShouldBeHidden() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "AiringOnlyNoBottomSections"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // The airing show should appear in hero section
+        let showName = app.staticTexts["Airing Only Show"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "Airing show should appear in hero section")
+
+        // Section connector should NOT exist (no bottom sections to connect to)
+        let connector = app.otherElements["SectionConnector"]
+        XCTAssertFalse(connector.exists,
+                       "Dashed connector should be hidden when no bottom sections exist")
+
+        // Section headers should also NOT be visible
+        let premieringHeader = app.staticTexts["PREMIERING SOON"]
+        let anticipatedHeader = app.staticTexts["ANTICIPATED"]
+        XCTAssertFalse(premieringHeader.exists,
+                       "PREMIERING SOON should not appear when no shows in that category")
+        XCTAssertFalse(anticipatedHeader.exists,
+                       "ANTICIPATED should not appear when no shows in that category")
+    }
+
+    /// SCENARIO: Active shows exist in bottom sections
+    /// EXPECTED: Dashed connector line should be visible
+    @MainActor
+    func testHasActiveShows_connectorShouldBeVisible() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "HasActiveShows"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // Wait for app to load
+        let showName = app.staticTexts["Currently Airing"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "Currently Airing show should appear")
+
+        // Section connector SHOULD exist (there are bottom sections)
+        let connector = app.otherElements["SectionConnector"]
+        XCTAssertTrue(connector.waitForExistence(timeout: timeout),
+                      "Dashed connector should be visible when bottom sections exist")
+    }
 }

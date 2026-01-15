@@ -162,8 +162,12 @@ struct TimelineView: View {
                         }
 
                         // Vertical connector from hero to sections
-                        verticalConnector
-                            .frame(height: 60)
+                        // Only show when there are sections below to connect to
+                        if hasNoFollowedShows || !premieringSoonEntries.isEmpty || !anticipatedEntries.isEmpty {
+                            verticalConnector
+                                .frame(height: 60)
+                                .accessibilityIdentifier("SectionConnector")
+                        }
 
                         if hasNoFollowedShows {
                             // No followed shows - show empty timeline for onboarding
