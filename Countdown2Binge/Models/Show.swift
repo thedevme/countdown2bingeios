@@ -39,9 +39,25 @@ struct Show: Identifiable, Codable, Equatable, Hashable {
     let inProduction: Bool
 
     /// The current or most recent season
+    /// Priority: 1) Currently airing season, 2) Upcoming season, 3) Most recent completed
     var currentSeason: Season? {
-        seasons
-            .filter { $0.seasonNumber > 0 } // Exclude specials (season 0)
+        let regularSeasons = seasons.filter { $0.seasonNumber > 0 } // Exclude specials
+
+        // 1. Prefer a season that's currently airing
+        if let airingSeason = regularSeasons.first(where: { $0.isAiring }) {
+            return airingSeason
+        }
+
+        // 2. Check for upcoming season (not started yet - includes announced seasons)
+        if let upcomingSeason = regularSeasons
+            .filter({ !$0.hasStarted })
+            .min(by: { $0.seasonNumber < $1.seasonNumber }) {
+            return upcomingSeason
+        }
+
+        // 3. Fall back to most recently completed season
+        return regularSeasons
+            .filter { $0.isComplete }
             .max(by: { $0.seasonNumber < $1.seasonNumber })
     }
 
