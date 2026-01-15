@@ -24,8 +24,20 @@ struct BingeReadyView: View {
     }
 
     /// Cache groups to avoid repeated computed property access
+    /// In UI testing mode, returns mock data for the current scenario
     private var groups: [BingeReadyShowGroup] {
-        viewModel.groupedByShow
+        if UITestDataProvider.isUITesting {
+            return UITestDataProvider.bingeReadyGroupsForCurrentScenario()
+        }
+        return viewModel.groupedByShow
+    }
+
+    /// Whether there are binge-ready items (respects UI test mode)
+    private var hasItems: Bool {
+        if UITestDataProvider.isUITesting {
+            return !groups.isEmpty
+        }
+        return viewModel.hasItems
     }
 
     private var currentGroup: BingeReadyShowGroup? {
@@ -89,11 +101,11 @@ struct BingeReadyView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 12)
 
-                        if viewModel.isLoading && !viewModel.hasItems && !hasLoadedOnce {
+                        if viewModel.isLoading && !hasItems && !hasLoadedOnce {
                             Spacer()
                             loadingView
                             Spacer()
-                        } else if !viewModel.hasItems {
+                        } else if !hasItems {
                             emptyStateView
                         } else {
                             // Main content

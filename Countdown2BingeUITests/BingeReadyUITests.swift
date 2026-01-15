@@ -116,7 +116,7 @@ final class BingeReadyUITests: XCTestCase {
                       "Tab bar should remain visible - content should fit screen")
 
         // Verify info button is visible (header row is intact)
-        let infoButton = app.buttons.matching(NSPredicate(format: "label CONTAINS 'info'")).firstMatch
+        let infoButton = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'info'")).firstMatch
         XCTAssertTrue(infoButton.exists || infoButton.waitForExistence(timeout: 2),
                       "Info button should be visible in header")
     }

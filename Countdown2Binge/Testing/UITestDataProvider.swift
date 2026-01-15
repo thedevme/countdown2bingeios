@@ -248,4 +248,21 @@ struct UITestDataProvider {
             ]
         }
     }
+
+    /// Returns binge-ready show groups for the current test scenario
+    static func bingeReadyGroupsForCurrentScenario() -> [BingeReadyShowGroup] {
+        let shows = showsForCurrentScenario()
+        var groups: [BingeReadyShowGroup] = []
+
+        for show in shows {
+            let readySeasons = show.seasons.filter { season in
+                season.seasonNumber > 0 && season.isComplete
+            }
+            if !readySeasons.isEmpty {
+                groups.append(BingeReadyShowGroup(show: show, seasons: readySeasons))
+            }
+        }
+
+        return groups
+    }
 }
