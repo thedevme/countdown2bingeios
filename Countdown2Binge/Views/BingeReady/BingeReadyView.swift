@@ -147,8 +147,8 @@ struct BingeReadyView: View {
                 animatedWatchedCount = currentWatchedCount
             }
             .onChange(of: viewModel.refreshTrigger) { _, _ in
-                // Animate to full count after marking watched (all episodes become watched)
-                animatedWatchedCount = currentTotalCount
+                // Animate to watched count (only aired episodes for airing seasons)
+                animatedWatchedCount = currentWatchedCount
             }
             .navigationDestination(item: $selectedItem) { item in
                 ShowDetailView(

@@ -207,6 +207,71 @@ struct MarkWatchedTests {
         let result2 = try await useCase.execute(showId: 1, seasonNumber: 2)
         #expect(result2 == .showComplete)
     }
+
+    // MARK: - Airing Season Watched Count (The Pitt Bug Prevention)
+
+    /// SCENARIO: Airing season marked as watched (5/10 episodes aired)
+    /// EXPECTED: watchedEpisodeCount should return only aired episodes (5), not all (10)
+    @Test func airingSeason_markedWatched_watchedCountOnlyIncludesAiredEpisodes() async throws {
+        // Create an airing season: 5 episodes aired, 5 haven't aired yet
+        var season = makeSeason(seasonNumber: 2, isComplete: false)
+        #expect(season.isAiring == true, "Season should be airing")
+        #expect(season.airedEpisodeCount == 5, "5 episodes should have aired")
+        #expect(season.episodeCount == 10, "Total episodes should be 10")
+
+        // Mark the season as watched
+        season.watchedDate = Date()
+        #expect(season.isWatched == true, "Season should be marked as watched")
+
+        // CRITICAL: watchedEpisodeCount should return only AIRED episodes, not all
+        #expect(season.watchedEpisodeCount == 5, "Watched count should only include aired episodes (5), not all episodes (10)")
+    }
+
+    /// SCENARIO: Complete season marked as watched (10/10 episodes aired)
+    /// EXPECTED: watchedEpisodeCount should return all episodes (10)
+    @Test func completeSeason_markedWatched_watchedCountIncludesAllEpisodes() async throws {
+        // Create a complete season: all 10 episodes have aired
+        var season = makeSeason(seasonNumber: 1, isComplete: true)
+        #expect(season.isComplete == true, "Season should be complete")
+        #expect(season.airedEpisodeCount == 10, "All 10 episodes should have aired")
+        #expect(season.episodeCount == 10, "Total episodes should be 10")
+
+        // Mark the season as watched
+        season.watchedDate = Date()
+        #expect(season.isWatched == true, "Season should be marked as watched")
+
+        // For complete seasons, watchedEpisodeCount should return all episodes
+        #expect(season.watchedEpisodeCount == 10, "Watched count should include all episodes for complete season")
+    }
+
+    /// SCENARIO: The Pitt bug - S1 complete, S2 airing, S3 announced
+    /// EXPECTED: When S2 is marked watched, only aired episodes should count
+    @Test func thePittScenario_markS2Watched_onlyAiredEpisodesCount() async throws {
+        let repository = MockShowRepository()
+
+        // Recreate The Pitt scenario
+        let s1 = makeSeason(seasonNumber: 1, isComplete: true, watchedDate: Date())
+        var s2 = makeSeason(seasonNumber: 2, isComplete: false) // Airing: 5/10 aired
+        let s3 = makeAnnouncedSeason(seasonNumber: 3)
+
+        let show = makeShow(
+            id: 250307,
+            status: .returning,
+            seasons: [s1, s2, s3]
+        )
+        repository.shows = [show]
+
+        // Verify S2 is airing
+        #expect(s2.isAiring == true, "S2 should be airing")
+        #expect(s2.airedEpisodeCount == 5, "S2 should have 5 aired episodes")
+
+        // Mark S2 as watched (simulating swipe down)
+        s2.watchedDate = Date()
+
+        // Verify only aired episodes are counted as watched
+        #expect(s2.watchedEpisodeCount == 5, "Only 5 aired episodes should be marked as watched, not all 10")
+        #expect(s2.watchedEpisodeCount != s2.episodeCount, "Watched count should NOT equal total count for airing season")
+    }
 }
 
 // MARK: - Mock Repository
@@ -329,5 +394,19 @@ private func makeSeason(seasonNumber: Int, isComplete: Bool, watchedDate: Date? 
         episodeCount: episodes.count,
         episodes: episodes,
         watchedDate: watchedDate
+    )
+}
+
+/// Creates an announced season with no episodes (for The Pitt scenario testing)
+private func makeAnnouncedSeason(seasonNumber: Int) -> Season {
+    Season(
+        id: seasonNumber * 100,
+        seasonNumber: seasonNumber,
+        name: "Season \(seasonNumber)",
+        overview: nil,
+        posterPath: nil,
+        airDate: nil,
+        episodeCount: 0,
+        episodes: []
     )
 }
