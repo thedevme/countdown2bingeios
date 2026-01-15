@@ -10,13 +10,20 @@ struct HeroCardStack: View {
     let shows: [(show: Show, daysUntilFinale: Int?, episodesUntilFinale: Int?, finaleDate: Date?)]
     @Binding var currentIndex: Int
     let onShowTap: (Show) -> Void
+    var cardSize: CGSize? = nil // Optional - if nil, uses default
 
     @State private var dragOffset: CGFloat = 0
 
-    private let cardWidth: CGFloat = 280
-    private let cardHeight: CGFloat = 365
-    private let cardCornerRadius: CGFloat = 32
-    private let cardSpacing: CGFloat = 35
+    // Default dimensions
+    static let defaultWidth: CGFloat = 280
+    static let defaultHeight: CGFloat = 365
+
+    private var cardWidth: CGFloat { cardSize?.width ?? Self.defaultWidth }
+    private var cardHeight: CGFloat { cardSize?.height ?? Self.defaultHeight }
+    private var scaleFactor: CGFloat { cardWidth / Self.defaultWidth }
+
+    private var cardCornerRadius: CGFloat { 32 * scaleFactor }
+    private var cardSpacing: CGFloat { 35 * scaleFactor }
     private let scaleStep: CGFloat = 0.1
     private let rotationDegrees: Double = 2
 
@@ -64,7 +71,7 @@ struct HeroCardStack: View {
                 }
             : nil
         )
-        .padding(.vertical, 20)
+        .padding(.vertical, 10)
     }
 
     // MARK: - Card View
@@ -107,6 +114,25 @@ struct HeroCardStack: View {
         .offset(x: offset(for: stackPosition, dragOffset: dragOffset, isFrontCard: isFrontCard))
         .rotation3DEffect(.degrees(rotation(for: effectPosition)), axis: (x: 0, y: 1, z: 0))
         .shadow(color: .black.opacity(0.3), radius: 20, y: 10)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isFrontCard ? "\(show.name), currently airing" : show.name)
+        .accessibilityHint(isFrontCard ? "Double tap to view details. Swipe left or right to see other shows." : "")
+        .accessibilityAddTraits(isFrontCard ? [.isButton, .isSelected] : .isButton)
+        .accessibilityAction(.default) {
+            if isFrontCard {
+                onShowTap(show)
+            }
+        }
+        .accessibilityAction(named: "Next show") {
+            if shows.count > 1 {
+                currentIndex = (currentIndex + 1) % shows.count
+            }
+        }
+        .accessibilityAction(named: "Previous show") {
+            if shows.count > 1 {
+                currentIndex = (currentIndex - 1 + shows.count) % shows.count
+            }
+        }
         .onTapGesture {
             if index == currentIndex {
                 onShowTap(show)

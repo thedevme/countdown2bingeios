@@ -18,8 +18,11 @@ struct TrendingShowCard: View {
     // App's teal accent color
     private let accentColor = Color(red: 0.22, green: 0.85, blue: 0.66)
 
-    // Card dimensions
-    private let posterHeight: CGFloat = 270
+    // Card dimensions - responsive for smaller screens
+    private var posterHeight: CGFloat {
+        // Smaller poster height on small screens (under 380pt width)
+        UIScreen.main.bounds.width < 380 ? 220 : 270
+    }
     private let bottomHeight: CGFloat = 100
     private let cornerRadius: CGFloat = 10
     private let bottomBackgroundColor = Color(red: 0x22/255, green: 0x22/255, blue: 0x24/255)
@@ -40,6 +43,24 @@ struct TrendingShowCard: View {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(cardAccessibilityLabel)
+        .accessibilityHint("Double tap to view details")
+    }
+
+    private var cardAccessibilityLabel: String {
+        var parts = [show.name]
+        if let network = extractNetwork(from: show) {
+            parts.append("on \(network)")
+        }
+        let genres = extractGenres(from: show).prefix(2)
+        if !genres.isEmpty {
+            parts.append(genres.joined(separator: ", "))
+        }
+        if isFollowed {
+            parts.append("Already added")
+        }
+        return parts.joined(separator: ", ")
     }
 
     // MARK: - Poster Section
@@ -212,6 +233,8 @@ struct TrendingShowCard: View {
         }
         .buttonStyle(.plain)
         .disabled(isLoading || isFollowed)
+        .accessibilityLabel(isFollowed ? "\(show.name) already added to binge list" : "Add \(show.name) to binge list")
+        .accessibilityHint(isFollowed ? "" : "Double tap to add")
     }
 
     // MARK: - Helpers

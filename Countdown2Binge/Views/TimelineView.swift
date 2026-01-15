@@ -110,64 +110,74 @@ struct TimelineView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                Color.black.ignoresSafeArea()
+            GeometryReader { geometry in
+                let cardSize = calculateHeroCardSize(for: geometry.size)
 
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // Header
-                        TimelineHeaderView(
-                            lastUpdated: lastRefreshed,
-                            isRefreshing: isRefreshing,
-                            onRefresh: {
-                                Task {
-                                    await refreshShows()
-                                }
-                            },
-                            onViewEntireTimeline: {
-                                showFullTimeline = true
-                            }
-                        )
+                ZStack {
+                    // Background
+                    Color.black.ignoresSafeArea()
 
-                        // Hero section (swipeable card stack)
-                        ZStack {
-                            // UI Test marker - zero-size text that XCUITest can find
-                            if !airingShows.isEmpty {
-                                Text("EndingSoon")
-                                    .accessibilityIdentifier("EndingSoonSection")
-                                    .frame(width: 0, height: 0)
-                                    .opacity(0)
-                            }
-
-                            HeroCardStack(
-                                shows: airingShows,
-                                currentIndex: $heroCardIndex,
-                                onShowTap: { show in
-                                    selectedShow = show
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            // Header
+                            TimelineHeaderView(
+                                lastUpdated: lastRefreshed,
+                                isRefreshing: isRefreshing,
+                                onRefresh: {
+                                    Task {
+                                        await refreshShows()
+                                    }
+                                },
+                                onViewEntireTimeline: {
+                                    showFullTimeline = true
                                 }
                             )
-                        }
 
-                        // Connector from cards to countdown
-                        verticalConnector
-                            .frame(height: 50)
+                            // Hero section (swipeable card stack)
+                            ZStack {
+                                // UI Test marker - zero-size text that XCUITest can find
+                                if !airingShows.isEmpty {
+                                    Text("EndingSoon")
+                                        .accessibilityIdentifier("EndingSoonSection")
+                                        .frame(width: 0, height: 0)
+                                        .opacity(0)
+                                }
 
-                        // Slot machine countdown (syncs with current card)
-                        if currentHeroShow != nil {
-                            SlotMachineCountdown(
-                                value: countdownValue,
-                                displayMode: settings.countdownDisplayMode
-                            )
-                        }
+                                HeroCardStack(
+                                    shows: airingShows,
+                                    currentIndex: $heroCardIndex,
+                                    onShowTap: { show in
+                                        selectedShow = show
+                                    },
+                                    cardSize: cardSize
+                                )
+                            }
+                            .frame(maxWidth: .infinity)
 
-                        // Vertical connector from hero to sections
-                        // Only show when there are sections below to connect to
-                        if hasNoFollowedShows || !premieringSoonEntries.isEmpty || !anticipatedEntries.isEmpty {
-                            verticalConnector
-                                .frame(height: 60)
-                                .accessibilityIdentifier("SectionConnector")
-                        }
+                            // Connector from cards to countdown (smaller on SE)
+                            if geometry.size.width >= 380 {
+                                verticalConnector
+                                    .frame(height: 24)
+                            } else {
+                                verticalConnector
+                                    .frame(height: 8)
+                            }
+
+                            // Slot machine countdown (syncs with current card)
+                            if currentHeroShow != nil {
+                                SlotMachineCountdown(
+                                    value: countdownValue,
+                                    displayMode: settings.countdownDisplayMode
+                                )
+                            }
+
+                            // Vertical connector from hero to sections
+                            // Only show when there are sections below to connect to
+                            if hasNoFollowedShows || !premieringSoonEntries.isEmpty || !anticipatedEntries.isEmpty {
+                                verticalConnector
+                                    .frame(height: 30)
+                                    .accessibilityIdentifier("SectionConnector")
+                            }
 
                         if hasNoFollowedShows {
                             // No followed shows - show empty timeline for onboarding
@@ -198,8 +208,12 @@ struct TimelineView: View {
                             showFullTimeline = true
                         })
                     }
+                    .frame(width: geometry.size.width)
                 }
-            }
+                .frame(width: geometry.size.width)
+            } // ZStack
+            .frame(width: geometry.size.width)
+            } // GeometryReader
             .navigationBarHidden(true)
             .navigationDestination(item: $selectedShow) { show in
                 ShowDetailView(
@@ -217,6 +231,44 @@ struct TimelineView: View {
         .onAppear {
             SoundManager.warmUp()
         }
+    }
+
+    // MARK: - Hero Card Size Calculation
+
+    /// Calculate hero card size based on available screen space
+    private func calculateHeroCardSize(for screenSize: CGSize) -> CGSize {
+        let aspectRatio = HeroCardStack.defaultHeight / HeroCardStack.defaultWidth // ~1.3
+
+        // Reserve space for: header (~100), connectors (~54), slot machine (~160), tab bar (~80)
+        let reservedHeight: CGFloat = 394
+        let availableHeight = screenSize.height - reservedHeight
+
+        // Max card width based on screen width (with some padding)
+        let maxWidth = min(screenSize.width - 80, HeroCardStack.defaultWidth)
+
+        // Calculate card dimensions that fit
+        let cardHeightFromWidth = maxWidth * aspectRatio
+        let cardWidthFromHeight = availableHeight / aspectRatio
+
+        let cardWidth: CGFloat
+        let cardHeight: CGFloat
+
+        if cardHeightFromWidth <= availableHeight {
+            // Width is the constraint
+            cardWidth = maxWidth
+            cardHeight = cardHeightFromWidth
+        } else {
+            // Height is the constraint
+            cardHeight = availableHeight
+            cardWidth = cardWidthFromHeight
+        }
+
+        // Ensure minimum size for usability
+        let minWidth: CGFloat = 200
+        let finalWidth = max(minWidth, min(cardWidth, HeroCardStack.defaultWidth))
+        let finalHeight = finalWidth * aspectRatio
+
+        return CGSize(width: finalWidth, height: finalHeight)
     }
 
     // MARK: - Premiering Soon Section

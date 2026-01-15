@@ -16,41 +16,41 @@ struct SearchView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                Color.black
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        isSearchFocused = false
-                    }
-
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // Page title
-                        Text("SEARCH")
-                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 16)
-                            .padding(.bottom, 12)
-
-                        // Search field
-                        searchField
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 20)
-
-                        // Content based on search state
-                        if viewModel.searchQuery.isEmpty {
-                            landingContent
-                        } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
-                            noResultsView
-                        } else {
-                            searchResultsContent
+            GeometryReader { geometry in
+                ZStack {
+                    // Background
+                    Color.black
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            isSearchFocused = false
                         }
+
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // Page title
+                            Text("SEARCH")
+                                .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                                .foregroundStyle(.white)
+                                .accessibilityAddTraits(.isHeader)
+
+                            // Search field
+                            searchField
+                                .padding(.bottom, 20)
+
+                            // Content based on search state
+                            if viewModel.searchQuery.isEmpty {
+                                landingContent
+                            } else if viewModel.searchResults.isEmpty && !viewModel.isSearching {
+                                noResultsView
+                            } else {
+                                searchResultsContent
+                            }
+                        }
+                        .padding(.top, 16)
                     }
+                    .padding(.horizontal)
+                    .scrollDismissesKeyboard(.immediately)
                 }
-                .scrollDismissesKeyboard(.immediately)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -100,6 +100,7 @@ struct SearchView: View {
                         .foregroundStyle(.white.opacity(0.5))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
             } else {
                 // Filter button
                 Button {
@@ -110,6 +111,7 @@ struct SearchView: View {
                         .foregroundStyle(.white.opacity(0.5))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Filter options")
             }
 
             if viewModel.isSearching {
@@ -136,11 +138,15 @@ struct SearchView: View {
 
     // MARK: - Landing Content (Empty Query State)
 
+    // Responsive horizontal padding for smaller screens
+    private var horizontalPadding: CGFloat {
+        UIScreen.main.bounds.width < 380 ? 12 : 20
+    }
+
     private var landingContent: some View {
         VStack(alignment: .leading, spacing: 28) {
             // Category filter chips
             categoryChips
-                .padding(.horizontal, 20)
 
             // Trending Shows Section
             if !viewModel.trendingShows.isEmpty {
@@ -168,6 +174,7 @@ struct SearchView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .tracking(1.5)
                 .foregroundStyle(.white.opacity(0.5))
+                .accessibilityAddTraits(.isHeader)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
@@ -182,6 +189,8 @@ struct SearchView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("\(category.rawValue) category")
+                        .accessibilityHint("Double tap to browse \(category.rawValue) shows")
                     }
                 }
             }
@@ -198,6 +207,7 @@ struct SearchView: View {
                     .font(.system(size: 13, weight: .bold))
                     .tracking(1)
                     .foregroundStyle(.white)
+                    .accessibilityAddTraits(.isHeader)
 
                 Spacer()
 
@@ -206,16 +216,16 @@ struct SearchView: View {
                 }
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(accentColor)
+                .accessibilityLabel("See all trending shows")
             }
-            .padding(.horizontal, 20)
 
             // Grid of trending shows
             LazyVGrid(
                 columns: [
-                    GridItem(.flexible(), spacing: 12),
-                    GridItem(.flexible(), spacing: 12)
+                    GridItem(.flexible(), spacing: 10),
+                    GridItem(.flexible(), spacing: 10)
                 ],
-                spacing: 12
+                spacing: 10
             ) {
                 ForEach(viewModel.trendingShows.prefix(4), id: \.show.id) { item in
                     TrendingShowCard(
@@ -238,7 +248,6 @@ struct SearchView: View {
                     )
                 }
             }
-            .padding(.horizontal, 20)
         }
     }
 
@@ -252,6 +261,7 @@ struct SearchView: View {
                     .font(.system(size: 13, weight: .bold))
                     .tracking(1)
                     .foregroundStyle(.white)
+                    .accessibilityAddTraits(.isHeader)
 
                 Spacer()
 
@@ -262,8 +272,8 @@ struct SearchView: View {
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(accentColor)
                 }
+                .accessibilityLabel("See all shows ending soon")
             }
-            .padding(.horizontal, 20)
 
             // Airing show cards
             VStack(spacing: 12) {
@@ -286,7 +296,6 @@ struct SearchView: View {
                     )
                 }
             }
-            .padding(.horizontal, 20)
         }
     }
 
@@ -300,6 +309,7 @@ struct SearchView: View {
             Image(systemName: "tv")
                 .font(.system(size: 56))
                 .foregroundStyle(.white.opacity(0.15))
+                .accessibilityHidden(true)
 
             VStack(spacing: 8) {
                 Text("Find Your Shows")
@@ -311,10 +321,10 @@ struct SearchView: View {
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.5))
             }
+            .accessibilityElement(children: .combine)
 
             Spacer()
         }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - No Results State
@@ -327,6 +337,7 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
                 .foregroundStyle(.white.opacity(0.15))
+                .accessibilityHidden(true)
 
             VStack(spacing: 8) {
                 Text("No Results")
@@ -338,10 +349,10 @@ struct SearchView: View {
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.5))
             }
+            .accessibilityElement(children: .combine)
 
             Spacer()
         }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Search Results Content
@@ -349,10 +360,10 @@ struct SearchView: View {
     private var searchResultsContent: some View {
         LazyVGrid(
             columns: [
-                GridItem(.flexible(), spacing: 12),
-                GridItem(.flexible(), spacing: 12)
+                GridItem(.flexible(), spacing: 10),
+                GridItem(.flexible(), spacing: 10)
             ],
-            spacing: 12
+            spacing: 10
         ) {
             ForEach(viewModel.searchResults) { result in
                 TrendingShowCard(
@@ -375,7 +386,7 @@ struct SearchView: View {
                 )
             }
         }
-        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity)
     }
 }
 

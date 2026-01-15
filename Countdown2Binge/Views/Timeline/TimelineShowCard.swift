@@ -55,6 +55,24 @@ struct TimelineShowCard: View {
         }
     }
 
+    private var accessibilityLabel: String {
+        let seasonText = "Season \(seasonNumber)"
+        switch style {
+        case .endingSoon, .premiering:
+            if let days = daysUntil {
+                let daysText = days == 1 ? "1 day" : "\(days) days"
+                let action = style == .endingSoon ? "ending" : "premiering"
+                return "\(show.name), \(seasonText), \(action) in \(daysText)"
+            }
+            return "\(show.name), \(seasonText)"
+        case .anticipated:
+            if let year = expectedYear {
+                return "\(show.name), \(seasonText), expected \(year)"
+            }
+            return "\(show.name), \(seasonText), date to be determined"
+        }
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             // Left side: Countdown text with background to create line break
@@ -96,6 +114,10 @@ struct TimelineShowCard: View {
             .contentShape(Rectangle()) // Hit area only on backdrop
         }
         .padding(.trailing, 24)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint("Double tap to view show details")
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

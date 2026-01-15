@@ -37,6 +37,16 @@ struct TimelineSectionHeader: View {
         }
     }
 
+    private var accessibilityLabel: String {
+        let showCount = totalCount == 1 ? "1 show" : "\(totalCount) shows"
+        return "\(title.lowercased().capitalized), \(showCount)"
+    }
+
+    private var accessibilityHint: String {
+        guard showDisclosure else { return "" }
+        return isExpanded ? "Double tap to collapse section" : "Double tap to expand section"
+    }
+
     private var headerContent: some View {
         HStack(spacing: 0) {
             // Badge aligned with timeline (centered in 80px area)
@@ -68,6 +78,11 @@ struct TimelineSectionHeader: View {
         .padding(.trailing, 24)
         .padding(.vertical, 12)
         .contentShape(Rectangle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint(accessibilityHint)
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityAddTraits(showDisclosure ? .isButton : [])
     }
 }
 

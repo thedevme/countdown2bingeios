@@ -69,6 +69,18 @@ struct EpisodeProgressBar: View {
             }
             .padding(.horizontal, 10)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(progressAccessibilityLabel)
+    }
+
+    private var progressAccessibilityLabel: String {
+        if watchedCount == 0 {
+            return "Episode progress: \(totalCount) episodes, none watched"
+        } else if watchedCount >= totalCount {
+            return "Episode progress: All \(totalCount) episodes watched"
+        } else {
+            return "Episode progress: \(watchedCount) of \(totalCount) episodes watched"
+        }
     }
 
     private var overflowLabel: some View {

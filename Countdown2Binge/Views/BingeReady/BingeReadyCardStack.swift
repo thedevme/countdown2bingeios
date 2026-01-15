@@ -82,6 +82,9 @@ struct BingeReadyCardStack: View {
                 height: cardSize.height + (40 * scaleFactor)
             )
             .gesture(swipeGesture)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(cardStackAccessibilityLabel)
+            .accessibilityHint(cardStackAccessibilityHint)
 
             // Confirmation UI (only shows when needed)
             if showDeleteConfirmation {
@@ -221,6 +224,27 @@ struct BingeReadyCardStack: View {
 
     private func goToPreviousSeason() {
         currentIndex = (currentIndex - 1 + seasons.count) % seasons.count
+    }
+
+    // MARK: - Accessibility
+
+    private var cardStackAccessibilityLabel: String {
+        let season = seasons[currentIndex]
+        let seasonText = "Season \(season.seasonNumber)"
+        if seasons.count > 1 {
+            return "\(show.name), \(seasonText), \(currentIndex + 1) of \(seasons.count) seasons ready to binge"
+        }
+        return "\(show.name), \(seasonText), ready to binge"
+    }
+
+    private var cardStackAccessibilityHint: String {
+        var hints: [String] = []
+        if seasons.count > 1 {
+            hints.append("Swipe left or right to change seasons")
+        }
+        hints.append("Swipe down to mark watched")
+        hints.append("Swipe up to remove show")
+        return hints.joined(separator: ". ")
     }
 
     // MARK: - Delete Confirmation

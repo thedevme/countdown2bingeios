@@ -26,13 +26,15 @@ struct SettingsView: View {
                                     .foregroundStyle(.white.opacity(0.5))
                             }
                             Spacer()
-                            Picker("", selection: $settings.countdownDisplayMode) {
+                            Picker("Countdown Display", selection: $settings.countdownDisplayMode) {
                                 ForEach(CountdownDisplayMode.allCases, id: \.self) { mode in
                                     Text(mode.label).tag(mode)
                                 }
                             }
                             .pickerStyle(.segmented)
                             .frame(width: 150)
+                            .accessibilityLabel("Countdown display mode")
+                            .accessibilityHint("Choose between showing days or episodes until finale")
                         }
                         .listRowBackground(Color.white.opacity(0.05))
                     } header: {
@@ -40,6 +42,7 @@ struct SettingsView: View {
                             .font(.system(size: 12, weight: .semibold))
                             .tracking(1.2)
                             .foregroundStyle(.white.opacity(0.5))
+                            .accessibilityAddTraits(.isHeader)
                     }
 
                     // MARK: - Binge Ready Section
@@ -55,11 +58,14 @@ struct SettingsView: View {
                         }
                         .tint(Color(red: 0.45, green: 0.90, blue: 0.70))
                         .listRowBackground(Color.white.opacity(0.05))
+                        .accessibilityLabel("Show airing seasons in Binge Ready")
+                        .accessibilityHint("When enabled, currently airing seasons will appear in the Binge Ready list")
                     } header: {
                         Text("BINGE READY")
                             .font(.system(size: 12, weight: .semibold))
                             .tracking(1.2)
                             .foregroundStyle(.white.opacity(0.5))
+                            .accessibilityAddTraits(.isHeader)
                     }
                 }
                 .scrollContentBackground(.hidden)

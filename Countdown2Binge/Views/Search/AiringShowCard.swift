@@ -126,6 +126,24 @@ struct AiringShowCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(cardAccessibilityLabel)
+        .accessibilityHint("Double tap to view details")
+    }
+
+    private var cardAccessibilityLabel: String {
+        var parts = [show.name]
+        if let network = extractNetwork(from: show) {
+            parts.append("on \(network)")
+        }
+        if let days = daysLeft {
+            let daysText = days == 1 ? "1 day left" : "\(days) days left"
+            parts.append(daysText)
+        }
+        if isFollowed {
+            parts.append("Already added")
+        }
+        return parts.joined(separator: ", ")
     }
 
     // MARK: - Backdrop Image
@@ -185,6 +203,8 @@ struct AiringShowCard: View {
         }
         .buttonStyle(.plain)
         .disabled(isLoading || isFollowed)
+        .accessibilityLabel(isFollowed ? "\(show.name) already added to binge list" : "Add \(show.name) to binge list")
+        .accessibilityHint(isFollowed ? "" : "Double tap to add")
     }
 
     // MARK: - Helpers

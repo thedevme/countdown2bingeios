@@ -72,6 +72,7 @@ struct BingeReadyView: View {
                                 .font(.system(size: 13, weight: .semibold))
                                 .tracking(1.5)
                                 .foregroundStyle(.white.opacity(0.5))
+                                .accessibilityAddTraits(.isHeader)
 
                             Spacer()
 
@@ -82,6 +83,8 @@ struct BingeReadyView: View {
                                     .font(.system(size: 20))
                                     .foregroundStyle(.white.opacity(0.5))
                             }
+                            .accessibilityLabel("Information")
+                            .accessibilityHint("Double tap for more information about Binge Ready")
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 12)
@@ -369,6 +372,9 @@ struct BingeReadyView: View {
             .opacity(isSelected ? 1.0 : 0.6)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(group.show.name), \(group.seasons.count) season\(group.seasons.count == 1 ? "" : "s") ready")
+        .accessibilityHint(isSelected ? "Currently selected" : "Double tap to select")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     // MARK: - Loading View
@@ -383,6 +389,8 @@ struct BingeReadyView: View {
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.5))
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Loading binge ready shows")
     }
 
     // MARK: - Empty State
@@ -400,6 +408,7 @@ struct BingeReadyView: View {
                     .font(.system(size: 44))
                     .foregroundStyle(Color(red: 0.45, green: 0.90, blue: 0.70).opacity(0.4))
             }
+            .accessibilityHidden(true)
 
             VStack(spacing: 10) {
                 Text("Nothing to Binge Yet")
@@ -413,6 +422,7 @@ struct BingeReadyView: View {
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
+            .accessibilityElement(children: .combine)
 
             Spacer()
             Spacer()

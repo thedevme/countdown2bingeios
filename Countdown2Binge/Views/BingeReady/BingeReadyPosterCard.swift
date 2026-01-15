@@ -52,6 +52,9 @@ struct BingeReadyPosterCard: View {
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .overlay(borderGlow)
         .shadow(color: .black.opacity(isTopCard ? 0.4 : 0.2), radius: isTopCard ? 20 : 8, y: isTopCard ? 10 : 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(show.name), Season \(season.seasonNumber), \(season.episodeCount) episodes")
+        .accessibilityHint(isTopCard ? "Double tap to view show details" : "")
     }
 
     // MARK: - Poster Image

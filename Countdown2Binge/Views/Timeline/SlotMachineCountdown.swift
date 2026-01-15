@@ -17,6 +17,14 @@ struct SlotMachineCountdown: View {
         }
     }
 
+    private var accessibilityLabel: String {
+        guard let value = value else {
+            return "Finale date to be determined"
+        }
+        let unit = displayMode == .days ? (value == 1 ? "day" : "days") : (value == 1 ? "episode" : "episodes")
+        return "Finale in \(value) \(unit)"
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: -4) {
@@ -30,7 +38,9 @@ struct SlotMachineCountdown: View {
 
             SlotMachineReel(value: value, displayMode: displayMode)
         }
-        .padding(.vertical, 20)
+        .padding(.vertical, 12)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 
