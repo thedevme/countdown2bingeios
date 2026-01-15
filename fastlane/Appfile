@@ -1,0 +1,18 @@
+# App Store Connect App Identifier
+app_identifier("io.DesignToSwiftUI.Countdown2Binge")
+
+# Your Apple Developer Portal username (email)
+# apple_id("your-email@example.com")
+
+# App Store Connect Team ID (if you have multiple teams)
+# itc_team_id("123456789")
+
+# Developer Portal Team ID (if you have multiple teams)
+# team_id("ABCD1234")
+
+# For App Store Connect API Key authentication
+# Set these environment variables or use the api_key_path in Fastfile:
+# - APP_STORE_CONNECT_API_KEY_KEY_ID
+# - APP_STORE_CONNECT_API_KEY_ISSUER_ID
+# - APP_STORE_CONNECT_API_KEY_KEY (base64 encoded .p8 content)
+# Or use api_key_path to point to a JSON file

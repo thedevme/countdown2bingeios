@@ -1,0 +1,134 @@
+# Fastfile for Countdown2Binge
+# Run `fastlane testflight` to build and upload to TestFlight
+
+default_platform(:ios)
+
+platform :ios do
+
+  # ============================================
+  # TESTFLIGHT DEPLOYMENT
+  # ============================================
+
+  desc "Build and upload to TestFlight"
+  lane :testflight_upload do |options|
+    # Load API key from JSON file
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"],
+      duration: 1200, # 20 minutes
+      in_house: false
+    )
+
+    # Run tests first (optional - skip with skip_tests:true)
+    unless options[:skip_tests]
+      UI.message("Running store release tests...")
+      run_tests(
+        scheme: "Countdown2Binge",
+        devices: ["iPhone 16 Pro"],
+        only_testing: [
+          "Countdown2BingeTests/ShowLifecycleManagerTests",
+          "Countdown2BingeTests/TimelineStateTests"
+        ],
+        fail_build: true
+      )
+    end
+
+    # Increment build number (based on TestFlight build number + 1)
+    UI.message("Incrementing build number...")
+    increment_build_number(
+      build_number: latest_testflight_build_number(api_key: api_key) + 1
+    )
+
+    # Build the app
+    UI.message("Building app for release...")
+    build_app(
+      scheme: "Countdown2Binge",
+      export_method: "app-store",
+      clean: true,
+      output_directory: "./build",
+      output_name: "Countdown2Binge.ipa"
+    )
+
+    # Upload to TestFlight
+    UI.message("Uploading to TestFlight...")
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+      changelog: options[:changelog] || "Bug fixes and improvements"
+    )
+
+    # Clean up build artifacts
+    clean_build_artifacts
+
+    UI.success("Successfully uploaded to TestFlight!")
+  end
+
+  # ============================================
+  # QUICK TESTFLIGHT (skip tests)
+  # ============================================
+
+  desc "Quick TestFlight upload (skips tests)"
+  lane :testflight_quick do |options|
+    testflight_upload(
+      skip_tests: true,
+      changelog: options[:changelog]
+    )
+  end
+
+  # ============================================
+  # TESTS ONLY
+  # ============================================
+
+  desc "Run all store release tests"
+  lane :test do
+    run_tests(
+      scheme: "Countdown2Binge",
+      devices: ["iPhone 16 Pro"],
+      only_testing: [
+        "Countdown2BingeTests/ShowLifecycleManagerTests",
+        "Countdown2BingeTests/TimelineStateTests"
+      ]
+    )
+
+    run_tests(
+      scheme: "Countdown2Binge",
+      devices: ["iPhone 16 Pro"],
+      only_testing: [
+        "Countdown2BingeUITests/TimelineUITests"
+      ]
+    )
+
+    UI.success("All tests passed!")
+  end
+
+  # ============================================
+  # BUILD ONLY (for local testing)
+  # ============================================
+
+  desc "Build release IPA without uploading"
+  lane :build do
+    build_app(
+      scheme: "Countdown2Binge",
+      export_method: "app-store",
+      clean: true,
+      output_directory: "./build",
+      output_name: "Countdown2Binge.ipa"
+    )
+
+    UI.success("Build complete! IPA saved to ./build/Countdown2Binge.ipa")
+  end
+
+  # ============================================
+  # HELPER: Show current build info
+  # ============================================
+
+  desc "Show current app version and build number"
+  lane :version do
+    version = get_version_number(target: "Countdown2Binge")
+    build = get_build_number
+    UI.message("Current version: #{version} (#{build})")
+  end
+
+end
