@@ -171,7 +171,7 @@ final class TimelineUITests: XCTestCase {
 
     // MARK: - TBD Countdown Tests (The Rookie Bug Prevention)
 
-    /// SCENARIO: Airing show with no confirmed finale date
+    /// SCENARIO: Airing show with no confirmed finale date (SVU case)
     /// EXPECTED: "TBD" should display in the countdown, NOT an empty box
     @MainActor
     func testAiringNoFinaleDate_shouldShowTBD() throws {
@@ -196,5 +196,111 @@ final class TimelineUITests: XCTestCase {
         ).firstMatch
         XCTAssertTrue(accessibilityLabel.exists || tbdText.exists,
                       "Countdown should either show TBD text or have TBD accessibility label")
+    }
+
+    /// SCENARIO: Finale episode is marked but has nil air date
+    /// EXPECTED: "TBD" should display (finale exists but date unknown)
+    @MainActor
+    func testFinaleTypeButNoAirDate_shouldShowTBD() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "FinaleTypeButNoAirDate"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // The test show should appear in hero section
+        let showName = app.staticTexts["Finale No Date Test"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "Finale No Date Test show should appear in hero section")
+
+        // The countdown should show "TBD" text
+        let tbdText = app.staticTexts["TBD"]
+        XCTAssertTrue(tbdText.waitForExistence(timeout: timeout),
+                      "TBD should be displayed when finale has no air date")
+    }
+
+    /// SCENARIO: Season exists but episodes array is empty (data not loaded)
+    /// EXPECTED: Should handle gracefully - either TBD or not show in airing
+    @MainActor
+    func testEmptyEpisodesArray_shouldNotCrash() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "EmptyEpisodesArray"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // App should launch without crashing
+        // Either the show appears with TBD or it doesn't appear in airing section
+        let showName = app.staticTexts["Empty Episodes Test"]
+        let tbdText = app.staticTexts["TBD"]
+        let nothingText = app.staticTexts["Nothing on the Timeline"]
+
+        // Wait for something to appear
+        _ = showName.waitForExistence(timeout: timeout)
+
+        // One of these should be true - show with TBD, or empty timeline
+        let showsWithTBD = showName.exists && tbdText.exists
+        let emptyTimeline = nothingText.exists
+        let showNotInAiring = !showName.exists
+
+        XCTAssertTrue(showsWithTBD || emptyTimeline || showNotInAiring,
+                      "App should handle empty episodes gracefully without crashing")
+    }
+
+    /// SCENARIO: Finale is TODAY (0 days countdown)
+    /// EXPECTED: Should show "00" in countdown
+    @MainActor
+    func testFinaleIsToday_shouldShowZero() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "FinaleIsToday"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // The test show should appear
+        let showName = app.staticTexts["Finale Today Test"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "Finale Today Test show should appear")
+
+        // Should show "00" for today
+        let zeroText = app.staticTexts["00"]
+        XCTAssertTrue(zeroText.waitForExistence(timeout: timeout),
+                      "Should show 00 when finale is today")
+    }
+
+    /// SCENARIO: Finale was in the past (negative days)
+    /// EXPECTED: Should show TBD or handle gracefully (not negative number)
+    @MainActor
+    func testFinaleInPast_shouldNotShowNegative() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "FinaleInPast"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // Wait for app to load
+        _ = app.staticTexts["Finale Past Test"].waitForExistence(timeout: timeout)
+
+        // Should NOT show negative numbers - either TBD or not in airing
+        // Check that no negative sign appears in countdown area
+        let negativeText = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH '-'")).firstMatch
+        XCTAssertFalse(negativeText.exists,
+                       "Should not display negative countdown values")
+    }
+
+    /// SCENARIO: Finale is 150+ days away (exceeds 99)
+    /// EXPECTED: Should show TBD (can't display 3 digits)
+    @MainActor
+    func testFinaleOver99Days_shouldShowTBD() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "FinaleOver99Days"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // The test show should appear
+        let showName = app.staticTexts["Finale Far Future Test"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "Finale Far Future Test show should appear")
+
+        // Should show TBD since we can't display 150
+        let tbdText = app.staticTexts["TBD"]
+        XCTAssertTrue(tbdText.waitForExistence(timeout: timeout),
+                      "Should show TBD when finale is > 99 days away")
     }
 }

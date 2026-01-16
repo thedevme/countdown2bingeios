@@ -25,12 +25,6 @@ struct SlotMachineCountdown: View {
         return "Finale in \(value) \(unit)"
     }
 
-    /// Whether the value is valid for display (0-99 range)
-    private var isValidCountdown: Bool {
-        guard let value = value else { return false }
-        return value >= 0 && value <= 99
-    }
-
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: -4) {
@@ -42,35 +36,12 @@ struct SlotMachineCountdown: View {
                     .foregroundStyle(Color(white: 0.45))
             }
 
-            if isValidCountdown {
-                SlotMachineReel(value: value, displayMode: displayMode)
-            } else {
-                // Static TBD display when no finale date is known or value is invalid
-                tbdView
-            }
+            // Always use animated reel - handles nil and out-of-range by animating to TBD
+            SlotMachineReel(value: value, displayMode: displayMode)
         }
         .padding(.vertical, 12)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
-    }
-
-    /// Static TBD view for when finale date is unknown
-    private var tbdView: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(hex: "0D0D0D"))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder(Color(hex: "252525"), lineWidth: 1)
-                )
-                .frame(width: 85, height: 100)
-
-            VStack(spacing: 2) {
-                Text("TBD")
-                    .font(.system(size: 55, weight: .heavy, design: .default).width(.condensed))
-                    .foregroundStyle(.white)
-            }
-        }
     }
 }
 
@@ -91,9 +62,12 @@ private struct SlotMachineReel: View {
     // Pre-computed reversed indices for performance
     private let reversedIndices = Array((0...100).reversed())
 
-    // The display value - nil means TBD (position 100)
+    // The display value - nil or out-of-range means TBD (position 100)
     private var displayValue: Int {
-        value ?? tbdIndex
+        guard let value = value, value >= 0, value <= maxNumber else {
+            return tbdIndex
+        }
+        return value
     }
 
     // Calculate the X offset to center the current value

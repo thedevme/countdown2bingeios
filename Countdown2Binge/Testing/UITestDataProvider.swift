@@ -23,6 +23,11 @@ enum UITestScenario: String {
     case hasBingeReadySeasons = "HasBingeReadySeasons"
     case noBingeReadySeasons = "NoBingeReadySeasons"
     case airingNoFinaleDate = "AiringNoFinaleDate"
+    case finaleTypeButNoAirDate = "FinaleTypeButNoAirDate"
+    case emptyEpisodesArray = "EmptyEpisodesArray"
+    case finaleIsToday = "FinaleIsToday"
+    case finaleInPast = "FinaleInPast"
+    case finaleOver99Days = "FinaleOver99Days"
 }
 
 /// Provides mock data for UI testing
@@ -139,6 +144,169 @@ struct UITestDataProvider {
         )
         episode.episodeType = episodeType
         return episode
+    }
+
+    /// Creates an episode with nil air date
+    static func makeMockEpisodeNoAirDate(
+        episodeNumber: Int,
+        seasonNumber: Int,
+        episodeType: EpisodeType = .standard
+    ) -> Episode {
+        var episode = Episode(
+            id: seasonNumber * 1000 + episodeNumber,
+            episodeNumber: episodeNumber,
+            seasonNumber: seasonNumber,
+            name: "Episode \(episodeNumber)",
+            overview: nil,
+            airDate: nil,  // No air date!
+            stillPath: nil,
+            runtime: 45
+        )
+        episode.episodeType = episodeType
+        return episode
+    }
+
+    /// Creates a season where finale is marked but has no air date
+    static func makeMockSeasonFinaleNoAirDate(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+
+        // Episodes 1-9 have aired, episode 10 is finale but no air date
+        var episodes: [Episode] = []
+        for i in 1...9 {
+            episodes.append(makeMockEpisode(
+                episodeNumber: i,
+                seasonNumber: seasonNumber,
+                airDate: pastDate,
+                episodeType: .standard
+            ))
+        }
+        // Finale episode with NO air date
+        episodes.append(makeMockEpisodeNoAirDate(
+            episodeNumber: 10,
+            seasonNumber: seasonNumber,
+            episodeType: .finale
+        ))
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: episodes.count,
+            episodes: episodes
+        )
+    }
+
+    /// Creates a season with no episodes (not yet loaded)
+    static func makeMockSeasonNoEpisodes(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: 10,  // Says 10 episodes but array is empty
+            episodes: []
+        )
+    }
+
+    /// Creates a season where finale is TODAY
+    static func makeMockSeasonFinaleToday(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+        let today = Calendar.current.startOfDay(for: now)
+
+        var episodes: [Episode] = []
+        for i in 1...9 {
+            episodes.append(makeMockEpisode(
+                episodeNumber: i,
+                seasonNumber: seasonNumber,
+                airDate: pastDate,
+                episodeType: .standard
+            ))
+        }
+        // Finale is TODAY
+        episodes.append(makeMockEpisode(
+            episodeNumber: 10,
+            seasonNumber: seasonNumber,
+            airDate: today,
+            episodeType: .finale
+        ))
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: episodes.count,
+            episodes: episodes
+        )
+    }
+
+    /// Creates a season where finale was in the past (negative days)
+    static func makeMockSeasonFinalePast(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now)!
+
+        var episodes: [Episode] = []
+        for i in 1...10 {
+            episodes.append(makeMockEpisode(
+                episodeNumber: i,
+                seasonNumber: seasonNumber,
+                airDate: i < 10 ? pastDate : yesterday,
+                episodeType: i == 10 ? .finale : .standard
+            ))
+        }
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: episodes.count,
+            episodes: episodes
+        )
+    }
+
+    /// Creates a season where finale is > 99 days away
+    static func makeMockSeasonFinaleFarFuture(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -7, to: now)!
+        let farFuture = Calendar.current.date(byAdding: .day, value: 150, to: now)!
+
+        var episodes: [Episode] = []
+        for i in 1...10 {
+            let airDate = i <= 2 ? pastDate : farFuture
+            episodes.append(makeMockEpisode(
+                episodeNumber: i,
+                seasonNumber: seasonNumber,
+                airDate: airDate,
+                episodeType: i == 10 ? .finale : .standard
+            ))
+        }
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: episodes.count,
+            episodes: episodes
+        )
     }
 
     /// Creates an airing season with no confirmed finale (TBD countdown)
@@ -287,12 +455,71 @@ struct UITestDataProvider {
         case .airingNoFinaleDate:
             // Airing show where finale date is unknown (TBD countdown)
             // This tests the scenario where Season.finale returns nil
+            // Example: SVU - has midSeason type but last ep not marked finale
             return [
                 makeMockShow(
                     id: 1,
                     name: "The Rookie Test",
                     status: .returning,
                     seasons: [makeMockSeasonNoFinale(seasonNumber: 1)]
+                )
+            ]
+
+        case .finaleTypeButNoAirDate:
+            // Finale episode is marked but has nil air date
+            // Example: Show announced finale but no date yet
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Finale No Date Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonFinaleNoAirDate(seasonNumber: 1)]
+                )
+            ]
+
+        case .emptyEpisodesArray:
+            // Season exists but episodes not loaded yet
+            // Example: Freshly added show before TMDB data loads
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Empty Episodes Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonNoEpisodes(seasonNumber: 1)]
+                )
+            ]
+
+        case .finaleIsToday:
+            // Finale air date is TODAY (0 days countdown)
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Finale Today Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonFinaleToday(seasonNumber: 1)]
+                )
+            ]
+
+        case .finaleInPast:
+            // Finale air date was yesterday (negative days)
+            // This can happen if data isn't refreshed after finale airs
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Finale Past Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonFinalePast(seasonNumber: 1)]
+                )
+            ]
+
+        case .finaleOver99Days:
+            // Finale is 150+ days away (exceeds 2-digit display)
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "Finale Far Future Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonFinaleFarFuture(seasonNumber: 1)]
                 )
             ]
         }
