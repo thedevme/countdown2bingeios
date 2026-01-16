@@ -114,6 +114,7 @@ struct HeroCardStack: View {
         .offset(x: offset(for: stackPosition, dragOffset: dragOffset, isFrontCard: isFrontCard))
         .rotation3DEffect(.degrees(rotation(for: effectPosition)), axis: (x: 0, y: 1, z: 0))
         .shadow(color: .black.opacity(0.3), radius: 20, y: 10)
+        .opacity(stackPosition >= 0 ? 1 : 0) // Hide wrap-around cards (only show current and next)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(isFrontCard ? "\(show.name), currently airing" : show.name)
         .accessibilityHint(isFrontCard ? "Double tap to view details. Swipe left or right to see other shows." : "")

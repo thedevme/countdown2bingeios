@@ -59,8 +59,8 @@ private struct SlotMachineReel: View {
     // Maximum number to display (0-99 + TBD at 100)
     private let maxNumber = 99
     private let tbdIndex = 100
-    // Pre-computed reversed indices for performance
-    private let reversedIndices = Array((0...100).reversed())
+    // Pre-computed indices (0 on left, TBD on right)
+    private let indices = Array(0...100)
 
     // The display value - nil or out-of-range means TBD (position 100)
     private var displayValue: Int {
@@ -71,11 +71,11 @@ private struct SlotMachineReel: View {
     }
 
     // Calculate the X offset to center the current value
-    // Numbers are reversed (100 at position 0, 0 at position 100)
-    // So position of displayValue = tbdIndex - displayValue
+    // Numbers go left to right: 0, 1, 2... 98, 99, TBD
+    // Position of displayValue = displayValue directly
     private var xOffset: CGFloat {
         let centerIndex = CGFloat(tbdIndex) / 2.0
-        let position = CGFloat(tbdIndex - displayValue)
+        let position = CGFloat(displayValue)
         return (centerIndex - position) * cellWidth
     }
 
@@ -90,9 +90,9 @@ private struct SlotMachineReel: View {
                 )
                 .frame(width: cellWidth, height: cellHeight)
 
-            // Scrolling number row (largest on left, smallest on right)
+            // Scrolling number row (smallest on left, TBD on right)
             HStack(spacing: 0) {
-                ForEach(reversedIndices, id: \.self) { number in
+                ForEach(indices, id: \.self) { number in
                     numberCell(for: number)
                 }
             }

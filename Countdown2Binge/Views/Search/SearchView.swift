@@ -45,10 +45,10 @@ struct SearchView: View {
                             searchResultsContent
                         }
                     }
-                    .padding(.horizontal)
                     .padding(.top, 16)
                 }
                 .scrollDismissesKeyboard(.immediately)
+                .contentMargins(.horizontal, 16, for: .scrollContent)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)

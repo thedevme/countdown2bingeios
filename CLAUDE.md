@@ -2,12 +2,25 @@
 
 ## Slot Machine Countdown Component
 
-**CRITICAL DIRECTION RULE**: The numbers always go from LEFT to RIGHT, highest to lowest.
-- Highest numbers on the LEFT (99, 98, 97...)
-- Lowest numbers on the RIGHT (...2, 1, 0)
-- TBD is at position 100 (far LEFT, highest position)
-- When countdown decreases, numbers scroll RIGHT (revealing lower numbers)
-- When value is nil or invalid, animate to TBD (scroll LEFT to position 100)
+**CRITICAL DIRECTION RULE**: The numbers always go from LEFT to RIGHT, lowest to highest.
+- Lowest numbers on the LEFT (0, 1, 2...)
+- Highest numbers on the RIGHT (...98, 99, TBD)
+- TBD is at position 100 (far RIGHT, highest position)
+- When countdown decreases, numbers scroll LEFT (revealing lower numbers)
+- When value is nil or invalid, animate to TBD (scroll RIGHT to position 100)
+
+---
+
+## Bug Fixing Workflow
+
+**For small bugs** (typos, simple logic errors, obvious fixes): Just fix them.
+
+**For big issues** (architectural changes, changes that affect multiple components, non-obvious fixes):
+1. **Explain what's wrong** - describe the issue clearly so the user understands it
+2. **Propose a fix** - explain what you're planning to do and why
+3. **Wait for approval** - do NOT touch any code until the user approves the approach
+
+If unsure whether something is a small bug or big issue, ask first.
 
 ---
 
