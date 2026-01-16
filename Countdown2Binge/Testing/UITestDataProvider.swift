@@ -22,6 +22,7 @@ enum UITestScenario: String {
     case airingOnlyNoBottomSections = "AiringOnlyNoBottomSections"
     case hasBingeReadySeasons = "HasBingeReadySeasons"
     case noBingeReadySeasons = "NoBingeReadySeasons"
+    case airingNoFinaleDate = "AiringNoFinaleDate"
 }
 
 /// Provides mock data for UI testing
@@ -123,9 +124,10 @@ struct UITestDataProvider {
     static func makeMockEpisode(
         episodeNumber: Int,
         seasonNumber: Int,
-        airDate: Date
+        airDate: Date,
+        episodeType: EpisodeType = .standard
     ) -> Episode {
-        Episode(
+        var episode = Episode(
             id: seasonNumber * 1000 + episodeNumber,
             episodeNumber: episodeNumber,
             seasonNumber: seasonNumber,
@@ -134,6 +136,41 @@ struct UITestDataProvider {
             airDate: airDate,
             stillPath: nil,
             runtime: 45
+        )
+        episode.episodeType = episodeType
+        return episode
+    }
+
+    /// Creates an airing season with no confirmed finale (TBD countdown)
+    static func makeMockSeasonNoFinale(seasonNumber: Int) -> Season {
+        let now = Date()
+        let pastDate = Calendar.current.date(byAdding: .day, value: -30, to: now)!
+        let futureDate = Calendar.current.date(byAdding: .day, value: 30, to: now)!
+
+        // Create episodes where some have aired, some haven't
+        // Use midSeason type on one episode so hasEpisodeTypes=true
+        // But don't mark any as finale, so finale will be nil
+        var episodes: [Episode] = []
+        for i in 1...10 {
+            let airDate = i <= 5 ? pastDate : futureDate
+            let type: EpisodeType = i == 5 ? .midSeason : .standard
+            episodes.append(makeMockEpisode(
+                episodeNumber: i,
+                seasonNumber: seasonNumber,
+                airDate: airDate,
+                episodeType: type
+            ))
+        }
+
+        return Season(
+            id: seasonNumber * 100,
+            seasonNumber: seasonNumber,
+            name: "Season \(seasonNumber)",
+            overview: nil,
+            posterPath: nil,
+            airDate: pastDate,
+            episodeCount: episodes.count,
+            episodes: episodes
         )
     }
 
@@ -244,6 +281,18 @@ struct UITestDataProvider {
                     name: "Still Airing",
                     status: .returning,
                     seasons: [makeMockSeason(seasonNumber: 1, isComplete: false, hasStarted: true)]
+                )
+            ]
+
+        case .airingNoFinaleDate:
+            // Airing show where finale date is unknown (TBD countdown)
+            // This tests the scenario where Season.finale returns nil
+            return [
+                makeMockShow(
+                    id: 1,
+                    name: "The Rookie Test",
+                    status: .returning,
+                    seasons: [makeMockSeasonNoFinale(seasonNumber: 1)]
                 )
             ]
         }

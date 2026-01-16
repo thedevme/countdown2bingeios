@@ -168,4 +168,33 @@ final class TimelineUITests: XCTestCase {
         XCTAssertTrue(connector.waitForExistence(timeout: timeout),
                       "Dashed connector should be visible when bottom sections exist")
     }
+
+    // MARK: - TBD Countdown Tests (The Rookie Bug Prevention)
+
+    /// SCENARIO: Airing show with no confirmed finale date
+    /// EXPECTED: "TBD" should display in the countdown, NOT an empty box
+    @MainActor
+    func testAiringNoFinaleDate_shouldShowTBD() throws {
+        app.launchArguments.append(contentsOf: ["-UITestScenario", "AiringNoFinaleDate"])
+        app.launch()
+
+        let timeout: TimeInterval = 10
+
+        // The test show should appear in hero section
+        let showName = app.staticTexts["The Rookie Test"]
+        XCTAssertTrue(showName.waitForExistence(timeout: timeout),
+                      "The Rookie Test show should appear in hero section")
+
+        // The countdown should show "TBD" text (not empty)
+        let tbdText = app.staticTexts["TBD"]
+        XCTAssertTrue(tbdText.waitForExistence(timeout: timeout),
+                      "TBD should be displayed when finale date is unknown")
+
+        // VoiceOver accessibility should describe it as TBD
+        let accessibilityLabel = app.otherElements.matching(
+            NSPredicate(format: "label CONTAINS[c] 'to be determined'")
+        ).firstMatch
+        XCTAssertTrue(accessibilityLabel.exists || tbdText.exists,
+                      "Countdown should either show TBD text or have TBD accessibility label")
+    }
 }

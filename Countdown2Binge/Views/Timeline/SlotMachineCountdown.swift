@@ -36,11 +36,35 @@ struct SlotMachineCountdown: View {
                     .foregroundStyle(Color(white: 0.45))
             }
 
-            SlotMachineReel(value: value, displayMode: displayMode)
+            if value != nil {
+                SlotMachineReel(value: value, displayMode: displayMode)
+            } else {
+                // Static TBD display when no finale date is known
+                tbdView
+            }
         }
         .padding(.vertical, 12)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
+    }
+
+    /// Static TBD view for when finale date is unknown
+    private var tbdView: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(hex: "0D0D0D"))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Color(hex: "252525"), lineWidth: 1)
+                )
+                .frame(width: 85, height: 100)
+
+            VStack(spacing: 2) {
+                Text("TBD")
+                    .font(.system(size: 55, weight: .heavy, design: .default).width(.condensed))
+                    .foregroundStyle(.white)
+            }
+        }
     }
 }
 
