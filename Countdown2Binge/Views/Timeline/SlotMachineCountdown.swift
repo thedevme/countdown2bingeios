@@ -18,11 +18,17 @@ struct SlotMachineCountdown: View {
     }
 
     private var accessibilityLabel: String {
-        guard let value = value else {
+        guard let value = value, value >= 0, value <= 99 else {
             return "Finale date to be determined"
         }
         let unit = displayMode == .days ? (value == 1 ? "day" : "days") : (value == 1 ? "episode" : "episodes")
         return "Finale in \(value) \(unit)"
+    }
+
+    /// Whether the value is valid for display (0-99 range)
+    private var isValidCountdown: Bool {
+        guard let value = value else { return false }
+        return value >= 0 && value <= 99
     }
 
     var body: some View {
@@ -36,10 +42,10 @@ struct SlotMachineCountdown: View {
                     .foregroundStyle(Color(white: 0.45))
             }
 
-            if value != nil {
+            if isValidCountdown {
                 SlotMachineReel(value: value, displayMode: displayMode)
             } else {
-                // Static TBD display when no finale date is known
+                // Static TBD display when no finale date is known or value is invalid
                 tbdView
             }
         }
