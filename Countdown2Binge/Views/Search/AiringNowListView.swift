@@ -38,7 +38,7 @@ struct AiringNowListView: View {
                                 },
                                 onAdd: {
                                     Task {
-                                        await viewModel.addShow(tmdbId: item.show.id)
+                                        await viewModel.toggleFollow(tmdbId: item.show.id)
                                     }
                                 }
                             )

@@ -25,33 +25,25 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-            // Timeline Tab
-            TimelineView()
-                .tabItem {
-                    Label("Timeline", systemImage: "calendar")
+                // Timeline Tab
+                SwiftUI.Tab("Timeline", systemImage: "calendar", value: Tab.timeline) {
+                    TimelineView()
                 }
-                .tag(Tab.timeline)
 
-            // Binge Ready Tab
-            BingeReadyTab(modelContext: modelContext)
-                .tabItem {
-                    Label("Binge Ready", systemImage: "checkmark.circle")
+                // Binge Ready Tab
+                SwiftUI.Tab("Binge Ready", systemImage: "checkmark.circle", value: Tab.bingeReady) {
+                    BingeReadyTab(modelContext: modelContext)
                 }
-                .tag(Tab.bingeReady)
 
-            // Search Tab
-            SearchTab(modelContext: modelContext)
-                .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
+                // Search Tab (accessory role - appears as icon in tab bar)
+                SwiftUI.Tab(value: Tab.search, role: .search) {
+                    SearchTab(modelContext: modelContext)
                 }
-                .tag(Tab.search)
 
-            // Settings Tab
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                // Settings Tab
+                SwiftUI.Tab("Settings", systemImage: "gearshape", value: Tab.settings) {
+                    SettingsView()
                 }
-                .tag(Tab.settings)
             }
             .tint(.white)
             .onAppear {

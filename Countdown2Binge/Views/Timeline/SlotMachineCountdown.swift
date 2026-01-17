@@ -55,7 +55,7 @@ private struct SlotMachineReel: View {
     // Width of each number cell
     private let cellWidth: CGFloat = 85
     // Height of the cell
-    private let cellHeight: CGFloat = 100
+    private let cellHeight: CGFloat = 80
     // Maximum number to display (0-99 + TBD at 100)
     private let maxNumber = 99
     private let tbdIndex = 100
@@ -123,14 +123,14 @@ private struct SlotMachineReel: View {
     }
 
     private func numberCell(for number: Int) -> some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 0) {
             if number == tbdIndex {
                 Text("TBD")
-                    .font(.system(size: 55, weight: .heavy, design: .default).width(.condensed))
+                    .font(.system(size: 51, weight: .heavy, design: .default).width(.condensed))
                     .foregroundStyle(.white)
             } else {
                 Text(String(format: "%02d", number))
-                    .font(.system(size: 65, weight: .heavy, design: .default).width(.condensed))
+                    .font(.system(size: 61, weight: .heavy, design: .default).width(.condensed))
                     .foregroundStyle(.white)
             }
 

@@ -72,9 +72,16 @@ struct SettingsView: View {
                 .listStyle(.insetGrouped)
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .largeTitle) {
+                    Text("SETTINGS")
+                        .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                        .foregroundStyle(.white)
+                }
+            }
         }
     }
 }

@@ -48,7 +48,7 @@ struct GenreListView: View {
                                 },
                                 onAdd: {
                                     Task {
-                                        await viewModel.addShow(tmdbId: show.id)
+                                        await viewModel.toggleFollow(tmdbId: show.id)
                                     }
                                 }
                             )

@@ -26,14 +26,9 @@ struct SearchView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Page title
-                        Text("SEARCH")
-                            .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
-                            .foregroundStyle(.white)
-                            .accessibilityAddTraits(.isHeader)
-
                         // Search field
                         searchField
+                            .padding(.horizontal, 16)
                             .padding(.bottom, 20)
 
                         // Content based on search state
@@ -43,16 +38,24 @@ struct SearchView: View {
                             noResultsView
                         } else {
                             searchResultsContent
+                                .padding(.horizontal, 16)
                         }
                     }
                     .padding(.top, 16)
                 }
                 .scrollDismissesKeyboard(.immediately)
-                .contentMargins(.horizontal, 16, for: .scrollContent)
             }
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Search")
+            .toolbarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .largeTitle) {
+                    Text("SEARCH")
+                        .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                        .foregroundStyle(.white)
+                }
+            }
             .navigationDestination(item: $viewModel.selectedShow) { show in
                 ShowDetailView(
                     viewModel: ShowDetailViewModel(
@@ -118,7 +121,7 @@ struct SearchView: View {
                     .scaleEffect(0.8)
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal)
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -137,28 +140,25 @@ struct SearchView: View {
     // MARK: - Landing Content (Empty Query State)
 
     // Responsive horizontal padding for smaller screens
-    private var horizontalPadding: CGFloat {
-        UIScreen.main.bounds.width < 380 ? 12 : 20
-    }
+//    private var horizontalPadding: CGFloat {
+//        UIScreen.main.bounds.width < 380 ? 12 : 20
+//    }
 
     private var landingContent: some View {
         VStack(alignment: .leading, spacing: 28) {
-            // Category filter chips
+            // Category filter chips (ScrollView goes edge-to-edge)
             categoryChips
 
             // Trending Shows Section
             if !viewModel.trendingShows.isEmpty {
                 trendingShowsSection
+                    .padding(.horizontal, 16)
             }
 
             // Airing Now Section
             if !viewModel.airingShows.isEmpty {
                 airingShowsSection
-            }
-
-            // Empty state if nothing to show
-            if viewModel.trendingShows.isEmpty && viewModel.airingShows.isEmpty && !viewModel.isLoadingTrending {
-                emptyLandingView
+                    .padding(.horizontal, 16)
             }
         }
         .padding(.bottom, 25)
@@ -173,6 +173,7 @@ struct SearchView: View {
                 .tracking(1.5)
                 .foregroundStyle(.white.opacity(0.5))
                 .accessibilityAddTraits(.isHeader)
+                .padding(.horizontal, 16)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
@@ -191,7 +192,9 @@ struct SearchView: View {
                         .accessibilityHint("Double tap to browse \(category.rawValue) shows")
                     }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollClipDisabled()
         }
     }
 
@@ -240,7 +243,7 @@ struct SearchView: View {
                         },
                         onAdd: {
                             Task {
-                                await viewModel.addShow(tmdbId: item.show.id)
+                                await viewModel.toggleFollow(tmdbId: item.show.id)
                             }
                         }
                     )
@@ -273,8 +276,8 @@ struct SearchView: View {
                 .accessibilityLabel("See all shows ending soon")
             }
 
-            // Airing show cards
-            VStack(spacing: 12) {
+            // Airing show cards - use LazyVGrid for stable width like TrendingShowCard
+            VStack {
                 ForEach(viewModel.airingShows.prefix(3), id: \.show.id) { item in
                     AiringShowCard(
                         show: item.show,
@@ -288,7 +291,7 @@ struct SearchView: View {
                         },
                         onAdd: {
                             Task {
-                                await viewModel.addShow(tmdbId: item.show.id)
+                                await viewModel.toggleFollow(tmdbId: item.show.id)
                             }
                         }
                     )
@@ -297,60 +300,11 @@ struct SearchView: View {
         }
     }
 
-    // MARK: - Empty Landing View
-
-    private var emptyLandingView: some View {
-        VStack(spacing: 12) {
-            Spacer()
-                .frame(height: 60)
-
-            Image(systemName: "tv")
-                .font(.system(size: 56))
-                .foregroundStyle(.white.opacity(0.15))
-                .accessibilityHidden(true)
-
-            VStack(spacing: 8) {
-                Text("Find Your Shows")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white.opacity(0.9))
-
-                Text("Search for TV shows to start tracking")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-            .accessibilityElement(children: .combine)
-
-            Spacer()
-        }
-    }
-
     // MARK: - No Results State
 
     private var noResultsView: some View {
-        VStack(spacing: 12) {
-            Spacer()
-                .frame(height: 80)
-
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundStyle(.white.opacity(0.15))
-                .accessibilityHidden(true)
-
-            VStack(spacing: 8) {
-                Text("No Results")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white.opacity(0.9))
-
-                Text("Try a different search term")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-            .accessibilityElement(children: .combine)
-
-            Spacer()
-        }
+        ContentUnavailableView.search(text: viewModel.searchQuery)
+            .foregroundStyle(.white.opacity(0.6))
     }
 
     // MARK: - Search Results Content
@@ -378,7 +332,7 @@ struct SearchView: View {
                     },
                     onAdd: {
                         Task {
-                            await viewModel.addShow(tmdbId: result.id)
+                            await viewModel.toggleFollow(tmdbId: result.id)
                         }
                     }
                 )
@@ -401,8 +355,8 @@ private struct CategoryChipLabel: View {
         Text(title)
             .font(.system(size: 14, weight: .medium))
             .foregroundStyle(.white)
+            .padding(.horizontal, 20)
             .frame(height: 40)
-            .padding(.horizontal, 18)
             .background(
                 Capsule()
                     .fill(backgroundColor)
@@ -497,9 +451,14 @@ private struct SearchResultRow: View {
                         .fontWeight(.semibold)
                 }
 
-                Text(isFollowed ? "Added" : "Add")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                HStack(spacing: 4) {
+                    Image(systemName: isFollowed ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 14, weight: .bold))
+                    Text(isFollowed ? "FOLLOWING" : "FOLLOW")
+                        .font(.system(size: 16, weight: .heavy).width(.condensed))
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(1)
+                }
             }
             .foregroundStyle(isFollowed ? .white.opacity(0.6) : accentColor)
             .padding(.horizontal, 14)
@@ -510,7 +469,7 @@ private struct SearchResultRow: View {
             )
         }
         .buttonStyle(.plain)
-        .disabled(isLoading || isFollowed)
+        .disabled(isLoading)
     }
 
     @ViewBuilder

@@ -40,10 +40,14 @@ struct EndingSoonCard: View {
                         Text(network.uppercased())
                             .font(.system(size: 10, weight: .bold))
                             .tracking(0.5)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.white.opacity(0.7))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 5)
-                            .background(accentColor)
+                            .background(Color(red: 0x2D/255, green: 0x2D/255, blue: 0x2F/255))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .strokeBorder(Color(red: 0x38/255, green: 0x38/255, blue: 0x39/255), lineWidth: 1)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                             .padding(12)
                     }
@@ -164,8 +168,14 @@ struct EndingSoonCard: View {
                         .tint(.white)
                         .scaleEffect(0.7)
                 } else {
-                    Text(isFollowed ? "Added" : "+ Add to Binge List")
-                        .font(.system(size: 12, weight: .medium))
+                    HStack(spacing: 4) {
+                        Image(systemName: isFollowed ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 14, weight: .bold))
+                        Text(isFollowed ? "FOLLOWING" : "FOLLOW")
+                            .font(.system(size: 16, weight: .heavy).width(.condensed))
+                            .minimumScaleFactor(0.7)
+                            .lineLimit(1)
+                    }
                 }
             }
             .foregroundStyle(.white)
@@ -178,7 +188,7 @@ struct EndingSoonCard: View {
             )
         }
         .buttonStyle(.plain)
-        .disabled(isLoading || isFollowed)
+        .disabled(isLoading)
     }
 }
 

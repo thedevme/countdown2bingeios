@@ -210,6 +210,37 @@ final class SearchViewModel {
         }
     }
 
+    /// Remove a show from the user's followed list.
+    /// - Parameter tmdbId: The TMDB ID of the show to remove
+    /// - Returns: `true` if successful, `false` if failed
+    func removeShow(tmdbId: Int) async -> Bool {
+        guard !addingShowIds.contains(tmdbId) else { return false }
+
+        addingShowIds.insert(tmdbId)
+
+        do {
+            if let show = repository.fetchShow(byTmdbId: tmdbId) {
+                try await repository.delete(show)
+            }
+            addingShowIds.remove(tmdbId)
+            return true
+        } catch {
+            self.error = error
+            addingShowIds.remove(tmdbId)
+            return false
+        }
+    }
+
+    /// Toggle follow state for a show - adds if not following, removes if following.
+    /// - Parameter tmdbId: The TMDB ID of the show to toggle
+    func toggleFollow(tmdbId: Int) async {
+        if isFollowed(tmdbId: tmdbId) {
+            _ = await removeShow(tmdbId: tmdbId)
+        } else {
+            _ = await addShow(tmdbId: tmdbId)
+        }
+    }
+
     // MARK: - Check Following Status
 
     /// Check if a show is already being followed.

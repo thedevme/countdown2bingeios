@@ -78,28 +78,6 @@ struct BingeReadyView: View {
                         .ignoresSafeArea()
 
                     VStack(spacing: 0) {
-                        // Header row
-                        HStack {
-                            Text("BINGE READY")
-                                .font(.system(size: 13, weight: .semibold))
-                                .tracking(1.5)
-                                .foregroundStyle(.white.opacity(0.5))
-                                .accessibilityAddTraits(.isHeader)
-
-                            Spacer()
-
-                            Button {
-                                // Info action
-                            } label: {
-                                Image(systemName: "info.circle")
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(.white.opacity(0.5))
-                            }
-                            .accessibilityLabel("Information")
-                            .accessibilityHint("Double tap for more information about Binge Ready")
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
 
                         if viewModel.isLoading && !hasItems && !hasLoadedOnce {
                             Spacer()
@@ -128,9 +106,17 @@ struct BingeReadyView: View {
                     .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentShowIndex)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Binge Ready")
+            .toolbarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .largeTitle) {
+                    Text("BINGE READY")
+                        .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                        .foregroundStyle(.white)
+                }
+            }
             .onAppear {
                 viewModel.loadSeasons()
                 hasLoadedOnce = true

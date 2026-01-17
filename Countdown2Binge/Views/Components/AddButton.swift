@@ -5,8 +5,8 @@
 
 import SwiftUI
 
-/// A button for adding/removing shows from the followed list.
-/// Displays "+ Add" when not following, "Added" with checkmark when following.
+/// A button for following/unfollowing shows.
+/// Displays "+ Follow" when not following, "Following" with checkmark when following.
 struct AddButton: View {
     let isAdded: Bool
     let isLoading: Bool
@@ -26,14 +26,14 @@ struct AddButton: View {
                         .tint(isAdded ? addedForeground : addForeground)
                         .scaleEffect(0.8)
                 } else {
-                    Image(systemName: isAdded ? "checkmark" : "plus")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                    Image(systemName: isAdded ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 14, weight: .bold))
                 }
 
-                Text(isAdded ? "Added" : "Add")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                Text(isAdded ? "FOLLOWING" : "FOLLOW")
+                    .font(.system(size: 16, weight: .heavy).width(.condensed))
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
             }
             .foregroundStyle(isAdded ? addedForeground : addForeground)
             .padding(.horizontal, 16)
@@ -55,7 +55,7 @@ struct AddButton: View {
 
     // MARK: - Colors
 
-    // "Add" state - prominent call to action
+    // "Follow" state - prominent call to action
     private var addForeground: Color {
         .white
     }
@@ -68,7 +68,7 @@ struct AddButton: View {
         Color(red: 0.45, green: 0.65, blue: 0.95)
     }
 
-    // "Added" state - subtle confirmation
+    // "Following" state - subtle confirmation
     private var addedForeground: Color {
         Color(red: 0.45, green: 0.90, blue: 0.70)
     }

@@ -30,9 +30,6 @@ struct AiringShowCard: View {
                 ZStack(alignment: .topTrailing) {
                     // Background image
                     backdropImage
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 220)
-                        .clipped()
                         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 10, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 10, style: .continuous))
 
                     // Network badge
@@ -40,10 +37,14 @@ struct AiringShowCard: View {
                         Text(network.uppercased())
                             .font(.system(size: 10, weight: .bold))
                             .tracking(0.5)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.white.opacity(0.7))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 5)
-                            .background(accentColor)
+                            .background(Color(red: 0x2D/255, green: 0x2D/255, blue: 0x2F/255))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .strokeBorder(Color(red: 0x38/255, green: 0x38/255, blue: 0x39/255), lineWidth: 1)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                             .padding(12)
                     }
@@ -69,7 +70,7 @@ struct AiringShowCard: View {
                             .lineLimit(2)
                     }
                     .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 // Genre tags
@@ -148,6 +149,8 @@ struct AiringShowCard: View {
 
     // MARK: - Backdrop Image
 
+    private let imageHeight: CGFloat = 220
+
     @ViewBuilder
     private var backdropImage: some View {
         if let url = TMDBConfiguration.imageURL(path: show.backdropPath ?? show.posterPath, size: .backdrop) {
@@ -155,12 +158,19 @@ struct AiringShowCard: View {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .frame(height: imageHeight)
+                    .clipped()
             } placeholder: {
                 backdropPlaceholder
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .frame(height: imageHeight)
             }
-            .drawingGroup() // Rasterizes for smoother scrolling
+            .drawingGroup()
         } else {
             backdropPlaceholder
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .frame(height: imageHeight)
         }
     }
 
@@ -188,8 +198,14 @@ struct AiringShowCard: View {
                         .tint(.white)
                         .scaleEffect(0.7)
                 } else {
-                    Text(isFollowed ? "Added" : "+ Add to Binge List")
-                        .font(.system(size: 12, weight: .medium))
+                    HStack(spacing: 4) {
+                        Image(systemName: isFollowed ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 14, weight: .bold))
+                        Text(isFollowed ? "FOLLOWING" : "FOLLOW")
+                            .font(.system(size: 16, weight: .heavy).width(.condensed))
+                            .minimumScaleFactor(0.7)
+                            .lineLimit(1)
+                    }
                 }
             }
             .foregroundStyle(.white)
@@ -202,9 +218,9 @@ struct AiringShowCard: View {
             )
         }
         .buttonStyle(.plain)
-        .disabled(isLoading || isFollowed)
-        .accessibilityLabel(isFollowed ? "\(show.name) already added to binge list" : "Add \(show.name) to binge list")
-        .accessibilityHint(isFollowed ? "" : "Double tap to add")
+        .disabled(isLoading)
+        .accessibilityLabel(isFollowed ? "Following \(show.name)" : "Follow \(show.name)")
+        .accessibilityHint(isFollowed ? "" : "Double tap to follow")
     }
 
     // MARK: - Helpers
@@ -285,6 +301,5 @@ struct AiringShowCard: View {
                 onAdd: {}
             )
         }
-        .padding(.horizontal, 20)
     }
 }

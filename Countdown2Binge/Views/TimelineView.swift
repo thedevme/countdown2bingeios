@@ -169,6 +169,7 @@ struct TimelineView: View {
                                     value: countdownValue,
                                     displayMode: settings.countdownDisplayMode
                                 )
+                                .offset(y: -3)
                             }
 
                             // Vertical connector from hero to sections
