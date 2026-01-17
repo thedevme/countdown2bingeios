@@ -54,6 +54,7 @@ struct SearchView: View {
                     Text("SEARCH")
                         .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
                         .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .navigationDestination(item: $viewModel.selectedShow) { show in

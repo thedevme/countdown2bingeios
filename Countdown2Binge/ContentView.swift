@@ -17,32 +17,38 @@ struct ContentView: View {
 
     enum Tab: Hashable {
         case timeline
+        case planner
         case bingeReady
-        case search
         case settings
+        case search
     }
 
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
                 // Timeline Tab
-                SwiftUI.Tab("Timeline", systemImage: "calendar", value: Tab.timeline) {
+                SwiftUI.Tab("Timeline", systemImage: "calendar.day.timeline.left", value: Tab.timeline) {
                     TimelineView()
                 }
 
-                // Binge Ready Tab
-                SwiftUI.Tab("Binge Ready", systemImage: "checkmark.circle", value: Tab.bingeReady) {
-                    BingeReadyTab(modelContext: modelContext)
+                // Planner Tab
+                SwiftUI.Tab("Planner", systemImage: "list.bullet.clipboard", value: Tab.planner) {
+                    PlannerView()
                 }
 
-                // Search Tab (accessory role - appears as icon in tab bar)
-                SwiftUI.Tab(value: Tab.search, role: .search) {
-                    SearchTab(modelContext: modelContext)
+                // Binge Ready Tab
+                SwiftUI.Tab("Binge Ready", systemImage: "calendar", value: Tab.bingeReady) {
+                    BingeReadyTab(modelContext: modelContext)
                 }
 
                 // Settings Tab
                 SwiftUI.Tab("Settings", systemImage: "gearshape", value: Tab.settings) {
                     SettingsView()
+                }
+
+                // Search Tab (accessory role - appears as icon in tab bar)
+                SwiftUI.Tab(value: Tab.search, role: .search) {
+                    SearchTab(modelContext: modelContext)
                 }
             }
             .tint(.white)

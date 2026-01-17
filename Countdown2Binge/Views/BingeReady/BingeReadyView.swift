@@ -115,6 +115,7 @@ struct BingeReadyView: View {
                     Text("BINGE READY")
                         .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
                         .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .onAppear {

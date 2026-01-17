@@ -53,7 +53,7 @@ private struct SlotMachineReel: View {
     // How many numbers visible on each side of center
     private let visibleRange = 2
     // Width of each number cell
-    private let cellWidth: CGFloat = 85
+    private let cellWidth: CGFloat = 90
     // Height of the cell
     private let cellHeight: CGFloat = 80
     // Maximum number to display (0-99 + TBD at 100)

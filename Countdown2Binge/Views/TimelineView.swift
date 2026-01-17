@@ -29,6 +29,9 @@ struct TimelineView: View {
     // Full timeline navigation
     @State private var showFullTimeline: Bool = false
 
+    // Profile navigation
+    @State private var showProfile: Bool = false
+
     private let timelineService = TimelineService()
     private let maxCardsPerSection = 3
 
@@ -120,18 +123,7 @@ struct TimelineView: View {
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
                             // Header
-                            TimelineHeaderView(
-                                lastUpdated: lastRefreshed,
-                                isRefreshing: isRefreshing,
-                                onRefresh: {
-                                    Task {
-                                        await refreshShows()
-                                    }
-                                },
-                                onViewEntireTimeline: {
-                                    showFullTimeline = true
-                                }
-                            )
+                            TimelineHeaderView(lastUpdated: lastRefreshed)
 
                             // Hero section (swipeable card stack)
                             ZStack {
@@ -169,7 +161,7 @@ struct TimelineView: View {
                                     value: countdownValue,
                                     displayMode: settings.countdownDisplayMode
                                 )
-                                .offset(y: -3)
+                                .offset(y: -6)
                             }
 
                             // Vertical connector from hero to sections
@@ -212,10 +204,34 @@ struct TimelineView: View {
                     .frame(width: geometry.size.width)
                 }
                 .frame(width: geometry.size.width)
+                .refreshable {
+                    await refreshShows()
+                }
             } // ZStack
             .frame(width: geometry.size.width)
             } // GeometryReader
-            .navigationBarHidden(true)
+            .navigationTitle("Timeline")
+            .toolbarTitleDisplayMode(.large)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .largeTitle) {
+                    Text("CURRENTLY AIRING")
+                        .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showProfile = true
+                    } label: {
+                        Image(systemName: "person.crop.circle")
+                            .font(.system(size: 22))
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
+                    .accessibilityLabel("View profile")
+                }
+            }
             .navigationDestination(item: $selectedShow) { show in
                 ShowDetailView(
                     viewModel: ShowDetailViewModel(
@@ -226,6 +242,9 @@ struct TimelineView: View {
             }
             .navigationDestination(isPresented: $showFullTimeline) {
                 FullTimelineView()
+            }
+            .navigationDestination(isPresented: $showProfile) {
+                ProfileView()
             }
         }
         .preferredColorScheme(.dark)

@@ -80,6 +80,7 @@ struct SettingsView: View {
                     Text("SETTINGS")
                         .font(.system(size: 36, weight: .heavy, design: .default).width(.condensed))
                         .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
