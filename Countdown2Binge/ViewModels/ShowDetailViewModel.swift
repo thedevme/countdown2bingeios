@@ -38,7 +38,7 @@ final class ShowDetailViewModel {
     var markWatchedResult: MarkWatchedResult?
 
     /// Whether the episode list is expanded
-    var isEpisodeListExpanded: Bool = true
+    var isEpisodeListExpanded: Bool = false
 
     /// Error state
     var error: Error?
@@ -46,22 +46,54 @@ final class ShowDetailViewModel {
     /// Whether the show was successfully removed (for dismissal)
     var didRemoveShow: Bool = false
 
+    // MARK: - Additional Content Properties
+
+    /// Videos (trailers, clips) for the show
+    var videos: [TMDBVideo] = []
+
+    /// Cast members
+    var cast: [TMDBCastMember] = []
+
+    /// Crew members (directors, creators)
+    var crew: [TMDBCrewMember] = []
+
+    /// Recommended similar shows
+    var recommendations: [TMDBShowSummary] = []
+
+    /// Loading state for additional content
+    var isLoadingAdditionalContent: Bool = false
+
+    /// IDs of recommendations currently being added/followed
+    private var addingRecommendationIds: Set<Int> = []
+
+    /// Selected recommendation show for navigation
+    var selectedRecommendation: Show?
+
+    /// Whether to show notification settings modal after adding
+    var showNotificationSettings: Bool = false
+
+    /// Notification settings being configured
+    var pendingNotificationSettings: NotificationSettings = .default
+
     // MARK: - Dependencies
 
     private let repository: ShowRepositoryProtocol
     private let markWatchedUseCase: MarkWatchedUseCaseProtocol
     private let markEpisodeWatchedUseCase: MarkEpisodeWatchedUseCaseProtocol
+    private let tmdbService: TMDBServiceProtocol
 
     // MARK: - Initialization
 
     init(
         show: Show,
         repository: ShowRepositoryProtocol,
+        tmdbService: TMDBServiceProtocol? = nil,
         markWatchedUseCase: MarkWatchedUseCaseProtocol? = nil,
         markEpisodeWatchedUseCase: MarkEpisodeWatchedUseCaseProtocol? = nil
     ) {
         self.show = show
         self.repository = repository
+        self.tmdbService = tmdbService ?? TMDBService()
         self.markWatchedUseCase = markWatchedUseCase ?? MarkWatchedUseCase(repository: repository)
         self.markEpisodeWatchedUseCase = markEpisodeWatchedUseCase ?? MarkEpisodeWatchedUseCase(repository: repository)
         self.isFollowed = repository.isShowFollowed(tmdbId: show.id)
@@ -168,6 +200,13 @@ final class ShowDetailViewModel {
         do {
             try await repository.save(show)
             isFollowed = true
+
+            // Check if we should show notification settings modal
+            let settings = AppSettings.shared
+            if !settings.useGlobalNotificationDefaults {
+                pendingNotificationSettings = .default
+                showNotificationSettings = true
+            }
         } catch {
             self.error = error
         }
@@ -265,5 +304,92 @@ final class ShowDetailViewModel {
             return
         }
         show.seasons[seasonIndex].episodes[episodeIndex].watchedDate = watched ? Date() : nil
+    }
+
+    // MARK: - Additional Content Loading
+
+    /// Load videos, credits, and recommendations from TMDB
+    func loadAdditionalContent() async {
+        guard !isLoadingAdditionalContent else { return }
+        isLoadingAdditionalContent = true
+
+        // Fetch all data in parallel
+        async let videosTask = tmdbService.getShowVideos(id: show.id)
+        async let creditsTask = tmdbService.getShowCredits(id: show.id)
+        async let recommendationsTask = tmdbService.getShowRecommendations(id: show.id)
+
+        // Videos
+        do {
+            videos = try await videosTask
+        } catch {
+            // Silently fail - videos are optional
+            videos = []
+        }
+
+        // Credits
+        do {
+            let credits = try await creditsTask
+            cast = Array(credits.cast.prefix(10))
+            crew = credits.crew.filter { ["Director", "Creator", "Executive Producer"].contains($0.job) }
+        } catch {
+            // Silently fail - credits are optional
+            cast = []
+            crew = []
+        }
+
+        // Recommendations
+        do {
+            recommendations = try await recommendationsTask
+        } catch {
+            // Silently fail - recommendations are optional
+            recommendations = []
+        }
+
+        isLoadingAdditionalContent = false
+    }
+
+    // MARK: - Recommendation Actions
+
+    /// Check if a recommendation is followed
+    func isRecommendationFollowed(tmdbId: Int) -> Bool {
+        repository.isShowFollowed(tmdbId: tmdbId)
+    }
+
+    /// Check if a recommendation is currently being added
+    func isRecommendationAdding(tmdbId: Int) -> Bool {
+        addingRecommendationIds.contains(tmdbId)
+    }
+
+    /// Toggle follow state for a recommendation
+    func toggleRecommendationFollow(tmdbId: Int) async {
+        guard !addingRecommendationIds.contains(tmdbId) else { return }
+
+        addingRecommendationIds.insert(tmdbId)
+
+        do {
+            if repository.isShowFollowed(tmdbId: tmdbId) {
+                // Unfollow - need to get the show first
+                if let show = repository.fetchShow(byTmdbId: tmdbId) {
+                    try await repository.delete(show)
+                }
+            } else {
+                // Follow - fetch full show details and save
+                let show = try await tmdbService.getShowDetails(id: tmdbId)
+                try await repository.save(show)
+            }
+        } catch {
+            self.error = error
+        }
+
+        addingRecommendationIds.remove(tmdbId)
+    }
+
+    /// Select a recommendation to view details
+    func selectRecommendation(tmdbId: Int) async {
+        do {
+            selectedRecommendation = try await tmdbService.getShowDetails(id: tmdbId)
+        } catch {
+            self.error = error
+        }
     }
 }

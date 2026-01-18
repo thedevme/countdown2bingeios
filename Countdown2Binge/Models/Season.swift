@@ -72,13 +72,22 @@ struct Season: Identifiable, Codable, Equatable, Hashable {
         hasStarted && !isComplete
     }
 
-    /// Days until the finale airs (nil if complete or no date)
+    /// Whether today is the finale day
+    var isFinaleDay: Bool {
+        guard let finaleDate else { return false }
+        return Calendar.current.isDateInToday(finaleDate)
+    }
+
+    /// Days until the finale airs (nil if finale has passed or no date)
+    /// Returns 0 on the day of the finale (show stays visible until end of day)
     var daysUntilFinale: Int? {
-        guard let finaleDate, !isComplete else { return nil }
+        guard let finaleDate else { return nil }
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         let finale = calendar.startOfDay(for: finaleDate)
-        return calendar.dateComponents([.day], from: today, to: finale).day
+        let days = calendar.dateComponents([.day], from: today, to: finale).day ?? 0
+        // Return days if finale is today or in the future
+        return days >= 0 ? days : nil
     }
 
     /// Days until the season premiere (nil if already started or no date)

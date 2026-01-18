@@ -119,8 +119,8 @@ private struct CompactPosterCard: View {
                             .strokeBorder(Color(white: 0.4).opacity(0.5), lineWidth: 1)
                     )
 
-                // Season badge
-                Text("S\(show.upcomingSeason?.seasonNumber ?? show.currentSeason?.seasonNumber ?? 1)")
+                // Season badge - use anticipated number for anticipated style
+                Text("S\(style == .anticipated ? show.anticipatedSeasonNumber : (show.upcomingSeason?.seasonNumber ?? show.currentSeason?.seasonNumber ?? 1))")
                     .font(.system(size: 56, weight: .heavy))
                     .foregroundStyle(.white)
                     .padding(.trailing, 16)

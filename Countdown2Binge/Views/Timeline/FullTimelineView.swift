@@ -312,7 +312,7 @@ struct FullTimelineView: View {
 
                                     TimelineShowCard(
                                         show: entry.show,
-                                        seasonNumber: entry.show.upcomingSeason?.seasonNumber ?? entry.show.currentSeason?.seasonNumber ?? 1,
+                                        seasonNumber: entry.show.anticipatedSeasonNumber,
                                         style: .anticipated,
                                         daysUntil: nil,
                                         expectedYear: hasDate ? expectedYear : nil,

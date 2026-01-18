@@ -159,3 +159,69 @@ struct TMDBImage: Codable {
         case iso6391 = "iso_639_1"
     }
 }
+
+// MARK: - Videos Response
+
+struct TMDBVideosResponse: Codable {
+    let results: [TMDBVideo]
+}
+
+struct TMDBVideo: Codable, Identifiable {
+    let id: String
+    let key: String
+    let name: String
+    let site: String
+    let type: String
+    let official: Bool
+    let publishedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, key, name, site, type, official
+        case publishedAt = "published_at"
+    }
+
+    /// YouTube thumbnail URL
+    var thumbnailURL: URL? {
+        guard site == "YouTube" else { return nil }
+        return URL(string: "https://img.youtube.com/vi/\(key)/mqdefault.jpg")
+    }
+
+    /// YouTube video URL
+    var videoURL: URL? {
+        guard site == "YouTube" else { return nil }
+        return URL(string: "https://www.youtube.com/watch?v=\(key)")
+    }
+}
+
+// MARK: - Credits Response
+
+struct TMDBCreditsResponse: Codable {
+    let cast: [TMDBCastMember]
+    let crew: [TMDBCrewMember]
+}
+
+struct TMDBCastMember: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let character: String?
+    let profilePath: String?
+    let order: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, character, order
+        case profilePath = "profile_path"
+    }
+}
+
+struct TMDBCrewMember: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let job: String
+    let department: String
+    let profilePath: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, job, department
+        case profilePath = "profile_path"
+    }
+}

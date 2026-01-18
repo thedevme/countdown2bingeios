@@ -38,6 +38,9 @@ protocol TMDBServiceProtocol {
     func getAiringShows(page: Int) async throws -> TMDBSearchResponse
     func getShowsByGenre(genreIds: [Int], page: Int) async throws -> TMDBSearchResponse
     func getShowLogo(id: Int) async -> String?
+    func getShowVideos(id: Int) async throws -> [TMDBVideo]
+    func getShowCredits(id: Int) async throws -> TMDBCreditsResponse
+    func getShowRecommendations(id: Int) async throws -> [TMDBShowSummary]
 }
 
 /// Service for interacting with the TMDB API
@@ -125,6 +128,29 @@ final class TMDBService: TMDBServiceProtocol {
         let endpoint = TMDBEndpoint.seasonDetails(tvId: tvId, seasonNumber: seasonNumber)
         let details: TMDBSeasonDetails = try await fetch(endpoint)
         return TMDBMapper.map(details)
+    }
+
+    /// Get videos (trailers, clips) for a show
+    func getShowVideos(id: Int) async throws -> [TMDBVideo] {
+        let endpoint = TMDBEndpoint.tvVideos(id: id)
+        let response: TMDBVideosResponse = try await fetch(endpoint)
+        // Filter for trailers and teasers, prefer official videos
+        return response.results
+            .filter { ["Trailer", "Teaser", "Clip", "Featurette"].contains($0.type) }
+            .sorted { ($0.official ? 0 : 1) < ($1.official ? 0 : 1) }
+    }
+
+    /// Get cast and crew for a show
+    func getShowCredits(id: Int) async throws -> TMDBCreditsResponse {
+        let endpoint = TMDBEndpoint.tvCredits(id: id)
+        return try await fetch(endpoint)
+    }
+
+    /// Get recommended shows similar to a given show
+    func getShowRecommendations(id: Int) async throws -> [TMDBShowSummary] {
+        let endpoint = TMDBEndpoint.tvRecommendations(id: id)
+        let response: TMDBSearchResponse = try await fetch(endpoint)
+        return response.results
     }
 
     // MARK: - Private

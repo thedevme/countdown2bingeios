@@ -22,8 +22,10 @@ final class StateRefreshService {
 
     /// Refresh all followed shows.
     /// Updates lifecycle states based on current date and optionally fetches fresh data.
-    /// - Parameter fetchFromAPI: If true, also fetches fresh data from TMDB for stale shows
-    func refreshAllShows(fetchFromAPI: Bool = false) async {
+    /// - Parameters:
+    ///   - fetchFromAPI: If true, also fetches fresh data from TMDB
+    ///   - forceRefresh: If true, refreshes all shows regardless of staleness
+    func refreshAllShows(fetchFromAPI: Bool = false, forceRefresh: Bool = false) async {
         let context = modelContainer.mainContext
         let store = FollowedShowsStore(modelContext: context)
 
@@ -35,7 +37,8 @@ final class StateRefreshService {
                 updateLifecycleState(for: followedShow)
 
                 // Optionally fetch fresh data from TMDB
-                if fetchFromAPI && followedShow.needsRefresh {
+                // Force refresh bypasses the staleness check
+                if fetchFromAPI && (forceRefresh || followedShow.needsRefresh) {
                     await refreshFromAPI(followedShow: followedShow, store: store)
                 }
             }
@@ -43,7 +46,7 @@ final class StateRefreshService {
             // Save all changes
             try context.save()
         } catch {
-            print("StateRefreshService: Failed to refresh shows - \(error)")
+            // Silently fail - refresh errors are non-critical
         }
     }
 
@@ -55,6 +58,11 @@ final class StateRefreshService {
     /// Full refresh including API calls for stale shows
     func refreshWithAPIData() async {
         await refreshAllShows(fetchFromAPI: true)
+    }
+
+    /// Force refresh all shows from API regardless of staleness
+    func forceRefreshAllShows() async {
+        await refreshAllShows(fetchFromAPI: true, forceRefresh: true)
     }
 
     // MARK: - Single Show Refresh
@@ -92,7 +100,7 @@ final class StateRefreshService {
             let show = try await tmdbService.getShowDetails(id: followedShow.tmdbId)
             try store.updateCache(for: followedShow.tmdbId, with: show)
         } catch {
-            print("StateRefreshService: Failed to refresh show \(followedShow.tmdbId) - \(error)")
+            // Silently fail - individual show refresh errors are non-critical
         }
     }
 }
@@ -100,9 +108,9 @@ final class StateRefreshService {
 // MARK: - App Lifecycle Integration
 
 extension StateRefreshService {
-    /// Called when app launches - do a full refresh with API data
+    /// Called when app launches - force refresh all shows from API
     func onAppLaunch() async {
-        await refreshWithAPIData()
+        await forceRefreshAllShows()
     }
 
     /// Called when app comes to foreground - just update states (fast)

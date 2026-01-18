@@ -155,6 +155,18 @@ private class PreviewGenreTMDBService: TMDBServiceProtocol {
     func getShowLogo(id: Int) async -> String? {
         nil
     }
+
+    func getShowVideos(id: Int) async throws -> [TMDBVideo] {
+        []
+    }
+
+    func getShowCredits(id: Int) async throws -> TMDBCreditsResponse {
+        TMDBCreditsResponse(cast: [], crew: [])
+    }
+
+    func getShowRecommendations(id: Int) async throws -> [TMDBShowSummary] {
+        []
+    }
 }
 
 private class PreviewGenreAddShowUseCase: AddShowUseCaseProtocol {

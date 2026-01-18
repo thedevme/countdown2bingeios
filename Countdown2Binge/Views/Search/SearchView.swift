@@ -75,6 +75,22 @@ struct SearchView: View {
             await viewModel.loadTrendingShows()
             await viewModel.loadAiringShows()
         }
+        .sheet(item: $viewModel.showPendingNotificationSettings) { show in
+            NotificationSettingsView(
+                show: show,
+                isGlobalDefaults: false,
+                settings: $viewModel.pendingNotificationSettings,
+                onSave: {
+                    // TODO: Save notification settings for this show
+                },
+                onSkip: {
+                    // User skipped - no action needed
+                }
+            )
+            .presentationDetents([.fraction(0.85)])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(24)
+        }
     }
 
     // MARK: - Search Field
@@ -549,6 +565,18 @@ private class MockTMDBService: TMDBServiceProtocol {
 
     func getShowLogo(id: Int) async -> String? {
         nil
+    }
+
+    func getShowVideos(id: Int) async throws -> [TMDBVideo] {
+        []
+    }
+
+    func getShowCredits(id: Int) async throws -> TMDBCreditsResponse {
+        TMDBCreditsResponse(cast: [], crew: [])
+    }
+
+    func getShowRecommendations(id: Int) async throws -> [TMDBShowSummary] {
+        []
     }
 }
 

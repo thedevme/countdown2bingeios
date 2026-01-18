@@ -123,7 +123,7 @@ private struct SlotMachineReel: View {
     }
 
     private func numberCell(for number: Int) -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: -4) {
             if number == tbdIndex {
                 Text("TBD")
                     .font(.system(size: 51, weight: .heavy, design: .default).width(.condensed))
@@ -138,6 +138,7 @@ private struct SlotMachineReel: View {
                 .font(.system(size: 9, weight: .semibold))
                 .tracking(1.5)
                 .foregroundStyle(Color(white: 0.5))
+                .offset(y: -4)
         }
         .frame(width: cellWidth, height: cellHeight)
     }

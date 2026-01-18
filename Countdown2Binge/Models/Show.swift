@@ -68,6 +68,19 @@ struct Show: Identifiable, Codable, Equatable, Hashable {
             .min(by: { $0.seasonNumber < $1.seasonNumber })
     }
 
+    /// The anticipated season number (for shows waiting for next season)
+    /// Returns upcoming season number if announced, otherwise current + 1
+    var anticipatedSeasonNumber: Int {
+        if let upcoming = upcomingSeason {
+            return upcoming.seasonNumber
+        }
+        // If no upcoming season announced, anticipate current + 1
+        let highestSeason = seasons
+            .filter { $0.seasonNumber > 0 }
+            .max(by: { $0.seasonNumber < $1.seasonNumber })
+        return (highestSeason?.seasonNumber ?? 0) + 1
+    }
+
     static func == (lhs: Show, rhs: Show) -> Bool {
         lhs.id == rhs.id
     }

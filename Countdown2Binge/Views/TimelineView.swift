@@ -16,6 +16,9 @@ struct TimelineView: View {
     @State private var lastRefreshed: Date? = Date()
     @Bindable private var settings = AppSettings.shared
 
+    // Force view refresh after data update
+    @State private var refreshID = UUID()
+
     // Section expand/collapse state (both sections sync together)
     // Default to compact (collapsed) view
     @State private var isSectionsExpanded: Bool = false
@@ -504,14 +507,17 @@ struct TimelineView: View {
     // MARK: - Refresh
 
     private func refreshShows() async {
+        print("TimelineView: Pull-to-refresh triggered")
         isRefreshing = true
         let refreshService = StateRefreshService(
             modelContainer: modelContext.container,
             tmdbService: TMDBService()
         )
-        await refreshService.refreshWithAPIData()
+        // Force refresh all shows from API regardless of staleness
+        await refreshService.forceRefreshAllShows()
         lastRefreshed = Date()
         isRefreshing = false
+        print("TimelineView: Refresh complete")
     }
 }
 

@@ -11,6 +11,9 @@ enum TMDBEndpoint {
     case tvDetails(id: Int)
     case seasonDetails(tvId: Int, seasonNumber: Int)
     case tvImages(id: Int)
+    case tvVideos(id: Int)
+    case tvCredits(id: Int)
+    case tvRecommendations(id: Int)
     case trendingTV
     case discoverAiring(page: Int)
     case discoverByGenre(genreIds: [Int], page: Int)
@@ -25,6 +28,12 @@ enum TMDBEndpoint {
             return "/tv/\(tvId)/season/\(seasonNumber)"
         case .tvImages(let id):
             return "/tv/\(id)/images"
+        case .tvVideos(let id):
+            return "/tv/\(id)/videos"
+        case .tvCredits(let id):
+            return "/tv/\(id)/credits"
+        case .tvRecommendations(let id):
+            return "/tv/\(id)/recommendations"
         case .trendingTV:
             return "/trending/tv/week"
         case .discoverAiring:
@@ -48,6 +57,12 @@ enum TMDBEndpoint {
             break
         case .tvImages:
             items.append(URLQueryItem(name: "include_image_language", value: "en,null"))
+        case .tvVideos:
+            break
+        case .tvCredits:
+            break
+        case .tvRecommendations:
+            break
         case .trendingTV:
             break
         case .discoverAiring(let page):

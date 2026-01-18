@@ -8,8 +8,20 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - App Delegate for Orientation Support
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        return OrientationManager.shared.orientation
+    }
+}
+
 @main
 struct Countdown2BingeApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
     let modelContainer: ModelContainer

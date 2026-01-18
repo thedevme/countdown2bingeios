@@ -97,6 +97,12 @@ final class SearchViewModel {
     /// ID of show currently being loaded for detail view
     var loadingDetailId: Int?
 
+    /// Show pending notification settings configuration (shown after adding)
+    var showPendingNotificationSettings: Show?
+
+    /// Notification settings being configured for the pending show
+    var pendingNotificationSettings: NotificationSettings = .default
+
     // MARK: - Dependencies
 
     private let tmdbService: TMDBServiceProtocol
@@ -190,8 +196,16 @@ final class SearchViewModel {
         recentlyAddedShowId = nil
 
         do {
-            _ = try await addShowUseCase.execute(tmdbId: tmdbId)
+            let addedShow = try await addShowUseCase.execute(tmdbId: tmdbId)
             recentlyAddedShowId = tmdbId
+
+            // Check if we should show notification settings modal
+            let settings = AppSettings.shared
+            if !settings.useGlobalNotificationDefaults {
+                // Show notification settings modal
+                pendingNotificationSettings = .default
+                showPendingNotificationSettings = addedShow
+            }
 
             // Clear success indicator after delay
             Task {

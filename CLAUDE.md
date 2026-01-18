@@ -11,6 +11,17 @@
 
 ---
 
+## Documentation First
+
+**ALWAYS check official documentation before implementing solutions for third-party libraries and frameworks.**
+
+- Do NOT assume how APIs work based on naming or intuition
+- Do NOT try multiple guessed approaches - look up the correct solution first
+- Use Context7 or web search to find official documentation
+- This applies to: YouTubePlayerKit, any Swift Package dependencies, Apple frameworks, etc.
+
+---
+
 ## Bug Fixing Workflow
 
 **For small bugs** (typos, simple logic errors, obvious fixes): Just fix them.

@@ -49,6 +49,11 @@ final class ShowLifecycleManager: ShowLifecycleManagerProtocol {
 
         // Season is complete (all episodes aired)
         if season.isComplete {
+            // Keep showing as "airing" on finale day so it stays in "Ending Soon"
+            // until midnight, then transitions the next day
+            if season.isFinaleDay {
+                return .airing
+            }
             return .completed
         }
 
