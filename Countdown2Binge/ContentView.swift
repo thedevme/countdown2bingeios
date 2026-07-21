@@ -10,46 +10,186 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+
+    @State private var activeTab: String = "timeline"
+    @State private var showOnboarding: Bool = true  // Start with onboarding
+    @State private var showWalkthrough: Bool = false
+    @State private var showFreeLimitModal: Bool = false
+    @State private var selectedPlan: String = ""
+    @State private var followedShows: [ShowSummary] = []
+
+    // For FreeLimitModal compatibility (uses String names)
+    @State private var followedShowNames: [String] = []
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        ZStack {
+            TabView(selection: $activeTab) {
+                Tab("Timeline", systemImage: "list.bullet.rectangle", value: "timeline") {
+                    TimelineScreen(
+                        layout: "expanded",
+                        numberStyle: "rotated"
+                    )
+                }
+
+                Tab("Discover", systemImage: "safari", value: "discover") {
+                    DiscoverScreen()
+                }
+
+                Tab("Binge Ready", systemImage: "popcorn", value: "binge") {
+                    BingeReadyScreen()
+                }
+
+                Tab("Settings", systemImage: "gearshape", value: "settings") {
+                    SettingsScreen()
+                }
+
+                Tab(value: "search", role: .search) {
+                    SearchScreen()
+                }
+            }
+            .tint(.c2bTeal)
+            .onAppear {
+                configureTabBarAppearance()
+            }
+
+            // Onboarding overlay
+            if showOnboarding {
+                OnboardingFlow(
+                    isPresented: $showOnboarding,
+                    onComplete: { plan, shows in
+                        selectedPlan = plan
+                        followedShows = shows
+                        followedShowNames = shows.map { $0.name }
+
+                        // Save to SwiftData
+                        Task {
+                            await saveFollowedShows(shows)
+                        }
+
+                        // Show Free Limit Modal if free plan and >3 shows
+                        if plan == "free" && shows.count > 3 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showFreeLimitModal = true
+                            }
+                        } else {
+                            // Show walkthrough directly
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showWalkthrough = true
+                            }
+                        }
+                    }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                .zIndex(100)
+            }
+
+            // Free Limit Modal overlay
+            if showFreeLimitModal {
+                FreeLimitModal(
+                    isPresented: $showFreeLimitModal,
+                    followedShows: $followedShowNames,
+                    onUpgrade: {
+                        selectedPlan = "premium"
+                    }
+                )
+                .zIndex(95)
+                .onChange(of: showFreeLimitModal) { oldValue, newValue in
+                    if !newValue {
+                        // Show walkthrough after modal dismisses
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showWalkthrough = true
+                        }
                     }
                 }
-                .onDelete(perform: deleteItems)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
+
+            // Walkthrough overlay
+            if showWalkthrough {
+                TimelineWalkthrough(isPresented: $showWalkthrough)
+                    .zIndex(90)
             }
-        } detail: {
-            Text("Select an item")
+        }
+        .preferredColorScheme(.dark)
+    }
+
+    // MARK: - Persistence
+
+    @MainActor
+    private func saveFollowedShows(_ shows: [ShowSummary]) async {
+        let store = FollowedShowsStore(modelContext: modelContext)
+        let seriesStore = SeriesStore(modelContext: modelContext)
+        let tmdbService = TMDBService()
+
+        // Step 1: Save minimal data immediately for quick UI update
+        for show in shows {
+            do {
+                try store.follow(summary: show)
+            } catch {
+                print("Error saving show \(show.name): \(error)")
+            }
+        }
+
+        // Step 2: Fetch full details for all shows in parallel
+        let ids = shows.map { $0.id }
+        do {
+            let fullShows = try await tmdbService.getMultipleShowDetails(ids: ids)
+            for fullShowData in fullShows {
+                try? store.updateCache(for: fullShowData.id, with: fullShowData)
+                try? seriesStore.save(from: fullShowData)
+                print("DEBUG: Fetched full details for \(fullShowData.name)")
+            }
+        } catch {
+            print("Error fetching show details: \(error)")
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
+    // MARK: - Tab Bar Appearance
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+    private func configureTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(Color.c2bBackground)
+
+        // Custom font for tab bar items (JetBrains Mono Bold - same as custom tab bar)
+        let tabBarFont = UIFont(name: "JetBrainsMono-Bold", size: 8.5) ?? .systemFont(ofSize: 8.5, weight: .bold)
+
+        // Normal state
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.4, alpha: 1.0)
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor(white: 0.4, alpha: 1.0),
+            .font: tabBarFont
+        ]
+
+        // Selected state
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.c2bTeal)
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor(Color.c2bTeal),
+            .font: tabBarFont
+        ]
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+}
+
+// MARK: - Settings Placeholder
+struct SettingsPlaceholder: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("SETTINGS")
+                    .font(.custom(.oswald.bold, size: CustomFont.size.heading))
+                    .foregroundColor(.c2bText)
+                    .textCase(.uppercase)
+                    .tracking(0.26)
+                    .padding(.top, 52)
+
+                Text("Settings screen coming soon")
+                    .font(.system(size: 15, weight: .regular, design: .default))
+                    .foregroundColor(.c2bDim)
+                    .padding(.top, 20)
+
+                Spacer()
             }
         }
     }
@@ -57,5 +197,91 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+}
+
+// MARK: - Preview for Individual Screens
+#Preview("Timeline") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+        NavigationStack {
+            TimelineScreen(
+                layout: "expanded",
+                numberStyle: "rotated"
+            )
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Timeline - Compact") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+        NavigationStack {
+            TimelineScreen(
+                layout: "compact",
+                numberStyle: "stacked"
+            )
+        }
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Binge Ready") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+        BingeReadyScreen()
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Search") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+        SearchScreen()
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Discover") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+        DiscoverScreen()
+    }
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Onboarding") {
+    struct OnboardingPreviewWrapper: View {
+        @State private var showOnboarding = true
+
+        var body: some View {
+            ZStack {
+                Color.c2bBackground.ignoresSafeArea()
+                OnboardingFlow(
+                    isPresented: $showOnboarding,
+                    onComplete: { plan, shows in
+                        print("Completed with plan: \(plan), shows: \(shows.map { $0.name })")
+                    }
+                )
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+
+    return OnboardingPreviewWrapper()
+}
+
+#Preview("Tab Bar") {
+    ZStack {
+        Color.c2bBackground.ignoresSafeArea()
+
+        VStack {
+            Spacer()
+            C2BTabBar(
+                activeTab: .constant("timeline"),
+                onSearchTap: {}
+            )
+        }
+    }
+    .preferredColorScheme(.dark)
 }

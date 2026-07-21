@@ -1,0 +1,45 @@
+//
+//  FollowedShow.swift
+//  Countdown2Binge
+//
+//  SwiftData model for tracking followed shows.
+//  Separates following state from show data cache.
+//
+
+import Foundation
+import SwiftData
+
+@Model
+final class FollowedShow {
+    /// TMDB ID of the show
+    @Attribute(.unique) var tmdbId: Int
+
+    /// When the user followed this show
+    var followedAt: Date
+
+    /// Last time we fetched fresh data from TMDB
+    var lastRefreshedAt: Date?
+
+    /// Whether this follow has been synced to cloud
+    var isSynced: Bool
+
+    /// Cached show data (metadata from TMDB)
+    @Relationship(deleteRule: .cascade)
+    var cachedData: CachedShowData?
+
+    init(tmdbId: Int, followedAt: Date = Date(), isSynced: Bool = false) {
+        self.tmdbId = tmdbId
+        self.followedAt = followedAt
+        self.lastRefreshedAt = nil
+        self.isSynced = isSynced
+    }
+
+    /// Check if show data needs refresh (>24 hours since last refresh)
+    var needsRefresh: Bool {
+        guard let lastRefreshed = lastRefreshedAt else {
+            return true // Never refreshed
+        }
+        let hoursSinceRefresh = Date().timeIntervalSince(lastRefreshed) / 3600
+        return hoursSinceRefresh >= 24
+    }
+}

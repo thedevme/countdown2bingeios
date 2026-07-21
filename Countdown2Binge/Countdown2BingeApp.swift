@@ -10,9 +10,19 @@ import SwiftData
 
 @main
 struct Countdown2BingeApp: App {
-    var sharedModelContainer: ModelContainer = {
+    @Environment(\.scenePhase) private var scenePhase
+
+    @State private var hasLaunched = false
+
+    let sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            FollowedShow.self,
+            CachedShowData.self,
+            Series.self,
+            SeriesSeason.self,
+            SeriesEpisode.self,
+            CachedDiscoverShow.self,
+            DiscoverCacheMetadata.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,10 +33,38 @@ struct Countdown2BingeApp: App {
         }
     }()
 
+    private var stateRefreshService: StateRefreshService {
+        StateRefreshService(modelContainer: sharedModelContainer)
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    if !hasLaunched {
+                        hasLaunched = true
+                        Task {
+                            await stateRefreshService.onAppLaunch()
+                        }
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            switch newPhase {
+            case .active:
+                // App returned to foreground
+                if hasLaunched {
+                    Task { @MainActor in
+                        await stateRefreshService.onAppForeground()
+                    }
+                }
+            case .inactive, .background:
+                // App going to background - could schedule background tasks here
+                break
+            @unknown default:
+                break
+            }
+        }
     }
 }

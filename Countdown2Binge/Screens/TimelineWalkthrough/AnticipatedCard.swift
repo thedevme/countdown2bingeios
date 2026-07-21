@@ -1,0 +1,240 @@
+import SwiftUI
+
+// MARK: - Anticipated Card (Wide horizontal card with countdown)
+struct AnticipatedCard: View {
+    // For walkthrough (static images)
+    let showId: String?
+    let bucketKey: String?
+    let namespace: Namespace.ID?
+
+    // For timeline (real data)
+    let show: ShowSummary?
+    let showData: ShowData?
+
+    // Walkthrough initializer
+    init(showId: String, bucketKey: String, namespace: Namespace.ID) {
+        self.showId = showId
+        self.bucketKey = bucketKey
+        self.namespace = namespace
+        self.show = nil
+        self.showData = nil
+    }
+
+    // Timeline initializer (ShowSummary - legacy)
+    init(show: ShowSummary) {
+        self.show = show
+        self.showData = nil
+        self.showId = nil
+        self.bucketKey = nil
+        self.namespace = nil
+    }
+
+    // Timeline initializer (ShowData - with lifecycle)
+    init(showData: ShowData) {
+        self.showData = showData
+        self.show = nil
+        self.showId = nil
+        self.bucketKey = nil
+        self.namespace = nil
+    }
+
+    private var mockData: (days: Int, season: String, platform: String, hasNew: Bool) {
+        switch showId {
+        case "reacher":
+            return (88, "2", "NETFLIX", true)
+        case "shogun":
+            return (10, "5", "NETFLIX", false)
+        default:
+            return (12, "2", "PRIME", false)
+        }
+    }
+
+    private var daysUntilPremiere: Int {
+        // Anticipated shows have no premiere date, so this is used for mock only
+        if let showData = showData {
+            return showData.daysUntilPremiere ?? 0
+        }
+        if let show = show, let dateString = show.firstAirDate {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            if let airDate = formatter.date(from: dateString) {
+                let days = Calendar.current.dateComponents([.day], from: Date(), to: airDate).day ?? 0
+                return max(0, days)
+            }
+        }
+        return mockData.days
+    }
+
+    private var displayName: String {
+        showData?.name ?? show?.name ?? showId ?? ""
+    }
+
+    private var posterURL: URL? {
+        showData?.posterURL ?? show?.posterURL
+    }
+
+    // For Anticipated shows, we show the next expected season
+    private var anticipatedSeasonNumber: Int {
+        if let showData = showData {
+            return showData.numberOfSeasons + 1
+        }
+        return 2 // Default for mock
+    }
+
+    // Expected release year (next year, formatted as '26)
+    private var expectedYearDisplay: String {
+        let nextYear = Calendar.current.component(.year, from: Date()) + 1
+        let shortYear = nextYear % 100
+        return "'\(shortYear)"
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            // Left: Countdown section
+            HStack {
+                VStack(spacing: 0) {
+                    Spacer()
+
+                    VStack(spacing: 0) {
+
+                        Text(expectedYearDisplay)
+                            .font(.custom(.oswald.bold, size: CustomFont.size.xl7))
+                            .foregroundColor(.white)
+                            .tracking(-5)
+                            .rotationEffect(.degrees(-90))
+
+                        Text("EXPECTED")
+                            .font(.custom(.oswald.bold, size: 16))
+                            .foregroundColor(Color.c2bTealBright)
+                            .textCase(.uppercase)
+                            .tracking(1.6)
+                            .padding(-5)
+
+                        Text("RELEASE")
+                            .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
+                            .foregroundColor(Color(hex: "#52525b"))
+                            .textCase(.uppercase)
+                            .tracking(1.2)
+                    }
+                }
+                .padding(-7)
+                .frame(width: 110, height: 140)
+            }
+            .padding(-20)
+
+
+            // Right: Poster (flexible)
+            ZStack(alignment: .topTrailing) {
+                // Poster image - use AsyncImage for ShowData/ShowSummary, Image for showId
+                if let url = posterURL {
+                    CachedAsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .grayscale(1.0)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color(hex: "#1a1a1c"))
+                    }
+                    .frame(height: 140)
+                    .clipped()
+                    .overlay(Color.black.opacity(0.3))
+                    .overlay(
+                        Rectangle()
+                            .fill(Color(hex: "#5eead4").opacity(0.3))
+                            .frame(width: 2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    )
+                } else if let showId = showId, show == nil && showData == nil {
+                    Image(showId)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 140)
+                        .grayscale(1.0)
+                        .clipped()
+                        .overlay(Color.black.opacity(0.3))
+                        .overlay(
+                            Rectangle()
+                                .fill(Color(hex: "#5eead4").opacity(0.3))
+                                .frame(width: 2)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        )
+                }
+
+                // Badges overlay
+                VStack(alignment: .trailing, spacing: 6) {
+                    if show == nil && showData == nil {
+                        HStack(spacing: 6) {
+                            if mockData.hasNew {
+                                Text("NEW")
+                                    .font(.system(size: CustomFont.size.xs, weight: .bold))
+                                    .foregroundColor(Color(hex: "#04201c"))
+                                    .textCase(.uppercase)
+                                    .tracking(1.4)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.c2bTealBright)
+                                    .cornerRadius(3)
+                            }
+
+                            Spacer()
+
+                            Text(mockData.platform)
+                                .font(.system(size: CustomFont.size.xs, weight: .bold))
+                                .foregroundColor(Color.c2bDim)
+                                .textCase(.uppercase)
+                                .tracking(1.4)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.black.opacity(0.7))
+                                .cornerRadius(3)
+                        }
+                    }
+
+                    Spacer()
+
+//                    HStack(spacing: 0) {
+//                        if showData != nil || show != nil {
+//                            // Show name and season for real data
+//                            VStack(alignment: .leading, spacing: 2) {
+//                                Text(displayName)
+//                                    .font(.custom(.oswald.bold, size: CustomFont.size.xl))
+//                                    .foregroundColor(.white)
+//                                    .lineLimit(1)
+//                                if showData != nil {
+//                                    Text("Season \(anticipatedSeasonNumber)")
+//                                        .font(.custom(.jetbrains.regular, size: CustomFont.size.xs))
+//                                        .foregroundColor(.c2bMuted)
+//                                }
+//                            }
+//                        } else {
+//                            Text("S")
+//                                .font(.custom(.oswald.bold, size: CustomFont.size.xl4))
+//                                .foregroundColor(.white)
+//
+//                            Text(mockData.season)
+//                                .font(.custom(.oswald.light, size: CustomFont.size.xl3))
+//                                .foregroundColor(.white)
+//                        }
+//
+//                        Spacer()
+//                    }
+                }
+                .padding(10)
+            }
+            .frame(height: 140)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+        }
+        .modifier(OptionalMatchedGeometry(id: showId, namespace: namespace))
+    }
+}
+
+// Preview disabled - requires namespace parameter
+// #Preview {
+//     VStack(spacing: 20) {
+//         AnticipatedCard(showId: "stranger-things")
+//         AnticipatedCard(showId: "fallout")
+//     }
+//     .padding()
+//     .background(Color.c2bBackground)
+// }
