@@ -103,11 +103,9 @@ final class PremiumManager {
 
     private init() {
         #if DEBUG
-        // Apply persisted debug override on launch
-        if debugPremiumOverride {
-            isPremium = true
-            print("PremiumManager: DEBUG - Premium restored from persisted override")
-        }
+        // Auto-enable premium for DEBUG builds (simulator)
+        isPremium = true
+        print("PremiumManager: DEBUG build - Premium auto-enabled")
         #endif
 
         // Auto-enable premium for TestFlight builds
