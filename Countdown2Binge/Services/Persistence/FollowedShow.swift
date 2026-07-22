@@ -28,7 +28,7 @@ final class FollowedShow {
     var cachedData: CachedShowData?
 
     /// Related show IDs from franchise data (spinoffs)
-    var relatedShowIds: [Int]
+    var relatedShowIds: [Int] = []
 
     init(tmdbId: Int, followedAt: Date = Date(), isSynced: Bool = false) {
         self.tmdbId = tmdbId

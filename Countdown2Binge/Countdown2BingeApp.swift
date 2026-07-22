@@ -15,19 +15,15 @@ struct Countdown2BingeApp: App {
     @State private var hasLaunched = false
 
     let sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            FollowedShow.self,
-            CachedShowData.self,
-            Series.self,
-            SeriesSeason.self,
-            SeriesEpisode.self,
-            CachedDiscoverShow.self,
-            DiscoverCacheMetadata.self,
-        ])
+        let schema = Schema(versionedSchema: SchemaV2.self)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(
+                for: schema,
+                migrationPlan: MigrationPlan.self,
+                configurations: [modelConfiguration]
+            )
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
