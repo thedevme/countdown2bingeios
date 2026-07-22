@@ -72,7 +72,11 @@ struct OnboardingFlow: View {
                     selectedPlan: selectedPlan,
                     isPurchasing: isPurchasing,
                     onNext: {
-                        if currentStep < totalSteps - 1 {
+                        // Skip paywall if already premium (DEBUG/TestFlight)
+                        if currentStep == 5 && PremiumManager.shared.isPremium {
+                            // Already premium - skip paywall and complete
+                            completeOnboarding()
+                        } else if currentStep < totalSteps - 1 {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                                 currentStep += 1
                             }
