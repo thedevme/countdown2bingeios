@@ -127,11 +127,16 @@ struct ShowDetailView: View {
                     // Cast & Crew
                     ShowDetailCastSection(cast: cast)
 
-                    // Related Shows
-                    ShowDetailRelatedSection(
-                        recommendations: recommendations,
-                        onTap: onRelatedTap
-                    )
+                    // Related Shows (Premium feature)
+                    if PremiumManager.shared.canViewSpinoffs {
+                        ShowDetailRelatedSection(
+                            recommendations: recommendations,
+                            onTap: onRelatedTap
+                        )
+                    } else if !recommendations.isEmpty {
+                        // Show upgrade prompt for free users
+                        ShowDetailRelatedUpgradePrompt()
+                    }
 
                     // About
                     ShowDetailAboutSection(show: show)

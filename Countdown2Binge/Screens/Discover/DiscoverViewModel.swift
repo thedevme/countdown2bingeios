@@ -227,6 +227,9 @@ final class DiscoverViewModel {
             try store.updateCache(for: show.id, with: show)
             try seriesStore.save(from: show)
             print("DEBUG: Saved \(show.name) - \(show.numberOfSeasons) seasons, inProduction: \(show.inProduction)")
+
+            // Save franchise/spinoff data for this show
+            await store.saveFranchiseData(for: show.id)
         } catch {
             print("Error following show: \(error)")
         }

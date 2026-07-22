@@ -27,11 +27,20 @@ final class FollowedShow {
     @Relationship(deleteRule: .cascade)
     var cachedData: CachedShowData?
 
+    /// Related show IDs from franchise data (spinoffs)
+    var relatedShowIds: [Int]
+
     init(tmdbId: Int, followedAt: Date = Date(), isSynced: Bool = false) {
         self.tmdbId = tmdbId
         self.followedAt = followedAt
         self.lastRefreshedAt = nil
         self.isSynced = isSynced
+        self.relatedShowIds = []
+    }
+
+    /// Whether this show has spinoffs/related shows
+    var hasSpinoffs: Bool {
+        !relatedShowIds.isEmpty
     }
 
     /// Check if show data needs refresh (>24 hours since last refresh)

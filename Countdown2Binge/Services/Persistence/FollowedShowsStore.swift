@@ -148,6 +148,40 @@ final class FollowedShowsStore {
         try modelContext.save()
     }
 
+    // MARK: - Spinoffs/Related Shows
+
+    /// Update related show IDs for a followed show
+    func updateRelatedShowIds(for tmdbId: Int, relatedIds: [Int]) throws {
+        guard let followedShow = getFollowedShow(tmdbId: tmdbId) else {
+            throw FollowedShowsStoreError.notFollowing
+        }
+        followedShow.relatedShowIds = relatedIds
+        try modelContext.save()
+    }
+
+    /// Get related show IDs for a followed show
+    func getRelatedShowIds(for tmdbId: Int) -> [Int] {
+        guard let followedShow = getFollowedShow(tmdbId: tmdbId) else {
+            return []
+        }
+        return followedShow.relatedShowIds
+    }
+
+    /// Save franchise data for a followed show (called after following)
+    func saveFranchiseData(for tmdbId: Int) async {
+        // Ensure franchise data is loaded
+        await FranchiseService.shared.fetchFranchises()
+
+        // Get related show IDs
+        let relatedIds = FranchiseService.shared.relatedShowIds(forShowId: tmdbId)
+
+        guard !relatedIds.isEmpty else { return }
+
+        // Save to database
+        try? updateRelatedShowIds(for: tmdbId, relatedIds: relatedIds)
+        print("FollowedShowsStore: Saved \(relatedIds.count) related shows for \(tmdbId)")
+    }
+
     // MARK: - Sync
 
     /// Mark a show as synced to cloud
