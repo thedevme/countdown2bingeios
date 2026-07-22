@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var showOnboarding: Bool = false
     @State private var showWalkthrough: Bool = false
     @State private var showFreeLimitModal: Bool = false
+    @State private var showDowngradeModal: Bool = false
     @State private var selectedPlan: String = ""
     @State private var followedShows: [ShowSummary] = []
 
@@ -133,8 +134,38 @@ struct ContentView: View {
                 TimelineWalkthrough(isPresented: $showWalkthrough)
                     .zIndex(90)
             }
+
+            // Downgrade removal modal (when premium -> free with >3 shows)
+            if showDowngradeModal {
+                DowngradeRemovalModal(isPresented: $showDowngradeModal)
+                    .zIndex(100)
+            }
         }
         .preferredColorScheme(.dark)
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            checkForDowngrade()
+        }
+        .onChange(of: PremiumManager.shared.didDowngradeFromPremium) { _, didDowngrade in
+            if didDowngrade {
+                checkForDowngrade()
+            }
+        }
+    }
+
+    // MARK: - Downgrade Check
+
+    private func checkForDowngrade() {
+        guard PremiumManager.shared.didDowngradeFromPremium else { return }
+
+        let store = FollowedShowsStore(modelContext: modelContext)
+        let followedCount = store.getFollowedCount()
+
+        if followedCount > 3 {
+            showDowngradeModal = true
+        } else {
+            // At or below limit, just clear the flag
+            PremiumManager.shared.didDowngradeFromPremium = false
+        }
     }
 
     // MARK: - Persistence
