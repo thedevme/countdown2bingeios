@@ -10,6 +10,7 @@
 		4602CAB730114363001185C9 /* ReceiptParser in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAB630114363001185C9 /* ReceiptParser */; };
 		4602CAB930114363001185C9 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAB830114363001185C9 /* RevenueCat */; };
 		4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CABA30114363001185C9 /* RevenueCatUI */; };
+		4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAC830114F62001185C9 /* FirebaseDatabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 			files = (
 				4602CAB930114363001185C9 /* RevenueCat in Frameworks */,
 				4602CAB730114363001185C9 /* ReceiptParser in Frameworks */,
+				4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */,
 				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,6 +139,7 @@
 				4602CAB630114363001185C9 /* ReceiptParser */,
 				4602CAB830114363001185C9 /* RevenueCat */,
 				4602CABA30114363001185C9 /* RevenueCatUI */,
+				4602CAC830114F62001185C9 /* FirebaseDatabase */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -222,6 +225,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -618,6 +622,14 @@
 				minimumVersion = 5.81.1;
 			};
 		};
+		4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.16.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -635,6 +647,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCatUI;
+		};
+		4602CAC830114F62001185C9 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
