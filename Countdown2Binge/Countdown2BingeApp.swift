@@ -34,7 +34,10 @@ struct Countdown2BingeApp: App {
     }()
 
     private var stateRefreshService: StateRefreshService {
-        StateRefreshService(modelContainer: sharedModelContainer)
+        StateRefreshService(
+            modelContainer: sharedModelContainer,
+            badgeManager: TabBadgeManager.shared
+        )
     }
 
     var body: some Scene {

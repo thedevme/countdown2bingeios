@@ -218,7 +218,13 @@ struct BingeReadyScreen: View {
             }
         }
         .navigationDestination(item: $selectedShowForDetail) { show in
-            FollowedShowDetail(show: show, onDismiss: { selectedShowForDetail = nil })
+            FollowedShowDetail(
+                show: show,
+                onDismiss: { selectedShowForDetail = nil },
+                onUnfollow: {
+                    Task { await viewModel.unfollowShow(show) }
+                }
+            )
                 .navigationBarHidden(true)
         }
         }
@@ -1074,12 +1080,12 @@ private struct BingeActionButtons: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            // Remove Show Button
+            // Unfollow Show Button
             Button(action: onRemove) {
                 HStack(spacing: 8) {
-                    Image(systemName: "xmark")
+                    Image(systemName: "bookmark.slash")
                         .font(.system(size: 12, weight: .semibold))
-                    Text("REMOVE SHOW")
+                    Text("UNFOLLOW SHOW")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.14)
                 }

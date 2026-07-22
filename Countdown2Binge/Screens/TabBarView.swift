@@ -4,6 +4,7 @@ import SwiftUI
 struct C2BTabBar: View {
     @Binding var activeTab: String
     let onSearchTap: () -> Void
+    var badgeManager: TabBadgeManager? = nil
 
     private let tabs = [
         TabItem(id: "timeline", label: "Timeline", icon: "list.bullet.rectangle"),
@@ -18,7 +19,12 @@ struct C2BTabBar: View {
                 TabButton(
                     tab: tab,
                     isActive: activeTab == tab.id,
-                    onTap: { activeTab = tab.id }
+                    showBadge: badgeManager?.hasBadge(for: tab.id) ?? false,
+                    onTap: {
+                        activeTab = tab.id
+                        // Clear badge when tab is tapped
+                        badgeManager?.clearBadge(for: tab.id)
+                    }
                 )
             }
         }
@@ -47,14 +53,29 @@ struct TabItem: Identifiable {
 struct TabButton: View {
     let tab: TabItem
     let isActive: Bool
+    var showBadge: Bool = false
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 3) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(isActive ? .c2bTealBright : .c2bMuted)
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: tab.icon)
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(isActive ? .c2bTealBright : .c2bMuted)
+
+                    // Badge dot
+                    if showBadge {
+                        Circle()
+                            .fill(Color.c2bTeal)
+                            .frame(width: 8, height: 8)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color(hex: "#161618"), lineWidth: 1.5)
+                            )
+                            .offset(x: 4, y: -2)
+                    }
+                }
 
                 Text(tab.label)
                     .monoStyle(size: 8.5, color: isActive ? .c2bText : .c2bMuted)

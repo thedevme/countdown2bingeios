@@ -10,14 +10,16 @@ import SwiftUI
 struct FollowedShowDetail: View {
     let show: ShowData
     let onDismiss: () -> Void
+    let onUnfollow: () -> Void
 
     @State private var selectedSeason: Int
     @State private var notifyEnabled = true
     @State private var showShareSheet = false
 
-    init(show: ShowData, onDismiss: @escaping () -> Void) {
+    init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}) {
         self.show = show
         self.onDismiss = onDismiss
+        self.onUnfollow = onUnfollow
         self._selectedSeason = State(initialValue: show.numberOfSeasons)
     }
 
@@ -50,7 +52,10 @@ struct FollowedShowDetail: View {
                     DetailNotifyToggle(isEnabled: $notifyEnabled)
                         .padding(.top, 26)
 
-                    DetailActionButtons(show: show)
+                    DetailActionButtons(show: show, onUnfollow: {
+                        onUnfollow()
+                        onDismiss()
+                    })
                         .padding(.top, 22)
                 }
                 .padding(.horizontal, 22)

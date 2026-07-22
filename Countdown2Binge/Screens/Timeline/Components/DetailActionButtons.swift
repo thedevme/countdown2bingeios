@@ -7,6 +7,9 @@ import SwiftUI
 
 struct DetailActionButtons: View {
     let show: ShowData
+    let onUnfollow: () -> Void
+
+    @State private var showUnfollowConfirmation = false
 
     private var isReady: Bool {
         show.timelineCategory == .bingeReady
@@ -29,8 +32,20 @@ struct DetailActionButtons: View {
             }
 
             DetailUnfollowButton {
-                // Unfollow
+                showUnfollowConfirmation = true
             }
+        }
+        .confirmationDialog(
+            "Unfollow \(show.name)?",
+            isPresented: $showUnfollowConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Unfollow", role: .destructive) {
+                onUnfollow()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This show will be removed from your timeline.")
         }
     }
 }

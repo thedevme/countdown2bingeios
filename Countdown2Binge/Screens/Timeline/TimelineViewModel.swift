@@ -127,6 +127,19 @@ final class TimelineViewModel {
         await loadFollowedShows()
     }
 
+    /// Unfollow a show
+    func unfollowShow(_ show: ShowData) async {
+        guard let store else { return }
+
+        do {
+            try store.unfollow(tmdbId: show.id)
+            // Remove from local list
+            followedShows.removeAll { $0.id == show.id }
+        } catch {
+            print("Error unfollowing show: \(error)")
+        }
+    }
+
     /// Get anticipated season number for display (numberOfSeasons + 1)
     func anticipatedSeasonNumber(for show: ShowData) -> Int {
         show.numberOfSeasons + 1

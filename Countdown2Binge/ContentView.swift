@@ -11,12 +11,19 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
 
+    // Persistent first-time flags
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough: Bool = false
+
     @State private var activeTab: String = "timeline"
-    @State private var showOnboarding: Bool = true  // Start with onboarding
+    @State private var showOnboarding: Bool = false
     @State private var showWalkthrough: Bool = false
     @State private var showFreeLimitModal: Bool = false
     @State private var selectedPlan: String = ""
     @State private var followedShows: [ShowSummary] = []
+
+    // Badge manager for tab notifications (shared instance)
+    private var badgeManager: TabBadgeManager { TabBadgeManager.shared }
 
     // For FreeLimitModal compatibility (uses String names)
     @State private var followedShowNames: [String] = []
@@ -27,29 +34,42 @@ struct ContentView: View {
                 Tab("Timeline", systemImage: "list.bullet.rectangle", value: "timeline") {
                     TimelineScreen(
                         layout: "expanded",
-                        numberStyle: "rotated"
+                        numberStyle: "rotated",
+                        onInfoTap: {
+                            showWalkthrough = true
+                        }
                     )
                 }
+                .badge(badgeManager.timelineBadge ? 1 : 0)
 
                 Tab("Discover", systemImage: "safari", value: "discover") {
-                    DiscoverScreen()
+                    DiscoverScreen(badgeManager: badgeManager)
                 }
 
                 Tab("Binge Ready", systemImage: "popcorn", value: "binge") {
                     BingeReadyScreen()
                 }
+                .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
                 Tab("Settings", systemImage: "gearshape", value: "settings") {
                     SettingsScreen()
                 }
 
                 Tab(value: "search", role: .search) {
-                    SearchScreen()
+                    SearchScreen(badgeManager: badgeManager)
                 }
             }
             .tint(.c2bTeal)
+            .onChange(of: activeTab) { _, newTab in
+                // Clear badge when user visits the tab
+                badgeManager.clearBadge(for: newTab)
+            }
             .onAppear {
                 configureTabBarAppearance()
+                // Show onboarding if not completed
+                if !hasCompletedOnboarding {
+                    showOnboarding = true
+                }
             }
 
             // Onboarding overlay
@@ -61,6 +81,9 @@ struct ContentView: View {
                         followedShows = shows
                         followedShowNames = shows.map { $0.name }
 
+                        // Mark onboarding as completed
+                        hasCompletedOnboarding = true
+
                         // Save to SwiftData
                         Task {
                             await saveFollowedShows(shows)
@@ -71,10 +94,11 @@ struct ContentView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 showFreeLimitModal = true
                             }
-                        } else {
-                            // Show walkthrough directly
+                        } else if !hasSeenWalkthrough {
+                            // Show walkthrough only if not seen before
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 showWalkthrough = true
+                                hasSeenWalkthrough = true
                             }
                         }
                     }
@@ -94,10 +118,11 @@ struct ContentView: View {
                 )
                 .zIndex(95)
                 .onChange(of: showFreeLimitModal) { oldValue, newValue in
-                    if !newValue {
-                        // Show walkthrough after modal dismisses
+                    if !newValue && !hasSeenWalkthrough {
+                        // Show walkthrough after modal dismisses (only if not seen)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             showWalkthrough = true
+                            hasSeenWalkthrough = true
                         }
                     }
                 }

@@ -20,6 +20,9 @@ final class StateRefreshService {
     private let modelContainer: ModelContainer
     private let tmdbService: TMDBServiceProtocol
 
+    /// Badge manager for notifying tab badges of state changes
+    var badgeManager: TabBadgeManager?
+
     // MARK: - State
 
     private var lastRefreshDate: Date? {
@@ -27,9 +30,10 @@ final class StateRefreshService {
         set { UserDefaults.standard.set(newValue, forKey: Self.lastRefreshKey) }
     }
 
-    init(modelContainer: ModelContainer, tmdbService: TMDBServiceProtocol? = nil) {
+    init(modelContainer: ModelContainer, tmdbService: TMDBServiceProtocol? = nil, badgeManager: TabBadgeManager? = nil) {
         self.modelContainer = modelContainer
         self.tmdbService = tmdbService ?? TMDBService()
+        self.badgeManager = badgeManager
     }
 
     /// Check if 24 hours have passed since last full refresh
@@ -119,12 +123,27 @@ final class StateRefreshService {
             return
         }
 
+        // Get previous state
+        let previousStateRaw = cachedData.lifecycleStateRaw
+        let previousState = ShowLifecycleState(rawValue: previousStateRaw)
+
         // Recompute lifecycle state based on current date
         let currentState = show.lifecycleState
 
         // Update if changed
         if cachedData.lifecycleStateRaw != currentState.rawValue {
             cachedData.lifecycleStateRaw = currentState.rawValue
+
+            // Check for transition to binge-ready state
+            if let previous = previousState {
+                let wasBingeable = previous == .ended || previous == .completed || previous == .cancelled
+                let isBingeable = currentState == .ended || currentState == .completed || currentState == .cancelled
+
+                // If show transitioned from non-bingeable to bingeable, trigger badge
+                if !wasBingeable && isBingeable {
+                    badgeManager?.bingeReadyBadge = true
+                }
+            }
         }
     }
 

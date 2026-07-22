@@ -54,17 +54,31 @@ struct CachedDiscoverShowRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 14) {
-                // Episode count
+                // Episode count (for Now) or Countdown (for future)
                 VStack(spacing: 2) {
-                    Text("\(show.episodeCount)")
-                        .font(.custom(.oswald.bold, size: 28))
-                        .foregroundColor(countColor)
-                    Text("EPS")
-                        .font(.custom(.jetbrains.regular, size: 9))
-                        .foregroundColor(countColor)
-                        .tracking(0.5)
+                    if isAvailableNow {
+                        Text("\(show.episodeCount)")
+                            .font(.custom(.oswald.bold, size: numberFontSize(for: show.episodeCount)))
+                            .foregroundColor(countColor)
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
+                        Text("EPS")
+                            .font(.custom(.jetbrains.regular, size: 9))
+                            .foregroundColor(countColor)
+                            .tracking(0.5)
+                    } else if let days = show.daysUntilPremiere {
+                        Text("\(days)")
+                            .font(.custom(.oswald.bold, size: numberFontSize(for: days)))
+                            .foregroundColor(countColor)
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
+                        Text("DAYS")
+                            .font(.custom(.jetbrains.regular, size: 9))
+                            .foregroundColor(countColor)
+                            .tracking(0.5)
+                    }
                 }
-                .frame(width: 44)
+                .frame(width: 50)
 
                 // Poster thumbnail
                 if let url = posterURL {
@@ -96,6 +110,7 @@ struct CachedDiscoverShowRow: View {
                             Text("S\(show.seasonCount)")
                                 .font(.custom(.oswald.bold, size: 12))
                                 .foregroundColor(.c2bMuted)
+                                .layoutPriority(1)
                         }
                     }
 
@@ -111,20 +126,13 @@ struct CachedDiscoverShowRow: View {
                             .lineLimit(1)
                     }
                 }
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Follow button
                 Button(action: onFollowTap) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(isFollowing ? Color.c2bTeal : Color.c2bSurface)
-                            .frame(width: 44, height: 44)
-
-                        Image(systemName: isFollowing ? "bookmark.fill" : "bookmark")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(isFollowing ? Color(hex: "#04201c") : .c2bTeal)
-                    }
+                    Image(systemName: isFollowing ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(isFollowing ? .c2bTeal : .c2bMuted)
                 }
             }
             .padding(.horizontal, C2BLayout.horizontalPadding)
@@ -142,5 +150,20 @@ struct CachedDiscoverShowRow: View {
                     .font(.system(size: 16))
                     .foregroundColor(.c2bMuted)
             )
+    }
+
+    /// Scale font size based on number of digits
+    private func numberFontSize(for number: Int) -> CGFloat {
+        let digits = String(number).count
+        switch digits {
+        case 1:
+            return 28
+        case 2:
+            return 28
+        case 3:
+            return 22
+        default:
+            return 18
+        }
     }
 }

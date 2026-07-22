@@ -94,6 +94,8 @@ enum TMDBEndpoint {
             items.append(URLQueryItem(name: "sort_by", value: "popularity.desc"))
             items.append(URLQueryItem(name: "include_adult", value: "false"))
             items.append(URLQueryItem(name: "with_status", value: "0")) // Returning Series only
+            items.append(URLQueryItem(name: "without_genres", value: "16")) // Exclude Animation
+            items.append(URLQueryItem(name: "with_type", value: "2")) // Scripted only
         case .discoverByDateRange(let networkId, let startDate, let endDate, let page):
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
@@ -103,6 +105,8 @@ enum TMDBEndpoint {
             items.append(URLQueryItem(name: "page", value: String(page)))
             items.append(URLQueryItem(name: "sort_by", value: "first_air_date.asc"))
             items.append(URLQueryItem(name: "include_adult", value: "false"))
+            items.append(URLQueryItem(name: "without_genres", value: "16")) // Exclude Animation
+            items.append(URLQueryItem(name: "with_type", value: "2")) // Scripted only (no reality/talk)
         }
 
         return items

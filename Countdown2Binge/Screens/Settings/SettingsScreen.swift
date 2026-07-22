@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsScreen: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
     @State private var isPremium = false // TODO: Connect to actual premium state
+    @State private var isRefreshingDiscover = false
+
+    // Reset flags
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -81,6 +88,40 @@ struct SettingsScreen: View {
                         )
                     }
 
+                    // Developer / Reset Group
+                    SettingsGroup(label: "Reset") {
+                        SettingsRowAction(
+                            icon: "arrow.counterclockwise",
+                            iconColor: .c2bMuted,
+                            title: "Reset onboarding",
+                            subtitle: hasCompletedOnboarding ? "Completed" : "Not completed",
+                            action: {
+                                hasCompletedOnboarding = false
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "play.circle",
+                            iconColor: .c2bMuted,
+                            title: "Reset walkthrough",
+                            subtitle: hasSeenWalkthrough ? "Seen" : "Not seen",
+                            action: {
+                                hasSeenWalkthrough = false
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "arrow.trianglehead.2.clockwise.rotate.90",
+                            iconColor: .c2bTeal,
+                            title: "Refresh Discover",
+                            subtitle: isRefreshingDiscover ? "Refreshing..." : "Reload show data",
+                            isLast: true,
+                            action: {
+                                Task { await refreshDiscoverCache() }
+                            }
+                        )
+                    }
+
                     // Sign Out Group
                     SettingsGroup {
                         SettingsRowDanger(
@@ -110,5 +151,13 @@ struct SettingsScreen: View {
                 NotificationsScreen(isPremium: isPremium)
             }
         }
+    }
+
+    @MainActor
+    private func refreshDiscoverCache() async {
+        isRefreshingDiscover = true
+        let cacheService = DiscoverCacheService(modelContext: modelContext)
+        await cacheService.refreshCache()
+        isRefreshingDiscover = false
     }
 }

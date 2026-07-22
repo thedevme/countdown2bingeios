@@ -17,6 +17,10 @@ final class DiscoverCacheService {
     /// Track cached show IDs in memory to avoid DB queries for duplicate checks
     private var cachedIds: Set<Int> = []
 
+    /// Track count per bucket to ensure minimum of 8 per section
+    private var bucketCounts: [DiscoverBucket: Int] = [:]
+    private let targetPerBucket = 8
+
     private let networks: [NetworkDefinition] = [
         NetworkDefinition(id: 213, name: "Netflix", color: "#E50914"),
         NetworkDefinition(id: 3186, name: "Max", color: "#5A35E0"),
@@ -56,21 +60,22 @@ final class DiscoverCacheService {
         // Clear existing cache
         clearCache()
 
-        // Track cached IDs in memory to avoid DB queries for duplicates
+        // Reset tracking
         cachedIds.removeAll()
+        bucketCounts = Dictionary(uniqueKeysWithValues: DiscoverBucket.allCases.map { ($0, 0) })
 
-        // Fetch all networks in parallel
-        try? await withThrowingTaskGroup(of: Void.self) { group in
-            for network in networks {
-                group.addTask {
-                    await self.fetchShowsForNetwork(network)
-                }
-            }
-            try await group.waitForAll()
+        // Fetch each bucket across all networks until we have enough shows
+        for bucket in DiscoverBucket.allCases {
+            await fetchShowsForBucket(bucket)
         }
 
         try? modelContext.save()
         print("DEBUG: Discover cache refresh complete")
+
+        // Log final counts
+        for bucket in DiscoverBucket.allCases {
+            print("DEBUG: \(bucket.displayTitle): \(bucketCounts[bucket] ?? 0) shows")
+        }
     }
 
     /// Get cached shows for a bucket, optionally filtered by network
@@ -117,60 +122,91 @@ final class DiscoverCacheService {
         }
     }
 
-    private func fetchShowsForNetwork(_ network: NetworkDefinition) async {
-        print("DEBUG: Fetching shows for \(network.name)...")
+    /// Fetch shows for a bucket across all networks until we have enough
+    private func fetchShowsForBucket(_ bucket: DiscoverBucket) async {
+        let dateRange = bucket.dateRange
+        let maxPagesPerNetwork = 10
 
-        // Fetch all date buckets in parallel
-        try? await withThrowingTaskGroup(of: Void.self) { group in
-            for bucket in DiscoverBucket.allCases {
-                group.addTask {
-                    await self.fetchShowsForBucket(network: network, bucket: bucket)
+        print("DEBUG: Fetching shows for \(bucket.displayTitle)...")
+
+        // Try each network until we have enough shows
+        for network in networks {
+            // Check if we already have enough for this bucket
+            if (bucketCounts[bucket] ?? 0) >= targetPerBucket {
+                break
+            }
+
+            var page = 1
+
+            while (bucketCounts[bucket] ?? 0) < targetPerBucket && page <= maxPagesPerNetwork {
+                do {
+                    // Fetch shows in date range
+                    let response = try await tmdbService.getShowsByDateRange(
+                        networkId: network.id,
+                        startDate: dateRange.start,
+                        endDate: dateRange.end,
+                        page: page
+                    )
+
+                    // No more results from this network
+                    if response.results.isEmpty {
+                        break
+                    }
+
+                    // Get IDs that aren't already cached
+                    let newShows = response.results.filter { !cachedIds.contains($0.id) }
+                    let newShowIds = newShows.map { $0.id }
+
+                    if !newShowIds.isEmpty {
+                        // Fetch full details to get episode/season counts
+                        let fullShows = try await tmdbService.getMultipleShowDetails(ids: newShowIds)
+
+                        // Create lookup for full show data
+                        let showDataMap = Dictionary(uniqueKeysWithValues: fullShows.map { ($0.id, $0) })
+
+                        // Cache shows with full details
+                        for summary in newShows {
+                            if (bucketCounts[bucket] ?? 0) >= targetPerBucket { break }
+                            if let fullData = showDataMap[summary.id] {
+                                cacheShow(summary, fullData: fullData, network: network, bucket: bucket)
+                                bucketCounts[bucket, default: 0] += 1
+                            }
+                        }
+
+                        // Save after each batch so UI updates progressively
+                        try? modelContext.save()
+                    }
+
+                    // Check if we've reached the last page for this network
+                    if page >= response.totalPages {
+                        break
+                    }
+
+                    page += 1
+                } catch {
+                    print("DEBUG: Error fetching \(network.name) \(bucket.displayTitle) page \(page): \(error)")
+                    break
                 }
             }
-            try await group.waitForAll()
         }
+
+        print("DEBUG: \(bucket.displayTitle) has \(bucketCounts[bucket] ?? 0) shows")
     }
 
-    private func fetchShowsForBucket(network: NetworkDefinition, bucket: DiscoverBucket) async {
-        let dateRange = bucket.dateRange
-
-        do {
-            // Fetch shows in date range
-            let response = try await tmdbService.getShowsByDateRange(
-                networkId: network.id,
-                startDate: dateRange.start,
-                endDate: dateRange.end,
-                page: 1
-            )
-
-            // Take first 8 shows per bucket per network
-            let shows = Array(response.results.prefix(8))
-
-            // Cache shows directly - no extra API calls
-            for show in shows {
-                cacheShow(show, network: network, bucket: bucket)
-            }
-
-            print("DEBUG: Cached \(shows.count) shows for \(network.name) - \(bucket.displayTitle)")
-        } catch {
-            print("DEBUG: Error fetching \(network.name) \(bucket.displayTitle): \(error)")
-        }
-    }
-
-    private func cacheShow(_ summary: TMDBShowSummary, network: NetworkDefinition, bucket: DiscoverBucket) {
+    private func cacheShow(_ summary: TMDBShowSummary, fullData: ShowData, network: NetworkDefinition, bucket: DiscoverBucket) {
         // Check if already cached using in-memory Set (avoid DB query)
         guard !cachedIds.contains(summary.id) else { return }
         cachedIds.insert(summary.id)
 
-        // Parse first air date
-        var firstAirDate: Date?
-        if let dateString = summary.firstAirDate {
+        // Use firstAirDate from full data, fallback to summary
+        var firstAirDate: Date? = fullData.firstAirDate
+        if firstAirDate == nil, let dateString = summary.firstAirDate {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
             firstAirDate = formatter.date(from: dateString)
         }
 
-        // Create cached show - no extra API call for counts
+        // Create cached show with full episode/season counts
         let cachedShow = CachedDiscoverShow(
             tmdbId: summary.id,
             name: summary.name,
@@ -179,8 +215,8 @@ final class DiscoverCacheService {
             backdropPath: summary.backdropPath,
             firstAirDate: firstAirDate,
             voteAverage: summary.voteAverage ?? 0,
-            episodeCount: 0,
-            seasonCount: 0,
+            episodeCount: fullData.numberOfEpisodes,
+            seasonCount: fullData.numberOfSeasons,
             networkId: network.id,
             networkName: network.name,
             networkColor: network.color,

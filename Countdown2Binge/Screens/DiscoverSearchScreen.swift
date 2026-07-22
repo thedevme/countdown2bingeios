@@ -9,6 +9,9 @@ struct SearchScreen: View {
     @State private var selectedGenre: String = "All"
     @State private var navigationPath = NavigationPath()
 
+    /// Badge manager for tab notifications
+    var badgeManager: TabBadgeManager?
+
     private let tabs = ["trending": "Trending", "genres": "Genres", "networks": "Networks"]
     private let genres = ["All", "Action", "Drama", "Sci-Fi", "Comedy", "Crime", "Fantasy", "Thriller", "Romance"]
 
@@ -226,6 +229,9 @@ struct SearchScreen: View {
             FollowConfirmationSheet(
                 show: pendingShow,
                 onSave: {
+                    // Trigger badge based on show state
+                    badgeManager?.showFollowed(pendingShow)
+
                     Task {
                         await viewModel.confirmPendingFollow()
                     }

@@ -5,6 +5,7 @@ import SwiftData
 struct TimelineScreen: View {
     let layout: String // "expanded" or "compact"
     let numberStyle: String // "rotated", "stacked", "chip"
+    var onInfoTap: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: TimelineViewModel = TimelineViewModel()
@@ -26,7 +27,10 @@ struct TimelineScreen: View {
         ScrollView {
             VStack(spacing: 0) {
                 // Header
-                TimelineHeader(onBellTap: { showNotificationSettings = true })
+                TimelineHeader(
+                    onBellTap: { showNotificationSettings = true },
+                    onInfoTap: onInfoTap
+                )
 
                     // Stats Bar
                     StatsBar(
@@ -98,7 +102,13 @@ struct TimelineScreen: View {
                 }
             }
             .navigationDestination(item: $selectedShowForDetail) { show in
-                FollowedShowDetail(show: show, onDismiss: { selectedShowForDetail = nil })
+                FollowedShowDetail(
+                    show: show,
+                    onDismiss: { selectedShowForDetail = nil },
+                    onUnfollow: {
+                        Task { await viewModel.unfollowShow(show) }
+                    }
+                )
                     .navigationBarHidden(true)
             }
         }
@@ -202,6 +212,7 @@ struct TimelineEmptySection: View {
 // MARK: - Timeline Header
 struct TimelineHeader: View {
     let onBellTap: () -> Void
+    var onInfoTap: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -243,6 +254,22 @@ struct TimelineHeader: View {
             }
 
             Spacer()
+
+            // Info Button (launches walkthrough)
+            if let onInfoTap {
+                Button(action: onInfoTap) {
+                    Image(systemName: "info")
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundColor(Color(hex: "#cfcfcf"))
+                        .frame(width: 42, height: 42)
+                        .background(Color.white.opacity(0.04))
+                        .cornerRadius(21)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
+                }
+            }
 
             // Notifications Button
             Button(action: onBellTap) {

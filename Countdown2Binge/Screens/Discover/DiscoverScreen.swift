@@ -15,6 +15,9 @@ struct DiscoverScreen: View {
     @State private var selectedNetwork: String = "all"
     @State private var navigationPath = NavigationPath()
 
+    /// Badge manager for tab notifications
+    var badgeManager: TabBadgeManager?
+
     enum DiscoverTab {
         case soonerLater
         case byNetwork
@@ -150,6 +153,9 @@ struct DiscoverScreen: View {
             FollowConfirmationSheet(
                 show: pendingShow,
                 onSave: {
+                    // Trigger badge based on show state
+                    badgeManager?.showFollowed(pendingShow)
+
                     Task {
                         await viewModel.confirmPendingFollow()
                     }
