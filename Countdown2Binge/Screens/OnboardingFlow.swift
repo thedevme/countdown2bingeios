@@ -1,4 +1,5 @@
 import SwiftUI
+import RevenueCat
 
 // MARK: - Onboarding Flow
 struct OnboardingFlow: View {
@@ -6,8 +7,10 @@ struct OnboardingFlow: View {
     let onComplete: (String, [ShowSummary]) -> Void
 
     @State private var currentStep: Int = 0
-    @State private var selectedPlan: String = "annual"
+    @State private var selectedPlan: String = "yearly"
     @State private var viewModel = OnboardingViewModel()
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String?
 
     private let totalSteps = 7
 
@@ -65,22 +68,137 @@ struct OnboardingFlow: View {
                 OnboardingFooter(
                     currentStep: currentStep,
                     totalSteps: totalSteps,
-                    canProceed: currentStep != 3 || viewModel.hasSelections,
+                    canProceed: (currentStep != 3 || viewModel.hasSelections) && !isPurchasing,
+                    selectedPlan: selectedPlan,
+                    isPurchasing: isPurchasing,
                     onNext: {
                         if currentStep < totalSteps - 1 {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                                 currentStep += 1
                             }
                         } else {
-                            // Complete onboarding with selected plan and shows
-                            onComplete(selectedPlan, viewModel.getSelectedShows())
-                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                                isPresented = false
+                            // On paywall step - initiate purchase
+                            Task {
+                                await handlePurchase()
                             }
+                        }
+                    },
+                    onRestore: {
+                        Task {
+                            await handleRestore()
                         }
                     }
                 )
             }
+
+            // Purchase error alert
+            if let error = purchaseError {
+                Color.black.opacity(0.5).ignoresSafeArea()
+                    .onTapGesture { purchaseError = nil }
+
+                VStack(spacing: 16) {
+                    Text("PURCHASE FAILED")
+                        .font(.custom(.oswald.bold, size: 18))
+                        .foregroundColor(.white)
+
+                    Text(error)
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "#a1a1aa"))
+                        .multilineTextAlignment(.center)
+
+                    Button("OK") {
+                        purchaseError = nil
+                    }
+                    .font(.custom(.oswald.bold, size: 16))
+                    .foregroundColor(Color(hex: "#04201c"))
+                    .padding(.horizontal, 40)
+                    .padding(.vertical, 12)
+                    .background(Color(hex: "#2dd4bf"))
+                    .cornerRadius(10)
+                }
+                .padding(24)
+                .background(Color(hex: "#1a1a1c"))
+                .cornerRadius(16)
+                .padding(40)
+            }
+        }
+    }
+
+    // MARK: - Purchase Handling
+
+    private func handlePurchase() async {
+        // Map plan ID to RevenueCat package identifier
+        let packageId: String
+        switch selectedPlan {
+        case "yearly":
+            packageId = "$rc_annual"
+        case "monthly":
+            packageId = "$rc_monthly"
+        case "lifetime":
+            packageId = "$rc_lifetime"
+        default:
+            // Unknown plan, complete without purchase
+            completeOnboarding()
+            return
+        }
+
+        isPurchasing = true
+        purchaseError = nil
+
+        do {
+            let offerings = try await PremiumManager.shared.getOfferings()
+
+            guard let currentOffering = offerings.current,
+                  let package = currentOffering.package(identifier: packageId) else {
+                print("OnboardingFlow: Package \(packageId) not found in offerings")
+                // Package not found - complete anyway (user can purchase later)
+                completeOnboarding()
+                return
+            }
+
+            let success = try await PremiumManager.shared.purchase(package: package)
+
+            if success {
+                // Purchase successful
+                completeOnboarding()
+            } else {
+                // User cancelled - still complete onboarding but as free
+                selectedPlan = "free"
+                completeOnboarding()
+            }
+        } catch {
+            isPurchasing = false
+            purchaseError = error.localizedDescription
+        }
+    }
+
+    private func completeOnboarding() {
+        isPurchasing = false
+        onComplete(selectedPlan, viewModel.getSelectedShows())
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            isPresented = false
+        }
+    }
+
+    private func handleRestore() async {
+        isPurchasing = true
+        purchaseError = nil
+
+        do {
+            try await PremiumManager.shared.restorePurchases()
+
+            if PremiumManager.shared.isPremium {
+                // Restore successful - user has premium
+                selectedPlan = "restored"
+                completeOnboarding()
+            } else {
+                // No purchases to restore
+                isPurchasing = false
+                purchaseError = "No previous purchases found to restore."
+            }
+        } catch {
+            isPurchasing = false
+            purchaseError = error.localizedDescription
         }
     }
 }
@@ -169,9 +287,16 @@ struct OnboardingFooter: View {
     let currentStep: Int
     let totalSteps: Int
     let canProceed: Bool
+    let selectedPlan: String
+    var isPurchasing: Bool = false
     let onNext: () -> Void
+    var onRestore: (() -> Void)? = nil
 
     private var buttonText: String {
+        if isPurchasing {
+            return "PROCESSING..."
+        }
+
         switch currentStep {
         case 0, 1:
             return "CONTINUE"
@@ -184,9 +309,18 @@ struct OnboardingFooter: View {
         case 5:
             return "CONTINUE"
         case 6:
-            return "START 7-DAY FREE TRIAL"
+            return paywallButtonText
         default:
             return "CONTINUE"
+        }
+    }
+
+    private var paywallButtonText: String {
+        switch selectedPlan {
+        case "lifetime":
+            return "PURCHASE LIFETIME"
+        default:
+            return "START 7-DAY FREE TRIAL"
         }
     }
 
@@ -197,29 +331,38 @@ struct OnboardingFooter: View {
     var body: some View {
         VStack(spacing: 0) {
             Button(action: onNext) {
-                Text(buttonText)
-                    .font(.custom(.oswald.bold, size: 17))
-                    .foregroundColor(canProceed ? Color(hex: "#04201c") : Color(hex: "#71717a"))
-                    .textCase(.uppercase)
-                    .tracking(0.17)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(canProceed ? Color(hex: "#2dd4bf") : Color.white.opacity(0.07))
-                    .cornerRadius(15)
+                HStack(spacing: 10) {
+                    if isPurchasing {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "#04201c")))
+                            .scaleEffect(0.8)
+                    }
+                    Text(buttonText)
+                        .font(.custom(.oswald.bold, size: 17))
+                        .foregroundColor(canProceed ? Color(hex: "#04201c") : Color(hex: "#71717a"))
+                        .textCase(.uppercase)
+                        .tracking(0.17)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(canProceed ? Color(hex: "#2dd4bf") : Color.white.opacity(0.07))
+                .cornerRadius(15)
             }
-            .disabled(!canProceed)
+            .disabled(!canProceed || isPurchasing)
             .padding(.horizontal, 22)
             .padding(.bottom, 26)
 
             // Legal text for paywall
             if currentStep == totalSteps - 1 {
                 VStack(spacing: 8) {
-                    Text("Trial auto-renews unless canceled 24h before end.")
-                        .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                        .foregroundColor(Color(hex: "#71717a"))
-                        .textCase(.uppercase)
-                        .tracking(1.6)
-                        .multilineTextAlignment(.center)
+                    if selectedPlan != "lifetime" {
+                        Text("Trial auto-renews unless canceled 24h before end.")
+                            .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
+                            .foregroundColor(Color(hex: "#71717a"))
+                            .textCase(.uppercase)
+                            .tracking(1.6)
+                            .multilineTextAlignment(.center)
+                    }
 
                     HStack(spacing: 12) {
                         Button(action: {}) {
@@ -246,7 +389,7 @@ struct OnboardingFooter: View {
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                             .foregroundColor(Color(hex: "#71717a"))
 
-                        Button(action: {}) {
+                        Button(action: { onRestore?() }) {
                             Text("Restore")
                                 .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                                 .foregroundColor(Color(hex: "#a1a1aa"))
@@ -1051,9 +1194,9 @@ struct PaywallStep: View {
     @Binding var selectedPlan: String
 
     private let plans = [
-        ("annual", "Pro Annual", "$39.99", "/yr", "Best value · save 33%", true),
-        ("monthly", "Pro Monthly", "$4.99", "/mo", "Billed monthly", false),
-        ("free", "Free", "$0", "", "Limited — no alerts", false)
+        ("yearly", "Pro Yearly", "$9.99", "/yr", "Best value · save 44%", true),
+        ("monthly", "Pro Monthly", "$1.49", "/mo", "Billed monthly", false),
+        ("lifetime", "Pro Lifetime", "$29.99", "", "One-time purchase", false)
     ]
 
     var body: some View {

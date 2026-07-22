@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
+import RevenueCat
 
 struct NotificationsScreen: View {
     let isPremium: Bool
     @Environment(\.dismiss) private var dismiss
+    @State private var showPaywall = false
+    @State private var selectedPlan = "yearly"
+    @State private var isPurchasing = false
+    @State private var purchaseError: String?
 
     // Notification settings
     @AppStorage("notif_bingeReady") private var bingeReady = true
@@ -50,80 +55,110 @@ struct NotificationsScreen: View {
                 }
                 .padding(.bottom, 18)
 
-                // Essentials Group (all users)
-                SettingsGroup(label: "Essentials") {
-                    SettingsRowToggle(
-                        icon: "bell.fill",
-                        iconColor: .c2bTealBright,
-                        title: "Binge ready",
-                        subtitle: "When a full season finishes releasing",
-                        isOn: $bingeReady
+                // Premium required for all notifications
+                if !isPremium {
+                    // Show upgrade prompt for free users
+                    VStack(spacing: 16) {
+                        Image(systemName: "bell.slash.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.c2bMuted)
+
+                        Text("NOTIFICATIONS REQUIRE PREMIUM")
+                            .font(.custom(.oswald.bold, size: 18))
+                            .foregroundColor(.white)
+
+                        Text("Upgrade to get notified when seasons are binge-ready, premiere days, and more.")
+                            .font(.system(size: 14))
+                            .foregroundColor(.c2bMuted)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(2)
+
+                        Button(action: { showPaywall = true }) {
+                            Text("UPGRADE TO PREMIUM")
+                                .font(.custom(.oswald.bold, size: 16))
+                                .foregroundColor(Color(hex: "#04201c"))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Color.c2bTeal)
+                                .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
+                    }
+                    .padding(24)
+                    .background(Color.white.opacity(0.03))
+                    .cornerRadius(16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
                     )
+                } else {
+                    // Premium users see all notification settings
+                    SettingsGroup(label: "Essentials") {
+                        SettingsRowToggle(
+                            icon: "bell.fill",
+                            iconColor: .c2bTealBright,
+                            title: "Binge ready",
+                            subtitle: "When a full season finishes releasing",
+                            isOn: $bingeReady
+                        )
 
-                    SettingsRowToggle(
-                        title: "Premiere day",
-                        subtitle: "When a followed season premieres",
-                        isLast: true,
-                        isOn: $premiere
-                    )
-                }
+                        SettingsRowToggle(
+                            title: "Premiere day",
+                            subtitle: "When a followed season premieres",
+                            isLast: true,
+                            isOn: $premiere
+                        )
+                    }
 
-                // Advanced Section Header
-                HStack(spacing: 8) {
-                    Text("ADVANCED")
-                        .font(.custom(.jetbrains.regular, size: 9))
-                        .tracking(1.44)
-                        .foregroundColor(.c2bMuted)
+                    // Advanced Section Header
+                    HStack(spacing: 8) {
+                        Text("ADVANCED")
+                            .font(.custom(.jetbrains.regular, size: 9))
+                            .tracking(1.44)
+                            .foregroundColor(.c2bMuted)
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.bottom, 10)
 
-                    SettingsPremiumBadge()
-                }
-                .padding(.horizontal, 4)
-                .padding(.bottom, 10)
-
-                // Advanced Group (premium-gated)
-                ZStack {
+                    // Advanced Group
                     VStack(spacing: 0) {
                         SettingsRowToggle(
                             title: "Almost there",
                             subtitle: "Heads-up when a season is 1 episode from done",
-                            isOn: $almostThere,
-                            disabled: !isPremium
+                            isOn: $almostThere
                         )
 
                         SettingsRowCustom(
                             title: "Countdown lead time",
                             subtitle: "Remind me before binge-ready day"
                         ) {
-                            NotificationLeadPicker(selectedDays: $leadDays, disabled: !isPremium)
+                            NotificationLeadPicker(selectedDays: $leadDays, disabled: false)
                         }
 
                         SettingsRowToggle(
                             title: "Per-show timing",
                             subtitle: "Set alerts individually on each show",
-                            isOn: $perShow,
-                            disabled: !isPremium
+                            isOn: $perShow
                         )
 
                         SettingsRowToggle(
                             title: "Weekly episode drops",
                             subtitle: "Notify on every new episode (opt-in)",
-                            isOn: $weeklyDrop,
-                            disabled: !isPremium
+                            isOn: $weeklyDrop
                         )
 
                         SettingsRowCustom(
                             title: "Digest",
                             subtitle: "Roll upcoming shows into one summary"
                         ) {
-                            NotificationDigestPicker(selectedOption: $digest, disabled: !isPremium)
+                            NotificationDigestPicker(selectedOption: $digest, disabled: false)
                         }
 
                         SettingsRowToggle(
                             title: "Quiet hours",
                             subtitle: "Mute 11pm – 8am",
                             isLast: true,
-                            isOn: $quietHours,
-                            disabled: !isPremium
+                            isOn: $quietHours
                         )
                     }
                     .background(Color.white.opacity(0.03))
@@ -132,29 +167,16 @@ struct NotificationsScreen: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.white.opacity(0.08), lineWidth: 1)
                     )
-                    .opacity(isPremium ? 1 : 0.5)
-                    .saturation(isPremium ? 1 : 0.4)
-                    .allowsHitTesting(isPremium)
+                    .padding(.bottom, 22)
 
-                    // Premium overlay for free users
-                    if !isPremium {
-                        SettingsPremiumOverlay {
-                            // TODO: Show premium paywall
-                        }
-                    }
-                }
-                .padding(.bottom, 22)
-
-                // Footer text
-                Text(isPremium
-                    ? "You're on Premium — all advanced alerts available."
-                    : "Free includes binge-ready & premiere alerts. Premium unlocks the rest."
-                )
-                .font(.system(size: 11.5))
-                .foregroundColor(.c2bMuted)
-                .multilineTextAlignment(.center)
-                .lineSpacing(1.5)
-                .frame(maxWidth: .infinity)
+                    // Footer text
+                    Text("You're on Premium — all alerts available.")
+                        .font(.system(size: 11.5))
+                        .foregroundColor(.c2bMuted)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(1.5)
+                        .frame(maxWidth: .infinity)
+                } // end else (premium users)
 
                 Spacer()
                     .frame(height: 150)
@@ -164,5 +186,13 @@ struct NotificationsScreen: View {
         }
         .background(Color.c2bBackground)
         .navigationBarHidden(true)
+        .sheet(isPresented: $showPaywall) {
+            DiscoverPaywallSheet(
+                selectedPlan: $selectedPlan,
+                isPurchasing: $isPurchasing,
+                purchaseError: $purchaseError,
+                onDismiss: { showPaywall = false }
+            )
+        }
     }
 }

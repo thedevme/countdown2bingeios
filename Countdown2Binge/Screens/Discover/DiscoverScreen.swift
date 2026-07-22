@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 struct DiscoverScreen: View {
     @Environment(\.modelContext) private var modelContext
@@ -14,6 +15,10 @@ struct DiscoverScreen: View {
     @State private var selectedTab: DiscoverTab = .soonerLater
     @State private var selectedNetwork: String = "all"
     @State private var navigationPath = NavigationPath()
+    @State private var showPaywall: Bool = false
+    @State private var selectedPlan: String = "yearly"
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String?
 
     /// Badge manager for tab notifications
     var badgeManager: TabBadgeManager?
@@ -161,6 +166,158 @@ struct DiscoverScreen: View {
                     }
                 }
             )
+        }
+        .onChange(of: viewModel.showPremiumUpgrade) { _, show in
+            if show {
+                showPaywall = true
+                viewModel.showPremiumUpgrade = false
+            }
+        }
+        .sheet(isPresented: $showPaywall) {
+            DiscoverPaywallSheet(
+                selectedPlan: $selectedPlan,
+                isPurchasing: $isPurchasing,
+                purchaseError: $purchaseError,
+                onDismiss: { showPaywall = false }
+            )
+        }
+    }
+}
+
+// MARK: - Discover Paywall Sheet
+struct DiscoverPaywallSheet: View {
+    @Binding var selectedPlan: String
+    @Binding var isPurchasing: Bool
+    @Binding var purchaseError: String?
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color(hex: "#000000").ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Header with close button
+                HStack {
+                    Spacer()
+                    Button(action: onDismiss) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(Color(hex: "#71717a"))
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.08))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 22)
+                .padding(.top, 16)
+
+                // Reuse PaywallStep content
+                PaywallStep(followedCount: 3, selectedPlan: $selectedPlan)
+
+                // Purchase button
+                Button(action: {
+                    Task { await handlePurchase() }
+                }) {
+                    HStack(spacing: 10) {
+                        if isPurchasing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "#04201c")))
+                                .scaleEffect(0.8)
+                        }
+                        Text(selectedPlan == "lifetime" ? "PURCHASE LIFETIME" : "START 7-DAY FREE TRIAL")
+                            .font(.custom(.oswald.bold, size: 17))
+                            .foregroundColor(Color(hex: "#04201c"))
+                            .textCase(.uppercase)
+                            .tracking(0.17)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color(hex: "#2dd4bf"))
+                    .cornerRadius(15)
+                }
+                .disabled(isPurchasing)
+                .padding(.horizontal, 22)
+                .padding(.bottom, 16)
+
+                // Legal text
+                if selectedPlan != "lifetime" {
+                    Text("Trial auto-renews unless canceled 24h before end.")
+                        .font(.custom(.jetbrains.bold, size: 9))
+                        .foregroundColor(Color(hex: "#71717a"))
+                        .textCase(.uppercase)
+                        .tracking(1.6)
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom, 16)
+                }
+            }
+
+            // Error overlay
+            if let error = purchaseError {
+                Color.black.opacity(0.5).ignoresSafeArea()
+                    .onTapGesture { purchaseError = nil }
+
+                VStack(spacing: 16) {
+                    Text("PURCHASE FAILED")
+                        .font(.custom(.oswald.bold, size: 18))
+                        .foregroundColor(.white)
+
+                    Text(error)
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "#a1a1aa"))
+                        .multilineTextAlignment(.center)
+
+                    Button("OK") { purchaseError = nil }
+                        .font(.custom(.oswald.bold, size: 16))
+                        .foregroundColor(Color(hex: "#04201c"))
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 12)
+                        .background(Color(hex: "#2dd4bf"))
+                        .cornerRadius(10)
+                }
+                .padding(24)
+                .background(Color(hex: "#1a1a1c"))
+                .cornerRadius(16)
+                .padding(40)
+            }
+        }
+    }
+
+    private func handlePurchase() async {
+        let packageId: String
+        switch selectedPlan {
+        case "yearly":
+            packageId = "$rc_annual"
+        case "monthly":
+            packageId = "$rc_monthly"
+        case "lifetime":
+            packageId = "$rc_lifetime"
+        default:
+            onDismiss()
+            return
+        }
+
+        isPurchasing = true
+        purchaseError = nil
+
+        do {
+            let offerings = try await PremiumManager.shared.getOfferings()
+
+            guard let currentOffering = offerings.current,
+                  let package = currentOffering.package(identifier: packageId) else {
+                isPurchasing = false
+                onDismiss()
+                return
+            }
+
+            let success = try await PremiumManager.shared.purchase(package: package)
+            isPurchasing = false
+
+            if success {
+                onDismiss()
+            }
+        } catch {
+            isPurchasing = false
+            purchaseError = error.localizedDescription
         }
     }
 }

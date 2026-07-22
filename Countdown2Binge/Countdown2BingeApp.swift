@@ -47,6 +47,7 @@ struct Countdown2BingeApp: App {
                     if !hasLaunched {
                         hasLaunched = true
                         Task {
+                            await PremiumManager.shared.configure()
                             await stateRefreshService.onAppLaunch()
                         }
                     }

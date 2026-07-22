@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 // MARK: - Search Screen
 struct SearchScreen: View {
@@ -8,6 +9,10 @@ struct SearchScreen: View {
     @State private var selectedTab: String = "trending"
     @State private var selectedGenre: String = "All"
     @State private var navigationPath = NavigationPath()
+    @State private var showPaywall: Bool = false
+    @State private var selectedPlan: String = "yearly"
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String?
 
     /// Badge manager for tab notifications
     var badgeManager: TabBadgeManager?
@@ -236,6 +241,20 @@ struct SearchScreen: View {
                         await viewModel.confirmPendingFollow()
                     }
                 }
+            )
+        }
+        .onChange(of: viewModel.showPremiumUpgrade) { _, show in
+            if show {
+                showPaywall = true
+                viewModel.showPremiumUpgrade = false
+            }
+        }
+        .sheet(isPresented: $showPaywall) {
+            DiscoverPaywallSheet(
+                selectedPlan: $selectedPlan,
+                isPurchasing: $isPurchasing,
+                purchaseError: $purchaseError,
+                onDismiss: { showPaywall = false }
             )
         }
     }

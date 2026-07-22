@@ -80,6 +80,9 @@ final class DiscoverViewModel {
     /// Show pending follow confirmation - triggers confirmation sheet
     private(set) var pendingFollowShow: ShowData?
 
+    /// Set to true when user hits free tier limit - triggers paywall
+    var showPremiumUpgrade: Bool = false
+
     var searchText: String = "" {
         didSet {
             searchTask?.cancel()
@@ -188,6 +191,12 @@ final class DiscoverViewModel {
                 print("Error unfollowing show: \(error)")
             }
         } else {
+            // Check premium limit before following
+            if !PremiumManager.shared.canAddShow(currentCount: followedShowIds.count) {
+                showPremiumUpgrade = true
+                return
+            }
+
             // Show confirmation sheet first - don't follow yet
             do {
                 let fullShowData = try await tmdbService.getShowDetails(id: show.id)
@@ -330,6 +339,13 @@ final class DiscoverViewModel {
         )
 
         if willFollow {
+            // Check premium limit before following
+            if !PremiumManager.shared.canAddShow(currentCount: followedShowIds.count) {
+                showPremiumUpgrade = true
+                loadingFollowId = nil
+                return
+            }
+
             // Show confirmation sheet - we already have full ShowData
             pendingFollowShow = show
         } else {

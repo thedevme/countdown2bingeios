@@ -7,12 +7,18 @@
 
 import SwiftUI
 import SwiftData
+import RevenueCat
 
 struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
-    @State private var isPremium = false // TODO: Connect to actual premium state
+    @State private var showPaywall = false
+    @State private var selectedPlan = "yearly"
+    @State private var isPurchasing = false
+    @State private var purchaseError: String?
     @State private var isRefreshingDiscover = false
+
+    private var isPremium: Bool { PremiumManager.shared.isPremium }
 
     // Reset flags
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
@@ -50,7 +56,7 @@ struct SettingsScreen: View {
                     // Premium CTA (free users only)
                     if !isPremium {
                         SettingsPremiumCTA {
-                            // TODO: Show premium paywall
+                            showPaywall = true
                         }
                     }
 
@@ -89,7 +95,20 @@ struct SettingsScreen: View {
                     }
 
                     // Developer / Reset Group
-                    SettingsGroup(label: "Reset") {
+                    SettingsGroup(label: "Developer") {
+                        #if DEBUG
+                        SettingsRowToggle(
+                            icon: "star.fill",
+                            iconColor: .yellow,
+                            title: "Debug Premium",
+                            subtitle: PremiumManager.shared.debugPremiumOverride ? "Enabled" : "Disabled",
+                            isOn: Binding(
+                                get: { PremiumManager.shared.debugPremiumOverride },
+                                set: { PremiumManager.shared.debugPremiumOverride = $0 }
+                            )
+                        )
+                        #endif
+
                         SettingsRowAction(
                             icon: "arrow.counterclockwise",
                             iconColor: .c2bMuted,
@@ -149,6 +168,14 @@ struct SettingsScreen: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showNotifications) {
                 NotificationsScreen(isPremium: isPremium)
+            }
+            .sheet(isPresented: $showPaywall) {
+                DiscoverPaywallSheet(
+                    selectedPlan: $selectedPlan,
+                    isPurchasing: $isPurchasing,
+                    purchaseError: $purchaseError,
+                    onDismiss: { showPaywall = false }
+                )
             }
         }
     }

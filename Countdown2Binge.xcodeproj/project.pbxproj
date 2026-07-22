@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4602CAB730114363001185C9 /* ReceiptParser in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAB630114363001185C9 /* ReceiptParser */; };
+		4602CAB930114363001185C9 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAB830114363001185C9 /* RevenueCat */; };
+		4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CABA30114363001185C9 /* RevenueCatUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		46AEA12B300005C500F05C7B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +71,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4602CAB930114363001185C9 /* RevenueCat in Frameworks */,
+				4602CAB730114363001185C9 /* ReceiptParser in Frameworks */,
+				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +134,9 @@
 			);
 			name = Countdown2Binge;
 			packageProductDependencies = (
+				4602CAB630114363001185C9 /* ReceiptParser */,
+				4602CAB830114363001185C9 /* RevenueCat */,
+				4602CABA30114363001185C9 /* RevenueCatUI */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -208,6 +220,9 @@
 			);
 			mainGroup = 46AEA112300005C300F05C7B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
 			projectDirPath = "";
@@ -593,6 +608,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.81.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4602CAB630114363001185C9 /* ReceiptParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = ReceiptParser;
+		};
+		4602CAB830114363001185C9 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		4602CABA30114363001185C9 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCatUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 46AEA113300005C300F05C7B /* Project object */;
 }
