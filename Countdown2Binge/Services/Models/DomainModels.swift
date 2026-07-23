@@ -255,37 +255,48 @@ struct SeasonData: Identifiable, Codable, Sendable, Hashable {
         seasonNumber == 0
     }
 
-    // MARK: - Lifecycle Helpers
+    // MARK: - Lifecycle Helpers (all use episode data as source of truth)
 
-    /// Check if season has started airing
-    var hasStarted: Bool {
-        // Use season airDate, or fall back to first episode's air date
-        let firstEpisodeDate = episodes
+    /// First episode of the season (by episode number)
+    private var firstEpisode: EpisodeData? {
+        episodes
             .filter { $0.episodeNumber > 0 }
-            .min(by: { $0.episodeNumber < $1.episodeNumber })?.airDate
-
-        guard let startDate = airDate ?? firstEpisodeDate else {
-            return false // No date means NOT started
-        }
-        return startDate <= Date()
+            .min(by: { $0.episodeNumber < $1.episodeNumber })
     }
 
-    /// Check if season is complete (all episodes have aired)
-    var isComplete: Bool {
-        guard hasStarted else { return false }
-        guard !episodes.isEmpty else {
-            // No episode data - check if we have episodeCount and airDate is in past
-            if episodeCount > 0, let airDate = airDate {
-                // Estimate: assume ~7 days per episode from air date
-                let estimatedEndDate = Calendar.current.date(byAdding: .day, value: episodeCount * 7, to: airDate) ?? airDate
-                return estimatedEndDate <= Date()
-            }
+    /// Finale episode - explicitly marked as finale type
+    var finaleEpisode: EpisodeData? {
+        episodes.first { $0.episodeType == .finale }
+    }
+
+    /// Premiere date from first episode's air date
+    var premiereDate: Date? {
+        firstEpisode?.airDate
+    }
+
+    /// Finale date from finale episode's air date
+    var finaleDate: Date? {
+        finaleEpisode?.airDate
+    }
+
+    /// Check if season has started airing (first episode's air date has passed)
+    var hasStarted: Bool {
+        guard let premiereDate = premiereDate else {
             return false
         }
+        let calendar = Calendar.current
+        return calendar.startOfDay(for: premiereDate) <= calendar.startOfDay(for: Date())
+    }
 
-        // Check if all episodes have aired
-        let airedEpisodes = episodes.filter { $0.hasAired }
-        return airedEpisodes.count >= episodeCount && episodeCount > 0
+    /// Check if season is complete (finale episode has aired)
+    var isComplete: Bool {
+        guard hasStarted else { return false }
+        guard let finaleEp = finaleEpisode, let finaleAirDate = finaleEp.airDate else {
+            return false // No finale episode = not complete
+        }
+        let calendar = Calendar.current
+        // Complete if finale date is in the past (not today)
+        return calendar.startOfDay(for: finaleAirDate) < calendar.startOfDay(for: Date())
     }
 
     /// Check if today is the finale day
@@ -296,32 +307,37 @@ struct SeasonData: Identifiable, Codable, Sendable, Hashable {
         return Calendar.current.isDateInToday(finaleDate)
     }
 
-    /// The finale date (last episode's air date)
-    var finaleDate: Date? {
-        episodes
-            .filter { $0.airDate != nil }
-            .max(by: { $0.episodeNumber < $1.episodeNumber })?
-            .airDate
-    }
-
     /// Days until season premiere (nil if already started or no date)
     var daysUntilPremiere: Int? {
-        let firstEpisodeDate = episodes
-            .filter { $0.episodeNumber > 0 }
-            .min(by: { $0.episodeNumber < $1.episodeNumber })?.airDate
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
 
-        guard let startDate = airDate ?? firstEpisodeDate else { return nil }
-        guard startDate > Date() else { return nil }
+        guard let premiereDate = premiereDate else { return nil }
+        let startOfPremiereDate = calendar.startOfDay(for: premiereDate)
 
-        let days = Calendar.current.dateComponents([.day], from: Date(), to: startDate).day
-        return days
+        // Return nil if already started
+        guard startOfPremiereDate >= startOfToday else { return nil }
+
+        return calendar.dateComponents([.day], from: startOfToday, to: startOfPremiereDate).day
     }
 
-    /// Days until season finale (nil if complete or no data)
+    /// Days until season finale (nil if no finale episode or finale has passed)
     var daysUntilFinale: Int? {
-        guard hasStarted, !isComplete else { return nil }
-        guard let finaleDate = finaleDate, finaleDate > Date() else { return nil }
-        return Calendar.current.dateComponents([.day], from: Date(), to: finaleDate).day
+        guard hasStarted else { return nil }
+
+        // Must have a finale episode with an air date
+        guard let finaleDate = finaleDate else { return nil }
+
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfFinaleDate = calendar.startOfDay(for: finaleDate)
+
+        // Finale must be today or in the future to show countdown
+        guard startOfFinaleDate >= startOfToday else {
+            return nil
+        }
+
+        return calendar.dateComponents([.day], from: startOfToday, to: startOfFinaleDate).day
     }
 }
 

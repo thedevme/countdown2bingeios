@@ -11,15 +11,29 @@ struct FollowedShowDetail: View {
     let show: ShowData
     let onDismiss: () -> Void
     let onUnfollow: () -> Void
+    var onSpinoffTap: (Int) -> Void = { _ in }
 
     @State private var selectedSeason: Int
     @State private var notifyEnabled = true
     @State private var showShareSheet = false
+    @State private var selectedTab: ShowDetailTab = .episodes
 
-    init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}) {
+    // Franchise data for spinoffs
+    private var franchise: Franchise? {
+        FranchiseService.shared.franchise(forShowId: show.id)
+    }
+
+    private var spinoffCount: Int {
+        guard let franchise = franchise else { return 0 }
+        // Count all related shows in the franchise (excluding current show)
+        return franchise.allTmdbIds.filter { $0 != show.id }.count
+    }
+
+    init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
         self.show = show
         self.onDismiss = onDismiss
         self.onUnfollow = onUnfollow
+        self.onSpinoffTap = onSpinoffTap
         self._selectedSeason = State(initialValue: show.numberOfSeasons)
     }
 
@@ -47,7 +61,29 @@ struct FollowedShowDetail: View {
                         BingeClock(days: days)
                     }
 
-                    DetailEpisodeSection(show: show)
+                    // Episodes / Spin-offs Tab Switcher (Premium feature)
+                    if PremiumManager.shared.canViewSpinoffs {
+                        ShowDetailTabSwitcher(
+                            selectedTab: $selectedTab,
+                            spinoffCount: spinoffCount
+                        )
+                        .padding(.top, 26)
+                        .padding(.bottom, 4)
+
+                        // Tab Content
+                        if selectedTab == .episodes {
+                            DetailEpisodeSection(show: show)
+                        } else {
+                            ShowDetailSpinoffsSection(
+                                show: show,
+                                franchise: franchise,
+                                onSpinoffTap: onSpinoffTap
+                            )
+                        }
+                    } else {
+                        // Non-premium: just show episodes
+                        DetailEpisodeSection(show: show)
+                    }
 
                     DetailNotifyToggle(isEnabled: $notifyEnabled)
                         .padding(.top, 26)

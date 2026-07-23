@@ -13,6 +13,7 @@ struct TimelineScreen: View {
     @State private var heroCardIndex: Int = 0
     @State private var selectedShowForDetail: ShowData?
     @State private var showNotificationSettings = false
+    @State private var showFullTimeline = false
 
     /// Countdown value for the currently displayed hero card
     private var currentHeroCountdown: Int? {
@@ -66,7 +67,7 @@ struct TimelineScreen: View {
                     .padding(.vertical, 10)
 
                     // View Timeline Button
-                    Button(action: {}) {
+                    Button(action: { showFullTimeline = true }) {
                         Text("View entire timeline")
                             .monoStyle(size: 11, color: .c2bText)
                             .padding(.horizontal, 26)
@@ -115,6 +116,10 @@ struct TimelineScreen: View {
                         Task { await viewModel.unfollowShow(show) }
                     }
                 )
+                    .navigationBarHidden(true)
+            }
+            .navigationDestination(isPresented: $showFullTimeline) {
+                FullTimelineView(viewModel: viewModel)
                     .navigationBarHidden(true)
             }
         }
@@ -366,6 +371,7 @@ struct DayTicker: View {
                 ForEach(-2...2, id: \.self) { offset in
                     let day = centerDay + offset
                     let isCenter = offset == 0
+                    let isPastDay = day < 0
 
                     VStack(spacing: isCenter ? 3 : 3) {
                         if value == nil && isCenter {
@@ -374,11 +380,18 @@ struct DayTicker: View {
                                     size: 26,
                                     color: .white
                                 )
+                        } else if isPastDay {
+                            // Show dash for past days (negative values)
+                            Text("–")
+                                .displayStyle(
+                                    size: 26,
+                                    color: .white
+                                )
                         } else {
-                            Text("\(max(0, day))")
+                            Text("\(day)")
                                 .displayStyle(
                                     size: isCenter ? 34 : 26,
-                                    color: isCenter ? .white : .white
+                                    color: .white
                                 )
                         }
 

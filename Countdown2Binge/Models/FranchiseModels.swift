@@ -32,6 +32,14 @@ struct FranchiseShow: Codable {
     let title: String
     let tmdbId: Int
     let years: String
+    let posterPath: String?
+
+    init(title: String, tmdbId: Int, years: String, posterPath: String? = nil) {
+        self.title = title
+        self.tmdbId = tmdbId
+        self.years = years
+        self.posterPath = posterPath
+    }
 }
 
 /// A spinoff show with additional metadata
@@ -41,6 +49,16 @@ struct SpinoffShow: Codable {
     let years: String
     let type: SpinoffType
     let status: SpinoffStatus
+    let posterPath: String?
+
+    init(title: String, tmdbId: Int, years: String, type: SpinoffType, status: SpinoffStatus, posterPath: String? = nil) {
+        self.title = title
+        self.tmdbId = tmdbId
+        self.years = years
+        self.type = type
+        self.status = status
+        self.posterPath = posterPath
+    }
 
     enum SpinoffType: String, Codable {
         case prequel

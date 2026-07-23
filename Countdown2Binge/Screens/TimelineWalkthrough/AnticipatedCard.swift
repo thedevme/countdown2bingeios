@@ -88,6 +88,17 @@ struct AnticipatedCard: View {
         return "'\(shortYear)"
     }
 
+    private var seasonString: String {
+        return "Season \(anticipatedSeasonNumber)"
+    }
+
+    private var platformString: String {
+        if let showData = showData, let network = showData.networks.first {
+            return network.name
+        }
+        return mockData.platform
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             // Left: Countdown section
@@ -162,63 +173,59 @@ struct AnticipatedCard: View {
                 }
 
                 // Badges overlay
-                VStack(alignment: .trailing, spacing: 6) {
-                    if show == nil && showData == nil {
-                        HStack(spacing: 6) {
-                            if mockData.hasNew {
-                                Text("NEW")
-                                    .font(.system(size: CustomFont.size.xs, weight: .bold))
-                                    .foregroundColor(Color(hex: "#04201c"))
-                                    .textCase(.uppercase)
-                                    .tracking(1.4)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.c2bTealBright)
-                                    .cornerRadius(3)
-                            }
-
-                            Spacer()
-
-                            Text(mockData.platform)
+                VStack(alignment: .leading, spacing: 0) {
+                    // Top badges
+                    HStack(spacing: 6) {
+                        if show == nil && showData == nil && mockData.hasNew {
+                            Text("NEW")
                                 .font(.system(size: CustomFont.size.xs, weight: .bold))
-                                .foregroundColor(Color.c2bDim)
+                                .foregroundColor(Color(hex: "#04201c"))
                                 .textCase(.uppercase)
                                 .tracking(1.4)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color.black.opacity(0.7))
+                                .background(Color.c2bTealBright)
                                 .cornerRadius(3)
                         }
+
+                        Spacer()
+
+                        Text(platformString)
+                            .font(.custom(.jetbrains.bold, size: 9))
+                            .foregroundColor(Color(hex: "#e7e7e7"))
+                            .textCase(.uppercase)
+                            .tracking(0.54)  // 0.06em
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color(hex: "#080808").opacity(0.7))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                            )
+                            .cornerRadius(6)
                     }
 
                     Spacer()
 
-//                    HStack(spacing: 0) {
-//                        if showData != nil || show != nil {
-//                            // Show name and season for real data
-//                            VStack(alignment: .leading, spacing: 2) {
-//                                Text(displayName)
-//                                    .font(.custom(.oswald.bold, size: CustomFont.size.xl))
-//                                    .foregroundColor(.white)
-//                                    .lineLimit(1)
-//                                if showData != nil {
-//                                    Text("Season \(anticipatedSeasonNumber)")
-//                                        .font(.custom(.jetbrains.regular, size: CustomFont.size.xs))
-//                                        .foregroundColor(.c2bMuted)
-//                                }
-//                            }
-//                        } else {
-//                            Text("S")
-//                                .font(.custom(.oswald.bold, size: CustomFont.size.xl4))
-//                                .foregroundColor(.white)
-//
-//                            Text(mockData.season)
-//                                .font(.custom(.oswald.light, size: CustomFont.size.xl3))
-//                                .foregroundColor(.white)
-//                        }
-//
-//                        Spacer()
-//                    }
+                    // Bottom: Season + Show name
+                    HStack(alignment: .bottom, spacing: 8) {
+                        // Season badge (S5 style)
+                        HStack(spacing: 0) {
+                            Text("S")
+                                .font(.custom(.oswald.bold, size: 28))
+                                .foregroundColor(.white)
+                            Text(String(anticipatedSeasonNumber))
+                                .font(.custom(.oswald.light, size: 28))
+                                .foregroundColor(.white)
+                        }
+                        .shadow(color: .black.opacity(0.7), radius: 4, x: 0, y: 2)
+
+                        Text(displayName.uppercased())
+                            .font(.custom(.oswald.bold, size: 19))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .shadow(color: .black.opacity(0.7), radius: 4, x: 0, y: 2)
+                    }
                 }
                 .padding(10)
             }

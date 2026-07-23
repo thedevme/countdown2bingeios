@@ -19,18 +19,40 @@ final class TimelineViewModel {
 
     // MARK: - Categorized Shows
 
-    /// Shows currently releasing episodes (sorted by finale date, soonest first)
+    /// Shows currently releasing episodes (sorted by finale date, soonest first; no date = last, then alphabetical)
     var airingNowShows: [ShowData] {
         followedShows
             .filter { $0.timelineCategory == .airingNow }
-            .sorted { ($0.daysUntilFinale ?? 999) < ($1.daysUntilFinale ?? 999) }
+            .sorted { lhs, rhs in
+                switch (lhs.daysUntilFinale, rhs.daysUntilFinale) {
+                case let (l?, r?):
+                    return l < r                          // Both have dates: soonest first
+                case (_?, nil):
+                    return true                           // Has date beats no date
+                case (nil, _?):
+                    return false                          // No date goes after
+                case (nil, nil):
+                    return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+                }
+            }
     }
 
-    /// Shows with known premiere date (sorted by premiere date, soonest first)
+    /// Shows with known premiere date (sorted by premiere date, soonest first; no date = last, then alphabetical)
     var premieringSoonShows: [ShowData] {
         followedShows
             .filter { $0.timelineCategory == .premieringSoon }
-            .sorted { ($0.daysUntilPremiere ?? 999) < ($1.daysUntilPremiere ?? 999) }
+            .sorted { lhs, rhs in
+                switch (lhs.daysUntilPremiere, rhs.daysUntilPremiere) {
+                case let (l?, r?):
+                    return l < r                          // Both have dates: soonest first
+                case (_?, nil):
+                    return true                           // Has date beats no date
+                case (nil, _?):
+                    return false                          // No date goes after
+                case (nil, nil):
+                    return lhs.name < rhs.name            // Both nil: alphabetical
+                }
+            }
     }
 
     /// Shows with no date announced - TBD (sorted alphabetically)
@@ -96,25 +118,6 @@ final class TimelineViewModel {
 
         do {
             followedShows = try await store.getAllFollowedAsShowData()
-
-            print("\n=== TIMELINE DEBUG ===\n")
-
-            for show in followedShows {
-                print("SHOW: \(show.name)")
-                print("  inProduction: \(show.inProduction)")
-                print("  status: \(show.status)")
-                print("  lifecycleState: \(show.lifecycleState)")
-                print("  timelineCategory: \(show.timelineCategory)")
-                print("  seasons: \(show.numberOfSeasons)")
-                if let current = show.currentSeason {
-                    print("  currentSeason: S\(current.seasonNumber) - hasStarted: \(current.hasStarted), isComplete: \(current.isComplete)")
-                } else {
-                    print("  currentSeason: nil")
-                }
-                print("")
-            }
-
-            print("==============================\n")
         } catch {
             print("Error loading followed shows: \(error)")
             followedShows = []

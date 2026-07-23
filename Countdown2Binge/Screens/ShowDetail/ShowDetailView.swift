@@ -27,7 +27,9 @@ struct ShowDetailView: View {
 
     // Franchise data for spinoffs
     private var franchise: Franchise? {
-        FranchiseService.shared.franchise(forShowId: show.id)
+        let result = FranchiseService.shared.franchise(forShowId: show.id)
+        print("DEBUG ShowDetail: Looking up franchise for show.id=\(show.id) (\(show.name)), found: \(result?.localizedName() ?? "nil")")
+        return result
     }
 
     private var spinoffCount: Int {

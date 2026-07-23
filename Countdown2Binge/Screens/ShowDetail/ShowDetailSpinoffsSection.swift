@@ -2,38 +2,31 @@
 //  ShowDetailSpinoffsSection.swift
 //  Countdown2Binge
 //
-//  Spinoffs tab content for show detail - displays franchise universe.
+//  Spinoffs tab - displays franchise universe with watch order timeline.
 //
 
 import SwiftUI
 
-// MARK: - Spinoffs Section (Premium Feature)
+// MARK: - Parent Section
 
 struct ShowDetailSpinoffsSection: View {
     let show: ShowData
     let franchise: Franchise?
-    let onSpinoffTap: (Int) -> Void  // TMDB ID of spinoff
-
-    private var hasSpinoffs: Bool {
-        franchise != nil && !franchise!.spinoffs.isEmpty
-    }
+    let onSpinoffTap: (Int) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            if let franchise = franchise, !franchise.spinoffs.isEmpty {
-                // Premium banner
+            if let franchise = franchise {
                 SpinoffsPremiumBanner(showTitle: show.name)
                     .padding(.bottom, 16)
 
-                // Watch order timeline
                 SpinoffsWatchOrderTimeline(
                     show: show,
                     franchise: franchise,
                     onSpinoffTap: onSpinoffTap
                 )
             } else {
-                // Empty state
-                SpinoffsEmptyState()
+                SpinoffsEmptyState(showTitle: show.name)
             }
         }
         .padding(.top, 22)
@@ -42,36 +35,26 @@ struct ShowDetailSpinoffsSection: View {
 
 // MARK: - Premium Banner
 
-private struct SpinoffsPremiumBanner: View {
+struct SpinoffsPremiumBanner: View {
     let showTitle: String
 
     var body: some View {
-        HStack(spacing: 11) {
-            // Icon
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.c2bTeal)
-                    .frame(width: 34, height: 34)
+        HStack(alignment: .center, spacing: 11) {
+            SpinoffsPremiumIcon()
 
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 15))
-                    .foregroundColor(Color(hex: "#04201c"))
-            }
-
-            // Text
             VStack(alignment: .leading, spacing: 4) {
                 Text("UNIVERSE — PREMIUM")
                     .font(.custom(.oswald.bold, size: 15))
                     .foregroundColor(.c2bTealBright)
-                    .tracking(0.3)
+                    .tracking(0.3)  // 0.02em = 15 * 0.02 = 0.3
 
                 Text("Track every spin-off & prequel connected to \(showTitle).")
                     .font(.system(size: 11.5))
                     .foregroundColor(.c2bDim)
-                    .lineSpacing(2)
+                    .lineSpacing(4.6)  // 11.5 * 1.4 = 16.1, lineSpacing = 16.1 - 11.5 = 4.6
             }
 
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 13)
@@ -90,137 +73,206 @@ private struct SpinoffsPremiumBanner: View {
     }
 }
 
+// MARK: - Premium Icon
+
+struct SpinoffsPremiumIcon: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.c2bTeal)
+                .frame(width: 34, height: 34)
+
+            Image(systemName: "mountain.2.fill")
+                .font(.system(size: 15))
+                .foregroundColor(Color(hex: "#04201c"))
+        }
+    }
+}
+
 // MARK: - Watch Order Timeline
 
-private struct SpinoffsWatchOrderTimeline: View {
+struct SpinoffsWatchOrderTimeline: View {
     let show: ShowData
     let franchise: Franchise
     let onSpinoffTap: (Int) -> Void
 
-    // Build ordered list: prequels → main show → others
-    private var orderedItems: [WatchOrderItem] {
-        var items: [WatchOrderItem] = []
+    private var orderedItems: [SpinoffsWatchOrderItem] {
+        var items: [SpinoffsWatchOrderItem] = []
 
-        // Prequels first
         let prequels = franchise.spinoffs.filter { $0.type == .prequel }
         for spinoff in prequels {
-            items.append(.spinoff(spinoff))
+            if spinoff.tmdbId == show.id {
+                items.append(.currentShow)
+            } else {
+                items.append(.spinoff(spinoff))
+            }
         }
 
-        // Main show
-        items.append(.mainShow)
+        if franchise.parentShow.tmdbId == show.id {
+            items.append(.currentShow)
+        } else {
+            items.append(.parentShow(franchise.parentShow))
+        }
 
-        // Other spinoffs (sequel, companion, spinoff, remake)
         let others = franchise.spinoffs.filter { $0.type != .prequel }
         for spinoff in others {
-            items.append(.spinoff(spinoff))
+            if spinoff.tmdbId == show.id {
+                items.append(.currentShow)
+            } else {
+                items.append(.spinoff(spinoff))
+            }
         }
 
         return items
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Header
-            HStack(spacing: 6) {
-                Image(systemName: "clock.arrow.circlepath")
-                    .font(.system(size: 10))
-                    .foregroundColor(.c2bTealBright)
+        ZStack(alignment: .topLeading) {
+            SpinoffsTimelineLine()
+                .padding(.leading, 10)
+                .padding(.top, 10)
+                .padding(.bottom, 40)
 
-                Text("RECOMMENDED WATCH ORDER")
-                    .font(.custom(.jetbrains.bold, size: 9))
-                    .foregroundColor(.c2bTealBright)
-                    .tracking(1.4)
-            }
-            .padding(.leading, 22)
-            .padding(.bottom, 16)
+            VStack(alignment: .leading, spacing: 0) {
+                SpinoffsWatchOrderHeader()
+                    .padding(.leading, -8)
+                    .padding(.bottom, 16)
 
-            // Timeline
-            ZStack(alignment: .leading) {
-                // Vertical line
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.c2bTealBright, .c2bTeal, Color.white.opacity(0.12)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 2)
-                    .padding(.leading, 10)
-                    .padding(.top, 10)
-                    .padding(.bottom, 40)
-
-                // Items
                 VStack(spacing: 16) {
                     ForEach(Array(orderedItems.enumerated()), id: \.offset) { index, item in
-                        WatchOrderItemRow(
+                        SpinoffsWatchOrderRow(
                             item: item,
                             index: index + 1,
-                            show: show,
+                            currentShow: show,
                             onSpinoffTap: onSpinoffTap
                         )
                     }
                 }
-                .padding(.leading, 30)
             }
+            .padding(.leading, 30)
         }
     }
 }
 
-// MARK: - Watch Order Item
+// MARK: - Timeline Line
 
-private enum WatchOrderItem {
-    case mainShow
-    case spinoff(SpinoffShow)
-}
-
-private struct WatchOrderItemRow: View {
-    let item: WatchOrderItem
-    let index: Int
-    let show: ShowData
-    let onSpinoffTap: (Int) -> Void
-
+struct SpinoffsTimelineLine: View {
     var body: some View {
-        HStack(spacing: 0) {
-            // Number circle
-            ZStack {
-                Circle()
-                    .fill(isMainShow ? Color.c2bTealBright : Color(hex: "#0a0a0b"))
-                    .frame(width: 22, height: 22)
-
-                if !isMainShow {
-                    Circle()
-                        .stroke(Color.c2bTealLine, lineWidth: 2)
-                        .frame(width: 22, height: 22)
-                }
-
-                Text("\(index)")
-                    .font(.custom(.oswald.bold, size: 12))
-                    .foregroundColor(isMainShow ? Color(hex: "#04201c") : .c2bTealBright)
-            }
-            .offset(x: -41)
-
-            // Content
-            if isMainShow {
-                MainShowCard(show: show)
-                    .offset(x: -30)
-            } else if case .spinoff(let spinoff) = item {
-                SpinoffCard(spinoff: spinoff, onTap: { onSpinoffTap(spinoff.tmdbId) })
-                    .offset(x: -30)
-            }
-        }
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    stops: [
+                        .init(color: .c2bTealBright, location: 0),
+                        .init(color: .c2bTeal, location: 0.6),
+                        .init(color: Color.white.opacity(0.12), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: 2)
     }
+}
 
-    private var isMainShow: Bool {
-        if case .mainShow = item { return true }
+// MARK: - Watch Order Header
+
+struct SpinoffsWatchOrderHeader: View {
+    var body: some View {
+        HStack(spacing: 4) {
+            Text("◷")
+                .font(.system(size: 10))
+            Text("Recommended watch order")
+                .font(.custom(.jetbrains.bold, size: 9))
+                .tracking(1.44)  // 0.16em = 9 * 0.16 = 1.44
+                .textCase(.uppercase)
+        }
+        .foregroundColor(.c2bTealBright)
+    }
+}
+
+// MARK: - Watch Order Item Enum
+
+enum SpinoffsWatchOrderItem {
+    case currentShow
+    case parentShow(FranchiseShow)
+    case spinoff(SpinoffShow)
+
+    var isCurrentShow: Bool {
+        if case .currentShow = self { return true }
         return false
     }
 }
 
-// MARK: - Main Show Card (You Are Here)
+// MARK: - Watch Order Row
 
-private struct MainShowCard: View {
+struct SpinoffsWatchOrderRow: View {
+    let item: SpinoffsWatchOrderItem
+    let index: Int
+    let currentShow: ShowData
+    let onSpinoffTap: (Int) -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            SpinoffsNumberCircle(index: index, isActive: item.isCurrentShow)
+                .offset(x: -41, y: item.isCurrentShow ? 4 : 12)
+
+            Group {
+                switch item {
+                case .currentShow:
+                    SpinoffsCurrentShowCard(show: currentShow)
+                case .parentShow(let parent):
+                    SpinoffsRelatedShowCard(
+                        title: parent.title,
+                        tag: "MAIN SERIES",
+                        description: "The original series that started it all.",
+                        posterPath: parent.posterPath,
+                        onTap: { onSpinoffTap(parent.tmdbId) }
+                    )
+                case .spinoff(let spinoff):
+                    SpinoffsRelatedShowCard(
+                        title: spinoff.title,
+                        tag: spinoff.type.label,
+                        description: spinoff.type.description,
+                        posterPath: spinoff.posterPath,
+                        onTap: { onSpinoffTap(spinoff.tmdbId) }
+                    )
+                }
+            }
+            .offset(x: -30)
+        }
+    }
+}
+
+// MARK: - Number Circle
+
+struct SpinoffsNumberCircle: View {
+    let index: Int
+    let isActive: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(isActive ? Color.c2bTealBright : Color(hex: "#0a0a0b"))
+                .frame(width: 22, height: 22)
+
+            if !isActive {
+                Circle()
+                    .stroke(Color.c2bTealLine, lineWidth: 2)
+                    .frame(width: 22, height: 22)
+            }
+
+            Text("\(index)")
+                .font(.custom(.oswald.bold, size: 12))
+                .foregroundColor(isActive ? Color(hex: "#04201c") : .c2bTealBright)
+                .textCase(.uppercase)
+        }
+        .frame(width: 22, height: 22)
+    }
+}
+
+// MARK: - Current Show Card
+
+struct SpinoffsCurrentShowCard: View {
     let show: ShowData
 
     private var posterURL: URL? {
@@ -230,38 +282,24 @@ private struct MainShowCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Poster
-            AsyncImage(url: posterURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 40, height: 60)
-                        .clipped()
-                        .cornerRadius(7)
-                default:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .frame(width: 40, height: 60)
-                        .cornerRadius(7)
-                }
-            }
+            SpinoffsPosterImage(url: posterURL)
+                .frame(width: 40, height: 60)
+                .clipShape(RoundedRectangle(cornerRadius: 7))
 
-            // Info
             VStack(alignment: .leading, spacing: 5) {
-                Text(show.name)
+                Text(show.name.uppercased())
                     .font(.custom(.oswald.bold, size: 17))
                     .foregroundColor(.c2bTealBright)
                     .lineLimit(1)
 
-                Text("MAIN SERIES · YOU ARE HERE")
+                Text("Main series · you are here")
                     .font(.custom(.jetbrains.bold, size: 8))
                     .foregroundColor(.c2bTeal)
-                    .tracking(0.8)
+                    .tracking(0.8)  // 0.1em = 8 * 0.1 = 0.8
+                    .textCase(.uppercase)
             }
 
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -274,152 +312,214 @@ private struct MainShowCard: View {
     }
 }
 
-// MARK: - Spinoff Card
+// MARK: - Related Show Card
 
-private struct SpinoffCard: View {
-    let spinoff: SpinoffShow
+struct SpinoffsRelatedShowCard: View {
+    let title: String
+    let tag: String
+    let description: String
+    let posterPath: String?
     let onTap: () -> Void
 
-    @State private var posterURL: URL?
-
-    private var typeLabel: String {
-        switch spinoff.type {
-        case .prequel: return "PREQUEL"
-        case .sequel: return "SEQUEL"
-        case .companion: return "COMPANION"
-        case .remake: return "REMAKE"
-        case .spinoff: return "SPIN-OFF"
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 0) {
+                SpinoffsCardImageHeader(title: title, tag: tag, posterPath: posterPath)
+                SpinoffsCardFooter(description: description)
+            }
+            .background(Color.white.opacity(0.03))
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white.opacity(0.08), lineWidth: 1)
+            )
         }
+        .buttonStyle(.plain)
     }
+}
 
-    private var statusLabel: String {
-        switch spinoff.status {
-        case .ended: return "Ended"
-        case .returning: return "Returning"
-        case .upcoming: return "Upcoming"
-        case .inProduction: return "In Production"
-        }
+// MARK: - Card Image Header
+
+struct SpinoffsCardImageHeader: View {
+    let title: String
+    let tag: String
+    let posterPath: String?
+
+    private var imageURL: URL? {
+        guard let path = posterPath else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w780\(path)")
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Image header with tag
-            ZStack(alignment: .topLeading) {
-                // Backdrop placeholder (would need to fetch from TMDB)
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.c2bSurface, Color.c2bBackground],
-                            startPoint: .top,
-                            endPoint: .bottom
+        ZStack(alignment: .bottomLeading) {
+            // Background image
+            AsyncImage(url: imageURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    Rectangle()
+                        .fill(Color.c2bSurface)
+                default:
+                    Rectangle()
+                        .fill(Color.c2bSurface)
+                        .overlay(
+                            ProgressView()
+                                .tint(.c2bMuted)
                         )
-                    )
-                    .aspectRatio(16/9, contentMode: .fit)
-                    .overlay(
-                        // Show title as fallback
-                        Text(spinoff.title)
-                            .font(.custom(.oswald.bold, size: 20))
-                            .foregroundColor(.white.opacity(0.3))
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    )
-
-                // Tag chip
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(Color.c2bTealBright)
-                        .frame(width: 5, height: 5)
-
-                    Text(typeLabel)
-                        .font(.custom(.jetbrains.bold, size: 8))
-                        .foregroundColor(.c2bTealBright)
-                        .tracking(1.0)
                 }
-                .padding(.horizontal, 9)
-                .padding(.vertical, 4)
-                .background(Color.black.opacity(0.6))
-                .background(.ultraThinMaterial)
-                .cornerRadius(999)
-                .overlay(
-                    Capsule()
-                        .stroke(Color.c2bTealLine, lineWidth: 1)
-                )
+            }
+            .aspectRatio(16/9, contentMode: .fit)
+            .clipped()
+
+            // Gradient overlay
+            LinearGradient(
+                colors: [Color.black.opacity(0.8), Color.black.opacity(0.1)],
+                startPoint: .bottom,
+                endPoint: .center
+            )
+
+            // Tag chip at top left
+            SpinoffsTagChip(tag: tag)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .padding(11)
-            }
-            .cornerRadius(16, corners: [.topLeft, .topRight])
 
-            // Content
-            VStack(alignment: .leading, spacing: 13) {
-                // Title and years
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(spinoff.title)
-                        .font(.custom(.oswald.bold, size: 18))
-                        .foregroundColor(.white)
-                        .lineLimit(2)
-
-                    HStack(spacing: 8) {
-                        Text(spinoff.years)
-                            .font(.custom(.jetbrains.regular, size: 10))
-                            .foregroundColor(.c2bMuted)
-
-                        Text("·")
-                            .foregroundColor(.c2bMuted)
-
-                        Text(statusLabel)
-                            .font(.custom(.jetbrains.regular, size: 10))
-                            .foregroundColor(spinoff.status == .returning ? .c2bTealBright : .c2bMuted)
-                    }
-                }
-
-                // Follow button
-                Button(action: onTap) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "bookmark.fill")
-                            .font(.system(size: 12))
-
-                        Text("FOLLOW SPIN-OFF")
-                            .font(.custom(.oswald.bold, size: 13))
-                            .tracking(0.3)
-                    }
-                    .foregroundColor(Color(hex: "#04201c"))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
-                    .background(Color.c2bTeal)
-                    .cornerRadius(12)
-                }
-            }
-            .padding(15)
+            // Title at bottom
+            Text(title.uppercased())
+                .font(.custom(.oswald.bold, size: 22))
+                .foregroundColor(.white)
+                .tracking(0.22)  // 0.01em = 22 * 0.01 = 0.22
+                .lineLimit(2)
+                .lineSpacing(-2)
+                .shadow(color: .black.opacity(0.7), radius: 10, x: 0, y: 2)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 12)
         }
-        .background(Color.white.opacity(0.03))
-        .cornerRadius(16)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+}
+
+// MARK: - Tag Chip
+
+struct SpinoffsTagChip: View {
+    let tag: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(Color.c2bTealBright)
+                .frame(width: 5, height: 5)
+
+            Text(tag)
+                .font(.custom(.jetbrains.bold, size: 8))
+                .foregroundColor(.c2bTealBright)
+                .tracking(0.96)  // 0.12em = 8 * 0.12 = 0.96
+                .textCase(.uppercase)
+        }
+        .padding(.horizontal, 9)
+        .padding(.vertical, 4)
+        .background(Color(hex: "#080808").opacity(0.6))
+        .background(.ultraThinMaterial)
+        .clipShape(Capsule())
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+            Capsule()
+                .stroke(Color.c2bTealLine, lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Card Footer
+
+struct SpinoffsCardFooter: View {
+    let description: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 13) {
+            Text(description)
+                .font(.system(size: 12.5))
+                .foregroundColor(.c2bDim)
+                .lineSpacing(6.25)  // 12.5 * 1.5 = 18.75, lineSpacing = 18.75 - 12.5 = 6.25
+
+            SpinoffsFollowButton()
+        }
+        .padding(.horizontal, 15)
+        .padding(.top, 13)
+        .padding(.bottom, 15)
+    }
+}
+
+// MARK: - Follow Button
+
+struct SpinoffsFollowButton: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "bookmark.fill")
+                .font(.system(size: 14))
+
+            Text("Follow spin-off")
+                .font(.system(size: 13, weight: .bold))
+                .tracking(0.39)  // 0.03em = 13 * 0.03 = 0.39
+                .textCase(.uppercase)
+        }
+        .foregroundColor(Color(hex: "#04201c"))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 11)
+        .background(Color.c2bTeal)
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Poster Image
+
+struct SpinoffsPosterImage: View {
+    let url: URL?
+
+    var body: some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            default:
+                Rectangle()
+                    .fill(Color.c2bSurface)
+            }
+        }
     }
 }
 
 // MARK: - Empty State
 
-private struct SpinoffsEmptyState: View {
+struct SpinoffsEmptyState: View {
+    let showTitle: String
+
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "rectangle.on.rectangle.slash")
-                .font(.system(size: 32))
+        VStack(spacing: 0) {
+            Image(systemName: "arrow.down.forward.and.arrow.up.backward")
+                .font(.system(size: 26))
                 .foregroundColor(.c2bMuted)
+                .opacity(0.7)
 
-            Text("No spin-offs or prequels")
-                .font(.custom(.oswald.bold, size: 18))
+            Text("No spin-offs yet")
+                .font(.custom(.oswald.bold, size: 17))
                 .foregroundColor(.c2bDim)
+                .tracking(0.34)  // 0.02em = 17 * 0.02 = 0.34
+                .textCase(.uppercase)
+                .padding(.top, 12)
 
-            Text("This show isn't part of a connected universe yet.")
-                .font(.system(size: 13))
+            Text("\(showTitle) doesn't have any spin-offs or prequels. We'll add them here if one is announced.")
+                .font(.system(size: 12))
                 .foregroundColor(.c2bMuted)
                 .multilineTextAlignment(.center)
+                .lineSpacing(6)  // 12 * 1.5 = 18, lineSpacing = 18 - 12 = 6
+                .padding(.top, 6)
         }
-        .frame(maxWidth: .infinity)
         .padding(.vertical, 44)
         .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
@@ -428,7 +528,31 @@ private struct SpinoffsEmptyState: View {
     }
 }
 
-// MARK: - Detail Tab Enum
+// MARK: - SpinoffType Extension
+
+extension SpinoffShow.SpinoffType {
+    var label: String {
+        switch self {
+        case .prequel: return "PREQUEL"
+        case .sequel: return "SEQUEL"
+        case .companion: return "COMPANION"
+        case .remake: return "REMAKE"
+        case .spinoff: return "SPIN-OFF"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .prequel: return "A prequel series set before the events of the main show."
+        case .sequel: return "A sequel continuing the story after the main series."
+        case .companion: return "A companion series running alongside the main show."
+        case .remake: return "A reimagining of the original series."
+        case .spinoff: return "A spin-off exploring characters from the main series."
+        }
+    }
+}
+
+// MARK: - Tab Enum
 
 enum ShowDetailTab: String, CaseIterable {
     case episodes = "Episodes"
@@ -444,29 +568,12 @@ struct ShowDetailTabSwitcher: View {
     var body: some View {
         HStack(spacing: 4) {
             ForEach(ShowDetailTab.allCases, id: \.self) { tab in
-                Button(action: { selectedTab = tab }) {
-                    HStack(spacing: 6) {
-                        Text(tab.rawValue.uppercased())
-                            .font(.custom(.jetbrains.bold, size: 10))
-                            .tracking(0.6)
-
-                        // Badge for spinoffs count
-                        if tab == .spinoffs && spinoffCount > 0 {
-                            Text("\(spinoffCount)")
-                                .font(.custom(.jetbrains.bold, size: 8.5))
-                                .foregroundColor(selectedTab == tab ? Color(hex: "#04201c") : Color(hex: "#04201c"))
-                                .padding(.horizontal, 4)
-                                .padding(.vertical, 2)
-                                .background(selectedTab == tab ? Color(hex: "#04201c").opacity(0.25) : Color.c2bTealBright)
-                                .cornerRadius(999)
-                        }
-                    }
-                    .foregroundColor(selectedTab == tab ? Color(hex: "#04201c") : .c2bDim)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 9)
-                    .background(selectedTab == tab ? Color.c2bTeal : Color.clear)
-                    .cornerRadius(9)
-                }
+                ShowDetailTabButton(
+                    tab: tab,
+                    isSelected: selectedTab == tab,
+                    badgeCount: tab == .spinoffs ? spinoffCount : 0,
+                    onTap: { selectedTab = tab }
+                )
             }
         }
         .padding(4)
@@ -476,5 +583,50 @@ struct ShowDetailTabSwitcher: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
+    }
+}
+
+// MARK: - Tab Button
+
+struct ShowDetailTabButton: View {
+    let tab: ShowDetailTab
+    let isSelected: Bool
+    let badgeCount: Int
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 6) {
+                Text(tab.rawValue.uppercased())
+                    .font(.custom(.jetbrains.bold, size: 10))
+                    .tracking(0.6)
+
+                if badgeCount > 0 {
+                    ShowDetailTabBadge(count: badgeCount, isSelected: isSelected)
+                }
+            }
+            .foregroundColor(isSelected ? Color(hex: "#04201c") : .c2bDim)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 9)
+            .background(isSelected ? Color.c2bTeal : Color.clear)
+            .cornerRadius(9)
+        }
+    }
+}
+
+// MARK: - Tab Badge
+
+struct ShowDetailTabBadge: View {
+    let count: Int
+    let isSelected: Bool
+
+    var body: some View {
+        Text("\(count)")
+            .font(.custom(.jetbrains.bold, size: 8.5))
+            .foregroundColor(Color(hex: "#04201c"))
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(isSelected ? Color(hex: "#04201c").opacity(0.25) : Color.c2bTealBright)
+            .cornerRadius(999)
     }
 }
