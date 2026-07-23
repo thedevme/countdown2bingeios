@@ -159,10 +159,8 @@ final class PremiumManager {
     /// Check current entitlements and update state
     func checkEntitlements() async {
         #if DEBUG
-        // Skip if debug override is active
-        if debugPremiumOverride {
-            return
-        }
+        // Skip entitlement check for DEBUG builds - always premium
+        return
         #endif
 
         // Skip entitlement check for TestFlight - premium is always enabled

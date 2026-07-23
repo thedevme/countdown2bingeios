@@ -5,6 +5,7 @@ import SwiftData
 struct TimelineScreen: View {
     let layout: String // "expanded" or "compact"
     let numberStyle: String // "rotated", "stacked", "chip"
+    var refreshTrigger: UUID = UUID()
     var onInfoTap: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
@@ -97,6 +98,11 @@ struct TimelineScreen: View {
             }
             .onAppear {
                 viewModel.configure(with: modelContext)
+                Task {
+                    await viewModel.loadFollowedShows()
+                }
+            }
+            .onChange(of: refreshTrigger) { _, _ in
                 Task {
                     await viewModel.loadFollowedShows()
                 }

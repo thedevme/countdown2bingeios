@@ -22,6 +22,7 @@ struct ContentView: View {
     @State private var showDowngradeModal: Bool = false
     @State private var selectedPlan: String = ""
     @State private var followedShows: [ShowSummary] = []
+    @State private var timelineRefreshTrigger: UUID = UUID()
 
     // Badge manager for tab notifications (shared instance)
     private var badgeManager: TabBadgeManager { TabBadgeManager.shared }
@@ -36,6 +37,7 @@ struct ContentView: View {
                     TimelineScreen(
                         layout: "expanded",
                         numberStyle: "rotated",
+                        refreshTrigger: timelineRefreshTrigger,
                         onInfoTap: {
                             showWalkthrough = true
                         }
@@ -78,6 +80,7 @@ struct ContentView: View {
                 OnboardingFlow(
                     isPresented: $showOnboarding,
                     onComplete: { plan, shows in
+                        print("ContentView: Received \(shows.count) shows to save")
                         selectedPlan = plan
                         followedShows = shows
                         followedShowNames = shows.map { $0.name }
@@ -85,21 +88,21 @@ struct ContentView: View {
                         // Mark onboarding as completed
                         hasCompletedOnboarding = true
 
-                        // Save to SwiftData
+                        // Save to SwiftData, then show walkthrough
                         Task {
                             await saveFollowedShows(shows)
-                        }
 
-                        // Show Free Limit Modal if free plan and >3 shows
-                        if plan == "free" && shows.count > 3 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                showFreeLimitModal = true
-                            }
-                        } else if !hasSeenWalkthrough {
-                            // Show walkthrough only if not seen before
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                showWalkthrough = true
-                                hasSeenWalkthrough = true
+                            // Wait for UI to update
+                            try? await Task.sleep(for: .seconds(1))
+
+                            await MainActor.run {
+                                // Show Free Limit Modal if free plan and >3 shows
+                                if plan == "free" && shows.count > 3 {
+                                    showFreeLimitModal = true
+                                } else if !hasSeenWalkthrough {
+                                    showWalkthrough = true
+                                    hasSeenWalkthrough = true
+                                }
                             }
                         }
                     }
@@ -197,6 +200,10 @@ struct ContentView: View {
         } catch {
             print("Error fetching show details: \(error)")
         }
+
+        // Step 3: Trigger timeline refresh
+        timelineRefreshTrigger = UUID()
+        print("DEBUG: Triggered timeline refresh after saving \(shows.count) shows")
     }
 
     // MARK: - Tab Bar Appearance

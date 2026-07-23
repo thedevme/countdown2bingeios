@@ -72,10 +72,10 @@ struct OnboardingFlow: View {
                     selectedPlan: selectedPlan,
                     isPurchasing: isPurchasing,
                     onNext: {
-                        // Skip paywall if already premium (DEBUG/TestFlight)
-                        if currentStep == 5 && PremiumManager.shared.isPremium {
-                            // Already premium - skip paywall and complete
+                        // Skip to completion if already premium (DEBUG/TestFlight)
+                        if currentStep >= 4 && PremiumManager.shared.isPremium {
                             completeOnboarding()
+                            return
                         } else if currentStep < totalSteps - 1 {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                                 currentStep += 1
@@ -178,7 +178,9 @@ struct OnboardingFlow: View {
 
     private func completeOnboarding() {
         isPurchasing = false
-        onComplete(selectedPlan, viewModel.getSelectedShows())
+        let shows = viewModel.getSelectedShows()
+        print("OnboardingFlow: Completing with \(shows.count) shows: \(shows.map { $0.name })")
+        onComplete(selectedPlan, shows)
         withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
             isPresented = false
         }
