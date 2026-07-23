@@ -183,6 +183,52 @@ final class FranchiseService {
                     SpinoffShow(title: "Berlin", tmdbId: 210401, years: "2023-", type: .prequel, status: .returning)
                 ],
                 watchOrder: nil
+            ),
+
+            // Reacher
+            Franchise(
+                id: "reacher",
+                franchiseName: ["en": "Reacher Universe"],
+                origin: "US",
+                parentShow: FranchiseShow(title: "Reacher", tmdbId: 108978, years: "2022-"),
+                spinoffs: [
+                    SpinoffShow(title: "Neagley", tmdbId: 999001, years: "TBA", type: .spinoff, status: .inProduction),
+                    SpinoffShow(title: "The 110th", tmdbId: 999002, years: "TBA", type: .prequel, status: .inProduction),
+                    SpinoffShow(title: "Dixon", tmdbId: 999003, years: "TBA", type: .spinoff, status: .inProduction),
+                    SpinoffShow(title: "O'Donnell", tmdbId: 999004, years: "TBA", type: .spinoff, status: .inProduction)
+                ],
+                watchOrder: nil
+            ),
+
+            // The Witcher
+            Franchise(
+                id: "witcher",
+                franchiseName: ["en": "The Witcher Universe"],
+                origin: "US",
+                parentShow: FranchiseShow(title: "The Witcher", tmdbId: 71912, years: "2019-"),
+                spinoffs: [
+                    SpinoffShow(title: "The Witcher: Blood Origin", tmdbId: 106541, years: "2022", type: .prequel, status: .ended),
+                    SpinoffShow(title: "The Witcher: Nightmare of the Wolf", tmdbId: 814675, years: "2021", type: .prequel, status: .ended),
+                    SpinoffShow(title: "The Witcher: Sirens of the Deep", tmdbId: 950387, years: "2025", type: .spinoff, status: .upcoming)
+                ],
+                watchOrder: WatchOrder(
+                    release: ["The Witcher: Nightmare of the Wolf", "The Witcher", "The Witcher: Blood Origin"],
+                    chronological: ["The Witcher: Blood Origin", "The Witcher: Nightmare of the Wolf", "The Witcher"]
+                )
+            ),
+
+            // Daredevil / Marvel Netflix
+            Franchise(
+                id: "daredevil",
+                franchiseName: ["en": "Daredevil Universe"],
+                origin: "US",
+                parentShow: FranchiseShow(title: "Daredevil", tmdbId: 61889, years: "2015-2018"),
+                spinoffs: [
+                    SpinoffShow(title: "The Punisher", tmdbId: 67178, years: "2017-2019", type: .spinoff, status: .ended),
+                    SpinoffShow(title: "Echo", tmdbId: 122226, years: "2024", type: .spinoff, status: .ended),
+                    SpinoffShow(title: "Daredevil: Born Again", tmdbId: 202555, years: "2025-", type: .sequel, status: .returning)
+                ],
+                watchOrder: nil
             )
         ]
     }
