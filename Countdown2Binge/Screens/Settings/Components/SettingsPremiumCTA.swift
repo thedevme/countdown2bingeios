@@ -93,6 +93,8 @@ struct SettingsPremiumOverlay: View {
                     .font(.custom(.jetbrains.bold, size: 10.5))
                     .tracking(1.26)
                     .foregroundColor(Color(hex: "#04201c"))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(Color.c2bTeal)

@@ -79,6 +79,8 @@ struct TabButton: View {
 
                 Text(tab.label)
                     .monoStyle(size: 8.5, color: isActive ? .c2bText : .c2bMuted)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 14)

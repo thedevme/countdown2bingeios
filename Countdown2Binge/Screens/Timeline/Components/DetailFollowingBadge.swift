@@ -16,6 +16,8 @@ struct DetailFollowingBadge: View {
                 .foregroundColor(.c2bTealBright)
                 .textCase(.uppercase)
                 .tracking(1.0)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .padding(.horizontal, 13)
         .padding(.vertical, 7)

@@ -10,6 +10,8 @@ struct DetailCurrentBadge: View {
         Text("detail_current")
             .font(.custom(.jetbrains.bold, size: 8))
             .foregroundColor(.c2bTealBright)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(Color.c2bTeal.opacity(0.12))

@@ -32,6 +32,8 @@ struct TimelineDensityToggle: View {
                         Text(mode.rawValue.uppercased())
                             .font(.custom(.jetbrains.bold, size: 9))
                             .tracking(0.8)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                     .foregroundColor(isSelected ? Color(hex: "#04201c") : .c2bDim)
                     .frame(maxWidth: .infinity)

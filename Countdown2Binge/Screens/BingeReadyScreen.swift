@@ -1131,6 +1131,8 @@ private struct BingeActionButtons: View {
                     Text("button_unfollow_show")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.14)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
                 .foregroundColor(.c2bMuted)
                 .frame(maxWidth: .infinity)

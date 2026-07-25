@@ -77,6 +77,8 @@ struct NotificationsScreen: View {
                             Text("button_upgrade_premium")
                                 .font(.custom(.oswald.bold, size: 16))
                                 .foregroundColor(Color(hex: "#04201c"))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
                                 .background(Color.c2bTeal)
