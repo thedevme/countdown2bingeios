@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Episode count -->
+    <key>plural_episodes</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 集</string>
+        </dict>
+    </dict>
+
+    <!-- Episodes short (eps) -->
+    <key>plural_eps</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@eps@</string>
+        <key>eps</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 集</string>
+        </dict>
+    </dict>
+
+    <!-- Season count -->
+    <key>plural_seasons</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@seasons@</string>
+        <key>seasons</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 季</string>
+        </dict>
+    </dict>
+
+    <!-- Show count -->
+    <key>plural_shows</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 部剧集</string>
+        </dict>
+    </dict>
+
+    <!-- Shows tracked -->
+    <key>plural_shows_tracked</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>已追踪 %lld 部剧集</string>
+        </dict>
+    </dict>
+
+    <!-- Days to watch -->
+    <key>plural_days_to_watch</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 天可看</string>
+        </dict>
+    </dict>
+
+    <!-- Days remaining -->
+    <key>plural_days_remaining</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>还剩 %lld 天</string>
+        </dict>
+    </dict>
+
+    <!-- Left to release -->
+    <key>plural_left_to_release</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>还有 %lld 集待播出</string>
+        </dict>
+    </dict>
+
+    <!-- Left to drop -->
+    <key>plural_left_to_drop</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>还有 %lld 集待上线</string>
+        </dict>
+    </dict>
+
+    <!-- Sync restored shows -->
+    <key>plural_sync_restored</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>已从云备份恢复 %lld 部剧集。</string>
+        </dict>
+    </dict>
+
+    <!-- Shows added (onboarding) -->
+    <key>plural_shows_added</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>已添加 %lld 部剧集。我们会追踪每一季，并在可以追剧时通知你。</string>
+        </dict>
+    </dict>
+
+    <!-- Premieres in days -->
+    <key>plural_premieres_in_days</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld 天后首播</string>
+        </dict>
+    </dict>
+
+    <!-- Binge ready in days -->
+    <key>plural_binge_ready_in_days</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>在你的时间线上 · 约 %lld 天后可追剧</string>
+        </dict>
+    </dict>
+
+    <!-- Episodes aired of total -->
+    <key>plural_episodes_watched</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>已看 %#@watched@ 集，共 %#@total@ 集</string>
+        <key>watched</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld</string>
+        </dict>
+        <key>total</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>%lld</string>
+        </dict>
+    </dict>
+
+    <!-- All episodes out -->
+    <key>plural_all_episodes_out</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>全部 %lld 集已播出 · 刚刚完结</string>
+        </dict>
+    </dict>
+
+    <!-- Follow line complete -->
+    <key>plural_follow_line_complete</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>全部 %lld 集已播出——随时可以开始。</string>
+        </dict>
+    </dict>
+
+    <!-- Follow hint airing -->
+    <key>plural_follow_hint_airing</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>关注后我们会等待全部 %lld 集播出，届时通知你可以追剧了。</string>
+        </dict>
+    </dict>
+
+    <!-- Share default binged -->
+    <key>plural_share_binged</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>other</key>
+            <string>刚刚一口气追完全部 %lld 集。</string>
+        </dict>
+    </dict>
+</dict>
+</plist>

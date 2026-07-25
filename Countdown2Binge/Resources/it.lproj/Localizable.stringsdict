@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Episode count -->
+    <key>plural_episodes</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld episodio</string>
+            <key>other</key>
+            <string>%lld episodi</string>
+        </dict>
+    </dict>
+
+    <!-- Episodes short (eps) -->
+    <key>plural_eps</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@eps@</string>
+        <key>eps</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld ep</string>
+            <key>other</key>
+            <string>%lld ep</string>
+        </dict>
+    </dict>
+
+    <!-- Season count -->
+    <key>plural_seasons</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@seasons@</string>
+        <key>seasons</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld stagione</string>
+            <key>other</key>
+            <string>%lld stagioni</string>
+        </dict>
+    </dict>
+
+    <!-- Show count -->
+    <key>plural_shows</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld serie</string>
+            <key>other</key>
+            <string>%lld serie</string>
+        </dict>
+    </dict>
+
+    <!-- Shows tracked -->
+    <key>plural_shows_tracked</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld SERIE SEGUITA</string>
+            <key>other</key>
+            <string>%lld SERIE SEGUITE</string>
+        </dict>
+    </dict>
+
+    <!-- Days to watch -->
+    <key>plural_days_to_watch</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld giorno da guardare</string>
+            <key>other</key>
+            <string>%lld giorni da guardare</string>
+        </dict>
+    </dict>
+
+    <!-- Days remaining -->
+    <key>plural_days_remaining</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld giorno rimanente</string>
+            <key>other</key>
+            <string>%lld giorni rimanenti</string>
+        </dict>
+    </dict>
+
+    <!-- Left to release -->
+    <key>plural_left_to_release</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld da pubblicare</string>
+            <key>other</key>
+            <string>%lld da pubblicare</string>
+        </dict>
+    </dict>
+
+    <!-- Left to drop -->
+    <key>plural_left_to_drop</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld in arrivo</string>
+            <key>other</key>
+            <string>%lld in arrivo</string>
+        </dict>
+    </dict>
+
+    <!-- Sync restored shows -->
+    <key>plural_sync_restored</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>Abbiamo ripristinato %lld serie dal tuo backup cloud.</string>
+            <key>other</key>
+            <string>Abbiamo ripristinato %lld serie dal tuo backup cloud.</string>
+        </dict>
+    </dict>
+
+    <!-- Shows added (onboarding) -->
+    <key>plural_shows_added</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@shows@</string>
+        <key>shows</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld serie aggiunta. Seguiremo ogni stagione e ti avviseremo quando sara pronta per la maratona.</string>
+            <key>other</key>
+            <string>%lld serie aggiunte. Seguiremo ogni stagione e ti avviseremo quando ognuna sara pronta per la maratona.</string>
+        </dict>
+    </dict>
+
+    <!-- Premieres in days -->
+    <key>plural_premieres_in_days</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>PRIMA TRA %lld GIORNO</string>
+            <key>other</key>
+            <string>PRIMA TRA %lld GIORNI</string>
+        </dict>
+    </dict>
+
+    <!-- Binge ready in days -->
+    <key>plural_binge_ready_in_days</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@days@</string>
+        <key>days</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>Nella tua timeline · maratona pronta tra ~%lld giorno</string>
+            <key>other</key>
+            <string>Nella tua timeline · maratona pronta tra ~%lld giorni</string>
+        </dict>
+    </dict>
+
+    <!-- Episodes aired of total -->
+    <key>plural_episodes_watched</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@watched@ di %#@total@ episodi guardati</string>
+        <key>watched</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld</string>
+            <key>other</key>
+            <string>%lld</string>
+        </dict>
+        <key>total</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>%lld</string>
+            <key>other</key>
+            <string>%lld</string>
+        </dict>
+    </dict>
+
+    <!-- All episodes out -->
+    <key>plural_all_episodes_out</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>L'unico episodio disponibile · appena concluso</string>
+            <key>other</key>
+            <string>Tutti i %lld episodi disponibili · appena concluso</string>
+        </dict>
+    </dict>
+
+    <!-- Follow line complete -->
+    <key>plural_follow_line_complete</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>L'episodio e disponibile — inizia quando vuoi.</string>
+            <key>other</key>
+            <string>Tutti i %lld episodi sono disponibili — inizia quando vuoi.</string>
+        </dict>
+    </dict>
+
+    <!-- Follow hint airing -->
+    <key>plural_follow_hint_airing</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>Segui e aspetteremo l'episodio %lld, poi ti avviseremo quando sara pronto per la maratona.</string>
+            <key>other</key>
+            <string>Segui e aspetteremo tutti i %lld episodi, poi ti avviseremo quando sara pronto per la maratona.</string>
+        </dict>
+    </dict>
+
+    <!-- Share default binged -->
+    <key>plural_share_binged</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@episodes@</string>
+        <key>episodes</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>Ho appena visto l'episodio dall'inizio alla fine. 🍿✅</string>
+            <key>other</key>
+            <string>Ho appena visto tutti i %lld episodi dall'inizio alla fine. 🍿✅</string>
+        </dict>
+    </dict>
+</dict>
+</plist>
