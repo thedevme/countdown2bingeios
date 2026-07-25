@@ -72,7 +72,7 @@ struct MiniPremieringCard: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
 
-                Text("TO PREMIERE")
+                Text("timeline_to_premiere")
                     .font(.custom(.jetbrains.bold, size: 6.5))
                     .tracking(0.8)
                     .foregroundColor(.c2bTealBright)
@@ -81,7 +81,7 @@ struct MiniPremieringCard: View {
 
             HStack(alignment: .center, spacing: 8) {
                 HStack(spacing: 0) {
-                    Text("S")
+                    Text("season_abbrev")
                         .font(.custom(.oswald.bold, size: 20))
                         .foregroundColor(.white)
 
@@ -127,6 +127,7 @@ struct MiniPremieringCard: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
+        .contentShape(Rectangle())
     }
 }
 
@@ -152,7 +153,7 @@ struct MiniAnticipatedCard: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
 
-                Text("EXPECTED")
+                Text("timeline_expected")
                     .font(.custom(.jetbrains.bold, size: 6.5))
                     .tracking(0.8)
                     .foregroundColor(.c2bMuted)
@@ -161,7 +162,7 @@ struct MiniAnticipatedCard: View {
 
             HStack(alignment: .center, spacing: 8) {
                 HStack(spacing: 0) {
-                    Text("S")
+                    Text("season_abbrev")
                         .font(.custom(.oswald.bold, size: 20))
                         .foregroundColor(Color.white.opacity(0.82))
 
@@ -204,6 +205,7 @@ struct MiniAnticipatedCard: View {
                 )
                 .foregroundColor(Color.white.opacity(0.12))
         )
+        .contentShape(Rectangle())
     }
 }
 
@@ -222,7 +224,7 @@ struct MiniEmptySection: View {
                     .font(.custom(.oswald.bold, size: dim ? 24 : 30))
                     .foregroundColor(dim ? .c2bDim : Color.white.opacity(0.4))
 
-                Text(dim ? "EXPECTED" : "TO PREMIERE")
+                Text(dim ? "timeline_expected" : "timeline_to_premiere")
                     .font(.custom(.jetbrains.bold, size: 6.5))
                     .tracking(0.8)
                     .foregroundColor(dim ? .c2bMuted : .c2bTealBright.opacity(0.5))

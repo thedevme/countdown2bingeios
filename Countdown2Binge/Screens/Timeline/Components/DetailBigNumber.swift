@@ -16,7 +16,7 @@ struct DetailBigNumber: View {
                 .foregroundColor(isReady ? .c2bTealBright : (value == "TBD" ? .c2bMuted : .white))
 
             if value != "NOW" && value != "TBD" {
-                Text("DAYS")
+                Text("time_days")
                     .font(.custom(.jetbrains.bold, size: 9))
                     .foregroundColor(.c2bDim)
                     .tracking(2.0)

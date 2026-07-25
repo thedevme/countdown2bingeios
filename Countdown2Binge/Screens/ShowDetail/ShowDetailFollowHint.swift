@@ -20,9 +20,9 @@ struct ShowDetailFollowHint: View {
 
     private var hintText: String {
         if hasDate {
-            return "Follow and we'll wait for all \(episodeCount) episodes, then alert you the day it's bingeable."
+            return String(localized: "follow_hint_airing \(episodeCount)")
         } else {
-            return "Follow it and we'll drop it into Anticipated — counting down the moment a date is announced."
+            return String(localized: "follow_hint_anticipated")
         }
     }
 }

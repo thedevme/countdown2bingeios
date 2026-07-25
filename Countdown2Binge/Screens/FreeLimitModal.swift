@@ -113,14 +113,14 @@ struct FreeLimitSheet: View {
 
             // Header badges
             HStack(spacing: 9) {
-                Text("FREE PLAN")
+                Text("free_plan_badge")
                     .monoStyle(size: 9, color: Color(hex: "#04201c"))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(Color.c2bMuted)
                     .cornerRadius(999)
 
-                Text("\(freeLimit) SHOWS MAX")
+                Text(String(localized: "free_shows_max \(freeLimit)"))
                     .monoStyle(size: 9, color: .c2bMuted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,11 +129,11 @@ struct FreeLimitSheet: View {
 
             // Title
             HStack(spacing: 0) {
-                Text("SELECT ")
+                Text(String(localized: "free_select") + " ")
                     .displayStyle(size: 26, color: .c2bText)
                 Text("\(stillOverCount > 0 ? stillOverCount : overCount)")
                     .displayStyle(size: 26, color: .c2bTeal)
-                Text(" TO REMOVE")
+                Text(" " + String(localized: "free_to_remove"))
                     .displayStyle(size: 26, color: .c2bText)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -141,7 +141,7 @@ struct FreeLimitSheet: View {
             .padding(.bottom, 8)
 
             // Description
-            Text("Free tracks up to \(freeLimit) shows. Tap the shows you want to drop, then confirm — nothing's removed until you do. Or go unlimited with Premium.")
+            Text(String(localized: "free_limit_description \(freeLimit)"))
                 .uiStyle(size: 13, weight: .regular, color: .c2bDim)
                 .lineSpacing(4)
                 .padding(.horizontal, 20)
@@ -187,7 +187,7 @@ struct FreeLimitSheet: View {
 
             // Upgrade link
             Button(action: onUpgrade) {
-                Text("◆ GO PREMIUM — KEEP ALL \(followedShows.count)")
+                Text(String(localized: "free_go_premium_keep \(followedShows.count)"))
                     .monoStyle(size: 10.5, color: .c2bTealBright)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
@@ -216,13 +216,13 @@ struct FreeLimitSheet: View {
 
     private var primaryButtonText: String {
         if atLimit {
-            return "CONTINUE WITH FREE"
+            return String(localized: "free_continue_free")
         } else if markedForRemoval.count == 0 {
-            return "SELECT \(overCount) TO REMOVE"
+            return String(localized: "free_select_to_remove \(overCount)")
         } else if stillOverCount > 0 {
-            return "SELECT \(stillOverCount) MORE"
+            return String(localized: "free_select_more \(stillOverCount)")
         } else {
-            return "REMOVE \(markedForRemoval.count) SELECTED"
+            return String(localized: "free_remove_selected \(markedForRemoval.count)")
         }
     }
 }
@@ -264,7 +264,7 @@ struct ShowRemovalCard: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text(isMarked ? "MARKED TO REMOVE · TAP TO KEEP" : "S2 · PRIME")
+                    Text(isMarked ? String(localized: "free_marked_to_remove") : "S2 · PRIME")
                         .monoStyle(
                             size: 8.5,
                             color: isMarked ? Color(hex: "#ff6b6b") : .c2bMuted

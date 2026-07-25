@@ -7,7 +7,7 @@ import SwiftUI
 
 struct DetailCurrentBadge: View {
     var body: some View {
-        Text("CURRENT")
+        Text("detail_current")
             .font(.custom(.jetbrains.bold, size: 8))
             .foregroundColor(.c2bTealBright)
             .padding(.horizontal, 6)

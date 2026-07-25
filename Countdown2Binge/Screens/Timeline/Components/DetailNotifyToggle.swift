@@ -15,10 +15,10 @@ struct DetailNotifyToggle: View {
                 .foregroundColor(isEnabled ? .c2bTealBright : .c2bMuted)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Binge-ready alert")
+                Text("notif_binge_ready_alert")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
-                Text("Ping me the day it's fully out")
+                Text("notif_ping_when_out")
                     .font(.system(size: 11.5))
                     .foregroundColor(.c2bMuted)
             }

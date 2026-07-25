@@ -11,6 +11,7 @@
 		4602CAB930114363001185C9 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAB830114363001185C9 /* RevenueCat */; };
 		4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CABA30114363001185C9 /* RevenueCatUI */; };
 		4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAC830114F62001185C9 /* FirebaseDatabase */; };
+		4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAF33014EB59001185C9 /* YouTubePlayerKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 			files = (
 				4602CAB930114363001185C9 /* RevenueCat in Frameworks */,
 				4602CAB730114363001185C9 /* ReceiptParser in Frameworks */,
+				4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */,
 				4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */,
 				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
@@ -140,6 +142,7 @@
 				4602CAB830114363001185C9 /* RevenueCat */,
 				4602CABA30114363001185C9 /* RevenueCatUI */,
 				4602CAC830114F62001185C9 /* FirebaseDatabase */,
+				4602CAF33014EB59001185C9 /* YouTubePlayerKit */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -220,12 +223,27 @@
 			knownRegions = (
 				en,
 				Base,
+				nl,
+				fr,
+				tr,
+				ko,
+				es,
+				it,
+				ru,
+				"zh-Hans",
+				th,
+				pl,
+				ja,
+				ar,
+				de,
+				"pt-BR",
 			);
 			mainGroup = 46AEA112300005C300F05C7B;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */,
 				4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -630,6 +648,14 @@
 				minimumVersion = 12.16.0;
 			};
 		};
+		4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SvenTiigi/YouTubePlayerKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -652,6 +678,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		4602CAF33014EB59001185C9 /* YouTubePlayerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
+			productName = YouTubePlayerKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

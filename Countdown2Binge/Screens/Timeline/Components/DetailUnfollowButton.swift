@@ -13,7 +13,7 @@ struct DetailUnfollowButton: View {
             HStack(spacing: 8) {
                 Image(systemName: "xmark")
                     .font(.system(size: 13, weight: .medium))
-                Text("Unfollow show")
+                Text("unfollow_show")
                     .font(.custom(.jetbrains.bold, size: 10.5))
                     .textCase(.uppercase)
                     .tracking(1.4)

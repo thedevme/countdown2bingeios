@@ -30,7 +30,7 @@ struct ShowDetailStatusCard: View {
                         .minimumScaleFactor(0.5)
 
                     if showDaysLabel {
-                        Text("DAYS")
+                        Text("time_days")
                             .font(.custom(.jetbrains.regular, size: 9))
                             .tracking(1.8)
                             .foregroundColor(.c2bDim)

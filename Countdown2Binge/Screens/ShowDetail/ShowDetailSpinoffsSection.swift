@@ -43,12 +43,12 @@ struct SpinoffsPremiumBanner: View {
             SpinoffsPremiumIcon()
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("UNIVERSE — PREMIUM")
+                Text("header_universe_premium")
                     .font(.custom(.oswald.bold, size: 15))
                     .foregroundColor(.c2bTealBright)
                     .tracking(0.3)  // 0.02em = 15 * 0.02 = 0.3
 
-                Text("Track every spin-off & prequel connected to \(showTitle).")
+                Text(String(localized: "premium_spinoffs_track \(showTitle)"))
                     .font(.system(size: 11.5))
                     .foregroundColor(.c2bDim)
                     .lineSpacing(4.6)  // 11.5 * 1.4 = 16.1, lineSpacing = 16.1 - 11.5 = 4.6
@@ -181,7 +181,7 @@ struct SpinoffsWatchOrderHeader: View {
         HStack(spacing: 4) {
             Text("◷")
                 .font(.system(size: 10))
-            Text("Recommended watch order")
+            Text("header_watch_order")
                 .font(.custom(.jetbrains.bold, size: 9))
                 .tracking(1.44)  // 0.16em = 9 * 0.16 = 1.44
                 .textCase(.uppercase)
@@ -214,7 +214,7 @@ struct SpinoffsWatchOrderRow: View {
     var body: some View {
         HStack(spacing: 0) {
             SpinoffsNumberCircle(index: index, isActive: item.isCurrentShow)
-                .offset(x: -41, y: item.isCurrentShow ? 4 : 12)
+                .offset(x: -30, y: item.isCurrentShow ? 4 : 12)
 
             Group {
                 switch item {
@@ -238,7 +238,7 @@ struct SpinoffsWatchOrderRow: View {
                     )
                 }
             }
-            .offset(x: -30)
+            .offset(x: -19)
         }
     }
 }
@@ -292,7 +292,7 @@ struct SpinoffsCurrentShowCard: View {
                     .foregroundColor(.c2bTealBright)
                     .lineLimit(1)
 
-                Text("Main series · you are here")
+                Text("season_you_are_here")
                     .font(.custom(.jetbrains.bold, size: 8))
                     .foregroundColor(.c2bTeal)
                     .tracking(0.8)  // 0.1em = 8 * 0.1 = 0.8
@@ -458,7 +458,7 @@ struct SpinoffsFollowButton: View {
             Image(systemName: "bookmark.fill")
                 .font(.system(size: 14))
 
-            Text("Follow spin-off")
+            Text("show_detail_follow_spinoff")
                 .font(.system(size: 13, weight: .bold))
                 .tracking(0.39)  // 0.03em = 13 * 0.03 = 0.39
                 .textCase(.uppercase)
@@ -503,14 +503,14 @@ struct SpinoffsEmptyState: View {
                 .foregroundColor(.c2bMuted)
                 .opacity(0.7)
 
-            Text("No spin-offs yet")
+            Text("empty_no_spinoffs")
                 .font(.custom(.oswald.bold, size: 17))
                 .foregroundColor(.c2bDim)
                 .tracking(0.34)  // 0.02em = 17 * 0.02 = 0.34
                 .textCase(.uppercase)
                 .padding(.top, 12)
 
-            Text("\(showTitle) doesn't have any spin-offs or prequels. We'll add them here if one is announced.")
+            Text(String(localized: "empty_no_spinoffs_message \(showTitle)"))
                 .font(.system(size: 12))
                 .foregroundColor(.c2bMuted)
                 .multilineTextAlignment(.center)
@@ -555,8 +555,8 @@ extension SpinoffShow.SpinoffType {
 // MARK: - Tab Enum
 
 enum ShowDetailTab: String, CaseIterable {
-    case episodes = "Episodes"
-    case spinoffs = "Spin-offs"
+    case episodes = "tab_episodes"
+    case spinoffs = "tab_spinoffs"
 }
 
 // MARK: - Tab Switcher
@@ -597,9 +597,10 @@ struct ShowDetailTabButton: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 6) {
-                Text(tab.rawValue.uppercased())
+                Text(LocalizedStringKey(tab.rawValue))
                     .font(.custom(.jetbrains.bold, size: 10))
                     .tracking(0.6)
+                    .textCase(.uppercase)
 
                 if badgeCount > 0 {
                     ShowDetailTabBadge(count: badgeCount, isSelected: isSelected)

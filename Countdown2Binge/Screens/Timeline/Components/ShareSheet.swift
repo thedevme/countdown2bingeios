@@ -21,7 +21,7 @@ struct ShareSheet: View {
     }
 
     private var defaultBingedText: String {
-        "Just binged all \(episodeCount) episodes start to finish. 🍿✅"
+        String(localized: "share_default_binged \(episodeCount)")
     }
 
     private var seasonNumber: String {
@@ -45,10 +45,10 @@ struct ShareSheet: View {
 
     private var statLabel: String {
         switch show.timelineCategory {
-        case .airingNow: return "Until binge ready"
-        case .premieringSoon: return "Until premiere"
-        case .anticipated: return "Release date pending"
-        case .bingeReady: return "Binge ready"
+        case .airingNow: return String(localized: "status_until_binge_ready")
+        case .premieringSoon: return String(localized: "share_until_premiere")
+        case .anticipated: return String(localized: "share_release_pending")
+        case .bingeReady: return String(localized: "status_ready_to_binge")
         }
     }
 
@@ -78,12 +78,12 @@ struct ShareSheet: View {
                     // Variant toggle
                     HStack(spacing: 4) {
                         VariantButton(
-                            title: "Counting Down",
+                            title: String(localized: "share_counting_down"),
                             isSelected: variant == .countingDown,
                             action: { variant = .countingDown }
                         )
                         VariantButton(
-                            title: "Just Binged",
+                            title: String(localized: "share_just_binged"),
                             isSelected: variant == .justBinged,
                             action: { variant = .justBinged }
                         )
@@ -116,7 +116,7 @@ struct ShareSheet: View {
                             .foregroundColor(.c2bMuted)
 
                         if variant == .countingDown {
-                            TextField("Enter your message...", text: $countdownText)
+                            TextField("share_enter_message", text: $countdownText)
                                 .font(.system(size: 12))
                                 .foregroundColor(.white)
                                 .tint(.c2bTeal)
@@ -140,17 +140,17 @@ struct ShareSheet: View {
 
                     // Share destinations
                     HStack(spacing: 8) {
-                        ShareDestination(label: "Messages", color: Color(hex: "#34C759"), icon: "message.fill")
-                        ShareDestination(label: "Instagram", color: Color(hex: "#E1306C"), icon: "camera.fill")
-                        ShareDestination(label: "Copy Link", color: Color(hex: "#8E8E93"), icon: "link")
-                        ShareDestination(label: "More", color: Color(hex: "#48484A"), icon: "ellipsis")
+                        ShareDestination(label: String(localized: "share_messages"), color: Color(hex: "#34C759"), icon: "message.fill")
+                        ShareDestination(label: String(localized: "share_instagram"), color: Color(hex: "#E1306C"), icon: "camera.fill")
+                        ShareDestination(label: String(localized: "share_copy_link"), color: Color(hex: "#8E8E93"), icon: "link")
+                        ShareDestination(label: String(localized: "share_more"), color: Color(hex: "#48484A"), icon: "ellipsis")
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
 
                     // Cancel button
                     Button(action: onClose) {
-                        Text("CANCEL")
+                        Text("button_cancel")
                             .font(.custom(.oswald.regular, size: 13))
                             .tracking(0.78)
                             .foregroundColor(.c2bDim)
@@ -281,7 +281,7 @@ private struct BingeCard: View {
                                 Image(systemName: "checkmark")
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(Color(hex: "#04201c"))
-                                Text("BINGED")
+                                Text("share_binged")
                                     .font(.custom(.jetbrains.bold, size: 8))
                                     .tracking(0.96)
                                     .foregroundColor(Color(hex: "#04201c"))
@@ -309,7 +309,7 @@ private struct BingeCard: View {
                         .shadow(color: .black.opacity(0.8), radius: 12, y: 2)
 
                     HStack(spacing: 0) {
-                        Text("S")
+                        Text("season_abbrev")
                             .font(.custom(.oswald.bold, size: 16))
                         Text(seasonNumber)
                             .font(.custom(.oswald.light, size: 16))
@@ -349,7 +349,7 @@ private struct BingeCard: View {
                             .minimumScaleFactor(0.5)
 
                         if statBig != "NOW" && statBig != "TBD" && statBig != "—" {
-                            Text("DAYS")
+                            Text("time_days")
                                 .font(.custom(.jetbrains.bold, size: 7))
                                 .tracking(0.98)
                                 .foregroundColor(.c2bMuted)
@@ -361,7 +361,7 @@ private struct BingeCard: View {
 
                 // Text section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(isFinished ? "Season complete" : statLabel.uppercased())
+                    Text(isFinished ? String(localized: "share_season_complete") : statLabel.uppercased())
                         .font(.custom(.jetbrains.bold, size: 8))
                         .tracking(1.12)
                         .foregroundColor(.c2bTeal)

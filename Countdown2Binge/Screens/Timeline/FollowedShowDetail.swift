@@ -14,7 +14,6 @@ struct FollowedShowDetail: View {
     var onSpinoffTap: (Int) -> Void = { _ in }
 
     @State private var selectedSeason: Int
-    @State private var notifyEnabled = true
     @State private var showShareSheet = false
     @State private var selectedTab: ShowDetailTab = .episodes
 
@@ -48,6 +47,13 @@ struct FollowedShowDetail: View {
                     )
 
                 VStack(spacing: 0) {
+                    // Streaming app deep link
+                    StreamingLinkButton(
+                        network: show.primaryNetwork,
+                        showName: show.name
+                    )
+                    .padding(.bottom, 16)
+
                     DetailSeasonPicker(
                         show: show,
                         selectedSeason: $selectedSeason
@@ -61,8 +67,8 @@ struct FollowedShowDetail: View {
                         BingeClock(days: days)
                     }
 
-                    // Episodes / Spin-offs Tab Switcher (Premium feature)
-                    if PremiumManager.shared.canViewSpinoffs {
+                    // Episodes / Spin-offs Tab Switcher (only show if spinoffs exist and premium)
+                    if PremiumManager.shared.canViewSpinoffs && spinoffCount > 0 {
                         ShowDetailTabSwitcher(
                             selectedTab: $selectedTab,
                             spinoffCount: spinoffCount
@@ -72,7 +78,7 @@ struct FollowedShowDetail: View {
 
                         // Tab Content
                         if selectedTab == .episodes {
-                            DetailEpisodeSection(show: show)
+                            DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
                         } else {
                             ShowDetailSpinoffsSection(
                                 show: show,
@@ -81,12 +87,9 @@ struct FollowedShowDetail: View {
                             )
                         }
                     } else {
-                        // Non-premium: just show episodes
-                        DetailEpisodeSection(show: show)
+                        // No spinoffs or non-premium: just show episodes
+                        DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
                     }
-
-                    DetailNotifyToggle(isEnabled: $notifyEnabled)
-                        .padding(.top, 26)
 
                     DetailActionButtons(show: show, onUnfollow: {
                         onUnfollow()

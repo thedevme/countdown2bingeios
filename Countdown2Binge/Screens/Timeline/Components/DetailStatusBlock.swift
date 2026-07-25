@@ -33,10 +33,10 @@ struct DetailStatusBlock: View {
 
     private var phaseLabel: String {
         switch show.timelineCategory {
-        case .airingNow: return "Now Airing"
-        case .premieringSoon: return "Premiering Soon"
-        case .anticipated: return "Anticipated"
-        case .bingeReady: return "Binge Ready"
+        case .airingNow: return String(localized: "phase_now_airing")
+        case .premieringSoon: return String(localized: "phase_premiering_soon")
+        case .anticipated: return String(localized: "phase_anticipated")
+        case .bingeReady: return String(localized: "phase_binge_ready")
         }
     }
 

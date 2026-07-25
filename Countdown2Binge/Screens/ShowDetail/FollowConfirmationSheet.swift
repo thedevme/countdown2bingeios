@@ -16,40 +16,40 @@ struct FollowConfirmationSheet: View {
         case .bingeReady:
             return FollowPhaseInfo(
                 key: "ready",
-                badge: "Series Complete",
+                badge: String(localized: "follow_badge_complete"),
                 tone: Color.c2bTealBright,
                 stat: "NOW",
-                statUnit: "binge ready",
-                line: "All \(show.currentSeason?.episodeCount ?? show.numberOfEpisodes) episodes are out — start whenever you want."
+                statUnit: String(localized: "follow_stat_binge_ready"),
+                line: String(localized: "follow_line_complete \(show.currentSeason?.episodeCount ?? show.numberOfEpisodes)")
             )
         case .airingNow:
             let days = show.daysUntilFinale ?? 0
             return FollowPhaseInfo(
                 key: "airing",
-                badge: "Now Airing",
+                badge: String(localized: "follow_badge_airing"),
                 tone: Color.c2bTeal,
                 stat: "\(max(0, days))",
-                statUnit: "days to finale",
-                line: "Episodes releasing weekly. We'll tell you the day the season finishes."
+                statUnit: String(localized: "follow_stat_days_finale"),
+                line: String(localized: "follow_line_airing")
             )
         case .premieringSoon:
             let days = show.daysUntilPremiere ?? 0
             return FollowPhaseInfo(
                 key: "premiering",
-                badge: "Premiering Soon",
+                badge: String(localized: "follow_badge_premiering"),
                 tone: Color.c2bTeal,
                 stat: "\(max(0, days))",
-                statUnit: "days to premiere",
-                line: "Premieres soon. We'll notify you when it starts airing."
+                statUnit: String(localized: "follow_stat_days_premiere"),
+                line: String(localized: "follow_line_premiering")
             )
         case .anticipated:
             return FollowPhaseInfo(
                 key: "anticipated",
-                badge: "Anticipated",
+                badge: String(localized: "badge_anticipated"),
                 tone: Color.c2bMuted,
                 stat: "TBD",
-                statUnit: "no date yet",
-                line: "No release date announced. We'll alert you the moment one drops."
+                statUnit: String(localized: "follow_stat_no_date"),
+                line: String(localized: "follow_line_anticipated")
             )
         }
     }
@@ -62,7 +62,7 @@ struct FollowConfirmationSheet: View {
             // Content
             VStack(alignment: .leading, spacing: 0) {
                 // Section Title
-                Text("ADDED TO YOUR TIMELINE IN")
+                Text("follow_added_to_timeline")
                     .font(.custom(.oswald.bold, size: 20))
                     .tracking(0.4)
                     .foregroundColor(.white)
@@ -77,7 +77,7 @@ struct FollowConfirmationSheet: View {
 
                 // Save Button
                 Button(action: onSave) {
-                    Text("SAVE")
+                    Text("button_save")
                         .font(.custom(.oswald.bold, size: 16))
                         .tracking(0.48)
                         .foregroundColor(Color(hex: "#04201c"))
@@ -150,7 +150,7 @@ private struct FollowConfirmHero: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(Color(hex: "#04201c"))
 
-                    Text("ADDED TO TIMELINE")
+                    Text("badge_added_to_timeline")
                         .font(.custom(.jetbrains.bold, size: 8.5))
                         .tracking(1.02)
                         .foregroundColor(Color(hex: "#04201c"))
@@ -178,12 +178,14 @@ private struct FollowConfirmHero: View {
 private struct FollowTimelineStepper: View {
     let activePhase: String
 
-    private let stages = [
-        ("ready", "SERIES COMPLETE"),
-        ("airing", "NOW AIRING"),
-        ("premiering", "PREMIERING"),
-        ("anticipated", "ANTICIPATED")
-    ]
+    private var stages: [(String, String)] {
+        [
+            ("ready", String(localized: "timeline_series_complete")),
+            ("airing", String(localized: "timeline_now_airing")),
+            ("premiering", String(localized: "timeline_premiering")),
+            ("anticipated", String(localized: "timeline_anticipated"))
+        ]
+    }
 
     private var activeIndex: Int {
         stages.firstIndex { $0.0 == activePhase } ?? 3

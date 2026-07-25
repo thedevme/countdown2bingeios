@@ -29,7 +29,7 @@ struct SettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // Header
-                    Text("SETTINGS")
+                    Text("header_settings")
                         .font(.custom(.oswald.bold, size: 27))
                         .tracking(0.54)
                         .foregroundColor(.white)
@@ -42,12 +42,12 @@ struct SettingsScreen: View {
                     )
 
                     // Alerts Group
-                    SettingsGroup(label: "Alerts") {
+                    SettingsGroup(label: String(localized: "settings_group_alerts")) {
                         SettingsRowChevron(
                             icon: "bell.fill",
                             iconColor: .c2bTealBright,
-                            title: "Notifications",
-                            subtitle: isPremium ? "Advanced alerts enabled" : "Binge-ready alerts only",
+                            title: String(localized: "settings_notifications"),
+                            subtitle: isPremium ? String(localized: "settings_alerts_advanced") : String(localized: "settings_alerts_basic"),
                             isLast: true,
                             action: { showNotifications = true }
                         )
@@ -61,47 +61,47 @@ struct SettingsScreen: View {
                     }
 
                     // Preferences Group
-                    SettingsGroup(label: "Preferences") {
+                    SettingsGroup(label: String(localized: "settings_group_preferences")) {
                         SettingsRowChevron(
                             icon: "tv",
-                            title: "Streaming services",
+                            title: String(localized: "settings_streaming_services"),
                             subtitle: "Netflix, Max, Prime, Hulu, Apple TV+",
                             action: { }
                         )
 
                         SettingsRowChevron(
                             icon: "moon.fill",
-                            title: "Appearance",
-                            subtitle: "Dark",
+                            title: String(localized: "settings_appearance"),
+                            subtitle: String(localized: "settings_dark"),
                             isLast: true,
                             action: { }
                         )
                     }
 
                     // Account Group
-                    SettingsGroup(label: "Account") {
+                    SettingsGroup(label: String(localized: "settings_group_account")) {
                         SettingsRowChevron(
                             icon: "person.fill",
-                            title: "Manage account",
+                            title: String(localized: "settings_manage_account"),
                             action: { }
                         )
 
                         SettingsRowChevron(
                             icon: "questionmark.circle",
-                            title: "Help & feedback",
+                            title: String(localized: "settings_help_feedback"),
                             isLast: true,
                             action: { }
                         )
                     }
 
                     // Developer / Reset Group
-                    SettingsGroup(label: "Developer") {
+                    SettingsGroup(label: String(localized: "settings_group_developer")) {
                         #if DEBUG
                         SettingsRowToggle(
                             icon: "star.fill",
                             iconColor: .yellow,
-                            title: "Debug Premium",
-                            subtitle: PremiumManager.shared.debugPremiumOverride ? "Enabled" : "Disabled",
+                            title: String(localized: "settings_debug_premium"),
+                            subtitle: PremiumManager.shared.debugPremiumOverride ? String(localized: "settings_enabled") : String(localized: "settings_disabled"),
                             isOn: Binding(
                                 get: { PremiumManager.shared.debugPremiumOverride },
                                 set: { PremiumManager.shared.debugPremiumOverride = $0 }
@@ -112,8 +112,8 @@ struct SettingsScreen: View {
                         SettingsRowAction(
                             icon: "arrow.counterclockwise",
                             iconColor: .c2bMuted,
-                            title: "Reset onboarding",
-                            subtitle: hasCompletedOnboarding ? "Completed" : "Not completed",
+                            title: String(localized: "settings_reset_onboarding"),
+                            subtitle: hasCompletedOnboarding ? String(localized: "settings_completed") : String(localized: "settings_not_completed"),
                             action: {
                                 hasCompletedOnboarding = false
                             }
@@ -122,8 +122,8 @@ struct SettingsScreen: View {
                         SettingsRowAction(
                             icon: "play.circle",
                             iconColor: .c2bMuted,
-                            title: "Reset walkthrough",
-                            subtitle: hasSeenWalkthrough ? "Seen" : "Not seen",
+                            title: String(localized: "settings_reset_walkthrough"),
+                            subtitle: hasSeenWalkthrough ? String(localized: "settings_seen") : String(localized: "settings_not_seen"),
                             action: {
                                 hasSeenWalkthrough = false
                             }
@@ -132,8 +132,8 @@ struct SettingsScreen: View {
                         SettingsRowAction(
                             icon: "arrow.trianglehead.2.clockwise.rotate.90",
                             iconColor: .c2bTeal,
-                            title: "Refresh Discover",
-                            subtitle: isRefreshingDiscover ? "Refreshing..." : "Reload show data",
+                            title: String(localized: "settings_refresh_discover"),
+                            subtitle: isRefreshingDiscover ? String(localized: "settings_refreshing") : String(localized: "settings_reload_data"),
                             isLast: true,
                             action: {
                                 Task { await refreshDiscoverCache() }
@@ -144,14 +144,14 @@ struct SettingsScreen: View {
                     // Sign Out Group
                     SettingsGroup {
                         SettingsRowDanger(
-                            title: "Sign out",
+                            title: String(localized: "button_sign_out"),
                             isLast: true,
                             action: { }
                         )
                     }
 
                     // Version
-                    Text("COUNTDOWN2BINGE · V1.0")
+                    Text(String(localized: "app_version \("V1.0")"))
                         .font(.custom(.jetbrains.regular, size: 8.5))
                         .tracking(1.19)
                         .foregroundColor(.c2bMuted)

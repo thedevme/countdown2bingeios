@@ -32,28 +32,28 @@ struct TimelineWalkthrough: View {
     private let buckets: [TimelineBucket] = [
         TimelineBucket(
             key: "airing",
-            label: "NOW AIRING",
+            label: String(localized: "timeline_now_playing"),
             tone: Color(hex: "#2dd4bf"),
-            hint: "Shows releasing new episodes right now, week to week. The one closest to its finale sits on top of the stack — that's what you'll be able to binge next.",
-            note: "As each finale airs, the show drops to Binge Ready and the next one rises to the top.",
+            hint: String(localized: "walkthrough_airing_hint"),
+            note: String(localized: "walkthrough_airing_note"),
             shows: ["the-last-of-us", "severance", "the-bear"],
             kind: .stack
         ),
         TimelineBucket(
             key: "premiering",
-            label: "PREMIERING SOON",
+            label: String(localized: "header_premiering_soon"),
             tone: Color(hex: "#5eead4"),
-            hint: "Shows with a locked premiere date, counting down day by day until the new season starts releasing.",
-            note: "The moment a season premieres, it moves up into Now Airing.",
+            hint: String(localized: "walkthrough_premiering_hint"),
+            note: String(localized: "walkthrough_premiering_note"),
             shows: ["shogun", "reacher"],
             kind: .premiering
         ),
         TimelineBucket(
             key: "anticipated",
-            label: "ANTICIPATED",
+            label: String(localized: "header_anticipated"),
             tone: Color(hex: "#71717a"),
-            hint: "Renewed shows that don't have a release date yet. They wait quietly at the bottom so you never lose track of them.",
-            note: "As soon as a date is announced, they jump up to Premiering Soon and start counting down.",
+            hint: String(localized: "walkthrough_anticipated_hint"),
+            note: String(localized: "walkthrough_anticipated_note"),
             shows: ["stranger-things", "fallout"],
             kind: .anticipated
         )

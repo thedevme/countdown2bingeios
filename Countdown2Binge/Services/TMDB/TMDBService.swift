@@ -16,15 +16,15 @@ enum TMDBError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "Invalid URL"
+            return String(localized: "error_invalid_url")
         case .networkError(let error):
-            return "NetworkData error: \(error.localizedDescription)"
+            return String(localized: "error_network \(error.localizedDescription)")
         case .decodingError(let error):
-            return "Failed to decode response: \(error.localizedDescription)"
+            return String(localized: "error_decode \(error.localizedDescription)")
         case .noData:
-            return "No data received"
+            return String(localized: "error_no_data")
         case .httpError(let statusCode):
-            return "HTTP error: \(statusCode)"
+            return String(localized: "error_http \(statusCode)")
         }
     }
 }

@@ -147,7 +147,7 @@ final class DiscoverViewModel {
             let response = try await tmdbService.getTrendingShows(page: 1)
             trendingShows = response.results.map { $0.toShowSummary() }
         } catch {
-            self.error = "Failed to load trending shows"
+            self.error = String(localized: "error_load_trending")
             print("Error loading trending shows: \(error)")
         }
 

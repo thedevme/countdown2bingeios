@@ -200,12 +200,12 @@ struct ShowDetailView: View {
         guard let season = show.currentSeason else { return "TBA" }
         switch show.timelineCategory {
         case .bingeReady:
-            return "all \(season.episodeCount) out"
+            return String(localized: "season_all_out \(season.episodeCount)")
         case .airingNow:
             let aired = season.episodes.filter { $0.hasAired }.count
-            return "\(aired)/\(season.episodeCount) out"
+            return String(localized: "season_partial_out \(aired) \(season.episodeCount)")
         default:
-            return "\(season.episodeCount) episodes"
+            return String(localized: "season_episode_count \(season.episodeCount)")
         }
     }
 
@@ -227,9 +227,9 @@ struct ShowDetailView: View {
 
     private var statusCardEyebrow: String {
         switch show.timelineCategory {
-        case .bingeReady: return "Ready to binge"
-        case .anticipated: return "Until new season"
-        default: return "Until binge ready"
+        case .bingeReady: return String(localized: "status_ready_to_binge")
+        case .anticipated: return String(localized: "status_until_new_season")
+        default: return String(localized: "status_until_binge_ready")
         }
     }
 
@@ -237,25 +237,25 @@ struct ShowDetailView: View {
         switch show.timelineCategory {
         case .bingeReady:
             let eps = show.currentSeason?.episodeCount ?? 0
-            return "All \(eps) episodes out · just finished"
+            return String(localized: "status_all_episodes_finished \(eps)")
         case .airingNow:
             if let finaleDate = show.currentSeason?.finaleDate {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMM d"
-                return "Finale \(formatter.string(from: finaleDate))"
+                return String(localized: "status_finale_date \(formatter.string(from: finaleDate))")
             }
-            return "Airing weekly"
+            return String(localized: "status_airing_weekly")
         case .premieringSoon:
             if let premiereDate = show.currentSeason?.airDate,
                let days = show.daysUntilPremiere {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMM d"
                 let readyDays = days + (show.currentSeason?.episodeCount ?? 8) * 7
-                return "Premieres \(formatter.string(from: premiereDate)) · ~\(readyDays)d ready"
+                return String(localized: "status_premieres_ready \(formatter.string(from: premiereDate)) \(readyDays)")
             }
-            return "Coming soon"
+            return String(localized: "status_coming_soon")
         case .anticipated:
-            return "No release date announced"
+            return String(localized: "status_no_release_date")
         }
     }
 
@@ -263,18 +263,18 @@ struct ShowDetailView: View {
         switch show.timelineCategory {
         case .bingeReady:
             let eps = show.currentSeason?.episodeCount ?? 0
-            return "Binge ready · all \(eps) out"
+            return String(localized: "pill_binge_ready \(eps)")
         case .airingNow:
             let aired = show.currentSeason?.episodes.filter { $0.hasAired }.count ?? 0
             let total = show.currentSeason?.episodeCount ?? 0
-            return "Now airing · \(aired)/\(total) out"
+            return String(localized: "pill_now_airing \(aired) \(total)")
         case .premieringSoon:
             if let days = show.daysUntilPremiere {
-                return "Premiering soon · in \(days)d"
+                return String(localized: "pill_premiering_in \(days)")
             }
-            return "Premiering soon"
+            return String(localized: "pill_premiering_soon")
         case .anticipated:
-            return "Anticipated"
+            return String(localized: "badge_anticipated")
         }
     }
 
@@ -309,7 +309,7 @@ struct ShowDetailFollowActionRow: View {
                             .font(.system(size: 18))
                     }
 
-                    Text(isFollowing ? "FOLLOWING" : "FOLLOW SHOW")
+                    Text(isFollowing ? String(localized: "button_following") : String(localized: "button_follow_show"))
                         .font(.custom(.oswald.bold, size: 19))
                         .tracking(0.4)
                 }
@@ -365,15 +365,15 @@ struct ShowDetailFollowConfirmationSection: View {
     private var statusText: String {
         if isFollowing {
             if hasDate, let days = daysUntilBingeReady {
-                return "✓ On your timeline · binge ready in ~\(days) days"
+                return String(localized: "following_binge_ready_in \(days)")
             } else {
-                return "✓ Following · waiting in Anticipated"
+                return String(localized: "following_waiting_anticipated")
             }
         } else {
             if hasDate, let days = daysUntilBingeReady {
-                return "Follow to track · binge ready in ~\(days) days"
+                return String(localized: "follow_prompt_with_days \(days)")
             } else {
-                return "Follow to track · no release date yet"
+                return String(localized: "follow_prompt_no_date")
             }
         }
     }
@@ -395,7 +395,7 @@ struct ShowDetailSynopsisSection: View {
 
                 if overview.count > 150 {
                     Button(action: { isExpanded.toggle() }) {
-                        Text(isExpanded ? "Show Less" : "More")
+                        Text(isExpanded ? String(localized: "button_show_less") : String(localized: "button_more"))
                             .font(.custom(.jetbrains.bold, size: 10))
                             .foregroundColor(.c2bTeal)
                             .tracking(0.8)

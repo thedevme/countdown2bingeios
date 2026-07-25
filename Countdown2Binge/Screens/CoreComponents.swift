@@ -124,7 +124,7 @@ struct PosterView: View {
             if showHint && imageName == nil && width >= 90 {
                 VStack {
                     Spacer()
-                    Text("POSTER")
+                    Text("poster_placeholder")
                         .monoStyle(size: max(7, width * 0.045), color: Color.white.opacity(0.28))
                         .tracking(4)
                         .padding(.bottom, 7)
@@ -327,11 +327,11 @@ struct PhaseTagView: View {
 
     private var label: String {
         switch phase {
-        case "anticipated": return "Anticipated"
-        case "premiering": return "Premiering Soon"
-        case "airing": return "Now Airing"
-        case "ready": return "Binge Ready"
-        default: return "Unknown"
+        case "anticipated": return String(localized: "phase_anticipated")
+        case "premiering": return String(localized: "phase_premiering_soon")
+        case "airing": return String(localized: "phase_now_airing")
+        case "ready": return String(localized: "phase_binge_ready")
+        default: return String(localized: "phase_unknown")
         }
     }
 
@@ -425,10 +425,10 @@ struct CountdownView: View {
     }
 
     private var eyebrowText: String {
-        if phase == "ready" { return "Ready to binge" }
-        if phase == "anticipated" { return "Binge ready" }
-        if phase == "premiering" { return "Binge ready in" }
-        return "Binge ready in"
+        if phase == "ready" { return String(localized: "phase_ready_to_binge") }
+        if phase == "anticipated" { return String(localized: "phase_binge_ready") }
+        if phase == "premiering" { return String(localized: "phase_binge_ready_in") }
+        return String(localized: "phase_binge_ready_in")
     }
 
     private var eyebrowColor: Color {
@@ -470,16 +470,16 @@ struct CountdownView: View {
                 .frame(height: 7)
             }
         } else if phase == "ready" {
-            Text("NOW")
+            Text("status_now")
                 .displayStyle(size: numberSize, color: .c2bTealBright)
         } else if phase == "anticipated" {
-            Text("TBA")
+            Text("timeline_tba")
                 .displayStyle(size: numberSize * 0.78, color: .c2bMuted)
         } else if let days = readyInDays {
             HStack(alignment: .bottom, spacing: 8) {
                 Text("\(days)")
                     .displayStyle(size: numberSize, color: .white)
-                Text(days == 1 ? "day" : "days")
+                Text(days == 1 ? String(localized: "time_day") : String(localized: "time_days"))
                     .monoStyle(size: 11, color: .c2bDim)
             }
         }
@@ -487,16 +487,17 @@ struct CountdownView: View {
 
     private var subtextContent: String {
         if countdownStyle == "episodes" && phase != "anticipated" {
-            return phase == "ready" ? "all episodes out" : "\(episodes - episodesAired) left to release"
+            let remaining = episodes - episodesAired
+            return phase == "ready" ? String(localized: "subtext_all_episodes_out") : String(localized: "subtext_left_to_release \(remaining)")
         } else if countdownStyle == "progress" && phase != "anticipated" {
             let pct = phase == "ready" ? 100 : Int((Double(episodesAired) / Double(episodes)) * 100)
-            return pct == 100 ? "season complete" : "of the season released"
+            return pct == 100 ? String(localized: "subtext_season_complete") : String(localized: "subtext_of_season_released")
         } else if phase == "ready" {
-            return "\(episodes) episodes · \(readyAgo ?? "all out")"
+            return String(localized: "subtext_episodes_ready \(episodes) \(readyAgo ?? String(localized: "subtext_all_out"))")
         } else if phase == "anticipated" {
-            return "no date yet"
+            return String(localized: "subtext_no_date_yet")
         } else {
-            return readyInDays != nil ? "until binge ready" : ""
+            return readyInDays != nil ? String(localized: "status_until_binge_ready") : ""
         }
     }
 }

@@ -145,7 +145,7 @@ private struct DowngradeRemovalSheet: View {
 
             // Header badges
             HStack(spacing: 9) {
-                Text("FREE PLAN")
+                Text("free_plan_badge")
                     .font(.custom(.jetbrains.bold, size: 9))
                     .tracking(1.2)
                     .foregroundColor(Color(hex: "#04201c"))
@@ -154,7 +154,7 @@ private struct DowngradeRemovalSheet: View {
                     .background(Color.c2bMuted)
                     .cornerRadius(999)
 
-                Text("\(freeLimit) SHOWS MAX")
+                Text(String(localized: "free_shows_max \(freeLimit)"))
                     .font(.custom(.jetbrains.regular, size: 9))
                     .tracking(1.2)
                     .foregroundColor(.c2bMuted)
@@ -165,7 +165,7 @@ private struct DowngradeRemovalSheet: View {
 
             // Title
             if atLimit {
-                Text("YOU'RE ALL SET")
+                Text("downgrade_all_set")
                     .font(.custom(.oswald.bold, size: 26))
                     .foregroundColor(.c2bTeal)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -173,13 +173,13 @@ private struct DowngradeRemovalSheet: View {
                     .padding(.bottom, 8)
             } else {
                 HStack(spacing: 0) {
-                    Text("REMOVE ")
+                    Text(String(localized: "downgrade_remove") + " ")
                         .font(.custom(.oswald.bold, size: 26))
                         .foregroundColor(.c2bText)
                     Text("\(stillOverCount > 0 ? stillOverCount : overCount)")
                         .font(.custom(.oswald.bold, size: 26))
                         .foregroundColor(Color(hex: "#ff6b6b"))
-                    Text(" TO CONTINUE")
+                    Text(" " + String(localized: "downgrade_to_continue"))
                         .font(.custom(.oswald.bold, size: 26))
                         .foregroundColor(.c2bText)
                 }
@@ -190,8 +190,8 @@ private struct DowngradeRemovalSheet: View {
 
             // Description
             Text(atLimit
-                 ? "Your shows are within the free limit. Tap continue to proceed."
-                 : "Your premium subscription ended. Free accounts track up to \(freeLimit) shows. Select shows to remove, then confirm.")
+                 ? String(localized: "downgrade_at_limit")
+                 : String(localized: "downgrade_over_limit \(freeLimit)"))
                 .font(.system(size: 13))
                 .foregroundColor(.c2bDim)
                 .lineSpacing(4)
@@ -241,7 +241,7 @@ private struct DowngradeRemovalSheet: View {
                 HStack(spacing: 6) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 11))
-                    Text("RESUBSCRIBE TO KEEP ALL \(followedShows.count)")
+                    Text(String(localized: "downgrade_resubscribe \(followedShows.count)"))
                         .font(.custom(.jetbrains.bold, size: 10.5))
                         .tracking(0.8)
                 }
@@ -273,13 +273,13 @@ private struct DowngradeRemovalSheet: View {
 
     private var primaryButtonText: String {
         if atLimit {
-            return "CONTINUE"
+            return String(localized: "button_continue")
         } else if markedForRemoval.count == 0 {
-            return "SELECT \(overCount) TO REMOVE"
+            return String(localized: "free_select_to_remove \(overCount)")
         } else if stillOverCount > 0 {
-            return "SELECT \(stillOverCount) MORE"
+            return String(localized: "free_select_more \(stillOverCount)")
         } else {
-            return "REMOVE \(markedForRemoval.count) SELECTED"
+            return String(localized: "free_remove_selected \(markedForRemoval.count)")
         }
     }
 }
@@ -329,7 +329,7 @@ private struct DowngradeShowCard: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text(isMarked ? "MARKED TO REMOVE" : "FOLLOWED \(formattedDate)")
+                    Text(isMarked ? String(localized: "free_marked_remove") : String(localized: "downgrade_followed \(formattedDate)"))
                         .font(.custom(.jetbrains.regular, size: 8.5))
                         .tracking(0.8)
                         .foregroundColor(isMarked ? Color(hex: "#ff6b6b") : .c2bMuted)

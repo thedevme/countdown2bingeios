@@ -19,7 +19,7 @@ struct BingeClock: View {
         VStack(alignment: .leading, spacing: 14) {
             // Header
             HStack(spacing: 8) {
-                Text("COUNTDOWN TO FINALE")
+                Text("timeline_countdown_finale")
                     .font(.custom(.oswald.bold, size: 17))
                     .tracking(0.68)
                     .foregroundColor(.white)
@@ -36,13 +36,13 @@ struct BingeClock: View {
 
             // Clock cells
             HStack(spacing: 6) {
-                ClockCell(value: "\(days)", label: "Days")
+                ClockCell(value: "\(days)", label: String(localized: "time_days"))
                 ClockSeparator()
-                ClockCell(value: String(format: "%02d", hours), label: "Hrs")
+                ClockCell(value: String(format: "%02d", hours), label: String(localized: "time_hours"))
                 ClockSeparator()
-                ClockCell(value: String(format: "%02d", minutes), label: "Min")
+                ClockCell(value: String(format: "%02d", minutes), label: String(localized: "time_minutes"))
                 ClockSeparator()
-                ClockCell(value: String(format: "%02d", seconds), label: "Sec")
+                ClockCell(value: String(format: "%02d", seconds), label: String(localized: "time_seconds"))
             }
         }
         .padding(.top, 20)

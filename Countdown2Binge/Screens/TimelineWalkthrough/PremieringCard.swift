@@ -107,14 +107,14 @@ struct PremieringCard: View {
                             .rotationEffect(.degrees(-90))
                             .padding(-30)
 
-                        Text("DAYS")
+                        Text("time_days")
                             .font(.custom(.oswald.bold, size: CustomFont.size.xl2))
                             .foregroundColor(Color.c2bTealBright)
                             .textCase(.uppercase)
                             .tracking(1.6)
                             .padding(-5)
 
-                        Text("TO PREMIERE")
+                        Text("timeline_to_premiere")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
                             .foregroundColor(Color(hex: "#52525b"))
                             .textCase(.uppercase)
@@ -167,7 +167,7 @@ struct PremieringCard: View {
                     // Top badges
                     HStack(spacing: 6) {
                         if show == nil && showData == nil && mockData.hasNew {
-                            Text("NEW")
+                            Text("badge_new")
                                 .font(.system(size: CustomFont.size.xs, weight: .bold))
                                 .foregroundColor(Color(hex: "#04201c"))
                                 .textCase(.uppercase)
@@ -201,7 +201,7 @@ struct PremieringCard: View {
                     HStack(alignment: .bottom, spacing: 8) {
                         // Season badge (S2 style)
                         HStack(spacing: 0) {
-                            Text("S")
+                            Text("season_abbrev")
                                 .font(.custom(.oswald.bold, size: 28))
                                 .foregroundColor(.white)
                             Text(seasonNumber)
@@ -222,6 +222,7 @@ struct PremieringCard: View {
             .frame(height: 140)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
+        .contentShape(Rectangle())
         .modifier(OptionalMatchedGeometry(id: showId, namespace: namespace))
     }
 }

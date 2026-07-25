@@ -69,12 +69,12 @@ struct ShowDetailFollowConfirmation: View {
                 .foregroundColor(.c2bTeal)
 
             if let days = daysUntilBingeReady {
-                Text("On your timeline \u{00B7} binge ready in ~\(days) days")
+                Text(String(localized: "timeline_binge_ready_in \(days)"))
                     .font(.custom(.jetbrains.bold, size: 9.5))
                     .foregroundColor(.c2bTeal)
                     .tracking(0.8)
             } else {
-                Text("Following \u{00B7} waiting in Anticipated")
+                Text("timeline_waiting_anticipated")
                     .font(.custom(.jetbrains.bold, size: 9.5))
                     .foregroundColor(.c2bTeal)
                     .tracking(0.8)

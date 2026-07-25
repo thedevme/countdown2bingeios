@@ -38,7 +38,7 @@ struct DiscoverNetworkSection: View {
                         .font(.custom(.oswald.bold, size: 22))
                         .foregroundColor(.c2bText)
 
-                    Text("\(shows.count) UPCOMING")
+                    Text(String(localized: "discover_upcoming_count \(shows.count)"))
                         .font(.custom(.jetbrains.regular, size: 9))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.0)
@@ -48,7 +48,7 @@ struct DiscoverNetworkSection: View {
 
                 // Sooner/Later toggle
                 HStack(spacing: 4) {
-                    Text("SOONER")
+                    Text("discover_sooner")
                         .font(.custom(.jetbrains.regular, size: 8))
                         .foregroundColor(.c2bMuted)
                         .tracking(0.8)
@@ -57,7 +57,7 @@ struct DiscoverNetworkSection: View {
                         .font(.system(size: 8, weight: .medium))
                         .foregroundColor(.c2bMuted)
 
-                    Text("LATER")
+                    Text("discover_later")
                         .font(.custom(.jetbrains.regular, size: 8))
                         .foregroundColor(.c2bDim)
                         .tracking(0.8)

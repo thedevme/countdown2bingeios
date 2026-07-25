@@ -52,7 +52,7 @@ struct SettingsAccountCard: View {
                         .font(.system(size: 9))
                         .foregroundColor(.c2bTealBright)
 
-                    Text(isPremium ? "Premium · Free trial" : "Free plan")
+                    Text(isPremium ? "account_premium_trial" : "account_free_plan")
                         .font(.custom(.jetbrains.regular, size: 9))
                         .tracking(0.9)
                         .foregroundColor(.c2bTealBright)

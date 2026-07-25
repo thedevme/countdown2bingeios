@@ -18,13 +18,13 @@ struct BingeReadyScreen: View {
     @State private var heroShowId: Int?
     @State private var selectedSeasonNumber: [Int: Int] = [:]
     @State private var showSeasonModal = false
-    @State private var selectedShowForDetail: ShowData?
+    @State private var navigationPath = NavigationPath()
     @State private var selectedSegment: BingeSegment = .active
 
     enum BingeSegment: String, CaseIterable {
-        case active = "Active"
-        case ended = "Ended"
-        case archived = "Archived"
+        case active = "segment_active"
+        case ended = "segment_ended"
+        case archived = "segment_archived"
     }
 
     private var shows: [ShowData] {
@@ -82,17 +82,17 @@ struct BingeReadyScreen: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
         ScrollView {
             VStack(spacing: 0) {
                 // Header
                 VStack(alignment: .leading, spacing: 7) {
-                    Text("BINGE")
+                    Text("header_binge")
                         .font(.custom(.oswald.bold, size: 27))
                         .tracking(0.54)
                         .foregroundColor(.white)
 
-                    Text("SEASONS & WATCH PROGRESS")
+                    Text("header_seasons_progress")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.14)
                         .foregroundColor(.c2bMuted)
@@ -124,8 +124,16 @@ struct BingeReadyScreen: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
                     .onTapGesture {
-                        selectedShowForDetail = show
+                        navigationPath.append(show)
                     }
+
+                    // Streaming app deep link
+                    StreamingLinkButton(
+                        network: show.primaryNetwork,
+                        showName: show.name
+                    )
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
 
                     // Action Buttons
                     BingeActionButtons(
@@ -172,6 +180,23 @@ struct BingeReadyScreen: View {
                         .padding(.top, 22)
                     }
 
+                    // Archive Button
+                    BingeArchiveButton(
+                        isArchived: viewModel.isArchived(show.id),
+                        onArchive: {
+                            viewModel.archiveShow(show.id)
+                            // Move to next show if this was the hero
+                            if heroShowId == show.id {
+                                heroShowId = nil
+                            }
+                        },
+                        onUnarchive: {
+                            viewModel.unarchiveShow(show.id)
+                        }
+                    )
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+
                     // Library Rail - tap to switch hero content
                     BingeLibraryRail(
                         shows: shows,
@@ -217,10 +242,10 @@ struct BingeReadyScreen: View {
                 .presentationDragIndicator(.visible)
             }
         }
-        .navigationDestination(item: $selectedShowForDetail) { show in
+        .navigationDestination(for: ShowData.self) { show in
             FollowedShowDetail(
                 show: show,
-                onDismiss: { selectedShowForDetail = nil },
+                onDismiss: { navigationPath.removeLast() },
                 onUnfollow: {
                     Task { await viewModel.unfollowShow(show) }
                 }
@@ -347,19 +372,19 @@ private struct BingeEmptyState: View {
         }
     }
 
-    private var title: String {
+    private var title: LocalizedStringKey {
         switch segment {
-        case .active: return "No active shows"
-        case .ended: return "No ended shows"
-        case .archived: return "No archived shows"
+        case .active: return "empty_no_active_shows"
+        case .ended: return "empty_no_ended_shows"
+        case .archived: return "empty_no_archived_shows"
         }
     }
 
-    private var subtitle: String {
+    private var subtitle: LocalizedStringKey {
         switch segment {
-        case .active: return "Shows you're currently watching will appear here"
-        case .ended: return "Shows that have ended will appear here"
-        case .archived: return "Shows you archive will appear here"
+        case .active: return "empty_active_subtitle"
+        case .ended: return "empty_ended_subtitle"
+        case .archived: return "empty_archived_subtitle"
         }
     }
 
@@ -491,6 +516,21 @@ final class WatchProgressManager: ObservableObject {
             seasonWatchedCount(showId: show.id, season: season.seasonNumber, episodeCount: season.episodeCount) < season.episodeCount
         } ?? show.seasons.last
     }
+
+    /// Get set of watched episode numbers for a season
+    func watchedEpisodeNumbers(showId: Int, season: Int, episodeCount: Int) -> Set<Int> {
+        guard episodeCount > 0 else { return [] }
+        return Set((1...episodeCount).filter { isWatched(showId: showId, season: season, episode: $0) })
+    }
+
+    /// Mark all aired episodes as watched
+    func markAiredWatched(showId: Int, season: Int, airedEpisodes: [Int]) {
+        for ep in airedEpisodes {
+            let key = episodeKey(showId: showId, season: season, episode: ep)
+            watchedEpisodes.insert(key)
+        }
+        saveWatched()
+    }
 }
 
 // MARK: - Hero Card
@@ -534,7 +574,7 @@ private struct BingeHeroCard: View {
                             Image(systemName: "star.fill")
                                 .font(.system(size: 8))
                                 .foregroundColor(Color(hex: "#04201c"))
-                            Text("LATEST ADDED")
+                            Text("badge_latest_added")
                                 .font(.custom(.jetbrains.bold, size: 8.5))
                                 .tracking(1.19)
                                 .foregroundColor(Color(hex: "#04201c"))
@@ -581,6 +621,7 @@ private struct BingeHeroCard: View {
             RoundedRectangle(cornerRadius: 22)
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
+        .contentShape(Rectangle())
     }
 }
 
@@ -621,11 +662,11 @@ private struct BingeSeasonSelector: View {
                 )
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Season \(season.seasonNumber)")
+                    Text(String(localized: "season_number \(season.seasonNumber)"))
                         .font(.custom(.oswald.bold, size: 20))
                         .foregroundColor(.white)
 
-                    Text("\(watchedCount)/\(season.episodeCount) watched\(isComplete ? " · complete" : (isCurrent ? " · current" : ""))")
+                    Text(String(localized: "binge_watched_count \(watchedCount) \(season.episodeCount)") + (isComplete ? String(localized: "binge_complete_suffix") : (isCurrent ? String(localized: "binge_current_suffix") : "")))
                         .font(.custom(.jetbrains.bold, size: 8.5))
                         .tracking(0.85)
                         .foregroundColor(isComplete ? .c2bTealBright : .c2bMuted)
@@ -636,7 +677,7 @@ private struct BingeSeasonSelector: View {
 
                 if show.numberOfSeasons > 1 {
                     HStack(spacing: 6) {
-                        Text("\(show.numberOfSeasons) seasons")
+                        Text(String(localized: "binge_seasons_count \(show.numberOfSeasons)"))
                             .font(.custom(.jetbrains.bold, size: 8.5))
                             .tracking(0.85)
                             .foregroundColor(.c2bMuted)
@@ -676,7 +717,7 @@ private struct BingeEpisodeStrip: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Season \(season.seasonNumber) · \(season.episodeCount) episodes")
+                Text(String(localized: "season_episode_info \(season.seasonNumber) \(season.episodeCount)"))
                     .font(.custom(.jetbrains.bold, size: 9.5))
                     .tracking(1.52)
                     .foregroundColor(.c2bMuted)
@@ -774,12 +815,12 @@ private struct BingeEpisodeCard: View {
                         .stroke(isWatched ? Color.c2bTealLine : Color.white.opacity(0.1), lineWidth: 1)
                 )
 
-                Text("Episode \(episodeNumber)")
+                Text(String(localized: "episode_number \(episodeNumber)"))
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(isWatched ? .c2bDim : .white)
                     .padding(.top, 8)
 
-                Text("EP \(episodeNumber) · 45M")
+                Text(String(localized: "episode_short \(episodeNumber)"))
                     .font(.custom(.jetbrains.bold, size: 8.5))
                     .tracking(0.51)
                     .foregroundColor(.c2bMuted)
@@ -800,7 +841,7 @@ private struct BingeLibraryRail: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("YOUR LIBRARY")
+            Text("header_your_library")
                 .font(.custom(.jetbrains.bold, size: 9.5))
                 .tracking(1.52)
                 .foregroundColor(.c2bMuted)
@@ -820,6 +861,7 @@ private struct BingeLibraryRail: View {
                     }
                 }
                 .padding(.horizontal, 20)
+                .padding(.top, 4)
             }
         }
     }
@@ -899,7 +941,7 @@ private struct BingeLibraryCard: View {
         .buttonStyle(.plain)
         .contextMenu {
             Button(role: .destructive, action: onUnfollow) {
-                Label("Unfollow", systemImage: "minus.circle")
+                Label("button_unfollow", systemImage: "minus.circle")
             }
         }
     }
@@ -922,7 +964,7 @@ private struct BingeSeasonPickerModal: View {
 
                 Spacer()
 
-                Text("\(show.numberOfSeasons) seasons")
+                Text(String(localized: "binge_seasons_count \(show.numberOfSeasons)"))
                     .font(.custom(.jetbrains.bold, size: 9))
                     .tracking(1.08)
                     .foregroundColor(.c2bMuted)
@@ -989,11 +1031,11 @@ private struct BingeSeasonRow: View {
                 )
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Season \(season.seasonNumber)")
+                    Text(String(localized: "season_number \(season.seasonNumber)"))
                         .font(.custom(.oswald.bold, size: 19))
                         .foregroundColor(isSelected ? .white : .c2bDim)
 
-                    Text(isComplete ? "Complete" : (isCurrent ? "Current · \(watchedCount)/\(season.episodeCount) watched" : "\(watchedCount)/\(season.episodeCount) watched"))
+                    Text(isComplete ? String(localized: "binge_status_complete") : (isCurrent ? String(localized: "binge_status_current \(watchedCount) \(season.episodeCount)") : String(localized: "binge_watched_count \(watchedCount) \(season.episodeCount)")))
                         .font(.custom(.jetbrains.bold, size: 8.5))
                         .tracking(0.85)
                         .foregroundColor(isComplete ? .c2bTealBright : .c2bMuted)
@@ -1043,9 +1085,10 @@ private struct BingeSegmentBar: View {
 
                 Button(action: { selectedSegment = segment }) {
                     HStack(spacing: 6) {
-                        Text(segment.rawValue.uppercased())
+                        Text(segment.rawValue)
                             .font(.custom(.jetbrains.bold, size: 10))
                             .tracking(1.2)
+                            .textCase(.uppercase)
 
                         Text("\(count(for: segment))")
                             .font(.custom(.jetbrains.bold, size: 9))
@@ -1085,7 +1128,7 @@ private struct BingeActionButtons: View {
                 HStack(spacing: 8) {
                     Image(systemName: "bookmark.slash")
                         .font(.system(size: 12, weight: .semibold))
-                    Text("UNFOLLOW SHOW")
+                    Text("button_unfollow_show")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.14)
                 }
@@ -1106,7 +1149,7 @@ private struct BingeActionButtons: View {
                 HStack(spacing: 8) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 12, weight: .semibold))
-                    Text("COMPLETED SHOW")
+                    Text("button_completed_show")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.14)
                 }
@@ -1118,5 +1161,34 @@ private struct BingeActionButtons: View {
             }
             .buttonStyle(.plain)
         }
+    }
+}
+
+// MARK: - Archive Button
+private struct BingeArchiveButton: View {
+    let isArchived: Bool
+    let onArchive: () -> Void
+    let onUnarchive: () -> Void
+
+    var body: some View {
+        Button(action: { isArchived ? onUnarchive() : onArchive() }) {
+            HStack(spacing: 8) {
+                Image(systemName: isArchived ? "arrow.uturn.backward" : "archivebox")
+                    .font(.system(size: 12, weight: .semibold))
+                Text(isArchived ? "button_unarchive" : "button_archive_show")
+                    .font(.custom(.jetbrains.bold, size: 9.5))
+                    .tracking(1.14)
+            }
+            .foregroundColor(isArchived ? .c2bTealBright : .c2bMuted)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(isArchived ? Color.c2bTeal.opacity(0.1) : Color.white.opacity(0.04))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isArchived ? Color.c2bTeal.opacity(0.3) : Color.white.opacity(0.1), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }

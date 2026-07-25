@@ -22,7 +22,7 @@ struct NotificationLeadPicker: View {
                         selectedDays = days
                     }
                 }) {
-                    Text("\(days)D")
+                    Text(String(localized: "time_days_short \(days)"))
                         .font(.custom(.jetbrains.bold, size: 10))
                         .tracking(0.6)
                         .foregroundColor(selectedDays == days ? Color(hex: "#04201c") : .c2bDim)
@@ -95,7 +95,7 @@ struct SettingsPremiumBadge: View {
                 .font(.system(size: 7))
                 .foregroundColor(.c2bTealBright)
 
-            Text("PREMIUM")
+            Text("badge_premium")
                 .font(.custom(.jetbrains.bold, size: 8))
                 .tracking(0.8)
                 .foregroundColor(.c2bTealBright)

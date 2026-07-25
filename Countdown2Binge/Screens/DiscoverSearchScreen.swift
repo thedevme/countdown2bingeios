@@ -25,7 +25,7 @@ struct SearchScreen: View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
                 // Header
-                Text("SEARCH")
+                Text("header_search")
                     .displayStyle(size: 26, color: .c2bText)
                     .padding(.top, 52)
                     .padding(.bottom, 14)
@@ -54,7 +54,7 @@ struct SearchScreen: View {
                                     .tint(Color(hex: "#71717a"))
                                     .padding(.top, 40)
                             } else if viewModel.searchResults.isEmpty {
-                                Text("No results found")
+                                Text("search_no_results")
                                     .monoStyle(size: 12, color: .c2bMuted)
                                     .padding(.top, 40)
                             } else {
@@ -270,7 +270,7 @@ struct SearchBar: View {
                 .font(.system(size: 22, weight: .regular))
                 .foregroundColor(.c2bMuted)
 
-            TextField("Search shows to binge", text: $text)
+            TextField(String(localized: "search_placeholder"), text: $text)
                 .font(CustomFonts.ui(size: 15))
                 .foregroundColor(.c2bText)
                 .autocapitalization(.none)
@@ -451,7 +451,7 @@ struct ShowGridCard: View {
                 .padding(.top, 8)
 
             // Year
-            Text(show.yearString ?? "TBA")
+            Text(show.yearString ?? String(localized: "timeline_tba"))
                 .monoStyle(size: 9, color: .c2bMuted)
                 .padding(.top, 2)
 
@@ -462,7 +462,7 @@ struct ShowGridCard: View {
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(isFollowing ? .c2bTealBright : Color(hex: "#04201c"))
 
-                    Text(isFollowing ? "FOLLOWING" : "FOLLOW")
+                    Text(isFollowing ? String(localized: "button_following") : String(localized: "button_follow"))
                         .font(.custom(.oswald.bold, size: 13))
                         .foregroundColor(isFollowing ? .c2bTealBright : Color(hex: "#04201c"))
                 }
@@ -542,7 +542,7 @@ struct NetworkRow: View {
                     Text(network.name.uppercased())
                         .displayStyle(size: 18, color: .c2bText)
 
-                    Text("\(shows.count) shows")
+                    Text(String(localized: "network_show_count \(shows.count)"))
                         .monoStyle(size: 8.5, color: .c2bMuted)
                 }
 

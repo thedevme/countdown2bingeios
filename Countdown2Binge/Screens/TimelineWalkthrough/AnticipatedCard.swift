@@ -89,7 +89,7 @@ struct AnticipatedCard: View {
     }
 
     private var seasonString: String {
-        return "Season \(anticipatedSeasonNumber)"
+        return String(localized: "timeline_season \(anticipatedSeasonNumber)")
     }
 
     private var platformString: String {
@@ -114,14 +114,14 @@ struct AnticipatedCard: View {
                             .tracking(-5)
                             .rotationEffect(.degrees(-90))
 
-                        Text("EXPECTED")
+                        Text("timeline_expected")
                             .font(.custom(.oswald.bold, size: 16))
                             .foregroundColor(Color.c2bTealBright)
                             .textCase(.uppercase)
                             .tracking(1.6)
                             .padding(-5)
 
-                        Text("RELEASE")
+                        Text("timeline_release")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
                             .foregroundColor(Color(hex: "#52525b"))
                             .textCase(.uppercase)
@@ -177,7 +177,7 @@ struct AnticipatedCard: View {
                     // Top badges
                     HStack(spacing: 6) {
                         if show == nil && showData == nil && mockData.hasNew {
-                            Text("NEW")
+                            Text("badge_new")
                                 .font(.system(size: CustomFont.size.xs, weight: .bold))
                                 .foregroundColor(Color(hex: "#04201c"))
                                 .textCase(.uppercase)
@@ -211,7 +211,7 @@ struct AnticipatedCard: View {
                     HStack(alignment: .bottom, spacing: 8) {
                         // Season badge (S5 style)
                         HStack(spacing: 0) {
-                            Text("S")
+                            Text("season_abbrev")
                                 .font(.custom(.oswald.bold, size: 28))
                                 .foregroundColor(.white)
                             Text(String(anticipatedSeasonNumber))
@@ -232,6 +232,7 @@ struct AnticipatedCard: View {
             .frame(height: 140)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
+        .contentShape(Rectangle())
         .modifier(OptionalMatchedGeometry(id: showId, namespace: namespace))
     }
 }

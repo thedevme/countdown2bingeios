@@ -37,52 +37,52 @@ extension WalkthroughStep {
         // Part 1: The three stages (shows fly in)
         WalkthroughStep(
             key: "airing",
-            label: "NOW AIRING",
+            label: String(localized: "timeline_now_playing"),
             tone: Color(hex: "#2dd4bf"),
-            hint: "Shows releasing new episodes right now, week to week. The one closest to its finale sits on top — that's what you'll binge next.",
-            note: "As each finale airs, the show drops to Binge Ready and the next rises to the top.",
+            hint: String(localized: "walkthrough_airing_hint"),
+            note: String(localized: "walkthrough_airing_note"),
             stepType: .bucketIntro(bucketKey: "airing")
         ),
         WalkthroughStep(
             key: "premiering",
-            label: "PREMIERING SOON",
+            label: String(localized: "header_premiering_soon"),
             tone: Color(hex: "#5eead4"),
-            hint: "Shows with a locked premiere date, counting down day by day until the new season starts releasing.",
-            note: "The moment a season premieres, it moves up into Now Airing.",
+            hint: String(localized: "walkthrough_premiering_hint"),
+            note: String(localized: "walkthrough_premiering_note"),
             stepType: .bucketIntro(bucketKey: "premiering")
         ),
         WalkthroughStep(
             key: "anticipated",
-            label: "ANTICIPATED",
+            label: String(localized: "header_anticipated"),
             tone: Color(hex: "#71717a"),
-            hint: "Renewed shows that don't have a release date yet. They wait quietly at the bottom so you never lose track of them.",
-            note: "As soon as a date is announced, they jump to Premiering Soon.",
+            hint: String(localized: "walkthrough_anticipated_hint"),
+            note: String(localized: "walkthrough_anticipated_note"),
             stepType: .bucketIntro(bucketKey: "anticipated")
         ),
 
         // Part 2: How shows move (transitions)
         WalkthroughStep(
             key: "date-set",
-            label: "A DATE IS SET",
+            label: String(localized: "walkthrough_label_date_set"),
             tone: Color(hex: "#2dd4bf"),
-            hint: "The Bear just got a premiere date. It moves up out of Anticipated into Premiering Soon and starts counting down.",
-            note: "Anticipated → Premiering Soon",
+            hint: String(localized: "walkthrough_date_set_hint"),
+            note: String(localized: "walkthrough_date_set_note"),
             stepType: .transition(from: "anticipated", to: "premiering", showId: "stranger-things")
         ),
         WalkthroughStep(
             key: "premieres",
-            label: "IT PREMIERES",
+            label: String(localized: "walkthrough_label_premieres"),
             tone: Color(hex: "#2dd4bf"),
-            hint: "Shogun just premiered. It climbs into Now Airing and joins the stack while new episodes release each week.",
-            note: "Premiering Soon → Now Airing",
+            hint: String(localized: "walkthrough_premieres_hint"),
+            note: String(localized: "walkthrough_premieres_note"),
             stepType: .transition(from: "premiering", to: "airing", showId: "shogun")
         ),
         WalkthroughStep(
             key: "finale",
-            label: "THE FINALE AIRS",
+            label: String(localized: "walkthrough_label_finale"),
             tone: Color(hex: "#2dd4bf"),
-            hint: "The Last of Us's finale aired — the full season is now Binge Ready. Its next season cycles back down to Anticipated until a new date is announced.",
-            note: "Now Airing → Binge Ready → next season to Anticipated",
+            hint: String(localized: "walkthrough_finale_hint"),
+            note: String(localized: "walkthrough_finale_note"),
             stepType: .transition(from: "airing", to: "binge-ready", showId: "the-last-of-us")
         )
     ]

@@ -30,10 +30,11 @@ struct DetailStatusInfo: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text((isReady ? "Ready to binge" : "Until binge ready").uppercased())
+            Text(isReady ? "phase_ready_to_binge" : "status_until_binge_ready")
                 .font(.custom(.jetbrains.bold, size: 9.5))
                 .foregroundColor(phaseTone)
                 .tracking(1.6)
+                .textCase(.uppercase)
 
             if let date = finaleDate {
                 let formatter = DateFormatter()

@@ -40,19 +40,19 @@ struct DiscoverShowRow: View {
     private var statusText: String {
         guard let dateString = show.firstAirDate,
               let date = parseDate(dateString) else {
-            return "FULL SEASON AVAILABLE"
+            return String(localized: "status_full_season_available")
         }
 
         let days = daysUntilAir ?? 0
 
         if days <= 0 {
-            return "FULL SEASON AVAILABLE"
+            return String(localized: "status_full_season_available")
         } else if days <= 7 {
-            return "PREMIERES IN \(days) DAY\(days == 1 ? "" : "S")"
+            return String(localized: "status_premieres_in_days \(days)")
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMM d"
-            return "PREMIERES \(formatter.string(from: date).uppercased())"
+            return String(localized: "status_premieres_date \(formatter.string(from: date).uppercased())")
         }
     }
 
@@ -72,7 +72,7 @@ struct DiscoverShowRow: View {
                     Text("\(episodeCount ?? 0)")
                         .font(.custom(.oswald.bold, size: 28))
                         .foregroundColor(countColor)
-                    Text("EPS")
+                    Text("label_eps")
                         .font(.custom(.jetbrains.regular, size: 9))
                         .foregroundColor(countColor)
                         .tracking(0.5)

@@ -31,7 +31,7 @@ struct ShowPile: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 7) {
                 // Vertical label
-                Text("YOUR SHOWS")
+                Text("timeline_your_shows")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.caption))
                     .foregroundColor(Color(hex: "#71717a"))
                     .textCase(.uppercase)

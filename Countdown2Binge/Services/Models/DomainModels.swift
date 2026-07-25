@@ -22,12 +22,12 @@ enum ShowStatus: String, Codable, Sendable {
 
     var displayName: String {
         switch self {
-        case .returning: return "Returning"
-        case .ended: return "Ended"
-        case .canceled: return "Canceled"
-        case .inProduction: return "In Production"
-        case .planned: return "Planned"
-        case .pilot: return "Pilot"
+        case .returning: return String(localized: "show_status_returning")
+        case .ended: return String(localized: "show_status_ended")
+        case .canceled: return String(localized: "show_status_canceled")
+        case .inProduction: return String(localized: "show_status_in_production")
+        case .planned: return String(localized: "show_status_planned")
+        case .pilot: return String(localized: "show_status_pilot")
         }
     }
 

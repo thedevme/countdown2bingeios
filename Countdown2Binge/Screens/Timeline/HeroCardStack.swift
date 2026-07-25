@@ -228,7 +228,7 @@ private struct MoreShowsBadge: View {
                 }
             }
 
-            Text("+\(count) MORE")
+            Text(String(localized: "hero_more_count \(count)"))
                 .font(.custom(.jetbrains.bold, size: 11))
                 .tracking(1.1)
                 .foregroundColor(.c2bTealBright)

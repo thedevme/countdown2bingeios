@@ -11,7 +11,7 @@ struct DetailFollowingBadge: View {
             Image(systemName: "bookmark.fill")
                 .font(.system(size: 12))
                 .foregroundColor(.c2bTealBright)
-            Text("Following")
+            Text("button_following")
                 .font(.custom(.jetbrains.bold, size: 9))
                 .foregroundColor(.c2bTealBright)
                 .textCase(.uppercase)

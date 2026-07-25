@@ -8,9 +8,9 @@
 import SwiftUI
 
 enum ShowDetailSeasonStatus: String {
-    case new = "NEW"
-    case airing = "AIRING"
-    case ready = "READY"
+    case new = "season_status_new"
+    case airing = "season_status_airing"
+    case ready = "season_status_ready"
 }
 
 struct ShowDetailSeasonBar: View {
@@ -21,13 +21,13 @@ struct ShowDetailSeasonBar: View {
     var body: some View {
         HStack(spacing: 10) {
             // Season label
-            Text("Season \(seasonNumber)")
+            Text(String(localized: "season_number \(seasonNumber)"))
                 .font(.custom(.oswald.bold, size: 20))
                 .foregroundColor(.white)
 
             // Status badge
             if let status = status {
-                Text(status.rawValue)
+                Text(LocalizedStringKey(status.rawValue))
                     .font(.custom(.jetbrains.bold, size: 8))
                     .tracking(1.1)
                     .foregroundColor(.c2bTealBright)

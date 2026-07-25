@@ -13,7 +13,7 @@ struct ShowDetailAboutSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             // Section header
-            Text("ABOUT")
+            Text("header_about")
                 .font(.custom(.jetbrains.bold, size: 9.5))
                 .foregroundColor(.c2bMuted)
                 .tracking(1.4)
@@ -21,29 +21,29 @@ struct ShowDetailAboutSection: View {
             // Metadata rows
             VStack(spacing: 0) {
                 if !show.genreNames.isEmpty {
-                    AboutRow(label: "Genre", value: show.genreNames.joined(separator: ", "))
+                    AboutRow(label: String(localized: "about_genre"), value: show.genreNames.joined(separator: ", "))
                 }
 
                 if show.numberOfSeasons > 0 {
-                    AboutRow(label: "Seasons", value: "\(show.numberOfSeasons)")
+                    AboutRow(label: String(localized: "about_seasons"), value: "\(show.numberOfSeasons)")
                 }
 
                 if show.numberOfEpisodes > 0 {
-                    AboutRow(label: "Episodes", value: "\(show.numberOfEpisodes)")
+                    AboutRow(label: String(localized: "about_episodes"), value: "\(show.numberOfEpisodes)")
                 }
 
-                AboutRow(label: "Status", value: show.status.displayName)
+                AboutRow(label: String(localized: "about_status"), value: show.status.displayName)
 
                 if let network = show.primaryNetwork?.name {
-                    AboutRow(label: "Network", value: network)
+                    AboutRow(label: String(localized: "about_network"), value: network)
                 }
 
                 if let year = show.yearString {
-                    AboutRow(label: "First Aired", value: year)
+                    AboutRow(label: String(localized: "about_first_aired"), value: year)
                 }
 
                 if let rating = show.voteAverage, rating > 0 {
-                    AboutRow(label: "Rating", value: String(format: "%.1f / 10", rating))
+                    AboutRow(label: String(localized: "about_rating"), value: String(format: "%.1f / 10", rating))
                 }
             }
             .background(Color.white.opacity(0.03))

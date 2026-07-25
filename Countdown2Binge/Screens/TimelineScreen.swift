@@ -11,9 +11,8 @@ struct TimelineScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: TimelineViewModel = TimelineViewModel()
     @State private var heroCardIndex: Int = 0
-    @State private var selectedShowForDetail: ShowData?
     @State private var showNotificationSettings = false
-    @State private var showFullTimeline = false
+    @State private var navigationPath = NavigationPath()
 
     /// Countdown value for the currently displayed hero card
     private var currentHeroCountdown: Int? {
@@ -25,7 +24,7 @@ struct TimelineScreen: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
         ScrollView {
             VStack(spacing: 0) {
                 // Header
@@ -52,7 +51,7 @@ struct TimelineScreen: View {
                             shows: viewModel.heroShowTuples,
                             currentIndex: $heroCardIndex,
                             onShowTap: { show in
-                                selectedShowForDetail = show
+                                navigationPath.append(show)
                             },
                             cardSize: CGSize(width: 280, height: 420)
                         )
@@ -67,8 +66,8 @@ struct TimelineScreen: View {
                     .padding(.vertical, 10)
 
                     // View Timeline Button
-                    Button(action: { showFullTimeline = true }) {
-                        Text("View entire timeline")
+                    Button(action: { navigationPath.append("fullTimeline") }) {
+                        Text("button_view_timeline")
                             .monoStyle(size: 11, color: .c2bText)
                             .padding(.horizontal, 26)
                             .padding(.vertical, 13)
@@ -108,19 +107,24 @@ struct TimelineScreen: View {
                     await viewModel.loadFollowedShows()
                 }
             }
-            .navigationDestination(item: $selectedShowForDetail) { show in
+            .navigationDestination(for: ShowData.self) { show in
                 FollowedShowDetail(
                     show: show,
-                    onDismiss: { selectedShowForDetail = nil },
+                    onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
                         Task { await viewModel.unfollowShow(show) }
                     }
                 )
-                    .navigationBarHidden(true)
+                .navigationBarHidden(true)
             }
-            .navigationDestination(isPresented: $showFullTimeline) {
-                FullTimelineView(viewModel: viewModel)
+            .navigationDestination(for: String.self) { route in
+                if route == "fullTimeline" {
+                    FullTimelineView(
+                        viewModel: viewModel,
+                        navigationPath: $navigationPath
+                    )
                     .navigationBarHidden(true)
+                }
             }
         }
         .overlay {
@@ -135,7 +139,7 @@ struct TimelineScreen: View {
     @ViewBuilder
     private var premieringSoonSection: some View {
         TimelineSection(
-            title: "PREMIERING SOON",
+            title: String(localized: "header_premiering_soon"),
             tone: .c2bTeal,
             count: viewModel.premieringSoonShows.count
         ) { isExpanded in
@@ -148,16 +152,14 @@ struct TimelineScreen: View {
                     }
                 } else {
                     ForEach(viewModel.premieringSoonShows, id: \.id) { show in
-                        Group {
+                        Button(action: { navigationPath.append(show) }) {
                             if isExpanded {
                                 PremieringCard(showData: show)
                             } else {
                                 MiniPremieringCard(showData: show)
                             }
                         }
-                        .onTapGesture {
-                            selectedShowForDetail = show
-                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -169,7 +171,7 @@ struct TimelineScreen: View {
     @ViewBuilder
     private var anticipatedSection: some View {
         TimelineSection(
-            title: "ANTICIPATED",
+            title: String(localized: "header_anticipated"),
             tone: .c2bMuted,
             count: viewModel.anticipatedShows.count
         ) { isExpanded in
@@ -182,16 +184,14 @@ struct TimelineScreen: View {
                     }
                 } else {
                     ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        Group {
+                        Button(action: { navigationPath.append(show) }) {
                             if isExpanded {
                                 AnticipatedCard(showData: show)
                             } else {
                                 MiniAnticipatedCard(showData: show)
                             }
                         }
-                        .onTapGesture {
-                            selectedShowForDetail = show
-                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -211,7 +211,7 @@ struct TimelineEmptySection: View {
             .foregroundColor(Color.white.opacity(0.08))
             .frame(height: 60)
             .overlay(
-                Text("EMPTY")
+                Text("empty_slot")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
                     .foregroundColor(Color(hex: "#52525b"))
                     .textCase(.uppercase)
@@ -227,46 +227,23 @@ struct TimelineHeader: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Profile Avatar
-            ZStack {
-                Circle()
-                    .fill(LinearGradient(
-                        colors: [Color(hex: "#2a2a2e"), Color(hex: "#131315")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
+            // Notifications Button (left)
+            Button(action: onBellTap) {
+                Image(systemName: "bell")
+                    .font(.system(size: 19, weight: .regular))
+                    .foregroundColor(Color(hex: "#cfcfcf"))
+                    .frame(width: 42, height: 42)
+                    .background(Color.white.opacity(0.04))
+                    .cornerRadius(21)
                     .overlay(
                         Circle()
                             .stroke(Color.white.opacity(0.1), lineWidth: 1)
                     )
-
-                Image(systemName: "person.fill")
-                    .font(.system(size: 22))
-                    .foregroundColor(Color.white.opacity(0.55))
-
-                // Active indicator
-                Circle()
-                    .fill(Color.c2bTealBright)
-                    .frame(width: 12, height: 12)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.c2bBackground, lineWidth: 2)
-                    )
-                    .offset(x: 15, y: 15)
-            }
-            .frame(width: 42, height: 42)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Good evening")
-                    .monoStyle(size: 9, color: .c2bMuted)
-
-                Text("Alex")
-                    .displayStyle(size: 22, color: .c2bText)
             }
 
             Spacer()
 
-            // Info Button (launches walkthrough)
+            // Info Button (right - launches walkthrough)
             if let onInfoTap {
                 Button(action: onInfoTap) {
                     Image(systemName: "info")
@@ -280,20 +257,6 @@ struct TimelineHeader: View {
                                 .stroke(Color.white.opacity(0.1), lineWidth: 1)
                         )
                 }
-            }
-
-            // Notifications Button
-            Button(action: onBellTap) {
-                Image(systemName: "bell")
-                    .font(.system(size: 19, weight: .regular))
-                    .foregroundColor(Color(hex: "#cfcfcf"))
-                    .frame(width: 42, height: 42)
-                    .background(Color.white.opacity(0.04))
-                    .cornerRadius(21)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
             }
         }
         .padding(.horizontal, C2BLayout.horizontalPadding)
@@ -309,13 +272,13 @@ struct StatsBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            StatCell(number: String(format: "%02d", tracked), label: "Tracked")
+            StatCell(number: String(format: "%02d", tracked), label: String(localized: "stats_tracked"))
 
             Rectangle()
                 .fill(Color.white.opacity(0.08))
                 .frame(width: 1)
 
-            StatCell(number: String(format: "%02d", upcoming), label: "Upcoming")
+            StatCell(number: String(format: "%02d", upcoming), label: String(localized: "stats_upcoming"))
         }
         .frame(height: 74)
         .background(Color.white.opacity(0.03))
@@ -375,7 +338,7 @@ struct DayTicker: View {
 
                     VStack(spacing: isCenter ? 3 : 3) {
                         if value == nil && isCenter {
-                            Text("TBD")
+                            Text("timeline_tbd")
                                 .displayStyle(
                                     size: 26,
                                     color: .white
@@ -419,7 +382,7 @@ struct DayTicker: View {
             .padding(.vertical, 6)
             .animation(.easeOut(duration: 0.3), value: centerDay)
 
-            Text("Today · \(formattedDate)")
+            Text(String(localized: "today_date \(formattedDate)"))
                 .monoStyle(size: 9.5, color: .c2bMuted)
                 .padding(.top, 12)
 
@@ -480,7 +443,7 @@ struct TimelineSection<Content: View>: View {
 
                     Spacer()
 
-                    Text(isExpanded ? "Hide" : "Show")
+                    Text(isExpanded ? String(localized: "button_hide") : String(localized: "button_show"))
                         .monoStyle(size: 8.5, color: .c2bMuted)
 
                     Image(systemName: "chevron.down")
@@ -524,8 +487,8 @@ struct CompactSoonRow: View {
         HStack(spacing: 4) {
             GiantNumber(
                 number: days,
-                unit: "DAYS",
-                sub: "TO PREMIERE",
+                unit: String(localized: "time_days"),
+                sub: String(localized: "timeline_to_premiere"),
                 dim: false,
                 empty: isEmpty,
                 dense: false,
@@ -548,11 +511,11 @@ struct CompactSoonRow: View {
                     )
 
                 if isEmpty {
-                    Text("EMPTY SLOT")
+                    Text("empty_slot")
                         .monoStyle(size: 11, color: .c2bMuted)
                 } else {
                     // Poster overlay here
-                    Text("Show Poster")
+                    Text("poster_placeholder")
                         .monoStyle(size: 11, color: .c2bDim)
                 }
             }
@@ -571,8 +534,8 @@ struct ExpandedSoonRow: View {
         HStack(spacing: 8) {
             GiantNumber(
                 number: days,
-                unit: "DAYS",
-                sub: "TO PREMIERE",
+                unit: String(localized: "time_days"),
+                sub: String(localized: "timeline_to_premiere"),
                 dim: false,
                 empty: isEmpty,
                 dense: false,
@@ -589,11 +552,11 @@ struct ExpandedSoonRow: View {
                     .cardShadow()
 
                 if isEmpty {
-                    Text("EMPTY SLOT")
+                    Text("empty_slot")
                         .monoStyle(size: 11, color: .c2bMuted)
                 } else {
                     // Poster content here
-                    Text("Show Poster")
+                    Text("poster_placeholder")
                         .monoStyle(size: 11, color: .c2bDim)
                 }
             }
@@ -628,8 +591,8 @@ struct CompactAnticipatedRow: View {
         HStack(spacing: 4) {
             GiantNumber(
                 number: year,
-                unit: "EXPECTED",
-                sub: "RELEASE",
+                unit: String(localized: "timeline_expected"),
+                sub: String(localized: "timeline_release"),
                 dim: true,
                 empty: isEmpty,
                 dense: true,
@@ -648,10 +611,10 @@ struct CompactAnticipatedRow: View {
                     )
 
                 if isEmpty {
-                    Text("EMPTY SLOT")
+                    Text("empty_slot")
                         .monoStyle(size: 11, color: Color.white.opacity(0.2))
                 } else {
-                    Text("Show Poster")
+                    Text("poster_placeholder")
                         .monoStyle(size: 11, color: .c2bDim)
                 }
             }
@@ -670,8 +633,8 @@ struct ExpandedAnticipatedRow: View {
         HStack(spacing: 8) {
             GiantNumber(
                 number: year,
-                unit: "EXPECTED",
-                sub: "RELEASE",
+                unit: String(localized: "timeline_expected"),
+                sub: String(localized: "timeline_release"),
                 dim: true,
                 empty: isEmpty,
                 dense: false,
@@ -690,10 +653,10 @@ struct ExpandedAnticipatedRow: View {
                     )
 
                 if isEmpty {
-                    Text("EMPTY SLOT")
+                    Text("empty_slot")
                         .monoStyle(size: 11, color: Color.white.opacity(0.2))
                 } else {
-                    Text("Show Poster")
+                    Text("poster_placeholder")
                         .monoStyle(size: 11, color: .c2bDim)
                 }
             }
@@ -835,7 +798,7 @@ struct CycleFooter: View {
                 .foregroundColor(.c2bMuted)
                 .opacity(0.7)
 
-            Text("Shows cycle back\nwhen seasons end")
+            Text("footer_cycle_message")
                 .monoStyle(size: 9, color: .c2bMuted)
                 .multilineTextAlignment(.center)
                 .lineSpacing(7)
@@ -898,7 +861,7 @@ struct NotificationSettingsModal: View {
                         .font(.system(size: 18))
                         .foregroundColor(.c2bTealBright)
 
-                    Text("NOTIFICATION SETTINGS")
+                    Text("header_notification_settings")
                         .font(.custom(.oswald.bold, size: 22))
                         .foregroundColor(.white)
 
@@ -910,23 +873,23 @@ struct NotificationSettingsModal: View {
                 // Settings
                 VStack(spacing: 0) {
                     NotificationSettingsRow(
-                        title: "Push notifications",
-                        subtitle: "Alerts on this device",
+                        title: String(localized: "notif_push_title"),
+                        subtitle: String(localized: "notif_push_subtitle"),
                         isOn: $pushEnabled
                     )
                     NotificationSettingsRow(
-                        title: "Premiere day",
-                        subtitle: "When a new season starts airing",
+                        title: String(localized: "notif_premiere_title"),
+                        subtitle: String(localized: "notif_premiere_subtitle"),
                         isOn: $premiereEnabled
                     )
                     NotificationSettingsRow(
-                        title: "Binge ready",
-                        subtitle: "The day the full season is out",
+                        title: String(localized: "notif_binge_ready_title"),
+                        subtitle: String(localized: "notif_binge_ready_subtitle"),
                         isOn: $bingeReadyEnabled
                     )
                     NotificationSettingsRow(
-                        title: "Weekly episodes",
-                        subtitle: "Ping on every new episode",
+                        title: String(localized: "notif_weekly_title"),
+                        subtitle: String(localized: "notif_weekly_subtitle"),
                         isOn: $weeklyEnabled
                     )
 
@@ -934,8 +897,8 @@ struct NotificationSettingsModal: View {
                     LeadTimePickerRow(leadDays: $leadDays)
 
                     NotificationSettingsRow(
-                        title: "Email digest",
-                        subtitle: "Weekly summary to your inbox",
+                        title: String(localized: "notif_email_title"),
+                        subtitle: String(localized: "notif_email_subtitle"),
                         isOn: $emailEnabled,
                         isLast: true
                     )
@@ -950,7 +913,7 @@ struct NotificationSettingsModal: View {
 
                 // Done Button
                 Button(action: onDismiss) {
-                    Text("DONE")
+                    Text("button_done")
                         .font(.custom(.oswald.bold, size: 16))
                         .tracking(0.48)
                         .foregroundColor(Color(hex: "#04201c"))
@@ -1028,11 +991,11 @@ private struct LeadTimePickerRow: View {
     var body: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Remind me early")
+                Text("notif_remind_early_title")
                     .font(.system(size: 13.5, weight: .semibold))
                     .foregroundColor(.white)
 
-                Text("Days before binge-ready")
+                Text("notif_remind_early_subtitle")
                     .font(.system(size: 11))
                     .foregroundColor(.c2bMuted)
             }
@@ -1067,7 +1030,7 @@ private struct LeadDayButton: View {
 
     var body: some View {
         Button(action: { selectedDays = days }) {
-            Text("\(days)D")
+            Text(String(localized: "time_days_short \(days)"))
                 .font(.custom(.jetbrains.bold, size: 10))
                 .tracking(0.6)
                 .foregroundColor(isSelected ? Color(hex: "#04201c") : .c2bDim)

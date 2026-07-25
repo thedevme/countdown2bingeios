@@ -64,7 +64,7 @@ struct ShowDetailTopBar: View {
 // MARK: - Not Tracking Badge
 struct ShowDetailNotTrackingBadge: View {
     var body: some View {
-        Text("◇ NOT TRACKING YET")
+        Text("not_tracking_yet")
             .font(.custom(.jetbrains.regular, size: 9.5))
             .tracking(1.8)
             .foregroundColor(.c2bTealBright)

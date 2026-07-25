@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import YouTubePlayerKit
 
 struct ShowDetailTrailersSection: View {
     let videos: [TMDBVideo]
@@ -18,7 +19,7 @@ struct ShowDetailTrailersSection: View {
             VStack(alignment: .leading, spacing: 14) {
                 // Section header
                 HStack {
-                    Text("TRAILERS & PREVIEWS")
+                    Text("header_trailers")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.4)
@@ -51,18 +52,19 @@ struct ShowDetailTrailersSection: View {
 }
 
 // MARK: - Trailer Card
+
 private struct TrailerCard: View {
     let video: TMDBVideo
     let width: CGFloat
     let height: CGFloat
 
+    @State private var showPlayer = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Thumbnail with play button
             Button {
-                if let url = video.videoURL {
-                    UIApplication.shared.open(url)
-                }
+                showPlayer = true
             } label: {
                 ZStack {
                     if let thumbnailURL = video.thumbnailURL {
@@ -122,6 +124,9 @@ private struct TrailerCard: View {
                 )
             }
             .buttonStyle(.plain)
+            .fullScreenCover(isPresented: $showPlayer) {
+                YouTubePlayerFullscreen(videoKey: video.key)
+            }
 
             // Title
             Text(video.name)
@@ -130,5 +135,64 @@ private struct TrailerCard: View {
                 .lineLimit(1)
         }
         .frame(width: width)
+    }
+}
+
+// MARK: - YouTube Player Fullscreen
+
+struct YouTubePlayerFullscreen: View {
+    let videoKey: String
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var player: YouTubePlayer
+
+    init(videoKey: String) {
+        self.videoKey = videoKey
+        _player = StateObject(wrappedValue: YouTubePlayer(
+            source: .video(id: videoKey),
+            configuration: .init(
+                fullscreenMode: .system,
+                allowsInlineMediaPlayback: true
+            )
+        ))
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Color.black.ignoresSafeArea()
+
+                YouTubePlayerView(player)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .ignoresSafeArea()
+
+                // Close button
+                VStack {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 36, height: 36)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        .padding(.top, 60)
+                        .padding(.leading, 20)
+
+                        Spacer()
+                    }
+                    Spacer()
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .persistentSystemOverlays(.hidden)
+        .onAppear {
+            Task {
+                try? await player.play()
+            }
+        }
     }
 }

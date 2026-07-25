@@ -49,7 +49,7 @@ struct DiscoverShowCard: View {
                     // Countdown badge
                     if let days = daysUntil, days > 0 {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("in")
+                            Text("countdown_in")
                                 .font(.custom(.jetbrains.regular, size: 10))
                                 .foregroundColor(.white.opacity(0.9))
 
@@ -82,7 +82,7 @@ struct DiscoverShowCard: View {
 
             // Premiere date
             if let dateString = show.firstAirDate, let date = parseDate(dateString) {
-                Text("PREMIERES \(formatDate(date))")
+                Text(String(localized: "premieres_date \(formatDate(date))"))
                     .font(.custom(.jetbrains.regular, size: 9))
                     .foregroundColor(.c2bMuted)
                     .tracking(0.8)

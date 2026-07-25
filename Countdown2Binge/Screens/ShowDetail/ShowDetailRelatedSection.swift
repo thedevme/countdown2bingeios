@@ -19,7 +19,7 @@ struct ShowDetailRelatedSection: View {
             VStack(alignment: .leading, spacing: 14) {
                 // Section header
                 HStack {
-                    Text("RELATED")
+                    Text("header_related")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.4)
@@ -120,7 +120,7 @@ struct ShowDetailRelatedUpgradePrompt: View {
                         .font(.system(size: 9))
                         .foregroundColor(.c2bMuted)
 
-                    Text("SPINOFFS & RELATED")
+                    Text("header_spinoffs_related")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.4)
@@ -128,7 +128,7 @@ struct ShowDetailRelatedUpgradePrompt: View {
 
                 Spacer()
 
-                Text("PREMIUM")
+                Text("badge_premium")
                     .font(.custom(.jetbrains.bold, size: 8))
                     .tracking(1.2)
                     .foregroundColor(.c2bTeal)
@@ -163,7 +163,7 @@ struct ShowDetailRelatedUpgradePrompt: View {
                         .font(.system(size: 20))
                         .foregroundColor(.c2bTeal)
 
-                    Text("Discover spinoffs & prequels")
+                    Text("premium_discover_spinoffs")
                         .font(.custom(.jetbrains.bold, size: 11))
                         .foregroundColor(.white)
                 }
@@ -171,7 +171,7 @@ struct ShowDetailRelatedUpgradePrompt: View {
 
             // Upgrade button
             Button(action: { showPaywall = true }) {
-                Text("UNLOCK WITH PREMIUM")
+                Text("button_unlock_premium")
                     .font(.custom(.oswald.bold, size: 14))
                     .tracking(0.4)
                     .foregroundColor(Color(hex: "#04201c"))

@@ -12,7 +12,7 @@ struct ShowDetailTimelineLink: View {
 
     var body: some View {
         Button(action: action) {
-            Text("VIEW ON MY TIMELINE →")
+            Text("view_on_timeline")
                 .font(.custom(.jetbrains.bold, size: 10.5))
                 .tracking(1.3)
                 .foregroundColor(.c2bTealBright)

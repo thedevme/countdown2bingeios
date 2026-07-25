@@ -34,14 +34,14 @@ struct FullTimelineScreen: View {
                     .padding(.bottom, 20)
 
                     // Last updated
-                    Text("Last updated: 4:34 pm")
+                    Text(String(localized: "last_updated \("4:34 pm")"))
                         .monoStyle(size: 10, color: .c2bMuted)
                         .padding(.bottom, 20)
 
                     // Stats bar
                     HStack(spacing: 10) {
-                        StatCard(number: "12", label: "TRACKED")
-                        StatCard(number: "05", label: "UPCOMING")
+                        StatCard(number: "12", label: String(localized: "stats_tracked"))
+                        StatCard(number: "05", label: String(localized: "stats_upcoming"))
                     }
                     .padding(.horizontal, C2BLayout.horizontalPadding)
                     .padding(.bottom, 28)
@@ -154,10 +154,10 @@ struct FullTimelinePosterCard: View {
                                 Text("\(days)")
                                     .displayStyle(size: 52, color: .c2bTealBright)
 
-                                Text("DAYS")
+                                Text("time_days")
                                     .monoStyle(size: 9, color: .c2bTealBright)
 
-                                Text("TO BINGE")
+                                Text("detail_to_binge")
                                     .monoStyle(size: 8, color: .c2bMuted)
                             }
                             .padding(.leading, 26)

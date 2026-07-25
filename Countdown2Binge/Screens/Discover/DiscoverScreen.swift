@@ -34,11 +34,11 @@ struct DiscoverScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Header
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("DISCOVER")
+                        Text("header_discover")
                             .font(.custom(.oswald.bold, size: 32))
                             .foregroundColor(.c2bText)
 
-                        Text("NEW, RECENT & UPCOMING \u{00B7} FOLLOW BEFORE THEY DROP")
+                        Text("discover_subtitle")
                             .font(.custom(.jetbrains.regular, size: 9))
                             .foregroundColor(.c2bMuted)
                             .tracking(1.0)
@@ -224,7 +224,7 @@ struct DiscoverPaywallSheet: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "#04201c")))
                                 .scaleEffect(0.8)
                         }
-                        Text(selectedPlan == "lifetime" ? "PURCHASE LIFETIME" : "START 7-DAY FREE TRIAL")
+                        Text(selectedPlan == "lifetime" ? String(localized: "button_purchase_lifetime") : String(localized: "button_start_trial"))
                             .font(.custom(.oswald.bold, size: 17))
                             .foregroundColor(Color(hex: "#04201c"))
                             .textCase(.uppercase)
@@ -241,7 +241,7 @@ struct DiscoverPaywallSheet: View {
 
                 // Legal text
                 if selectedPlan != "lifetime" {
-                    Text("Trial auto-renews unless canceled 24h before end.")
+                    Text("premium_trial_legal")
                         .font(.custom(.jetbrains.bold, size: 9))
                         .foregroundColor(Color(hex: "#71717a"))
                         .textCase(.uppercase)
@@ -257,7 +257,7 @@ struct DiscoverPaywallSheet: View {
                     .onTapGesture { purchaseError = nil }
 
                 VStack(spacing: 16) {
-                    Text("PURCHASE FAILED")
+                    Text("alert_purchase_failed")
                         .font(.custom(.oswald.bold, size: 18))
                         .foregroundColor(.white)
 
@@ -266,7 +266,7 @@ struct DiscoverPaywallSheet: View {
                         .foregroundColor(Color(hex: "#a1a1aa"))
                         .multilineTextAlignment(.center)
 
-                    Button("OK") { purchaseError = nil }
+                    Button("button_ok") { purchaseError = nil }
                         .font(.custom(.oswald.bold, size: 16))
                         .foregroundColor(Color(hex: "#04201c"))
                         .padding(.horizontal, 40)

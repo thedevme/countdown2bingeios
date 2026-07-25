@@ -23,7 +23,7 @@ struct DetailSeasonPicker: View {
                 }
             } label: {
                 HStack {
-                    Text("Season \(selectedSeason)")
+                    Text(String(localized: "season_number \(selectedSeason)"))
                         .font(.custom(.oswald.bold, size: 20))
                         .foregroundColor(.white)
                         .textCase(.uppercase)
@@ -34,7 +34,7 @@ struct DetailSeasonPicker: View {
 
                     Spacer()
 
-                    Text("0/\(episodeCount(for: selectedSeason)) watched")
+                    Text(String(localized: "binge_watched_count \(0) \(episodeCount(for: selectedSeason))"))
                         .font(.custom(.jetbrains.regular, size: 9.5))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.0)
@@ -65,14 +65,14 @@ struct DetailSeasonPicker: View {
                             }
                         } label: {
                             HStack {
-                                Text("Season \(season)")
+                                Text(String(localized: "season_number \(season)"))
                                     .font(.custom(.oswald.regular, size: 18))
                                     .foregroundColor(season == selectedSeason ? .white : .c2bDim)
 
                                 if season == show.numberOfSeasons {
                                     Text("·")
                                         .foregroundColor(.c2bMuted)
-                                    Text("CURRENT")
+                                    Text("detail_current")
                                         .font(.custom(.jetbrains.bold, size: 9))
                                         .foregroundColor(.c2bTeal)
                                         .tracking(1.0)

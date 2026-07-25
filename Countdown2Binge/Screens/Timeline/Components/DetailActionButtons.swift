@@ -18,17 +18,9 @@ struct DetailActionButtons: View {
     var body: some View {
         VStack(spacing: 12) {
             if isReady {
-                DetailPrimaryButton(title: "\u{25B8} START BINGE", style: .primary) {
+                DetailPrimaryButton(title: String(localized: "button_start_binge"), style: .primary) {
                     // Start binge
                 }
-            }
-
-            DetailPrimaryButton(
-                title: "BINGE PLAN",
-                icon: "calendar.badge.checkmark",
-                style: isReady ? .secondary : .primary
-            ) {
-                // Binge plan
             }
 
             DetailUnfollowButton {
@@ -36,16 +28,16 @@ struct DetailActionButtons: View {
             }
         }
         .confirmationDialog(
-            "Unfollow \(show.name)?",
+            String(localized: "alert_unfollow \(show.name)"),
             isPresented: $showUnfollowConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Unfollow", role: .destructive) {
+            Button(String(localized: "button_unfollow"), role: .destructive) {
                 onUnfollow()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "button_cancel"), role: .cancel) {}
         } message: {
-            Text("This show will be removed from your timeline.")
+            Text("alert_remove_message")
         }
     }
 }

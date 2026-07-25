@@ -12,8 +12,8 @@ import SwiftUI
 
 struct FullTimelineView: View {
     let viewModel: TimelineViewModel
+    @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedShowForDetail: ShowData?
 
     var body: some View {
         ScrollView {
@@ -39,14 +39,6 @@ struct FullTimelineView: View {
             }
         }
         .background(Color.c2bBackground)
-        .navigationDestination(item: $selectedShowForDetail) { show in
-            FollowedShowDetail(
-                show: show,
-                onDismiss: { selectedShowForDetail = nil },
-                onUnfollow: {}
-            )
-            .navigationBarHidden(true)
-        }
     }
 
     // MARK: - Header
@@ -65,12 +57,12 @@ struct FullTimelineView: View {
             Spacer()
 
             VStack(spacing: 4) {
-                Text("FULL TIMELINE")
+                Text("header_full_timeline")
                     .font(.custom(.oswald.bold, size: 20))
                     .foregroundColor(.white)
                     .tracking(1.2)
 
-                Text("\(viewModel.trackedCount) SHOWS TRACKED")
+                Text(String(localized: "timeline_shows_tracked \(viewModel.trackedCount)"))
                     .font(.custom(.jetbrains.regular, size: 9))
                     .foregroundColor(.c2bMuted)
                     .tracking(0.8)
@@ -91,10 +83,10 @@ struct FullTimelineView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Section Header
             sectionHeader(
-                title: "NOW PLAYING",
+                title: String(localized: "timeline_now_playing"),
                 count: viewModel.airingNowShows.count,
                 tone: .c2bTeal,
-                subtitle: "FINALE COUNTDOWN"
+                subtitle: String(localized: "timeline_finale_countdown")
             )
 
             // Cards
@@ -103,11 +95,11 @@ struct FullTimelineView: View {
                     TimelineEmptySection()
                 } else {
                     ForEach(viewModel.airingNowShows, id: \.id) { show in
-                        NowPlayingCard(showData: show)
-                            .onTapGesture {
-                                selectedShowForDetail = show
-                            }
-                    }
+                        Button(action: { navigationPath.append(show) }) {
+                            NowPlayingCard(showData: show)
+                        }
+                        .buttonStyle(.plain)
+                                            }
                 }
             }
             .padding(.top, 16)
@@ -121,10 +113,10 @@ struct FullTimelineView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Section Header
             sectionHeader(
-                title: "PREMIERING SOON",
+                title: String(localized: "header_premiering_soon"),
                 count: viewModel.premieringSoonShows.count,
                 tone: .c2bTeal,
-                subtitle: "UPCOMING SEASONS"
+                subtitle: String(localized: "timeline_upcoming_seasons")
             )
 
             // Cards
@@ -133,11 +125,11 @@ struct FullTimelineView: View {
                     TimelineEmptySection()
                 } else {
                     ForEach(viewModel.premieringSoonShows, id: \.id) { show in
-                        PremieringCard(showData: show)
-                            .onTapGesture {
-                                selectedShowForDetail = show
-                            }
-                    }
+                        Button(action: { navigationPath.append(show) }) {
+                            PremieringCard(showData: show)
+                        }
+                        .buttonStyle(.plain)
+                                            }
                 }
             }
             .padding(.top, 16)
@@ -151,10 +143,10 @@ struct FullTimelineView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Section Header
             sectionHeader(
-                title: "ANTICIPATED",
+                title: String(localized: "header_anticipated"),
                 count: viewModel.anticipatedShows.count,
                 tone: .c2bMuted,
-                subtitle: "WAITING FOR DATES"
+                subtitle: String(localized: "timeline_waiting_dates")
             )
 
             // Cards
@@ -163,10 +155,10 @@ struct FullTimelineView: View {
                     TimelineEmptySection()
                 } else {
                     ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        AnticipatedCard(showData: show)
-                            .onTapGesture {
-                                selectedShowForDetail = show
-                            }
+                        Button(action: { navigationPath.append(show) }) {
+                            AnticipatedCard(showData: show)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -254,21 +246,21 @@ struct NowPlayingCard: View {
                                 .rotationEffect(.degrees(-90))
                                 .padding(-30)
                         } else {
-                            Text("TBD")
+                            Text("timeline_tbd")
                                 .font(.custom(.oswald.bold, size: 40))
                                 .foregroundColor(.white)
                                 .rotationEffect(.degrees(-90))
                                 .padding(-20)
                         }
 
-                        Text("DAYS")
+                        Text("time_days")
                             .font(.custom(.oswald.bold, size: CustomFont.size.xl2))
                             .foregroundColor(Color.c2bTealBright)
                             .textCase(.uppercase)
                             .tracking(1.6)
                             .padding(-5)
 
-                        Text("TO FINALE")
+                        Text("timeline_to_finale")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
                             .foregroundColor(Color(hex: "#52525b"))
                             .textCase(.uppercase)
@@ -327,7 +319,7 @@ struct NowPlayingCard: View {
                     // Bottom: Season + Show name
                     HStack(alignment: .bottom, spacing: 8) {
                         HStack(spacing: 0) {
-                            Text("S")
+                            Text("season_abbrev")
                                 .font(.custom(.oswald.bold, size: 28))
                                 .foregroundColor(.white)
                             Text(seasonNumber)
@@ -348,5 +340,6 @@ struct NowPlayingCard: View {
             .frame(height: 140)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
+        .contentShape(Rectangle())
     }
 }

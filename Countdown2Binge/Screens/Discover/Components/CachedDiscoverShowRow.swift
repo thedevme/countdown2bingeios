@@ -35,19 +35,19 @@ struct CachedDiscoverShowRow: View {
 
     private var statusText: String {
         guard let days = show.daysUntilPremiere else {
-            return "FULL SEASON AVAILABLE"
+            return String(localized: "status_full_season_available")
         }
 
         if days <= 0 {
-            return "FULL SEASON AVAILABLE"
+            return String(localized: "status_full_season_available")
         } else if days <= 7 {
-            return "PREMIERES IN \(days) DAY\(days == 1 ? "" : "S")"
+            return String(localized: "status_premieres_in_days \(days)")
         } else if let date = show.firstAirDate {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMM d"
-            return "PREMIERES \(formatter.string(from: date).uppercased())"
+            return String(localized: "status_premieres_date \(formatter.string(from: date).uppercased())")
         } else {
-            return "COMING SOON"
+            return String(localized: "status_coming_soon")
         }
     }
 
@@ -62,7 +62,7 @@ struct CachedDiscoverShowRow: View {
                             .foregroundColor(countColor)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
-                        Text("EPS")
+                        Text("label_eps")
                             .font(.custom(.jetbrains.regular, size: 9))
                             .foregroundColor(countColor)
                             .tracking(0.5)
@@ -72,7 +72,7 @@ struct CachedDiscoverShowRow: View {
                             .foregroundColor(countColor)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
-                        Text("DAYS")
+                        Text("time_days")
                             .font(.custom(.jetbrains.regular, size: 9))
                             .foregroundColor(countColor)
                             .tracking(0.5)

@@ -101,7 +101,7 @@ struct OnboardingFlow: View {
                     .onTapGesture { purchaseError = nil }
 
                 VStack(spacing: 16) {
-                    Text("PURCHASE FAILED")
+                    Text("alert_purchase_failed")
                         .font(.custom(.oswald.bold, size: 18))
                         .foregroundColor(.white)
 
@@ -110,7 +110,7 @@ struct OnboardingFlow: View {
                         .foregroundColor(Color(hex: "#a1a1aa"))
                         .multilineTextAlignment(.center)
 
-                    Button("OK") {
+                    Button("button_ok") {
                         purchaseError = nil
                     }
                     .font(.custom(.oswald.bold, size: 16))
@@ -200,7 +200,7 @@ struct OnboardingFlow: View {
             } else {
                 // No purchases to restore
                 isPurchasing = false
-                purchaseError = "No previous purchases found to restore."
+                purchaseError = String(localized: "error_no_purchases")
             }
         } catch {
             isPurchasing = false
@@ -260,7 +260,7 @@ struct OnboardingHeader: View {
                 // Skip button
                 if currentStep < totalSteps - 2 {
                     Button(action: onSkip) {
-                        Text("SKIP")
+                        Text("button_skip")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
                             .foregroundColor(Color(hex: "#71717a"))
                             .textCase(.uppercase)
@@ -362,7 +362,7 @@ struct OnboardingFooter: View {
             if currentStep == totalSteps - 1 {
                 VStack(spacing: 8) {
                     if selectedPlan != "lifetime" {
-                        Text("Trial auto-renews unless canceled 24h before end.")
+                        Text("premium_trial_legal")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                             .foregroundColor(Color(hex: "#71717a"))
                             .textCase(.uppercase)
@@ -372,7 +372,7 @@ struct OnboardingFooter: View {
 
                     HStack(spacing: 12) {
                         Button(action: {}) {
-                            Text("Terms")
+                            Text("link_terms")
                                 .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                                 .foregroundColor(Color(hex: "#a1a1aa"))
                                 .textCase(.uppercase)
@@ -384,7 +384,7 @@ struct OnboardingFooter: View {
                             .foregroundColor(Color(hex: "#71717a"))
 
                         Button(action: {}) {
-                            Text("Privacy")
+                            Text("link_privacy")
                                 .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                                 .foregroundColor(Color(hex: "#a1a1aa"))
                                 .textCase(.uppercase)
@@ -396,7 +396,7 @@ struct OnboardingFooter: View {
                             .foregroundColor(Color(hex: "#71717a"))
 
                         Button(action: { onRestore?() }) {
-                            Text("Restore")
+                            Text("link_restore")
                                 .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
                                 .foregroundColor(Color(hex: "#a1a1aa"))
                                 .textCase(.uppercase)
@@ -428,13 +428,13 @@ struct PainSlide: View {
                 PainIllustration()
                     .padding(.vertical, 26)
 
-                Text("THE PROBLEM")
+                Text("onboarding_pain_label")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
                     .tracking(1.6)
 
-                Text("WAIT — THAT SHOW CAME BACK?")
+                Text("onboarding_pain_title")
                     .font(.custom(.oswald.bold, size: CustomFont.size.display))
                     .textCase(.uppercase)
                     .tracking(0.42)
@@ -445,7 +445,7 @@ struct PainSlide: View {
                     .padding(.top, 12)
                     .padding(.bottom, 20)
 
-                Text("You find out seasons ended weeks ago. Or that your favorite show got renewed and you had no idea.")
+                Text("onboarding_pain_description")
                     .font(.system(size: 16, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(4)
@@ -475,7 +475,7 @@ struct PainIllustration: View {
                 .grayscale(0.6)
                 .brightness(-0.2)
                 .overlay(
-                    Text("SEASON ENDED")
+                    Text("status_season_ended")
                         .font(.custom(.oswald.bold, size: CustomFont.size.body))
                         .foregroundColor(Color(hex: "#dd524c"))
                         .textCase(.uppercase)
@@ -526,13 +526,13 @@ struct AgitateSlide: View {
                     .padding(.bottom, 20)
                     .frame(maxWidth: .infinity)
 
-                Text("WHY IT HAPPENS")
+                Text("onboarding_agitate_label")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
                     .tracking(1.6)
 
-                Text("KEEPING TRACK IS IMPOSSIBLE.")
+                Text("onboarding_agitate_title")
                     .font(.custom(.oswald.bold, size: 35))
                     .textCase(.uppercase)
                     .tracking(0.35)
@@ -543,7 +543,7 @@ struct AgitateSlide: View {
                     .padding(.top, 12)
                     .padding(.bottom, 20)
 
-                Text("Shows drop on different apps, on different schedules. By the time you remember, the finale already aired.")
+                Text("onboarding_agitate_description")
                     .font(.system(size: 16, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(4)
@@ -605,13 +605,13 @@ struct SolutionSlide: View {
                 SolutionIllustration()
                     .padding(.vertical, 26)
 
-                Text("THE FIX")
+                Text("onboarding_solution_label")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
                     .tracking(1.6)
 
-                Text("COUNTDOWN2BINGE FIXES THIS.")
+                Text("onboarding_solution_title")
                     .font(.custom(.oswald.bold, size: CustomFont.size.display))
                     .textCase(.uppercase)
                     .tracking(0.42)
@@ -622,7 +622,7 @@ struct SolutionSlide: View {
                     .padding(.top, 12)
                     .padding(.bottom, 20)
 
-                Text("One place to track every show. Get notified the moment a season ends — so you can binge it without stopping.")
+                Text("onboarding_solution_description")
                     .font(.system(size: 16, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(4)
@@ -701,14 +701,14 @@ struct AddShowsStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("ADD YOUR SHOWS")
+                Text("onboarding_add_shows_label")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
                     .tracking(1.6)
                     .padding(.top, 12)
 
-                Text("WHAT ARE YOU WAITING ON?")
+                Text("onboarding_add_shows_title")
                     .font(.custom(.oswald.bold, size: 36))
                     .textCase(.uppercase)
                     .tracking(0.36)
@@ -719,7 +719,7 @@ struct AddShowsStep: View {
                     .padding(.top, 10)
                     .padding(.bottom, 8)
 
-                Text("Search and follow the shows you want to binge. Add as many as you like.")
+                Text("onboarding_add_shows_description")
                     .font(.system(size: 14, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(3)
@@ -752,7 +752,7 @@ struct AddShowsStep: View {
                             .foregroundColor(Color(hex: "#a1a1aa"))
                             .multilineTextAlignment(.center)
 
-                        Button("Try Again") {
+                        Button("button_try_again") {
                             Task {
                                 await viewModel.loadTrendingShows()
                             }
@@ -902,7 +902,7 @@ struct ReviewSelectionStep: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("REVIEW SELECTION")
+                        Text("onboarding_review_title")
                             .font(.custom(.oswald.bold, size: 40))
                             .textCase(.uppercase)
                             .tracking(0.40)
@@ -915,7 +915,7 @@ struct ReviewSelectionStep: View {
                     Spacer()
 
                     // Show count badge
-                    Text("\(viewModel.selectedCount) SHOWS")
+                    Text(String(localized: "onboarding_shows_count \(viewModel.selectedCount)"))
                         .font(.custom(.oswald.bold, size: 14))
                         .foregroundColor(Color(hex: "#04201c"))
                         .textCase(.uppercase)
@@ -928,7 +928,7 @@ struct ReviewSelectionStep: View {
                 .padding(.top, 12)
                 .padding(.bottom, 16)
 
-                Text("Here's what you're tracking. Remove anything you changed your mind on, or add more.")
+                Text("onboarding_review_description")
                     .font(.system(size: 16, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(4)
@@ -1104,7 +1104,7 @@ struct AllSetStep: View {
                 }
 
                 // Title
-                Text("YOU'RE ALL SET.")
+                Text("onboarding_all_set_title")
                     .font(.custom(.oswald.bold, size: 44))
                     .textCase(.uppercase)
                     .tracking(0.44)
@@ -1113,7 +1113,7 @@ struct AllSetStep: View {
                     .padding(.bottom, 12)
 
                 // Description
-                Text("\(followedCount) \(followedCount == 1 ? "show" : "shows") added. We'll watch every season and tell you the moment each one is ready to binge.")
+                Text(String(localized: "onboarding_all_set_description \(followedCount)"))
                     .font(.system(size: 16, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(4)
@@ -1122,7 +1122,7 @@ struct AllSetStep: View {
                     .padding(.bottom, 40)
 
                 // Following label
-                Text("FOLLOWING")
+                Text("onboarding_following")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
@@ -1208,14 +1208,14 @@ struct PaywallStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("CHOOSE YOUR PLAN")
+                Text("onboarding_choose_plan")
                     .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
                     .foregroundColor(Color(hex: "#2dd4bf"))
                     .textCase(.uppercase)
                     .tracking(1.6)
                     .padding(.top, 12)
 
-                Text("NEVER MISS A FINALE.")
+                Text("onboarding_never_miss")
                     .font(.custom(.oswald.bold, size: CustomFont.size.title))
                     .textCase(.uppercase)
                     .tracking(0.34)
@@ -1226,7 +1226,7 @@ struct PaywallStep: View {
                     .padding(.top, 10)
                     .padding(.bottom, 6)
 
-                Text("You're tracking \(followedCount) shows. Go Pro to get alerted the moment any season is binge-ready.")
+                Text(String(localized: "paywall_tracking_shows \(followedCount)"))
                     .font(.system(size: 13.5, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#a1a1aa"))
                     .lineSpacing(3)
@@ -1297,7 +1297,7 @@ struct PlanCard: View {
                             .tracking(0.18)
 
                         if isBest {
-                            Text("BEST")
+                            Text("paywall_best")
                                 .font(.custom(.jetbrains.bold, size: 8))
                                 .foregroundColor(Color(hex: "#04201c"))
                                 .textCase(.uppercase)

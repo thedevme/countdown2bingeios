@@ -7,10 +7,10 @@ struct C2BTabBar: View {
     var badgeManager: TabBadgeManager? = nil
 
     private let tabs = [
-        TabItem(id: "timeline", label: "Timeline", icon: "list.bullet.rectangle"),
-        TabItem(id: "discover", label: "Discover", icon: "safari"),
-        TabItem(id: "binge", label: "Binge Ready", icon: "popcorn"),
-        TabItem(id: "settings", label: "Settings", icon: "gearshape")
+        TabItem(id: "timeline", label: String(localized: "tab_timeline"), icon: "list.bullet.rectangle"),
+        TabItem(id: "discover", label: String(localized: "tab_discover"), icon: "safari"),
+        TabItem(id: "binge", label: String(localized: "tab_binge_ready"), icon: "popcorn"),
+        TabItem(id: "settings", label: String(localized: "tab_settings"), icon: "gearshape")
     ]
 
     var body: some View {

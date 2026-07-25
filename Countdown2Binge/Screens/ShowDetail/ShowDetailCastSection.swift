@@ -17,7 +17,7 @@ struct ShowDetailCastSection: View {
             VStack(alignment: .leading, spacing: 14) {
                 // Section header
                 HStack {
-                    Text("CAST & CREW")
+                    Text("header_cast_crew")
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .foregroundColor(.c2bMuted)
                         .tracking(1.4)

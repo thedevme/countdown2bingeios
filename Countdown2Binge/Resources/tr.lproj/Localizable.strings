@@ -1,0 +1,285 @@
+/*
+  Localizable.strings
+  Countdown2Binge
+
+  English (Base Language)
+*/
+
+// =============================================================================
+// MARK: - Tab Bar
+// =============================================================================
+
+"tab_timeline" = "Timeline";
+"tab_discover" = "Discover";
+"tab_binge_ready" = "Binge Ready";
+"tab_settings" = "Settings";
+
+// =============================================================================
+// MARK: - Buttons & Actions
+// =============================================================================
+
+"button_follow" = "FOLLOW";
+"button_following" = "FOLLOWING";
+"button_cancel" = "Cancel";
+"button_done" = "Done";
+"button_close" = "Close";
+"button_remove" = "Remove";
+"button_share" = "Share";
+"button_upgrade" = "UPGRADE";
+"button_restore_purchases" = "Restore Purchases";
+"button_start_trial" = "START 7-DAY FREE TRIAL";
+"button_purchase_lifetime" = "PURCHASE LIFETIME";
+"button_mark_watched" = "Mark Watched";
+"button_mark_all_watched" = "MARK ALL WATCHED";
+"button_clear_season" = "CLEAR SEASON";
+"button_yes" = "Yes";
+"button_no" = "No";
+"button_skip" = "Skip";
+"button_continue" = "Continue";
+"button_get_started" = "Get Started";
+"button_start_binge" = "▸ START BINGE";
+"button_unfollow" = "Unfollow";
+"button_sign_in_apple" = "Sign in with Apple";
+
+// =============================================================================
+// MARK: - Status Badges
+// =============================================================================
+
+"badge_airing" = "AIRING";
+"badge_premiering" = "PREMIERING";
+"badge_binge_ready" = "BINGE READY";
+"badge_anticipated" = "ANTICIPATED";
+"badge_cancelled" = "CANCELLED";
+"badge_watched" = "WATCHED";
+"badge_up_next" = "UP NEXT";
+"badge_finale" = "FINALE";
+"badge_premiere" = "PREMIERE";
+"badge_new" = "NEW";
+
+// =============================================================================
+// MARK: - Section Headers
+// =============================================================================
+
+"header_trailers" = "TRAILERS & PREVIEWS";
+"header_catch_up" = "CATCH UP BEFORE FINALE";
+"header_episodes" = "EPISODES";
+"header_spinoffs" = "SPIN-OFFS";
+"header_trending" = "TRENDING SHOWS";
+"header_ending_soon" = "ENDING SOON";
+"header_premiering_soon" = "PREMIERING SOON";
+"header_currently_airing" = "CURRENTLY AIRING";
+"header_watch_order" = "RECOMMENDED WATCH ORDER";
+"header_universe_premium" = "UNIVERSE — PREMIUM";
+"header_cast_crew" = "CAST & CREW";
+"header_where_to_watch" = "WHERE TO WATCH";
+"header_browse_category" = "Browse by Category";
+
+// =============================================================================
+// MARK: - Time & Countdown Labels
+// =============================================================================
+
+"time_days" = "DAYS";
+"time_day" = "DAY";
+"time_hours" = "HRS";
+"time_hour" = "HR";
+"time_minutes" = "MIN";
+"time_seconds" = "SEC";
+"time_episodes" = "EPISODES";
+"time_episode" = "EPISODE";
+"time_eps_per_day" = "eps/day";
+"time_ep_per_day" = "ep/day";
+"time_days_to_watch" = "%d days to watch";
+"time_start_today" = "Start today";
+"time_start_date" = "Start %@";
+"time_already_started" = "Already started";
+
+// =============================================================================
+// MARK: - Season & Episodes
+// =============================================================================
+
+"season_label" = "SEASON";
+"season_of_episodes" = "%d of %d";
+"season_aired" = "aired";
+"season_watched" = "WATCHED";
+"season_episodes_label" = "Episodes";
+"season_avg_runtime" = "Avg Runtime";
+"season_runtime_minutes" = "%d min";
+"season_left_to_drop" = "%d left to drop";
+"season_main_series" = "MAIN SERIES";
+"season_you_are_here" = "Main series · you are here";
+
+// =============================================================================
+// MARK: - Empty States
+// =============================================================================
+
+"empty_nothing_to_binge" = "Nothing to Binge Yet";
+"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
+"empty_no_shows" = "No shows followed yet";
+"empty_search_to_add" = "Search to add your favorite shows";
+"empty_no_spinoffs" = "No spin-offs yet";
+"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
+"empty_timeline" = "Nothing on the Timeline";
+"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
+"empty_no_results" = "No Results";
+"empty_no_shows_found" = "No shows found";
+
+// =============================================================================
+// MARK: - Settings
+// =============================================================================
+
+"settings_heading" = "Settings";
+"settings_sound" = "Sound";
+"settings_haptics" = "Haptics";
+"settings_notifications" = "Notifications";
+"settings_countdown_mode" = "Countdown";
+"settings_reminders" = "Reminders";
+"settings_cloud_sync" = "Cloud Sync";
+"settings_account" = "Account";
+"settings_get_in_touch" = "Get in touch";
+"settings_privacy_policy" = "Privacy Policy";
+"settings_terms" = "Terms of Use";
+"settings_api_credit" = "API provided by themoviedb.org";
+
+// =============================================================================
+// MARK: - Notifications
+// =============================================================================
+
+"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
+"notification_premiere" = "SEASON PREMIERE";
+"notification_new_episode" = "NEW EPISODE";
+"notification_finale" = "FINALE REMINDER";
+"notification_binge_ready" = "SEASON BINGE-READY";
+"notification_quiet_hours" = "QUIET HOURS";
+"notification_default" = "DEFAULT NOTIFICATIONS";
+"notification_applied_to_all" = "Applied to all new shows";
+
+// =============================================================================
+// MARK: - Premium & Paywall
+// =============================================================================
+
+"premium_unlock" = "UNLOCK";
+"premium_countdown2binge" = "COUNTDOWN2BINGE";
+"premium_heading" = "Premium";
+"premium_unlimited" = "Unlimited Shows";
+"premium_unlimited_desc" = "Track all your favorite series";
+"premium_spinoffs" = "Spinoff Collections";
+"premium_spinoffs_desc" = "Discover related series & universes";
+"premium_notifications" = "Smart Notifications";
+"premium_cloud_sync" = "Cloud Sync";
+"premium_yearly" = "YEARLY";
+"premium_monthly" = "MONTHLY";
+"premium_lifetime" = "LIFETIME";
+"premium_most_popular" = "MOST POPULAR";
+"premium_best_value" = "BEST VALUE";
+"premium_free_limit" = "Free users can follow up to 3 shows";
+
+// =============================================================================
+// MARK: - Onboarding
+// =============================================================================
+
+"onboarding_welcome" = "Welcome to";
+"onboarding_app_name" = "Countdown2Binge";
+"onboarding_tagline" = "Know when it's binge-ready.";
+"onboarding_add_shows" = "Add Your Shows";
+"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
+"onboarding_notifications" = "Stay Updated";
+"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
+"onboarding_complete" = "You're All Set!";
+"onboarding_step_of" = "STEP %d OF %d";
+
+// =============================================================================
+// MARK: - Alerts & Confirmations
+// =============================================================================
+
+"alert_remove_show" = "Remove %@?";
+"alert_remove_message" = "This will remove the show from your followed list.";
+"alert_unfollow" = "Unfollow %@?";
+"alert_error" = "Error";
+"alert_purchase_error" = "Purchase Error";
+
+// =============================================================================
+// MARK: - Show Detail
+// =============================================================================
+
+"show_detail_overview" = "Overview";
+"show_detail_seasons" = "Seasons";
+"show_detail_spinoffs" = "Spin-offs";
+"show_detail_no_overview" = "No overview available.";
+"show_detail_binge_ready_date" = "BINGE READY %@";
+"show_detail_follow_spinoff" = "Follow spin-off";
+
+// =============================================================================
+// MARK: - Spinoff Types
+// =============================================================================
+
+"spinoff_prequel" = "PREQUEL";
+"spinoff_sequel" = "SEQUEL";
+"spinoff_companion" = "COMPANION";
+"spinoff_remake" = "REMAKE";
+"spinoff_spinoff" = "SPIN-OFF";
+"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
+"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
+"spinoff_companion_desc" = "A companion series running alongside the main show.";
+"spinoff_remake_desc" = "A reimagining of the original series.";
+"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
+"spinoff_main_series_desc" = "The original series that started it all.";
+
+// =============================================================================
+// MARK: - Search
+// =============================================================================
+
+"search_placeholder" = "Search shows to binge";
+"search_heading" = "Search";
+"search_see_all" = "SEE ALL";
+"search_try_different" = "Try a different category";
+
+// =============================================================================
+// MARK: - Categories/Genres
+// =============================================================================
+
+"category_drama" = "Drama";
+"category_comedy" = "Comedy";
+"category_action" = "Action & Adventure";
+"category_scifi" = "Sci-Fi & Fantasy";
+"category_crime" = "Crime";
+"category_mystery" = "Mystery";
+"category_animation" = "Animation";
+"category_documentary" = "Documentary";
+"category_reality" = "Reality";
+"category_family" = "Family";
+
+// =============================================================================
+// MARK: - Account & Sync
+// =============================================================================
+
+"account_title" = "Account";
+"account_signed_in_apple" = "Signed in with Apple";
+"account_sync_status" = "Sync Status";
+"account_sync_now" = "Sync Now";
+"account_sign_out" = "Sign Out";
+"account_delete" = "Delete Account";
+"sync_welcome_back" = "Welcome Back!";
+"sync_backed_up" = "Backup Complete";
+"sync_restored_one" = "We restored 1 show from your cloud backup.";
+"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+
+// =============================================================================
+// MARK: - Accessibility Labels
+// =============================================================================
+
+"a11y_show_poster" = "%@ poster";
+"a11y_follow_button" = "Follow %@";
+"a11y_unfollow_button" = "Unfollow %@";
+"a11y_close_button" = "Close";
+"a11y_settings_button" = "Settings";
+"a11y_search_button" = "Search";
+"a11y_play_trailer" = "Play trailer";
+"a11y_episode_watched" = "Episode %d watched";
+"a11y_episode_not_watched" = "Episode %d not watched";
+"a11y_season_progress" = "%d of %d episodes watched";
+"a11y_binge_ready" = "Binge ready";
+"a11y_currently_airing" = "Currently airing";
+"a11y_days_remaining" = "%d days remaining";
+"a11y_swipe_seasons" = "Swipe left or right to change seasons";
+"a11y_double_tap_details" = "Double tap to view details";
+"a11y_double_tap_follow" = "Double tap to follow";

@@ -12,11 +12,11 @@ struct DiscoverTabSwitcher: View {
         HStack(spacing: 0) {
             Button(action: { selectedTab = .soonerLater }) {
                 HStack(spacing: 8) {
-                    Text("SOONER")
+                    Text("discover_sooner")
                         .font(.custom(.oswald.bold, size: 13))
                     Image(systemName: "arrow.right")
                         .font(.system(size: 10, weight: .bold))
-                    Text("LATER")
+                    Text("discover_later")
                         .font(.custom(.oswald.bold, size: 13))
                 }
                 .foregroundColor(selectedTab == .soonerLater ? Color(hex: "#04201c") : .c2bMuted)
@@ -27,7 +27,7 @@ struct DiscoverTabSwitcher: View {
             }
 
             Button(action: { selectedTab = .byNetwork }) {
-                Text("BY NETWORK")
+                Text("discover_by_network")
                     .font(.custom(.oswald.bold, size: 13))
                     .foregroundColor(selectedTab == .byNetwork ? Color(hex: "#04201c") : .c2bMuted)
                     .frame(maxWidth: .infinity)

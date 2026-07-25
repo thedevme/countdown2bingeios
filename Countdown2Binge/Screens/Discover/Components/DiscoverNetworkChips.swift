@@ -16,7 +16,7 @@ struct DiscoverNetworkChips: View {
             HStack(spacing: 10) {
                 // "All networks" chip
                 NetworkChip(
-                    name: "All networks",
+                    name: String(localized: "discover_all_networks"),
                     color: nil,
                     isSelected: selectedNetwork == "all",
                     onTap: { selectedNetwork = "all" }

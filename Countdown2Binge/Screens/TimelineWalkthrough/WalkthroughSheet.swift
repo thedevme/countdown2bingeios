@@ -38,7 +38,7 @@ struct WalkthroughSheet: View {
 
                 // Header
                 HStack {
-                    Text("Quick tour")
+                    Text("walkthrough_quick_tour")
                         .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
                         .foregroundColor(Color(hex: "#2dd4bf"))
                         .textCase(.uppercase)
@@ -47,7 +47,7 @@ struct WalkthroughSheet: View {
                     Spacer()
 
                     Button(action: onClose) {
-                        Text("Skip")
+                        Text("button_skip")
                             .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
                             .foregroundColor(Color(hex: "#71717a"))
                             .textCase(.uppercase)
@@ -62,7 +62,7 @@ struct WalkthroughSheet: View {
                     if step < 0 {
                         // Step -1: Intro
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("YOUR TIMELINE, SORTED FOR YOU.")
+                            Text("walkthrough_title")
                                 .font(.custom(.oswald.bold, size: CustomFont.size.heading))
                                 .textCase(.uppercase)
                                 .tracking(0.26)
@@ -71,7 +71,7 @@ struct WalkthroughSheet: View {
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
 
-                            Text("Every show you follow is grouped into three stages by how close it is to bingeable — and shows move up on their own as time passes. Step through to see where each one lands.")
+                            Text("walkthrough_description")
                                 .font(.system(size: 13.5, weight: .regular, design: .default))
                                 .foregroundColor(Color(hex: "#a1a1aa"))
                                 .lineSpacing(2)
@@ -224,11 +224,11 @@ struct WalkthroughSheet: View {
 
     private var buttonText: String {
         if step < 0 {
-            return "SHOW ME →"
+            return String(localized: "walkthrough_show_me")
         } else if step < totalSteps - 1 {
-            return "NEXT →"
+            return String(localized: "walkthrough_next")
         } else {
-            return "GOT IT — LET'S GO"
+            return String(localized: "walkthrough_got_it")
         }
     }
 }

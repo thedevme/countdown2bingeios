@@ -33,7 +33,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabView(selection: $activeTab) {
-                Tab("Timeline", systemImage: "list.bullet.rectangle", value: "timeline") {
+                Tab("tab_timeline", systemImage: "list.bullet.rectangle", value: "timeline") {
                     TimelineScreen(
                         layout: "expanded",
                         numberStyle: "rotated",
@@ -45,16 +45,16 @@ struct ContentView: View {
                 }
                 .badge(badgeManager.timelineBadge ? 1 : 0)
 
-                Tab("Discover", systemImage: "safari", value: "discover") {
+                Tab("tab_discover", systemImage: "safari", value: "discover") {
                     DiscoverScreen(badgeManager: badgeManager)
                 }
 
-                Tab("Binge Ready", systemImage: "popcorn", value: "binge") {
+                Tab("tab_binge_ready", systemImage: "popcorn", value: "binge") {
                     BingeReadyScreen()
                 }
                 .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
-                Tab("Settings", systemImage: "gearshape", value: "settings") {
+                Tab("tab_settings", systemImage: "gearshape", value: "settings") {
                     SettingsScreen()
                 }
 
@@ -240,14 +240,14 @@ struct SettingsPlaceholder: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                Text("SETTINGS")
+                Text("settings_heading")
                     .font(.custom(.oswald.bold, size: CustomFont.size.heading))
                     .foregroundColor(.c2bText)
                     .textCase(.uppercase)
                     .tracking(0.26)
                     .padding(.top, 52)
 
-                Text("Settings screen coming soon")
+                Text("settings_coming_soon")
                     .font(.system(size: 15, weight: .regular, design: .default))
                     .foregroundColor(.c2bDim)
                     .padding(.top, 20)

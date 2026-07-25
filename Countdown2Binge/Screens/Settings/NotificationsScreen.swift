@@ -46,7 +46,7 @@ struct NotificationsScreen: View {
                             )
                     }
 
-                    Text("NOTIFICATIONS")
+                    Text("header_notifications")
                         .font(.custom(.oswald.bold, size: 22))
                         .tracking(0.44)
                         .foregroundColor(.white)
@@ -63,18 +63,18 @@ struct NotificationsScreen: View {
                             .font(.system(size: 40))
                             .foregroundColor(.c2bMuted)
 
-                        Text("NOTIFICATIONS REQUIRE PREMIUM")
+                        Text("premium_notifications_required")
                             .font(.custom(.oswald.bold, size: 18))
                             .foregroundColor(.white)
 
-                        Text("Upgrade to get notified when seasons are binge-ready, premiere days, and more.")
+                        Text("premium_notifications_subtitle")
                             .font(.system(size: 14))
                             .foregroundColor(.c2bMuted)
                             .multilineTextAlignment(.center)
                             .lineSpacing(2)
 
                         Button(action: { showPaywall = true }) {
-                            Text("UPGRADE TO PREMIUM")
+                            Text("button_upgrade_premium")
                                 .font(.custom(.oswald.bold, size: 16))
                                 .foregroundColor(Color(hex: "#04201c"))
                                 .frame(maxWidth: .infinity)
@@ -93,18 +93,18 @@ struct NotificationsScreen: View {
                     )
                 } else {
                     // Premium users see all notification settings
-                    SettingsGroup(label: "Essentials") {
+                    SettingsGroup(label: String(localized: "settings_group_essentials")) {
                         SettingsRowToggle(
                             icon: "bell.fill",
                             iconColor: .c2bTealBright,
-                            title: "Binge ready",
-                            subtitle: "When a full season finishes releasing",
+                            title: String(localized: "notif_binge_ready_title"),
+                            subtitle: String(localized: "notif_binge_ready_full_subtitle"),
                             isOn: $bingeReady
                         )
 
                         SettingsRowToggle(
-                            title: "Premiere day",
-                            subtitle: "When a followed season premieres",
+                            title: String(localized: "notif_premiere_title"),
+                            subtitle: String(localized: "notif_premiere_full_subtitle"),
                             isLast: true,
                             isOn: $premiere
                         )
@@ -112,7 +112,7 @@ struct NotificationsScreen: View {
 
                     // Advanced Section Header
                     HStack(spacing: 8) {
-                        Text("ADVANCED")
+                        Text("settings_group_advanced")
                             .font(.custom(.jetbrains.regular, size: 9))
                             .tracking(1.44)
                             .foregroundColor(.c2bMuted)
@@ -123,40 +123,40 @@ struct NotificationsScreen: View {
                     // Advanced Group
                     VStack(spacing: 0) {
                         SettingsRowToggle(
-                            title: "Almost there",
-                            subtitle: "Heads-up when a season is 1 episode from done",
+                            title: String(localized: "notif_almost_there_title"),
+                            subtitle: String(localized: "notif_almost_there_subtitle"),
                             isOn: $almostThere
                         )
 
                         SettingsRowCustom(
-                            title: "Countdown lead time",
-                            subtitle: "Remind me before binge-ready day"
+                            title: String(localized: "notif_lead_time_title"),
+                            subtitle: String(localized: "notif_lead_time_subtitle")
                         ) {
                             NotificationLeadPicker(selectedDays: $leadDays, disabled: false)
                         }
 
                         SettingsRowToggle(
-                            title: "Per-show timing",
-                            subtitle: "Set alerts individually on each show",
+                            title: String(localized: "notif_per_show_title"),
+                            subtitle: String(localized: "notif_per_show_subtitle"),
                             isOn: $perShow
                         )
 
                         SettingsRowToggle(
-                            title: "Weekly episode drops",
-                            subtitle: "Notify on every new episode (opt-in)",
+                            title: String(localized: "notif_weekly_drops_title"),
+                            subtitle: String(localized: "notif_weekly_drops_subtitle"),
                             isOn: $weeklyDrop
                         )
 
                         SettingsRowCustom(
-                            title: "Digest",
-                            subtitle: "Roll upcoming shows into one summary"
+                            title: String(localized: "notif_digest_title"),
+                            subtitle: String(localized: "notif_digest_subtitle")
                         ) {
                             NotificationDigestPicker(selectedOption: $digest, disabled: false)
                         }
 
                         SettingsRowToggle(
-                            title: "Quiet hours",
-                            subtitle: "Mute 11pm – 8am",
+                            title: String(localized: "notif_quiet_hours_title"),
+                            subtitle: String(localized: "notif_quiet_hours_subtitle"),
                             isLast: true,
                             isOn: $quietHours
                         )
@@ -170,7 +170,7 @@ struct NotificationsScreen: View {
                     .padding(.bottom, 22)
 
                     // Footer text
-                    Text("You're on Premium — all alerts available.")
+                    Text("premium_all_alerts_available")
                         .font(.system(size: 11.5))
                         .foregroundColor(.c2bMuted)
                         .multilineTextAlignment(.center)

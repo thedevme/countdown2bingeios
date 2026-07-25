@@ -25,11 +25,11 @@ struct SettingsPremiumCTA: View {
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("UNLOCK PREMIUM")
+                    Text("premium_unlock_premium")
                         .font(.custom(.oswald.bold, size: 16))
                         .foregroundColor(.c2bTealBright)
 
-                    Text("Advanced notifications, per-show timing & more")
+                    Text("premium_advanced_features")
                         .font(.system(size: 11.5))
                         .foregroundColor(.c2bDim)
                 }
@@ -77,19 +77,19 @@ struct SettingsPremiumOverlay: View {
                         .foregroundColor(Color(hex: "#04201c"))
                 }
 
-                Text("PREMIUM FEATURE")
+                Text("premium_feature")
                     .font(.custom(.oswald.bold, size: 17))
                     .tracking(0.34)
                     .foregroundColor(.c2bTealBright)
 
-                Text("Fine-tune exactly when and how Countdown2Binge pings you. Unlock with Premium.")
+                Text("premium_feature_description")
                     .font(.system(size: 12))
                     .foregroundColor(.c2bDim)
                     .multilineTextAlignment(.center)
                     .lineSpacing(1.45)
                     .frame(maxWidth: 220)
 
-                Text("START FREE TRIAL")
+                Text("button_start_free_trial")
                     .font(.custom(.jetbrains.bold, size: 10.5))
                     .tracking(1.26)
                     .foregroundColor(Color(hex: "#04201c"))
