@@ -2,284 +2,796 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Thai (th)
 */
 
 // =============================================================================
 // MARK: - Tab Bar
 // =============================================================================
 
-"tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_timeline" = "ไทม์ไลน์";
+"tab_discover" = "ค้นพบ";
+"tab_binge_ready" = "พร้อมดูรวดเดียว";
+"tab_settings" = "ตั้งค่า";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
-"button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
-"button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_follow" = "ติดตาม";
+"button_following" = "กำลังติดตาม";
+"button_cancel" = "ยกเลิก";
+"button_done" = "เสร็จสิ้น";
+"button_close" = "ปิด";
+"button_remove" = "ลบ";
+"button_share" = "แชร์";
+"button_upgrade" = "อัปเกรด";
+"button_restore_purchases" = "กู้คืนการซื้อ";
+"button_start_trial" = "เริ่มทดลองใช้ฟรี 7 วัน";
+"button_purchase_lifetime" = "ซื้อตลอดชีพ";
+"button_mark_watched" = "ทำเครื่องหมายว่าดูแล้ว";
+"button_mark_all_watched" = "ทำเครื่องหมายดูแล้วทั้งหมด";
+"button_clear_season" = "ล้างซีซัน";
+"button_yes" = "ใช่";
+"button_no" = "ไม่";
+"button_skip" = "ข้าม";
+"button_continue" = "ดำเนินการต่อ";
+"button_get_started" = "เริ่มต้นใช้งาน";
+"button_start_binge" = "▸ เริ่มดูรวดเดียว";
+"button_unfollow" = "เลิกติดตาม";
+"button_sign_in_apple" = "ลงชื่อเข้าใช้ด้วย Apple";
+"button_view_timeline" = "ดูไทม์ไลน์ทั้งหมด";
+"button_hide" = "ซ่อน";
+"button_show" = "แสดง";
+"button_upgrade_premium" = "อัปเกรดเป็นพรีเมียม";
+"button_unfollow_show" = "เลิกติดตามซีรีส์";
+"button_completed_show" = "ซีรีส์ที่จบแล้ว";
+"button_archive_show" = "จัดเก็บซีรีส์";
+"button_unarchive" = "ยกเลิกการจัดเก็บ";
+"button_sign_out" = "ออกจากระบบ";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
-"badge_finale" = "FINALE";
-"badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_airing" = "กำลังออกอากาศ";
+"badge_premiering" = "เปิดตัว";
+"badge_binge_ready" = "พร้อมดูรวดเดียว";
+"badge_anticipated" = "รอคอย";
+"badge_cancelled" = "ยกเลิก";
+"badge_watched" = "ดูแล้ว";
+"badge_up_next" = "ถัดไป";
+"badge_finale" = "ตอนจบ";
+"badge_premiere" = "ตอนแรก";
+"badge_new" = "ใหม่";
+"badge_latest_added" = "เพิ่มล่าสุด";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
-"header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
-"header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
-"header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_trailers" = "ตัวอย่างและพรีวิว";
+"header_catch_up" = "ตามดูก่อนตอนจบ";
+"header_episodes" = "ตอน";
+"header_spinoffs" = "ซีรีส์แยก";
+"header_trending" = "ซีรีส์มาแรง";
+"header_ending_soon" = "ใกล้จบเร็วๆ นี้";
+"header_premiering_soon" = "เปิดตัวเร็วๆ นี้";
+"header_currently_airing" = "กำลังออกอากาศ";
+"header_watch_order" = "ลำดับการรับชมที่แนะนำ";
+"header_universe_premium" = "จักรวาล — พรีเมียม";
+"header_cast_crew" = "นักแสดงและทีมงาน";
+"header_where_to_watch" = "ดูได้ที่ไหน";
+"header_browse_category" = "เรียกดูตามหมวดหมู่";
+"header_binge" = "ดูรวดเดียว";
+"header_seasons_progress" = "ซีซันและความคืบหน้าการรับชม";
+"header_your_library" = "คลังของคุณ";
+"header_settings" = "ตั้งค่า";
+"header_notifications" = "การแจ้งเตือน";
+"header_notification_settings" = "ตั้งค่าการแจ้งเตือน";
+"header_anticipated" = "รอคอย";
+"header_discover" = "ค้นพบ";
+"discover_subtitle" = "ใหม่ ล่าสุด และกำลังจะมา · ติดตามก่อนออกอากาศ";
+"discover_sooner" = "เร็วขึ้น";
+"discover_later" = "ช้าลง";
+"discover_by_network" = "ตามช่อง";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
-"time_minutes" = "MIN";
-"time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_days" = "วัน";
+"time_day" = "วัน";
+"time_hours" = "ชม.";
+"time_hour" = "ชม.";
+"time_minutes" = "นาที";
+"time_seconds" = "วินาที";
+"time_episodes" = "ตอน";
+"time_episode" = "ตอน";
+"time_eps_per_day" = "ตอน/วัน";
+"time_ep_per_day" = "ตอน/วัน";
+"time_days_to_watch" = "%d วันที่ต้องดู";
+"time_start_today" = "เริ่มวันนี้";
+"time_start_date" = "เริ่ม %@";
+"time_already_started" = "เริ่มแล้ว";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
-"season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_label" = "ซีซัน";
+"season_of_episodes" = "%d จาก %d";
+"season_aired" = "ออกอากาศแล้ว";
+"season_watched" = "ดูแล้ว";
+"season_episodes_label" = "ตอน";
+"season_avg_runtime" = "ความยาวเฉลี่ย";
+"season_runtime_minutes" = "%d นาที";
+"season_left_to_drop" = "เหลืออีก %d ตอน";
+"season_main_series" = "ซีรีส์หลัก";
+"season_you_are_here" = "ซีรีส์หลัก · คุณอยู่ที่นี่";
+"season_progress" = "%d จาก %d ออกอากาศแล้ว · เหลืออีก %d ตอน";
+
+// Binge Segments
+"segment_active" = "กำลังติดตาม";
+"segment_ended" = "จบแล้ว";
+"segment_archived" = "จัดเก็บแล้ว";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "ยังไม่มีอะไรให้ดูรวดเดียว";
+"empty_when_seasons_finish" = "เมื่อซีซันออกอากาศครบแล้ว\nจะปรากฏที่นี่พร้อมให้รับชม";
+"empty_no_shows" = "ยังไม่ได้ติดตามซีรีส์";
+"empty_search_to_add" = "ค้นหาเพื่อเพิ่มซีรีส์ที่คุณชื่นชอบ";
+"empty_no_spinoffs" = "ยังไม่มีซีรีส์แยก";
+"empty_no_spinoffs_message" = "%@ ยังไม่มีซีรีส์แยกหรือภาคก่อน เราจะเพิ่มที่นี่หากมีการประกาศ";
+"empty_timeline" = "ไม่มีอะไรในไทม์ไลน์";
+"empty_timeline_message" = "ซีรีส์ที่คุณติดตามไม่ได้กำลังออกอากาศ\nหรือเปิดตัวเร็วๆ นี้";
+"empty_no_results" = "ไม่พบผลลัพธ์";
+"empty_no_shows_found" = "ไม่พบซีรีส์";
+"empty_slot" = "ว่าง";
+"empty_no_active_shows" = "ไม่มีซีรีส์ที่กำลังติดตาม";
+"empty_no_ended_shows" = "ไม่มีซีรีส์ที่จบแล้ว";
+"empty_no_archived_shows" = "ไม่มีซีรีส์ที่จัดเก็บ";
+"empty_active_subtitle" = "ซีรีส์ที่คุณกำลังดูอยู่จะปรากฏที่นี่";
+"empty_ended_subtitle" = "ซีรีส์ที่จบแล้วจะปรากฏที่นี่";
+"empty_archived_subtitle" = "ซีรีส์ที่คุณจัดเก็บจะปรากฏที่นี่";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
-"settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_heading" = "ตั้งค่า";
+"settings_sound" = "เสียง";
+"settings_haptics" = "การสั่น";
+"settings_notifications" = "การแจ้งเตือน";
+"settings_countdown_mode" = "นับถอยหลัง";
+"settings_reminders" = "การเตือนความจำ";
+"settings_cloud_sync" = "ซิงค์คลาวด์";
+"settings_account" = "บัญชี";
+"settings_get_in_touch" = "ติดต่อเรา";
+"settings_privacy_policy" = "นโยบายความเป็นส่วนตัว";
+"settings_terms" = "ข้อกำหนดการใช้งาน";
+"settings_api_credit" = "API โดย themoviedb.org";
+"settings_group_alerts" = "การแจ้งเตือน";
+"settings_group_preferences" = "การตั้งค่า";
+"settings_group_account" = "บัญชี";
+"settings_group_developer" = "นักพัฒนา";
+"settings_group_essentials" = "สิ่งจำเป็น";
+"settings_group_advanced" = "ขั้นสูง";
+"settings_alerts_advanced" = "เปิดใช้การแจ้งเตือนขั้นสูง";
+"settings_alerts_basic" = "แจ้งเตือนพร้อมดูรวดเดียวเท่านั้น";
+"settings_streaming_services" = "บริการสตรีมมิ่ง";
+"settings_appearance" = "รูปลักษณ์";
+"settings_dark" = "มืด";
+"settings_manage_account" = "จัดการบัญชี";
+"settings_help_feedback" = "ช่วยเหลือและความคิดเห็น";
+"settings_debug_premium" = "ดีบักพรีเมียม";
+"settings_enabled" = "เปิดใช้งาน";
+"settings_disabled" = "ปิดใช้งาน";
+"settings_reset_onboarding" = "รีเซ็ตการแนะนำ";
+"settings_completed" = "เสร็จสิ้น";
+"settings_not_completed" = "ยังไม่เสร็จสิ้น";
+"settings_reset_walkthrough" = "รีเซ็ตการสอนใช้งาน";
+"settings_seen" = "ดูแล้ว";
+"settings_not_seen" = "ยังไม่ได้ดู";
+"settings_refresh_discover" = "รีเฟรชค้นพบ";
+"settings_refreshing" = "กำลังรีเฟรช...";
+"settings_reload_data" = "โหลดข้อมูลซีรีส์ใหม่";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "ตอนนี้คุณกำลังติดตาม:";
+"notification_premiere" = "เปิดตัวซีซัน";
+"notification_new_episode" = "ตอนใหม่";
+"notification_finale" = "เตือนตอนจบ";
+"notification_binge_ready" = "ซีซันพร้อมดูรวดเดียว";
+"notification_quiet_hours" = "ช่วงเวลาเงียบ";
+"notification_default" = "การแจ้งเตือนเริ่มต้น";
+"notification_applied_to_all" = "ใช้กับซีรีส์ใหม่ทั้งหมด";
+"notif_push_title" = "การแจ้งเตือนพุช";
+"notif_push_subtitle" = "แจ้งเตือนบนอุปกรณ์นี้";
+"notif_premiere_title" = "วันเปิดตัว";
+"notif_premiere_subtitle" = "เมื่อซีซันใหม่เริ่มออกอากาศ";
+"notif_premiere_full_subtitle" = "เมื่อซีซันที่ติดตามเปิดตัว";
+"notif_binge_ready_title" = "พร้อมดูรวดเดียว";
+"notif_binge_ready_subtitle" = "วันที่ซีซันครบทุกตอน";
+"notif_binge_ready_full_subtitle" = "เมื่อซีซันออกอากาศครบ";
+"notif_weekly_title" = "ตอนรายสัปดาห์";
+"notif_weekly_subtitle" = "แจ้งเตือนทุกตอนใหม่";
+"notif_email_title" = "อีเมลสรุป";
+"notif_email_subtitle" = "สรุปรายสัปดาห์ส่งถึงกล่องจดหมาย";
+"notif_remind_early_title" = "เตือนล่วงหน้า";
+"notif_remind_early_subtitle" = "วันก่อนพร้อมดูรวดเดียว";
+"notif_almost_there_title" = "ใกล้แล้ว";
+"notif_almost_there_subtitle" = "แจ้งเตือนเมื่อซีซันเหลืออีก 1 ตอน";
+"notif_lead_time_title" = "เวลานำนับถอยหลัง";
+"notif_lead_time_subtitle" = "เตือนฉันก่อนวันพร้อมดูรวดเดียว";
+"notif_per_show_title" = "เวลาแต่ละซีรีส์";
+"notif_per_show_subtitle" = "ตั้งการแจ้งเตือนแต่ละซีรีส์แยกกัน";
+"notif_weekly_drops_title" = "ตอนใหม่รายสัปดาห์";
+"notif_weekly_drops_subtitle" = "แจ้งเตือนทุกตอนใหม่ (เลือกเปิด)";
+"notif_digest_title" = "สรุป";
+"notif_digest_subtitle" = "รวมซีรีส์ที่กำลังจะมาเป็นสรุปเดียว";
+"notif_quiet_hours_title" = "ช่วงเวลาเงียบ";
+"notif_quiet_hours_subtitle" = "ปิดเสียง 23.00 – 08.00 น.";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "ปลดล็อก";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
-"premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_heading" = "พรีเมียม";
+"premium_unlimited" = "ซีรีส์ไม่จำกัด";
+"premium_unlimited_desc" = "ติดตามซีรีส์ที่คุณชื่นชอบทั้งหมด";
+"premium_spinoffs" = "คอลเลกชันซีรีส์แยก";
+"premium_spinoffs_desc" = "ค้นพบซีรีส์ที่เกี่ยวข้องและจักรวาล";
+"premium_notifications" = "การแจ้งเตือนอัจฉริยะ";
+"premium_cloud_sync" = "ซิงค์คลาวด์";
+"premium_yearly" = "รายปี";
+"premium_monthly" = "รายเดือน";
+"premium_lifetime" = "ตลอดชีพ";
+"premium_most_popular" = "ยอดนิยม";
+"premium_best_value" = "คุ้มค่าที่สุด";
+"premium_free_limit" = "ผู้ใช้ฟรีติดตามได้สูงสุด 3 ซีรีส์";
+"premium_notifications_required" = "การแจ้งเตือนต้องใช้พรีเมียม";
+"premium_notifications_subtitle" = "อัปเกรดเพื่อรับการแจ้งเตือนเมื่อซีซันพร้อมดูรวดเดียว วันเปิดตัว และอื่นๆ";
+"premium_all_alerts_available" = "คุณใช้พรีเมียม — การแจ้งเตือนทั้งหมดพร้อมใช้งาน";
+"premium_trial_legal" = "ทดลองใช้ต่ออัตโนมัติหากไม่ยกเลิกก่อน 24 ชม.";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "ยินดีต้อนรับสู่";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "รู้เมื่อพร้อมดูรวดเดียว";
+"onboarding_add_shows" = "เพิ่มซีรีส์ของคุณ";
+"onboarding_add_shows_desc" = "ค้นหาและติดตามซีรีส์ที่คุณชื่นชอบ";
+"onboarding_notifications" = "อัปเดตอยู่เสมอ";
+"onboarding_notifications_desc" = "รับการแจ้งเตือนเมื่อซีซันพร้อมดูรวดเดียว";
+"onboarding_complete" = "พร้อมแล้ว!";
+"onboarding_step_of" = "ขั้นตอน %d จาก %d";
+
+// Pain slide
+"onboarding_pain_label" = "ปัญหา";
+"onboarding_pain_title" = "เดี๋ยวนะ — ซีรีส์นั้นกลับมาแล้วเหรอ?";
+"onboarding_pain_description" = "คุณรู้ว่าซีซันจบไปหลายสัปดาห์แล้ว หรือซีรีส์ที่ชอบได้รับการต่อแต่ไม่รู้เลย";
+
+// Agitate slide
+"onboarding_agitate_label" = "ทำไมถึงเกิดขึ้น";
+"onboarding_agitate_title" = "ติดตามทุกอย่างเป็นไปไม่ได้";
+"onboarding_agitate_description" = "ซีรีส์ออกอากาศบนแอปต่างๆ ตารางต่างกัน พอคุณนึกขึ้นได้ ตอนจบก็ออกอากาศไปแล้ว";
+
+// Solution slide
+"onboarding_solution_label" = "ทางออก";
+"onboarding_solution_title" = "COUNTDOWN2BINGE แก้ปัญหานี้";
+"onboarding_solution_description" = "ที่เดียวสำหรับติดตามทุกซีรีส์ รับการแจ้งเตือนทันทีเมื่อซีซันจบ — เพื่อให้คุณดูรวดเดียวได้ไม่หยุด";
+
+// Add shows step
+"onboarding_add_shows_label" = "เพิ่มซีรีส์ของคุณ";
+"onboarding_add_shows_title" = "คุณกำลังรออะไรอยู่?";
+"onboarding_add_shows_description" = "ค้นหาและติดตามซีรีส์ที่คุณต้องการดูรวดเดียว เพิ่มได้ไม่จำกัด";
+
+// Review step
+"onboarding_review_title" = "ตรวจสอบการเลือก";
+"onboarding_review_description" = "นี่คือสิ่งที่คุณกำลังติดตาม ลบสิ่งที่เปลี่ยนใจ หรือเพิ่มอีกได้";
+
+// All set step
+"onboarding_all_set_title" = "พร้อมแล้ว";
+"onboarding_following" = "กำลังติดตาม";
+
+// Paywall step
+"onboarding_choose_plan" = "เลือกแผนของคุณ";
+"onboarding_never_miss" = "ไม่พลาดตอนจบอีกต่อไป";
+
+// Buttons
+"button_try_again" = "ลองอีกครั้ง";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "ลบ %@?";
+"alert_remove_message" = "จะลบซีรีส์ออกจากรายการที่ติดตาม";
+"alert_unfollow" = "เลิกติดตาม %@?";
+"alert_error" = "ข้อผิดพลาด";
+"alert_purchase_error" = "ข้อผิดพลาดการซื้อ";
+"alert_purchase_failed" = "การซื้อล้มเหลว";
+"button_ok" = "ตกลง";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
-"show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_overview" = "ภาพรวม";
+"show_detail_seasons" = "ซีซัน";
+"show_detail_spinoffs" = "ซีรีส์แยก";
+"show_detail_no_overview" = "ไม่มีภาพรวม";
+"show_detail_binge_ready_date" = "พร้อมดูรวดเดียว %@";
+"show_detail_follow_spinoff" = "ติดตามซีรีส์แยก";
 
 // =============================================================================
 // MARK: - Spinoff Types
 // =============================================================================
 
-"spinoff_prequel" = "PREQUEL";
-"spinoff_sequel" = "SEQUEL";
-"spinoff_companion" = "COMPANION";
-"spinoff_remake" = "REMAKE";
-"spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel" = "ภาคก่อน";
+"spinoff_sequel" = "ภาคต่อ";
+"spinoff_companion" = "ซีรีส์เสริม";
+"spinoff_remake" = "รีเมค";
+"spinoff_spinoff" = "ซีรีส์แยก";
+"spinoff_prequel_desc" = "ซีรีส์ภาคก่อนที่เกิดขึ้นก่อนเหตุการณ์ในซีรีส์หลัก";
+"spinoff_sequel_desc" = "ภาคต่อที่ดำเนินเรื่องต่อหลังซีรีส์หลัก";
+"spinoff_companion_desc" = "ซีรีส์เสริมที่ออกอากาศควบคู่กับซีรีส์หลัก";
+"spinoff_remake_desc" = "การตีความใหม่ของซีรีส์ต้นฉบับ";
+"spinoff_spinoff_desc" = "ซีรีส์แยกที่สำรวจตัวละครจากซีรีส์หลัก";
+"spinoff_main_series_desc" = "ซีรีส์ต้นฉบับที่เริ่มต้นทุกอย่าง";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "ค้นหาซีรีส์เพื่อดูรวดเดียว";
+"search_heading" = "ค้นหา";
+"search_see_all" = "ดูทั้งหมด";
+"search_try_different" = "ลองหมวดหมู่อื่น";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
-"category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
-"category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
-"category_reality" = "Reality";
-"category_family" = "Family";
+"category_drama" = "ดราม่า";
+"category_comedy" = "ตลก";
+"category_action" = "แอ็คชันและผจญภัย";
+"category_scifi" = "ไซไฟและแฟนตาซี";
+"category_crime" = "อาชญากรรม";
+"category_mystery" = "ลึกลับ";
+"category_animation" = "แอนิเมชัน";
+"category_documentary" = "สารคดี";
+"category_reality" = "เรียลลิตี้";
+"category_family" = "ครอบครัว";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
-"account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_title" = "บัญชี";
+"account_signed_in_apple" = "ลงชื่อเข้าใช้ด้วย Apple";
+"account_sync_status" = "สถานะการซิงค์";
+"account_sync_now" = "ซิงค์ตอนนี้";
+"account_sign_out" = "ออกจากระบบ";
+"account_delete" = "ลบบัญชี";
+"sync_welcome_back" = "ยินดีต้อนรับกลับ!";
+"sync_backed_up" = "สำรองข้อมูลเสร็จสิ้น";
+"sync_restored_one" = "เรากู้คืน 1 ซีรีส์จากข้อมูลสำรองคลาวด์ของคุณ";
+"sync_restored_many" = "เรากู้คืน %lld ซีรีส์จากข้อมูลสำรองคลาวด์ของคุณ";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
-"a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_show_poster" = "โปสเตอร์ %@";
+"a11y_follow_button" = "ติดตาม %@";
+"a11y_unfollow_button" = "เลิกติดตาม %@";
+"a11y_close_button" = "ปิด";
+"a11y_settings_button" = "ตั้งค่า";
+"a11y_search_button" = "ค้นหา";
+"a11y_play_trailer" = "เล่นตัวอย่าง";
+"a11y_episode_watched" = "ตอน %d ดูแล้ว";
+"a11y_episode_not_watched" = "ตอน %d ยังไม่ได้ดู";
+"a11y_season_progress" = "ดูแล้ว %d จาก %d ตอน";
+"a11y_binge_ready" = "พร้อมดูรวดเดียว";
+"a11y_currently_airing" = "กำลังออกอากาศ";
+"a11y_days_remaining" = "เหลืออีก %d วัน";
+"a11y_swipe_seasons" = "ปัดซ้ายหรือขวาเพื่อเปลี่ยนซีซัน";
+"a11y_double_tap_details" = "แตะสองครั้งเพื่อดูรายละเอียด";
+"a11y_double_tap_follow" = "แตะสองครั้งเพื่อติดตาม";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "ติดตาม";
+"stats_upcoming" = "กำลังจะมา";
+"footer_cycle_message" = "ซีรีส์จะวนกลับ\nเมื่อซีซันจบ";
+"label_start" = "เริ่ม";
+"label_eps" = "ตอน";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "ซีซันครบทุกตอน";
+"status_premieres_in_days %lld" = "เปิดตัวใน %lld วัน";
+"status_premieres_date %@" = "เปิดตัว %@";
+"status_ready_to_binge" = "พร้อมดูรวดเดียว";
+"status_until_new_season" = "จนถึงซีซันใหม่";
+"status_until_binge_ready" = "จนกว่าจะพร้อมดูรวดเดียว";
+"status_all_episodes_finished %lld" = "ครบทั้ง %lld ตอน · เพิ่งจบ";
+"status_finale_date %@" = "ตอนจบ %@";
+"status_airing_weekly" = "ออกอากาศรายสัปดาห์";
+"status_premieres_ready %@ %lld" = "เปิดตัว %@ · พร้อมใน ~%lld วัน";
+"status_coming_soon" = "เร็วๆ นี้";
+"status_no_release_date" = "ยังไม่มีวันเผยแพร่";
+
+// Season info
+"season_all_out %lld" = "ครบทั้ง %lld ตอน";
+"season_partial_out %lld %lld" = "%lld/%lld ออกแล้ว";
+"season_episode_count %lld" = "%lld ตอน";
+
+// Pills
+"pill_binge_ready %lld" = "พร้อมดูรวดเดียว · ครบทั้ง %lld ตอน";
+"pill_now_airing %lld %lld" = "กำลังออกอากาศ · %lld/%lld ออกแล้ว";
+"pill_premiering_in %lld" = "เปิดตัวเร็วๆ นี้ · ใน %lld วัน";
+"pill_premiering_soon" = "เปิดตัวเร็วๆ นี้";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "ซีรีส์จบแล้ว";
+"follow_badge_airing" = "กำลังออกอากาศ";
+"follow_badge_premiering" = "เปิดตัวเร็วๆ นี้";
+"follow_stat_binge_ready" = "พร้อมดูรวดเดียว";
+"follow_stat_days_finale" = "วันถึงตอนจบ";
+"follow_stat_days_premiere" = "วันถึงเปิดตัว";
+"follow_stat_no_date" = "ยังไม่มีวัน";
+"follow_line_complete %lld" = "ครบทั้ง %lld ตอนแล้ว — เริ่มดูเมื่อไหร่ก็ได้";
+"follow_line_airing" = "ตอนออกอากาศรายสัปดาห์ เราจะแจ้งคุณวันที่ซีซันจบ";
+"follow_line_premiering" = "เปิดตัวเร็วๆ นี้ เราจะแจ้งคุณเมื่อเริ่มออกอากาศ";
+"follow_line_anticipated" = "ยังไม่มีวันเผยแพร่ เราจะแจ้งคุณทันทีเมื่อประกาศ";
+"follow_added_to_timeline" = "เพิ่มในไทม์ไลน์ของคุณใน";
+"badge_added_to_timeline" = "เพิ่มในไทม์ไลน์";
+
+// Timeline stages
+"timeline_series_complete" = "ซีรีส์จบแล้ว";
+"timeline_now_airing" = "กำลังออกอากาศ";
+"timeline_premiering" = "เปิดตัว";
+"timeline_anticipated" = "รอคอย";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "เกี่ยวกับ";
+"about_genre" = "ประเภท";
+"about_seasons" = "ซีซัน";
+"about_episodes" = "ตอน";
+"about_status" = "สถานะ";
+"about_network" = "ช่อง";
+"about_first_aired" = "ออกอากาศครั้งแรก";
+"about_rating" = "เรตติ้ง";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "ที่เกี่ยวข้อง";
+"header_spinoffs_related" = "ซีรีส์แยกและที่เกี่ยวข้อง";
+"badge_premium" = "พรีเมียม";
+"premium_discover_spinoffs" = "ค้นพบซีรีส์แยกและภาคก่อน";
+"button_unlock_premium" = "ปลดล็อกด้วยพรีเมียม";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "ทัวร์ด่วน";
+"walkthrough_title" = "ไทม์ไลน์ของคุณ จัดเรียงให้";
+"walkthrough_description" = "ทุกซีรีส์ที่คุณติดตามจะถูกจัดกลุ่มเป็นสามระยะตามความใกล้พร้อมดูรวดเดียว — และซีรีส์จะเลื่อนขึ้นเองตามเวลา ดูต่อเพื่อเห็นแต่ละระยะ";
+"walkthrough_show_me" = "แสดงให้ฉันดู →";
+"walkthrough_next" = "ถัดไป →";
+"walkthrough_got_it" = "เข้าใจแล้ว — ไปกันเลย";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "ติดตามซีรีส์";
+"button_show_less" = "แสดงน้อยลง";
+"button_more" = "เพิ่มเติม";
+"button_save" = "บันทึก";
+"button_start_free_trial" = "เริ่มทดลองใช้ฟรี";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "ปลดล็อกพรีเมียม";
+"premium_advanced_features" = "การแจ้งเตือนขั้นสูง เวลาแต่ละซีรีส์ และอื่นๆ";
+"premium_feature" = "ฟีเจอร์พรีเมียม";
+"premium_feature_description" = "ปรับแต่งเวลาและวิธีที่ Countdown2Binge แจ้งเตือนคุณ ปลดล็อกด้วยพรีเมียม";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "กำลังนับถอยหลัง";
+"share_just_binged" = "เพิ่งดูรวดเดียว";
+"share_until_premiere" = "จนถึงเปิดตัว";
+"share_release_pending" = "รอวันเผยแพร่";
+"share_season_complete" = "ซีซันครบ";
+"share_messages" = "ข้อความ";
+"share_instagram" = "Instagram";
+"share_copy_link" = "คัดลอกลิงก์";
+"share_more" = "เพิ่มเติม";
+"share_binged" = "ดูรวดเดียวแล้ว";
+"share_default_countdown" = "ฉันกำลังรอดูเรื่องนี้รวดเดียวตั้งแต่ต้นจนจบ 🍿";
+"share_default_binged %lld" = "เพิ่งดูรวดเดียวครบทั้ง %lld ตอน 🍿✅";
+"share_enter_message" = "ใส่ข้อความของคุณ...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "แผนฟรี";
+"free_shows_max %lld" = "สูงสุด %lld ซีรีส์";
+"free_select" = "เลือก";
+"free_to_remove" = "เพื่อลบ";
+"free_limit_description %lld" = "แผนฟรีติดตามได้สูงสุด %lld ซีรีส์ แตะซีรีส์ที่ต้องการลบ แล้วยืนยัน — ไม่มีอะไรถูกลบจนกว่าคุณจะยืนยัน หรืออัปเกรดเป็นพรีเมียมเพื่อไม่จำกัด";
+"free_go_premium_keep %lld" = "◆ เป็นพรีเมียม — เก็บทั้ง %lld ซีรีส์";
+"free_continue_free" = "ดำเนินการต่อแบบฟรี";
+"free_select_to_remove %lld" = "เลือก %lld เพื่อลบ";
+"free_select_more %lld" = "เลือกอีก %lld";
+"free_remove_selected %lld" = "ลบ %lld ที่เลือก";
+"free_marked_to_remove" = "ทำเครื่องหมายเพื่อลบ · แตะเพื่อเก็บ";
+"free_marked_remove" = "ทำเครื่องหมายเพื่อลบ";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "พร้อมแล้ว";
+"downgrade_remove" = "ลบ";
+"downgrade_to_continue" = "เพื่อดำเนินการต่อ";
+"downgrade_at_limit" = "ซีรีส์ของคุณอยู่ในขีดจำกัดแผนฟรี แตะดำเนินการต่อเพื่อไปต่อ";
+"downgrade_over_limit %lld" = "การสมัครพรีเมียมของคุณหมดอายุแล้ว บัญชีฟรีติดตามได้สูงสุด %lld ซีรีส์ เลือกซีรีส์เพื่อลบ แล้วยืนยัน";
+"downgrade_resubscribe %lld" = "สมัครใหม่เพื่อเก็บทั้ง %lld ซีรีส์";
+"downgrade_followed %@" = "ติดตามเมื่อ %@";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "ไทม์ไลน์ทั้งหมด";
+"timeline_shows_tracked %lld" = "ติดตาม %lld ซีรีส์";
+"timeline_now_playing" = "กำลังเล่น";
+"timeline_finale_countdown" = "นับถอยหลังตอนจบ";
+"timeline_upcoming_seasons" = "ซีซันที่กำลังจะมา";
+"timeline_waiting_dates" = "รอวันเผยแพร่";
+"timeline_to_finale" = "ถึงตอนจบ";
+"timeline_to_premiere" = "ถึงเปิดตัว";
+"timeline_tbd" = "รอประกาศ";
+"timeline_expected" = "คาดว่า";
+"timeline_release" = "เผยแพร่";
+"timeline_season %lld" = "ซีซัน %lld";
+"timeline_tba" = "ประกาศภายหลัง";
+"network_show_count %lld" = "%lld ซีรีส์";
+
+// Additional UI strings
+"timeline_your_shows" = "ซีรีส์ของคุณ";
+"timeline_countdown_finale" = "นับถอยหลังถึงตอนจบ";
+"detail_to_binge" = "พร้อมดูรวดเดียว";
+"detail_current" = "ปัจจุบัน";
+"episode_watched" = "ดูแล้ว";
+"episode_not_aired" = "ยังไม่ออกอากาศ";
+"status_now" = "ตอนนี้";
+"status_season_ended" = "ซีซันจบแล้ว";
+"paywall_best" = "ดีที่สุด";
+"poster_placeholder" = "โปสเตอร์";
+
+// Additional missing strings
+"season_number %lld" = "ซีซัน %lld";
+"season_episode_info %lld %lld" = "ซีซัน %lld · %lld ตอน";
+"episode_number %lld" = "ตอน %lld";
+"episode_short %lld" = "ตอน %lld · 45 นาที";
+"today_date %@" = "วันนี้ · %@";
+"last_updated %@" = "อัปเดตล่าสุด: %@";
+"no_episodes_available" = "ไม่มีตอนที่พร้อมใช้งาน";
+"link_terms" = "ข้อกำหนด";
+"link_privacy" = "ความเป็นส่วนตัว";
+"link_restore" = "กู้คืน";
+"paywall_tracking_shows %lld" = "คุณกำลังติดตาม %lld ซีรีส์ เป็นโปรเพื่อรับการแจ้งเตือนทันทีเมื่อซีซันพร้อมดูรวดเดียว";
+"settings_coming_soon" = "เร็วๆ นี้";
+"binge_watched_count %lld %lld" = "ดูแล้ว %lld/%lld";
+"binge_complete_suffix" = " · ครบแล้ว";
+"binge_current_suffix" = " · ปัจจุบัน";
+"binge_seasons_count %lld" = "%lld ซีซัน";
+"binge_status_complete" = "ครบแล้ว";
+"binge_status_current %lld %lld" = "ปัจจุบัน · ดูแล้ว %lld/%lld";
+"unfollow_show" = "เลิกติดตามซีรีส์";
+"tap_episode_details" = "แตะตอนเพื่อดูรายละเอียด";
+"countdown_in" = "ใน";
+"view_on_timeline" = "ดูในไทม์ไลน์ของฉัน →";
+"timeline_binge_ready_in %lld" = "ในไทม์ไลน์ของคุณ · พร้อมดูรวดเดียวใน ~%lld วัน";
+"timeline_waiting_anticipated" = "กำลังติดตาม · รอในรายการรอคอย";
+"notif_binge_ready_alert" = "แจ้งเตือนพร้อมดูรวดเดียว";
+"notif_ping_when_out" = "แจ้งฉันวันที่ออกครบ";
+"premieres_date %@" = "เปิดตัว %@";
+"binge_ready_when_airs" = "ซีซันทั้งหมดพร้อมดูรวดเดียวทันทีเมื่อตอนนี้ออกอากาศ";
+"watch_on %@" = "ดูที่ %@";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "เพิ่ม %lld ซีรีส์แล้ว เราจะติดตามทุกซีซันและแจ้งคุณทันทีเมื่อพร้อมดูรวดเดียว";
+"hero_more_count %lld" = "+%lld อีก";
+"onboarding_shows_count %lld" = "%lld ซีรีส์";
+"discover_upcoming_count %lld" = "%lld กำลังจะมา";
+"stats_tracked" = "ติดตาม";
+"stats_upcoming" = "กำลังจะมา";
+
+// Season status badges
+"season_status_new" = "ใหม่";
+"season_status_airing" = "ออกอากาศ";
+"season_status_ready" = "พร้อม";
+
+// Spinoffs tabs
+"tab_episodes" = "ตอน";
+"tab_spinoffs" = "ซีรีส์แยก";
+
+// Show status
+"show_status_returning" = "กลับมา";
+"show_status_ended" = "จบแล้ว";
+"show_status_canceled" = "ยกเลิก";
+"show_status_in_production" = "กำลังผลิต";
+"show_status_planned" = "วางแผนแล้ว";
+"show_status_pilot" = "ตอนนำร่อง";
+
+// Timeline phases
+"phase_anticipated" = "รอคอย";
+"phase_premiering_soon" = "เปิดตัวเร็วๆ นี้";
+"phase_now_airing" = "กำลังออกอากาศ";
+"phase_binge_ready" = "พร้อมดูรวดเดียว";
+"phase_unknown" = "ไม่ทราบ";
+"phase_ready_to_binge" = "พร้อมดูรวดเดียว";
+"phase_binge_ready_in" = "พร้อมดูรวดเดียวใน";
+
+// Countdown display mode
+"countdown_mode_days" = "วัน";
+"countdown_mode_episodes" = "ตอน";
+
+// Follow hints
+"follow_hint_airing %lld" = "ติดตามและเราจะรอครบทั้ง %lld ตอน แล้วแจ้งคุณวันที่พร้อมดูรวดเดียว";
+"follow_hint_anticipated" = "ติดตามและเราจะเพิ่มไว้ในรายการรอคอย — นับถอยหลังทันทีเมื่อประกาศวัน";
+
+// Episode status
+"episode_status_aired" = "ออกอากาศแล้ว";
+"episode_status_up_next" = "ถัดไป";
+"episode_status_not_aired" = "ยังไม่ออกอากาศ";
+"episode_status_finale" = "ตอนจบ";
+
+// Rewatch
+"rewatch_single_season %lld" = "ดูซ้ำ ซ.%lld";
+"rewatch_season_range %lld %lld" = "ดูซ้ำ ซ.%lld–ซ.%lld";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "ติดตามเพื่อดูความคืบหน้า · พร้อมดูรวดเดียวใน ~%lld วัน";
+"follow_prompt_no_date" = "ติดตามเพื่อดูความคืบหน้า · ยังไม่มีวันเผยแพร่";
+
+// Episode actions
+"button_clear" = "ล้าง";
+"button_mark_all_watched" = "ทำเครื่องหมายดูแล้วทั้งหมด";
+"button_mark_aired_watched" = "ทำเครื่องหมายที่ออกอากาศว่าดูแล้ว";
+
+// Episode status text
+"status_complete_rewatch" = "ครบแล้ว — พร้อมดูซ้ำ";
+"status_full_season_available" = "ซีซันครบทุกตอน";
+"status_no_episodes_yet" = "ยังไม่มีตอนออกอากาศ";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ ในไทม์ไลน์ของคุณ · พร้อมดูรวดเดียวใน ~%lld วัน";
+"following_waiting_anticipated" = "✓ กำลังติดตาม · รอในรายการรอคอย";
+"status_partial_aired %lld %lld" = "%lld จาก %lld ออกอากาศแล้ว · ที่เหลือออกรายสัปดาห์";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ ยังไม่ได้ติดตาม";
+"plan_season_episodes %@ %lld" = "%@ · %lld ตอน";
+"episode_count_short %lld" = "%lld ตอน";
+"episode_placeholder %lld" = "ตอน %lld";
+"episode_in_days %lld" = " · ใน %lld วัน";
+"episode_label_short %lld" = "ตอน %lld";
+"episode_label_finale" = "ตอนจบ";
+"episode_label_aired" = "ออกอากาศแล้ว";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "ไม่สามารถโหลดซีรีส์ได้ กรุณาลองอีกครั้ง";
+"error_load_trending" = "ไม่สามารถโหลดซีรีส์มาแรง";
+"error_invalid_url" = "URL ไม่ถูกต้อง";
+"error_network %@" = "ข้อผิดพลาดเครือข่าย: %@";
+"error_decode %@" = "ไม่สามารถถอดรหัสการตอบกลับ: %@";
+"error_no_data" = "ไม่ได้รับข้อมูล";
+"error_http %lld" = "ข้อผิดพลาด HTTP: %lld";
+"error_no_purchases" = "ไม่พบการซื้อก่อนหน้าที่จะกู้คืน";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "ครบทุกตอน";
+"subtext_left_to_release %lld" = "เหลืออีก %lld ตอน";
+"subtext_season_complete" = "ซีซันครบ";
+"subtext_of_season_released" = "ของซีซันออกอากาศแล้ว";
+"subtext_episodes_ready %lld %@" = "%lld ตอน · %@";
+"subtext_all_out" = "ครบทั้งหมด";
+"subtext_no_date_yet" = "ยังไม่มีวัน";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "พรีเมียม · ทดลองใช้ฟรี";
+"account_free_plan" = "แผนฟรี";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "ออกอากาศแล้ว";
+"legend_up_next" = "ถัดไป";
+"legend_not_yet_aired" = "ยังไม่ออกอากาศ";
+"legend_finale" = "ตอนจบ";
+"legend_start_today" = "เริ่มวันนี้";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "ทุกช่อง";
+"season_abbrev" = "ซ.";
+"days_abbrev" = "ว.";
+"time_days_short %lld" = "%lld ว.";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "ซีรีส์ที่กำลังออกตอนใหม่ทุกสัปดาห์ ซีรีส์ที่ใกล้ตอนจบที่สุดจะอยู่บนสุด — นั่นคือสิ่งที่คุณจะได้ดูรวดเดียวต่อไป";
+"walkthrough_airing_note" = "เมื่อตอนจบออกอากาศ ซีรีส์จะลงไปที่พร้อมดูรวดเดียว และซีรีส์ถัดไปจะขึ้นมาบนสุด";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "ซีรีส์ที่มีวันเปิดตัวแน่นอน นับถอยหลังทุกวันจนถึงซีซันใหม่เริ่มออกอากาศ";
+"walkthrough_premiering_note" = "เมื่อซีซันเปิดตัว จะย้ายขึ้นไปที่กำลังออกอากาศ";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "ซีรีส์ที่ต่อแล้วแต่ยังไม่มีวันเผยแพร่ รออยู่ด้านล่างเพื่อให้คุณไม่หลุดติดตาม";
+"walkthrough_anticipated_note" = "เมื่อประกาศวัน จะกระโดดขึ้นไปที่เปิดตัวเร็วๆ นี้และเริ่มนับถอยหลัง";
+
+// Transitions
+"walkthrough_date_set_hint" = "The Bear เพิ่งได้วันเปิดตัว ย้ายขึ้นจากรอคอยไปที่เปิดตัวเร็วๆ นี้และเริ่มนับถอยหลัง";
+"walkthrough_date_set_note" = "รอคอย → เปิดตัวเร็วๆ นี้";
+"walkthrough_premieres_hint" = "Shogun เพิ่งเปิดตัว ขึ้นไปที่กำลังออกอากาศและเข้าร่วมขณะตอนใหม่ออกทุกสัปดาห์";
+"walkthrough_premieres_note" = "เปิดตัวเร็วๆ นี้ → กำลังออกอากาศ";
+"walkthrough_finale_hint" = "ตอนจบของ The Last of Us ออกอากาศแล้ว — ซีซันครบพร้อมดูรวดเดียว ซีซันต่อไปจะวนกลับไปที่รอคอยจนกว่าจะประกาศวันใหม่";
+"walkthrough_finale_note" = "กำลังออกอากาศ → พร้อมดูรวดเดียว → ซีซันต่อไปไปรอคอย";
+"walkthrough_label_date_set" = "ได้วันแล้ว";
+"walkthrough_label_premieres" = "เปิดตัว";
+"walkthrough_label_finale" = "ตอนจบออกอากาศ";

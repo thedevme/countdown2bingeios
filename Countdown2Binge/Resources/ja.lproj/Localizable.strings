@@ -2,284 +2,796 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Japanese (日本語)
 */
 
 // =============================================================================
 // MARK: - Tab Bar
 // =============================================================================
 
-"tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_timeline" = "タイムライン";
+"tab_discover" = "見つける";
+"tab_binge_ready" = "一気見OK";
+"tab_settings" = "設定";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
-"button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
-"button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_follow" = "フォロー";
+"button_following" = "フォロー中";
+"button_cancel" = "キャンセル";
+"button_done" = "完了";
+"button_close" = "閉じる";
+"button_remove" = "削除";
+"button_share" = "共有";
+"button_upgrade" = "アップグレード";
+"button_restore_purchases" = "購入を復元";
+"button_start_trial" = "7日間無料トライアルを開始";
+"button_purchase_lifetime" = "永久版を購入";
+"button_mark_watched" = "視聴済みにする";
+"button_mark_all_watched" = "すべて視聴済みにする";
+"button_clear_season" = "シーズンをクリア";
+"button_yes" = "はい";
+"button_no" = "いいえ";
+"button_skip" = "スキップ";
+"button_continue" = "続ける";
+"button_get_started" = "始める";
+"button_start_binge" = "▸ 一気見を開始";
+"button_unfollow" = "フォロー解除";
+"button_sign_in_apple" = "Appleでサインイン";
+"button_view_timeline" = "タイムライン全体を見る";
+"button_hide" = "隠す";
+"button_show" = "表示";
+"button_upgrade_premium" = "プレミアムにアップグレード";
+"button_unfollow_show" = "番組のフォローを解除";
+"button_completed_show" = "視聴完了";
+"button_archive_show" = "番組をアーカイブ";
+"button_unarchive" = "アーカイブ解除";
+"button_sign_out" = "サインアウト";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
-"badge_finale" = "FINALE";
-"badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_airing" = "放送中";
+"badge_premiering" = "初回放送";
+"badge_binge_ready" = "一気見OK";
+"badge_anticipated" = "注目";
+"badge_cancelled" = "打ち切り";
+"badge_watched" = "視聴済み";
+"badge_up_next" = "次に視聴";
+"badge_finale" = "最終回";
+"badge_premiere" = "初回";
+"badge_new" = "新着";
+"badge_latest_added" = "最近追加";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
-"header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
-"header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
-"header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_trailers" = "予告編＆プレビュー";
+"header_catch_up" = "最終回前に追いつこう";
+"header_episodes" = "エピソード";
+"header_spinoffs" = "スピンオフ";
+"header_trending" = "人気の番組";
+"header_ending_soon" = "まもなく終了";
+"header_premiering_soon" = "まもなく初回放送";
+"header_currently_airing" = "現在放送中";
+"header_watch_order" = "おすすめ視聴順";
+"header_universe_premium" = "ユニバース — プレミアム";
+"header_cast_crew" = "キャスト＆スタッフ";
+"header_where_to_watch" = "視聴方法";
+"header_browse_category" = "カテゴリで探す";
+"header_binge" = "一気見";
+"header_seasons_progress" = "シーズン＆視聴進捗";
+"header_your_library" = "あなたのライブラリ";
+"header_settings" = "設定";
+"header_notifications" = "通知";
+"header_notification_settings" = "通知設定";
+"header_anticipated" = "注目";
+"header_discover" = "見つける";
+"discover_subtitle" = "新作・最新・近日公開 · 配信前にフォロー";
+"discover_sooner" = "もうすぐ";
+"discover_later" = "もう少し先";
+"discover_by_network" = "ネットワーク別";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
-"time_minutes" = "MIN";
-"time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_days" = "日";
+"time_day" = "日";
+"time_hours" = "時間";
+"time_hour" = "時間";
+"time_minutes" = "分";
+"time_seconds" = "秒";
+"time_episodes" = "エピソード";
+"time_episode" = "エピソード";
+"time_eps_per_day" = "話/日";
+"time_ep_per_day" = "話/日";
+"time_days_to_watch" = "視聴まで%d日";
+"time_start_today" = "今日から開始";
+"time_start_date" = "%@から開始";
+"time_already_started" = "すでに開始済み";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
-"season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_label" = "シーズン";
+"season_of_episodes" = "%d/%d";
+"season_aired" = "放送済み";
+"season_watched" = "視聴済み";
+"season_episodes_label" = "エピソード";
+"season_avg_runtime" = "平均時間";
+"season_runtime_minutes" = "%d分";
+"season_left_to_drop" = "残り%d話配信予定";
+"season_main_series" = "メインシリーズ";
+"season_you_are_here" = "メインシリーズ · 現在地";
+"season_progress" = "%d/%d放送済み · 残り%d話";
+
+// Binge Segments
+"segment_active" = "視聴中";
+"segment_ended" = "終了";
+"segment_archived" = "アーカイブ";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "一気見できる番組がありません";
+"empty_when_seasons_finish" = "シーズンの放送が終わると、\nここに視聴可能として表示されます";
+"empty_no_shows" = "フォロー中の番組がありません";
+"empty_search_to_add" = "検索してお気に入りの番組を追加";
+"empty_no_spinoffs" = "スピンオフはまだありません";
+"empty_no_spinoffs_message" = "%@にはスピンオフや前日譚がありません。発表され次第、ここに追加します。";
+"empty_timeline" = "タイムラインに何もありません";
+"empty_timeline_message" = "フォロー中の番組は現在\n放送中または近日放送予定ではありません";
+"empty_no_results" = "結果がありません";
+"empty_no_shows_found" = "番組が見つかりません";
+"empty_slot" = "空";
+"empty_no_active_shows" = "視聴中の番組はありません";
+"empty_no_ended_shows" = "終了した番組はありません";
+"empty_no_archived_shows" = "アーカイブした番組はありません";
+"empty_active_subtitle" = "現在視聴中の番組がここに表示されます";
+"empty_ended_subtitle" = "終了した番組がここに表示されます";
+"empty_archived_subtitle" = "アーカイブした番組がここに表示されます";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
-"settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_heading" = "設定";
+"settings_sound" = "サウンド";
+"settings_haptics" = "触覚フィードバック";
+"settings_notifications" = "通知";
+"settings_countdown_mode" = "カウントダウン";
+"settings_reminders" = "リマインダー";
+"settings_cloud_sync" = "クラウド同期";
+"settings_account" = "アカウント";
+"settings_get_in_touch" = "お問い合わせ";
+"settings_privacy_policy" = "プライバシーポリシー";
+"settings_terms" = "利用規約";
+"settings_api_credit" = "APIはthemoviedb.orgより提供";
+"settings_group_alerts" = "アラート";
+"settings_group_preferences" = "設定";
+"settings_group_account" = "アカウント";
+"settings_group_developer" = "開発者";
+"settings_group_essentials" = "基本設定";
+"settings_group_advanced" = "詳細設定";
+"settings_alerts_advanced" = "詳細アラート有効";
+"settings_alerts_basic" = "一気見OKアラートのみ";
+"settings_streaming_services" = "配信サービス";
+"settings_appearance" = "外観";
+"settings_dark" = "ダーク";
+"settings_manage_account" = "アカウント管理";
+"settings_help_feedback" = "ヘルプ＆フィードバック";
+"settings_debug_premium" = "プレミアムデバッグ";
+"settings_enabled" = "有効";
+"settings_disabled" = "無効";
+"settings_reset_onboarding" = "オンボーディングをリセット";
+"settings_completed" = "完了";
+"settings_not_completed" = "未完了";
+"settings_reset_walkthrough" = "ウォークスルーをリセット";
+"settings_seen" = "表示済み";
+"settings_not_seen" = "未表示";
+"settings_refresh_discover" = "「見つける」を更新";
+"settings_refreshing" = "更新中...";
+"settings_reload_data" = "番組データを再読み込み";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "フォローを開始しました：";
+"notification_premiere" = "シーズン初回";
+"notification_new_episode" = "新しいエピソード";
+"notification_finale" = "最終回リマインダー";
+"notification_binge_ready" = "シーズン一気見OK";
+"notification_quiet_hours" = "おやすみ時間";
+"notification_default" = "デフォルト通知";
+"notification_applied_to_all" = "すべての新しい番組に適用";
+"notif_push_title" = "プッシュ通知";
+"notif_push_subtitle" = "このデバイスへのアラート";
+"notif_premiere_title" = "初回放送日";
+"notif_premiere_subtitle" = "新シーズンの放送開始時";
+"notif_premiere_full_subtitle" = "フォロー中のシーズンが初回放送される時";
+"notif_binge_ready_title" = "一気見OK";
+"notif_binge_ready_subtitle" = "シーズン全話配信日";
+"notif_binge_ready_full_subtitle" = "シーズン全話の配信が完了した時";
+"notif_weekly_title" = "毎週のエピソード";
+"notif_weekly_subtitle" = "新エピソードごとに通知";
+"notif_email_title" = "メールダイジェスト";
+"notif_email_subtitle" = "週間まとめをメールで";
+"notif_remind_early_title" = "事前リマインド";
+"notif_remind_early_subtitle" = "一気見OK前の日数";
+"notif_almost_there_title" = "もうすぐ";
+"notif_almost_there_subtitle" = "シーズン完結まであと1話の時に通知";
+"notif_lead_time_title" = "カウントダウン事前通知";
+"notif_lead_time_subtitle" = "一気見OK日の前にリマインド";
+"notif_per_show_title" = "番組ごとのタイミング";
+"notif_per_show_subtitle" = "各番組で個別にアラートを設定";
+"notif_weekly_drops_title" = "毎週のエピソード配信";
+"notif_weekly_drops_subtitle" = "新エピソードごとに通知（オプトイン）";
+"notif_digest_title" = "ダイジェスト";
+"notif_digest_subtitle" = "今後の番組を1つのまとめに";
+"notif_quiet_hours_title" = "おやすみ時間";
+"notif_quiet_hours_subtitle" = "23時〜8時は通知オフ";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "解除";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
-"premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_heading" = "プレミアム";
+"premium_unlimited" = "番組数無制限";
+"premium_unlimited_desc" = "お気に入りのシリーズをすべて追跡";
+"premium_spinoffs" = "スピンオフコレクション";
+"premium_spinoffs_desc" = "関連シリーズ＆ユニバースを発見";
+"premium_notifications" = "スマート通知";
+"premium_cloud_sync" = "クラウド同期";
+"premium_yearly" = "年間";
+"premium_monthly" = "月間";
+"premium_lifetime" = "永久";
+"premium_most_popular" = "最も人気";
+"premium_best_value" = "最もお得";
+"premium_free_limit" = "無料ユーザーは最大3番組までフォロー可能";
+"premium_notifications_required" = "通知にはプレミアムが必要";
+"premium_notifications_subtitle" = "アップグレードすると、一気見OK、初回放送日などの通知を受け取れます。";
+"premium_all_alerts_available" = "プレミアム利用中 — すべてのアラートが利用可能です。";
+"premium_trial_legal" = "トライアルは終了24時間前までにキャンセルしないと自動更新されます。";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "ようこそ";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "一気見OKになったら教えます。";
+"onboarding_add_shows" = "番組を追加";
+"onboarding_add_shows_desc" = "お気に入りのテレビ番組を検索してフォロー";
+"onboarding_notifications" = "最新情報を入手";
+"onboarding_notifications_desc" = "シーズンが一気見OKになったら通知";
+"onboarding_complete" = "準備完了！";
+"onboarding_step_of" = "ステップ %d / %d";
+
+// Pain slide
+"onboarding_pain_label" = "問題";
+"onboarding_pain_title" = "え、あの番組戻ってきてたの？";
+"onboarding_pain_description" = "シーズンが何週間も前に終わっていたことに気づく。またはお気に入りの番組が更新されていたのに全く知らなかった。";
+
+// Agitate slide
+"onboarding_agitate_label" = "なぜ起こるのか";
+"onboarding_agitate_title" = "追跡するのは不可能。";
+"onboarding_agitate_description" = "番組は異なるアプリで、異なるスケジュールで配信される。思い出した頃には、最終回はとっくに放送済み。";
+
+// Solution slide
+"onboarding_solution_label" = "解決策";
+"onboarding_solution_title" = "COUNTDOWN2BINGEが解決します。";
+"onboarding_solution_description" = "すべての番組を一箇所で追跡。シーズンが終わった瞬間に通知 — 止まらずに一気見できます。";
+
+// Add shows step
+"onboarding_add_shows_label" = "番組を追加";
+"onboarding_add_shows_title" = "何を待っていますか？";
+"onboarding_add_shows_description" = "一気見したい番組を検索してフォロー。好きなだけ追加できます。";
+
+// Review step
+"onboarding_review_title" = "選択を確認";
+"onboarding_review_description" = "追跡中の番組です。気が変わったものは削除するか、さらに追加してください。";
+
+// All set step
+"onboarding_all_set_title" = "準備完了。";
+"onboarding_following" = "フォロー中";
+
+// Paywall step
+"onboarding_choose_plan" = "プランを選択";
+"onboarding_never_miss" = "最終回を見逃さない。";
+
+// Buttons
+"button_try_again" = "再試行";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "%@を削除しますか？";
+"alert_remove_message" = "この番組をフォローリストから削除します。";
+"alert_unfollow" = "%@のフォローを解除しますか？";
+"alert_error" = "エラー";
+"alert_purchase_error" = "購入エラー";
+"alert_purchase_failed" = "購入に失敗しました";
+"button_ok" = "OK";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
-"show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_overview" = "概要";
+"show_detail_seasons" = "シーズン";
+"show_detail_spinoffs" = "スピンオフ";
+"show_detail_no_overview" = "概要がありません。";
+"show_detail_binge_ready_date" = "一気見OK %@";
+"show_detail_follow_spinoff" = "スピンオフをフォロー";
 
 // =============================================================================
 // MARK: - Spinoff Types
 // =============================================================================
 
-"spinoff_prequel" = "PREQUEL";
-"spinoff_sequel" = "SEQUEL";
-"spinoff_companion" = "COMPANION";
-"spinoff_remake" = "REMAKE";
-"spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel" = "前日譚";
+"spinoff_sequel" = "続編";
+"spinoff_companion" = "コンパニオン";
+"spinoff_remake" = "リメイク";
+"spinoff_spinoff" = "スピンオフ";
+"spinoff_prequel_desc" = "メインシリーズの出来事より前を描いた前日譚シリーズ。";
+"spinoff_sequel_desc" = "メインシリーズ後のストーリーを続ける続編。";
+"spinoff_companion_desc" = "メインシリーズと並行して展開するコンパニオンシリーズ。";
+"spinoff_remake_desc" = "オリジナルシリーズの再創造。";
+"spinoff_spinoff_desc" = "メインシリーズのキャラクターを掘り下げるスピンオフ。";
+"spinoff_main_series_desc" = "すべての始まりとなったオリジナルシリーズ。";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "一気見する番組を検索";
+"search_heading" = "検索";
+"search_see_all" = "すべて見る";
+"search_try_different" = "別のカテゴリを試す";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
-"category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
-"category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
-"category_reality" = "Reality";
-"category_family" = "Family";
+"category_drama" = "ドラマ";
+"category_comedy" = "コメディ";
+"category_action" = "アクション＆アドベンチャー";
+"category_scifi" = "SF＆ファンタジー";
+"category_crime" = "犯罪";
+"category_mystery" = "ミステリー";
+"category_animation" = "アニメーション";
+"category_documentary" = "ドキュメンタリー";
+"category_reality" = "リアリティ";
+"category_family" = "ファミリー";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
-"account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_title" = "アカウント";
+"account_signed_in_apple" = "Appleでサインイン済み";
+"account_sync_status" = "同期状況";
+"account_sync_now" = "今すぐ同期";
+"account_sign_out" = "サインアウト";
+"account_delete" = "アカウント削除";
+"sync_welcome_back" = "おかえりなさい！";
+"sync_backed_up" = "バックアップ完了";
+"sync_restored_one" = "クラウドバックアップから1番組を復元しました。";
+"sync_restored_many" = "クラウドバックアップから%lld番組を復元しました。";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
-"a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_show_poster" = "%@のポスター";
+"a11y_follow_button" = "%@をフォロー";
+"a11y_unfollow_button" = "%@のフォローを解除";
+"a11y_close_button" = "閉じる";
+"a11y_settings_button" = "設定";
+"a11y_search_button" = "検索";
+"a11y_play_trailer" = "予告編を再生";
+"a11y_episode_watched" = "エピソード%d視聴済み";
+"a11y_episode_not_watched" = "エピソード%d未視聴";
+"a11y_season_progress" = "%d/%dエピソード視聴済み";
+"a11y_binge_ready" = "一気見OK";
+"a11y_currently_airing" = "現在放送中";
+"a11y_days_remaining" = "残り%d日";
+"a11y_swipe_seasons" = "左右にスワイプしてシーズンを変更";
+"a11y_double_tap_details" = "ダブルタップで詳細を表示";
+"a11y_double_tap_follow" = "ダブルタップでフォロー";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "追跡中";
+"stats_upcoming" = "近日公開";
+"footer_cycle_message" = "シーズンが終わると\n番組は循環します";
+"label_start" = "開始";
+"label_eps" = "話";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "シーズン全話配信中";
+"status_premieres_in_days %lld" = "%lld日後に初回放送";
+"status_premieres_date %@" = "%@に初回放送";
+"status_ready_to_binge" = "一気見OK";
+"status_until_new_season" = "新シーズンまで";
+"status_until_binge_ready" = "一気見OKまで";
+"status_all_episodes_finished %lld" = "全%lld話配信完了 · 完結したばかり";
+"status_finale_date %@" = "最終回 %@";
+"status_airing_weekly" = "毎週放送中";
+"status_premieres_ready %@ %lld" = "%@初回放送 · 約%lld日後一気見OK";
+"status_coming_soon" = "近日公開";
+"status_no_release_date" = "配信日未発表";
+
+// Season info
+"season_all_out %lld" = "全%lld話配信中";
+"season_partial_out %lld %lld" = "%lld/%lld話配信中";
+"season_episode_count %lld" = "%lldエピソード";
+
+// Pills
+"pill_binge_ready %lld" = "一気見OK · 全%lld話配信中";
+"pill_now_airing %lld %lld" = "放送中 · %lld/%lld話配信中";
+"pill_premiering_in %lld" = "まもなく初回放送 · %lld日後";
+"pill_premiering_soon" = "まもなく初回放送";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "シリーズ完結";
+"follow_badge_airing" = "放送中";
+"follow_badge_premiering" = "まもなく初回放送";
+"follow_stat_binge_ready" = "一気見OK";
+"follow_stat_days_finale" = "最終回まで";
+"follow_stat_days_premiere" = "初回放送まで";
+"follow_stat_no_date" = "日程未定";
+"follow_line_complete %lld" = "全%lld話配信中 — いつでも視聴開始できます。";
+"follow_line_airing" = "毎週エピソード配信中。シーズン完結日にお知らせします。";
+"follow_line_premiering" = "まもなく初回放送。放送開始時に通知します。";
+"follow_line_anticipated" = "配信日未発表。発表され次第すぐにお知らせします。";
+"follow_added_to_timeline" = "タイムラインに追加しました";
+"badge_added_to_timeline" = "タイムラインに追加";
+
+// Timeline stages
+"timeline_series_complete" = "シリーズ完結";
+"timeline_now_airing" = "放送中";
+"timeline_premiering" = "初回放送";
+"timeline_anticipated" = "注目";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "概要";
+"about_genre" = "ジャンル";
+"about_seasons" = "シーズン";
+"about_episodes" = "エピソード";
+"about_status" = "ステータス";
+"about_network" = "ネットワーク";
+"about_first_aired" = "初回放送日";
+"about_rating" = "評価";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "関連";
+"header_spinoffs_related" = "スピンオフ＆関連作品";
+"badge_premium" = "プレミアム";
+"premium_discover_spinoffs" = "スピンオフ＆前日譚を発見";
+"button_unlock_premium" = "プレミアムで解除";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "クイックツアー";
+"walkthrough_title" = "タイムラインは自動整理。";
+"walkthrough_description" = "フォローしたすべての番組は、一気見可能になるまでの近さに応じて3つの段階にグループ化されます。時間が経つと自動的に移動します。各段階を確認しましょう。";
+"walkthrough_show_me" = "見せて →";
+"walkthrough_next" = "次へ →";
+"walkthrough_got_it" = "OK — 始めよう";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "番組をフォロー";
+"button_show_less" = "表示を減らす";
+"button_more" = "もっと見る";
+"button_save" = "保存";
+"button_start_free_trial" = "無料トライアルを開始";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "プレミアムを解除";
+"premium_advanced_features" = "詳細通知、番組ごとのタイミング設定など";
+"premium_feature" = "プレミアム機能";
+"premium_feature_description" = "Countdown2Bingeの通知タイミングと方法を細かく調整。プレミアムで解除。";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "カウントダウン中";
+"share_just_binged" = "一気見完了";
+"share_until_premiere" = "初回放送まで";
+"share_release_pending" = "配信日未定";
+"share_season_complete" = "シーズン完結";
+"share_messages" = "メッセージ";
+"share_instagram" = "Instagram";
+"share_copy_link" = "リンクをコピー";
+"share_more" = "その他";
+"share_binged" = "一気見済み";
+"share_default_countdown" = "この番組を最初から最後まで一気見するのを待ってます。🍿";
+"share_default_binged %lld" = "全%lld話を最初から最後まで一気見しました。🍿✅";
+"share_enter_message" = "メッセージを入力...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "無料プラン";
+"free_shows_max %lld" = "最大%lld番組";
+"free_select" = "選択";
+"free_to_remove" = "削除する";
+"free_limit_description %lld" = "無料プランは最大%lld番組まで。削除する番組をタップして確認 — 確認するまで削除されません。またはプレミアムで無制限に。";
+"free_go_premium_keep %lld" = "◆ プレミアムで%lld番組すべて維持";
+"free_continue_free" = "無料プランで続ける";
+"free_select_to_remove %lld" = "削除する%lld番組を選択";
+"free_select_more %lld" = "あと%lld番組選択";
+"free_remove_selected %lld" = "選択した%lld番組を削除";
+"free_marked_to_remove" = "削除予定 · タップして維持";
+"free_marked_remove" = "削除予定";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "準備完了";
+"downgrade_remove" = "削除";
+"downgrade_to_continue" = "続けるには";
+"downgrade_at_limit" = "番組数は無料プランの上限内です。続けるには「続ける」をタップしてください。";
+"downgrade_over_limit %lld" = "プレミアムサブスクリプションが終了しました。無料アカウントは最大%lld番組まで。削除する番組を選択して確認してください。";
+"downgrade_resubscribe %lld" = "再登録して%lld番組すべて維持";
+"downgrade_followed %@" = "%@からフォロー中";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "完全なタイムライン";
+"timeline_shows_tracked %lld" = "%lld番組追跡中";
+"timeline_now_playing" = "現在再生中";
+"timeline_finale_countdown" = "最終回カウントダウン";
+"timeline_upcoming_seasons" = "今後のシーズン";
+"timeline_waiting_dates" = "日程待ち";
+"timeline_to_finale" = "最終回まで";
+"timeline_to_premiere" = "初回放送まで";
+"timeline_tbd" = "未定";
+"timeline_expected" = "予定";
+"timeline_release" = "配信";
+"timeline_season %lld" = "シーズン%lld";
+"timeline_tba" = "後日発表";
+"network_show_count %lld" = "%lld番組";
+
+// Additional UI strings
+"timeline_your_shows" = "あなたの番組";
+"timeline_countdown_finale" = "最終回までカウントダウン";
+"detail_to_binge" = "一気見まで";
+"detail_current" = "現在";
+"episode_watched" = "視聴済み";
+"episode_not_aired" = "未放送";
+"status_now" = "今";
+"status_season_ended" = "シーズン終了";
+"paywall_best" = "ベスト";
+"poster_placeholder" = "ポスター";
+
+// Additional missing strings
+"season_number %lld" = "シーズン%lld";
+"season_episode_info %lld %lld" = "シーズン%lld · %lldエピソード";
+"episode_number %lld" = "エピソード%lld";
+"episode_short %lld" = "第%lld話 · 45分";
+"today_date %@" = "今日 · %@";
+"last_updated %@" = "最終更新: %@";
+"no_episodes_available" = "利用可能なエピソードがありません";
+"link_terms" = "利用規約";
+"link_privacy" = "プライバシー";
+"link_restore" = "復元";
+"paywall_tracking_shows %lld" = "%lld番組を追跡中。プロにアップグレードして、シーズンが一気見OKになった瞬間に通知を受け取りましょう。";
+"settings_coming_soon" = "近日公開";
+"binge_watched_count %lld %lld" = "%lld/%lld視聴済み";
+"binge_complete_suffix" = " · 完了";
+"binge_current_suffix" = " · 現在";
+"binge_seasons_count %lld" = "%lldシーズン";
+"binge_status_complete" = "完了";
+"binge_status_current %lld %lld" = "現在 · %lld/%lld視聴済み";
+"unfollow_show" = "番組のフォローを解除";
+"tap_episode_details" = "エピソードをタップして詳細を表示";
+"countdown_in" = "あと";
+"view_on_timeline" = "タイムラインで見る →";
+"timeline_binge_ready_in %lld" = "タイムラインに追加 · 約%lld日後に一気見OK";
+"timeline_waiting_anticipated" = "フォロー中 · 注目で待機中";
+"notif_binge_ready_alert" = "一気見OKアラート";
+"notif_ping_when_out" = "全話配信日に通知";
+"premieres_date %@" = "%@初回放送";
+"binge_ready_when_airs" = "この放送でシーズン全体が一気見OKになります。";
+"watch_on %@" = "%@で視聴";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "%lld番組を追加しました。すべてのシーズンを監視し、一気見OKになった瞬間にお知らせします。";
+"hero_more_count %lld" = "+%lld件以上";
+"onboarding_shows_count %lld" = "%lld番組";
+"discover_upcoming_count %lld" = "%lld件近日公開";
+"stats_tracked" = "追跡中";
+"stats_upcoming" = "近日公開";
+
+// Season status badges
+"season_status_new" = "新着";
+"season_status_airing" = "放送中";
+"season_status_ready" = "OK";
+
+// Spinoffs tabs
+"tab_episodes" = "エピソード";
+"tab_spinoffs" = "スピンオフ";
+
+// Show status
+"show_status_returning" = "継続中";
+"show_status_ended" = "終了";
+"show_status_canceled" = "打ち切り";
+"show_status_in_production" = "制作中";
+"show_status_planned" = "企画中";
+"show_status_pilot" = "パイロット版";
+
+// Timeline phases
+"phase_anticipated" = "注目";
+"phase_premiering_soon" = "まもなく初回放送";
+"phase_now_airing" = "放送中";
+"phase_binge_ready" = "一気見OK";
+"phase_unknown" = "不明";
+"phase_ready_to_binge" = "一気見OK";
+"phase_binge_ready_in" = "一気見OKまで";
+
+// Countdown display mode
+"countdown_mode_days" = "日数";
+"countdown_mode_episodes" = "エピソード";
+
+// Follow hints
+"follow_hint_airing %lld" = "フォローすると全%lld話を待って、一気見可能になった日にお知らせします。";
+"follow_hint_anticipated" = "フォローすると「注目」に追加され、日程が発表された瞬間にカウントダウンを開始します。";
+
+// Episode status
+"episode_status_aired" = "放送済み";
+"episode_status_up_next" = "次に視聴";
+"episode_status_not_aired" = "未放送";
+"episode_status_finale" = "最終回";
+
+// Rewatch
+"rewatch_single_season %lld" = "S%lldを再視聴";
+"rewatch_season_range %lld %lld" = "S%lld〜S%lldを再視聴";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "フォローして追跡 · 約%lld日後に一気見OK";
+"follow_prompt_no_date" = "フォローして追跡 · 配信日未定";
+
+// Episode actions
+"button_clear" = "クリア";
+"button_mark_all_watched" = "すべて視聴済みにする";
+"button_mark_aired_watched" = "放送済みを視聴済みに";
+
+// Episode status text
+"status_complete_rewatch" = "完了 — 再視聴可能";
+"status_full_season_available" = "シーズン全話配信中";
+"status_no_episodes_yet" = "まだエピソードが配信されていません";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ タイムラインに追加 · 約%lld日後に一気見OK";
+"following_waiting_anticipated" = "✓ フォロー中 · 注目で待機中";
+"status_partial_aired %lld %lld" = "%lld/%lld話放送済み · 残りは毎週配信";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ まだ追跡していません";
+"plan_season_episodes %@ %lld" = "%@ · %lldエピソード";
+"episode_count_short %lld" = "%lld話";
+"episode_placeholder %lld" = "エピソード%lld";
+"episode_in_days %lld" = " · %lld日後";
+"episode_label_short %lld" = "第%lld話";
+"episode_label_finale" = "最終回";
+"episode_label_aired" = "放送済み";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "番組の読み込みに失敗しました。もう一度お試しください。";
+"error_load_trending" = "人気番組の読み込みに失敗しました";
+"error_invalid_url" = "無効なURL";
+"error_network %@" = "ネットワークエラー: %@";
+"error_decode %@" = "レスポンスのデコードに失敗: %@";
+"error_no_data" = "データを受信できませんでした";
+"error_http %lld" = "HTTPエラー: %lld";
+"error_no_purchases" = "復元可能な以前の購入が見つかりません。";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "全話配信中";
+"subtext_left_to_release %lld" = "残り%lld話配信予定";
+"subtext_season_complete" = "シーズン完結";
+"subtext_of_season_released" = "シーズンの一部配信中";
+"subtext_episodes_ready %lld %@" = "%lldエピソード · %@";
+"subtext_all_out" = "全話配信中";
+"subtext_no_date_yet" = "日程未定";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "プレミアム · 無料トライアル";
+"account_free_plan" = "無料プラン";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "放送済み";
+"legend_up_next" = "次に視聴";
+"legend_not_yet_aired" = "未放送";
+"legend_finale" = "最終回";
+"legend_start_today" = "今日から開始";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "すべてのネットワーク";
+"season_abbrev" = "S";
+"days_abbrev" = "日";
+"time_days_short %lld" = "%lld日";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "毎週新しいエピソードが配信されている番組。最終回に最も近い番組がスタックの一番上にあります — 次に一気見できるのはこれです。";
+"walkthrough_airing_note" = "最終回が放送されると、番組は「一気見OK」に移動し、次の番組が一番上に上がります。";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "初回放送日が確定している番組。新シーズンの配信開始まで日々カウントダウン中。";
+"walkthrough_premiering_note" = "シーズンが初回放送されると、「放送中」に移動します。";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "更新が決定しているが、まだ配信日が発表されていない番組。見失わないように下部で静かに待機しています。";
+"walkthrough_anticipated_note" = "日程が発表されると、「まもなく初回放送」に移動してカウントダウンを開始します。";
+
+// Transitions
+"walkthrough_date_set_hint" = "The Bearの初回放送日が決定しました。「注目」から「まもなく初回放送」に移動し、カウントダウンを開始します。";
+"walkthrough_date_set_note" = "注目 → まもなく初回放送";
+"walkthrough_premieres_hint" = "Shogunが初回放送されました。「放送中」に移動し、毎週新しいエピソードが配信される間スタックに加わります。";
+"walkthrough_premieres_note" = "まもなく初回放送 → 放送中";
+"walkthrough_finale_hint" = "The Last of Usの最終回が放送されました — シーズン全体が一気見OKになりました。次のシーズンは新しい日程が発表されるまで「注目」に戻ります。";
+"walkthrough_finale_note" = "放送中 → 一気見OK → 次のシーズンは注目へ";
+"walkthrough_label_date_set" = "日程決定";
+"walkthrough_label_premieres" = "初回放送";
+"walkthrough_label_finale" = "最終回放送";

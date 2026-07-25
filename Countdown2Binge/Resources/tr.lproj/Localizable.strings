@@ -2,284 +2,796 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Turkish (tr)
 */
 
 // =============================================================================
 // MARK: - Tab Bar
 // =============================================================================
 
-"tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_timeline" = "Zaman Çizelgesi";
+"tab_discover" = "Keşfet";
+"tab_binge_ready" = "Maratona Hazır";
+"tab_settings" = "Ayarlar";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
-"button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
-"button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_follow" = "TAKİP ET";
+"button_following" = "TAKİP EDİLİYOR";
+"button_cancel" = "İptal";
+"button_done" = "Tamam";
+"button_close" = "Kapat";
+"button_remove" = "Kaldır";
+"button_share" = "Paylaş";
+"button_upgrade" = "YÜKSELT";
+"button_restore_purchases" = "Satın Alımları Geri Yükle";
+"button_start_trial" = "7 GÜNLÜK ÜCRETSİZ DENEMEYİ BAŞLAT";
+"button_purchase_lifetime" = "ÖMÜR BOYU SATIN AL";
+"button_mark_watched" = "İzlendi İşaretle";
+"button_mark_all_watched" = "TÜMÜNÜ İZLENDİ İŞARETLE";
+"button_clear_season" = "SEZONU TEMİZLE";
+"button_yes" = "Evet";
+"button_no" = "Hayır";
+"button_skip" = "Atla";
+"button_continue" = "Devam";
+"button_get_started" = "Başla";
+"button_start_binge" = "▸ MARATONA BAŞLA";
+"button_unfollow" = "Takibi Bırak";
+"button_sign_in_apple" = "Apple ile Giriş Yap";
+"button_view_timeline" = "Tüm zaman çizelgesini gör";
+"button_hide" = "Gizle";
+"button_show" = "Göster";
+"button_upgrade_premium" = "PREMİUM'A YÜKSELT";
+"button_unfollow_show" = "DİZİYİ TAKİPTEN ÇIKAR";
+"button_completed_show" = "TAMAMLANAN DİZİ";
+"button_archive_show" = "DİZİYİ ARŞİVLE";
+"button_unarchive" = "ARŞİVDEN ÇIKAR";
+"button_sign_out" = "Çıkış Yap";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
-"badge_finale" = "FINALE";
-"badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_airing" = "YAYINDA";
+"badge_premiering" = "BAŞLIYOR";
+"badge_binge_ready" = "MARATONA HAZIR";
+"badge_anticipated" = "BEKLENİYOR";
+"badge_cancelled" = "İPTAL EDİLDİ";
+"badge_watched" = "İZLENDİ";
+"badge_up_next" = "SIRADA";
+"badge_finale" = "FİNAL";
+"badge_premiere" = "PRÖMIYÉR";
+"badge_new" = "YENİ";
+"badge_latest_added" = "SON EKLENENLER";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
-"header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
-"header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
-"header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_trailers" = "FRAGMANLAR VE ÖN İZLEMELER";
+"header_catch_up" = "FİNALDEN ÖNCE YETİŞİN";
+"header_episodes" = "BÖLÜMLER";
+"header_spinoffs" = "UZANTI DİZİLER";
+"header_trending" = "TREND DİZİLER";
+"header_ending_soon" = "YAKINDA BİTİYOR";
+"header_premiering_soon" = "YAKINDA BAŞLIYOR";
+"header_currently_airing" = "ŞU AN YAYINDA";
+"header_watch_order" = "ÖNERİLEN İZLEME SIRASI";
+"header_universe_premium" = "EVRENİ — PREMİUM";
+"header_cast_crew" = "OYUNCULAR VE EKİP";
+"header_where_to_watch" = "NEREDE İZLENİR";
+"header_browse_category" = "Kategoriye Göre Gözat";
+"header_binge" = "MARATON";
+"header_seasons_progress" = "SEZONLAR VE İZLEME İLERLEMESİ";
+"header_your_library" = "KİTAPLIĞINIZ";
+"header_settings" = "AYARLAR";
+"header_notifications" = "BİLDİRİMLER";
+"header_notification_settings" = "BİLDİRİM AYARLARI";
+"header_anticipated" = "BEKLENİYOR";
+"header_discover" = "KEŞFET";
+"discover_subtitle" = "YENİ, GÜNCEL VE YAKINDA · YAYINLANMADAN ÖNCE TAKİP EDİN";
+"discover_sooner" = "YAKINDA";
+"discover_later" = "DAHA SONRA";
+"discover_by_network" = "KANALA GÖRE";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
-"time_minutes" = "MIN";
-"time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_days" = "GÜN";
+"time_day" = "GÜN";
+"time_hours" = "SAAT";
+"time_hour" = "SAAT";
+"time_minutes" = "DAK";
+"time_seconds" = "SN";
+"time_episodes" = "BÖLÜM";
+"time_episode" = "BÖLÜM";
+"time_eps_per_day" = "bölüm/gün";
+"time_ep_per_day" = "bölüm/gün";
+"time_days_to_watch" = "%d gün izleme süresi";
+"time_start_today" = "Bugün başla";
+"time_start_date" = "%@ başla";
+"time_already_started" = "Zaten başladı";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
-"season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_label" = "SEZON";
+"season_of_episodes" = "%d / %d";
+"season_aired" = "yayınlandı";
+"season_watched" = "İZLENDİ";
+"season_episodes_label" = "Bölümler";
+"season_avg_runtime" = "Ort. Süre";
+"season_runtime_minutes" = "%d dk";
+"season_left_to_drop" = "%d bölüm kaldı";
+"season_main_series" = "ANA DİZİ";
+"season_you_are_here" = "Ana dizi · buradasınız";
+"season_progress" = "%d / %d yayınlandı · %d kaldı";
+
+// Binge Segments
+"segment_active" = "Aktif";
+"segment_ended" = "Bitti";
+"segment_archived" = "Arşivlendi";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "Henüz İzlenecek Bir Şey Yok";
+"empty_when_seasons_finish" = "Sezonlar yayınlanmayı bitirdiğinde,\nburada izlemeye hazır görünecekler";
+"empty_no_shows" = "Henüz takip edilen dizi yok";
+"empty_search_to_add" = "Favori dizilerinizi eklemek için arayın";
+"empty_no_spinoffs" = "Henüz uzantı dizi yok";
+"empty_no_spinoffs_message" = "%@ dizisinin henüz uzantı dizisi veya öncül hikayesi yok. Duyurulursa buraya ekleriz.";
+"empty_timeline" = "Zaman Çizelgesinde Bir Şey Yok";
+"empty_timeline_message" = "Takip ettiğiniz diziler şu an\nyayınlanmıyor veya yakında başlamıyor";
+"empty_no_results" = "Sonuç Bulunamadı";
+"empty_no_shows_found" = "Dizi bulunamadı";
+"empty_slot" = "BOŞ";
+"empty_no_active_shows" = "Aktif dizi yok";
+"empty_no_ended_shows" = "Biten dizi yok";
+"empty_no_archived_shows" = "Arşivlenmiş dizi yok";
+"empty_active_subtitle" = "Şu an izlediğiniz diziler burada görünecek";
+"empty_ended_subtitle" = "Biten diziler burada görünecek";
+"empty_archived_subtitle" = "Arşivlediğiniz diziler burada görünecek";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
-"settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_heading" = "Ayarlar";
+"settings_sound" = "Ses";
+"settings_haptics" = "Dokunsal Geri Bildirim";
+"settings_notifications" = "Bildirimler";
+"settings_countdown_mode" = "Geri Sayım";
+"settings_reminders" = "Hatırlatıcılar";
+"settings_cloud_sync" = "Bulut Senkronizasyonu";
+"settings_account" = "Hesap";
+"settings_get_in_touch" = "İletişime Geç";
+"settings_privacy_policy" = "Gizlilik Politikası";
+"settings_terms" = "Kullanım Koşulları";
+"settings_api_credit" = "API themoviedb.org tarafından sağlanmaktadır";
+"settings_group_alerts" = "Uyarılar";
+"settings_group_preferences" = "Tercihler";
+"settings_group_account" = "Hesap";
+"settings_group_developer" = "Geliştirici";
+"settings_group_essentials" = "Temel Özellikler";
+"settings_group_advanced" = "GELİŞMİŞ";
+"settings_alerts_advanced" = "Gelişmiş uyarılar etkin";
+"settings_alerts_basic" = "Sadece maratona hazır uyarıları";
+"settings_streaming_services" = "Yayın servisleri";
+"settings_appearance" = "Görünüm";
+"settings_dark" = "Koyu";
+"settings_manage_account" = "Hesabı yönet";
+"settings_help_feedback" = "Yardım ve geri bildirim";
+"settings_debug_premium" = "Premium Hata Ayıklama";
+"settings_enabled" = "Etkin";
+"settings_disabled" = "Devre Dışı";
+"settings_reset_onboarding" = "Tanıtımı sıfırla";
+"settings_completed" = "Tamamlandı";
+"settings_not_completed" = "Tamamlanmadı";
+"settings_reset_walkthrough" = "Rehberi sıfırla";
+"settings_seen" = "Görüldü";
+"settings_not_seen" = "Görülmedi";
+"settings_refresh_discover" = "Keşfet'i Yenile";
+"settings_refreshing" = "Yenileniyor...";
+"settings_reload_data" = "Dizi verilerini yeniden yükle";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "ŞİMDİ TAKİP EDİYORSUNUZ:";
+"notification_premiere" = "SEZON PRÖMİYERİ";
+"notification_new_episode" = "YENİ BÖLÜM";
+"notification_finale" = "FİNAL HATIRLATICI";
+"notification_binge_ready" = "SEZON MARATONA HAZIR";
+"notification_quiet_hours" = "SESSİZ SAATLER";
+"notification_default" = "VARSAYILAN BİLDİRİMLER";
+"notification_applied_to_all" = "Tüm yeni dizilere uygulanır";
+"notif_push_title" = "Anlık bildirimler";
+"notif_push_subtitle" = "Bu cihazdaki uyarılar";
+"notif_premiere_title" = "Prömiyér günü";
+"notif_premiere_subtitle" = "Yeni bir sezon yayınlanmaya başladığında";
+"notif_premiere_full_subtitle" = "Takip ettiğiniz bir sezon prömiyér yaptığında";
+"notif_binge_ready_title" = "Maratona hazır";
+"notif_binge_ready_subtitle" = "Tüm sezonun yayınlandığı gün";
+"notif_binge_ready_full_subtitle" = "Tüm sezon yayınlanmayı bitirdiğinde";
+"notif_weekly_title" = "Haftalık bölümler";
+"notif_weekly_subtitle" = "Her yeni bölümde bildirim";
+"notif_email_title" = "E-posta özeti";
+"notif_email_subtitle" = "Haftalık özet gelen kutunuza";
+"notif_remind_early_title" = "Erken hatırlat";
+"notif_remind_early_subtitle" = "Maratona hazır olmadan önce günler";
+"notif_almost_there_title" = "Neredeyse tamam";
+"notif_almost_there_subtitle" = "Sezon bitmesine 1 bölüm kala uyarı";
+"notif_lead_time_title" = "Geri sayım öncesi süre";
+"notif_lead_time_subtitle" = "Maratona hazır gününden önce hatırlat";
+"notif_per_show_title" = "Dizi bazlı zamanlama";
+"notif_per_show_subtitle" = "Her dizi için ayrı ayrı uyarı ayarla";
+"notif_weekly_drops_title" = "Haftalık bölüm yayınları";
+"notif_weekly_drops_subtitle" = "Her yeni bölümde bildirim al (isteğe bağlı)";
+"notif_digest_title" = "Özet";
+"notif_digest_subtitle" = "Yaklaşan dizileri tek özette topla";
+"notif_quiet_hours_title" = "Sessiz saatler";
+"notif_quiet_hours_subtitle" = "23:00 – 08:00 arası sessiz";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "AÇ";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
 "premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_unlimited" = "Sınırsız Dizi";
+"premium_unlimited_desc" = "Tüm favori dizilerinizi takip edin";
+"premium_spinoffs" = "Uzantı Dizi Koleksiyonları";
+"premium_spinoffs_desc" = "İlgili dizileri ve evrenleri keşfedin";
+"premium_notifications" = "Akıllı Bildirimler";
+"premium_cloud_sync" = "Bulut Senkronizasyonu";
+"premium_yearly" = "YILLIK";
+"premium_monthly" = "AYLIK";
+"premium_lifetime" = "ÖMÜR BOYU";
+"premium_most_popular" = "EN POPÜLER";
+"premium_best_value" = "EN İYİ DEĞER";
+"premium_free_limit" = "Ücretsiz kullanıcılar en fazla 3 dizi takip edebilir";
+"premium_notifications_required" = "BİLDİRİMLER İÇİN PREMİUM GEREKLİ";
+"premium_notifications_subtitle" = "Sezonlar maratona hazır olduğunda, prömiyér günlerinde ve daha fazlası için bildirim almak üzere yükseltin.";
+"premium_all_alerts_available" = "Premium'dasınız — tüm uyarılar kullanılabilir.";
+"premium_trial_legal" = "Deneme, bitiminden 24 saat önce iptal edilmezse otomatik yenilenir.";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "Hoş Geldiniz";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "Ne zaman maratona hazır olduğunu bilin.";
+"onboarding_add_shows" = "Dizilerinizi Ekleyin";
+"onboarding_add_shows_desc" = "Favori TV dizilerinizi arayın ve takip edin";
+"onboarding_notifications" = "Güncel Kalın";
+"onboarding_notifications_desc" = "Sezonlar maratona hazır olduğunda bildirim alın";
+"onboarding_complete" = "Hazırsınız!";
+"onboarding_step_of" = "ADIM %d / %d";
+
+// Pain slide
+"onboarding_pain_label" = "SORUN";
+"onboarding_pain_title" = "DUR — O DİZİ GERİ Mİ GELDİ?";
+"onboarding_pain_description" = "Sezonların haftalar önce bittiğini öğreniyorsunuz. Ya da favori dizinizin yenilendiğini ve hiç haberiniz olmadığını.";
+
+// Agitate slide
+"onboarding_agitate_label" = "NEDEN OLUYOR";
+"onboarding_agitate_title" = "TAKİP ETMEK İMKANSIZ.";
+"onboarding_agitate_description" = "Diziler farklı uygulamalarda, farklı programlarda yayınlanıyor. Hatırladığınızda, final çoktan yayınlanmış oluyor.";
+
+// Solution slide
+"onboarding_solution_label" = "ÇÖZÜM";
+"onboarding_solution_title" = "COUNTDOWN2BINGE BUNU ÇÖZER.";
+"onboarding_solution_description" = "Her diziyi takip etmek için tek bir yer. Bir sezon biter bitmez bildirim alın — böylece durmadan izleyebilirsiniz.";
+
+// Add shows step
+"onboarding_add_shows_label" = "DİZİLERİNİZİ EKLEYİN";
+"onboarding_add_shows_title" = "NEYİ BEKLİYORSUNUZ?";
+"onboarding_add_shows_description" = "Maraton izlemek istediğiniz dizileri arayın ve takip edin. İstediğiniz kadar ekleyin.";
+
+// Review step
+"onboarding_review_title" = "SEÇİMİ İNCELEYİN";
+"onboarding_review_description" = "İşte takip ettikleriniz. Vazgeçtiklerinizi kaldırın veya daha fazla ekleyin.";
+
+// All set step
+"onboarding_all_set_title" = "HAZIRSINIZ.";
+"onboarding_following" = "TAKİP EDİLİYOR";
+
+// Paywall step
+"onboarding_choose_plan" = "PLANINIZI SEÇİN";
+"onboarding_never_miss" = "HİÇBİR FİNALİ KAÇIRMAYIN.";
+
+// Buttons
+"button_try_again" = "Tekrar Dene";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "%@ kaldırılsın mı?";
+"alert_remove_message" = "Bu, diziyi takip listenizden kaldıracak.";
+"alert_unfollow" = "%@ takipten çıkılsın mı?";
+"alert_error" = "Hata";
+"alert_purchase_error" = "Satın Alma Hatası";
+"alert_purchase_failed" = "SATIN ALMA BAŞARISIZ";
+"button_ok" = "Tamam";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
-"show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_overview" = "Genel Bakış";
+"show_detail_seasons" = "Sezonlar";
+"show_detail_spinoffs" = "Uzantı Diziler";
+"show_detail_no_overview" = "Genel bakış mevcut değil.";
+"show_detail_binge_ready_date" = "MARATONA HAZIR %@";
+"show_detail_follow_spinoff" = "Uzantı diziyi takip et";
 
 // =============================================================================
 // MARK: - Spinoff Types
 // =============================================================================
 
-"spinoff_prequel" = "PREQUEL";
-"spinoff_sequel" = "SEQUEL";
-"spinoff_companion" = "COMPANION";
-"spinoff_remake" = "REMAKE";
-"spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel" = "ÖNCÜL";
+"spinoff_sequel" = "DEVAM";
+"spinoff_companion" = "EŞLİK";
+"spinoff_remake" = "YENİDEN ÇEVRİM";
+"spinoff_spinoff" = "UZANTI DİZİ";
+"spinoff_prequel_desc" = "Ana dizinin olaylarından önce geçen bir öncül dizi.";
+"spinoff_sequel_desc" = "Ana diziden sonra hikayeye devam eden bir dizi.";
+"spinoff_companion_desc" = "Ana diziyle birlikte yayınlanan bir eşlik dizisi.";
+"spinoff_remake_desc" = "Orijinal dizinin yeniden yorumu.";
+"spinoff_spinoff_desc" = "Ana dizideki karakterleri keşfeden bir uzantı dizi.";
+"spinoff_main_series_desc" = "Her şeyi başlatan orijinal dizi.";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "Maraton izlenecek dizi ara";
+"search_heading" = "Ara";
+"search_see_all" = "TÜMÜNÜ GÖR";
+"search_try_different" = "Farklı bir kategori deneyin";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
 "category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
-"category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
-"category_reality" = "Reality";
-"category_family" = "Family";
+"category_comedy" = "Komedi";
+"category_action" = "Aksiyon ve Macera";
+"category_scifi" = "Bilim Kurgu ve Fantastik";
+"category_crime" = "Suç";
+"category_mystery" = "Gizem";
+"category_animation" = "Animasyon";
+"category_documentary" = "Belgesel";
+"category_reality" = "Realite";
+"category_family" = "Aile";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
-"account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_title" = "Hesap";
+"account_signed_in_apple" = "Apple ile giriş yapıldı";
+"account_sync_status" = "Senkronizasyon Durumu";
+"account_sync_now" = "Şimdi Senkronize Et";
+"account_sign_out" = "Çıkış Yap";
+"account_delete" = "Hesabı Sil";
+"sync_welcome_back" = "Tekrar Hoş Geldiniz!";
+"sync_backed_up" = "Yedekleme Tamamlandı";
+"sync_restored_one" = "Bulut yedeklemesinden 1 dizi geri yüklendi.";
+"sync_restored_many" = "Bulut yedeklemesinden %lld dizi geri yüklendi.";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
-"a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_show_poster" = "%@ afişi";
+"a11y_follow_button" = "%@ takip et";
+"a11y_unfollow_button" = "%@ takipten çık";
+"a11y_close_button" = "Kapat";
+"a11y_settings_button" = "Ayarlar";
+"a11y_search_button" = "Ara";
+"a11y_play_trailer" = "Fragmanı oynat";
+"a11y_episode_watched" = "Bölüm %d izlendi";
+"a11y_episode_not_watched" = "Bölüm %d izlenmedi";
+"a11y_season_progress" = "%d / %d bölüm izlendi";
+"a11y_binge_ready" = "Maratona hazır";
+"a11y_currently_airing" = "Şu an yayında";
+"a11y_days_remaining" = "%d gün kaldı";
+"a11y_swipe_seasons" = "Sezonları değiştirmek için sola veya sağa kaydırın";
+"a11y_double_tap_details" = "Detayları görmek için iki kez dokunun";
+"a11y_double_tap_follow" = "Takip etmek için iki kez dokunun";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "TAKİP EDİLEN";
+"stats_upcoming" = "YAKLAŞAN";
+"footer_cycle_message" = "Sezonlar bittiğinde\ndiziler döngüye girer";
+"label_start" = "BAŞLA";
+"label_eps" = "BLM";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "TÜM SEZON MEVCUT";
+"status_premieres_in_days %lld" = "%lld GÜN İÇİNDE PRÖMIYÉR";
+"status_premieres_date %@" = "PRÖMIYÉR %@";
+"status_ready_to_binge" = "Maratona hazır";
+"status_until_new_season" = "Yeni sezona kadar";
+"status_until_binge_ready" = "Maratona hazır olana kadar";
+"status_all_episodes_finished %lld" = "Tüm %lld bölüm yayında · yeni bitti";
+"status_finale_date %@" = "Final %@";
+"status_airing_weekly" = "Haftalık yayında";
+"status_premieres_ready %@ %lld" = "Prömiyér %@ · ~%lld gün hazır";
+"status_coming_soon" = "Yakında";
+"status_no_release_date" = "Yayın tarihi açıklanmadı";
+
+// Season info
+"season_all_out %lld" = "tüm %lld yayında";
+"season_partial_out %lld %lld" = "%lld/%lld yayında";
+"season_episode_count %lld" = "%lld bölüm";
+
+// Pills
+"pill_binge_ready %lld" = "Maratona hazır · tüm %lld yayında";
+"pill_now_airing %lld %lld" = "Şu an yayında · %lld/%lld yayında";
+"pill_premiering_in %lld" = "Yakında başlıyor · %lld gün sonra";
+"pill_premiering_soon" = "Yakında başlıyor";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "Dizi Tamamlandı";
+"follow_badge_airing" = "Şu An Yayında";
+"follow_badge_premiering" = "Yakında Başlıyor";
+"follow_stat_binge_ready" = "maratona hazır";
+"follow_stat_days_finale" = "finale gün";
+"follow_stat_days_premiere" = "prömiyere gün";
+"follow_stat_no_date" = "henüz tarih yok";
+"follow_line_complete %lld" = "Tüm %lld bölüm yayında — istediğiniz zaman başlayın.";
+"follow_line_airing" = "Bölümler haftalık yayınlanıyor. Sezon bittiğinde size haber vereceğiz.";
+"follow_line_premiering" = "Yakında başlıyor. Yayınlanmaya başladığında sizi bilgilendireceğiz.";
+"follow_line_anticipated" = "Yayın tarihi açıklanmadı. Bir tarih belirlenir belirlenmez sizi uyaracağız.";
+"follow_added_to_timeline" = "ZAMAN ÇİZELGENİZE EKLENDİ";
+"badge_added_to_timeline" = "ZAMAN ÇİZELGESİNE EKLENDİ";
+
+// Timeline stages
+"timeline_series_complete" = "DİZİ TAMAMLANDI";
+"timeline_now_airing" = "ŞU AN YAYINDA";
+"timeline_premiering" = "BAŞLIYOR";
+"timeline_anticipated" = "BEKLENİYOR";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "HAKKINDA";
+"about_genre" = "Tür";
+"about_seasons" = "Sezonlar";
+"about_episodes" = "Bölümler";
+"about_status" = "Durum";
+"about_network" = "Kanal";
+"about_first_aired" = "İlk Yayın";
+"about_rating" = "Puan";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "İLGİLİ";
+"header_spinoffs_related" = "UZANTI VE İLGİLİ DİZİLER";
+"badge_premium" = "PREMİUM";
+"premium_discover_spinoffs" = "Uzantı ve öncül dizileri keşfedin";
+"button_unlock_premium" = "PREMİUM İLE AÇ";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "Hızlı tur";
+"walkthrough_title" = "ZAMAN ÇİZELGENİZ, SİZİN İÇİN SIRALI.";
+"walkthrough_description" = "Takip ettiğiniz her dizi, maratona ne kadar yakın olduğuna göre üç aşamaya ayrılır — ve zaman geçtikçe diziler kendi başlarına yukarı çıkar. Her birinin nereye düştüğünü görmek için adımlayın.";
+"walkthrough_show_me" = "GÖSTER →";
+"walkthrough_next" = "DEVAM →";
+"walkthrough_got_it" = "ANLADIM — BAŞLAYALIM";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "DİZİYİ TAKİP ET";
+"button_show_less" = "Daha Az Göster";
+"button_more" = "Daha Fazla";
+"button_save" = "KAYDET";
+"button_start_free_trial" = "ÜCRETSİZ DENEMEYİ BAŞLAT";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "PREMİUM'U AÇ";
+"premium_advanced_features" = "Gelişmiş bildirimler, dizi bazlı zamanlama ve daha fazlası";
+"premium_feature" = "PREMİUM ÖZELLİK";
+"premium_feature_description" = "Countdown2Binge'in size ne zaman ve nasıl bildirim göndereceğini tam olarak ayarlayın. Premium ile açın.";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "Geri Sayım";
+"share_just_binged" = "Yeni Maraton İzledim";
+"share_until_premiere" = "Prömiyere kadar";
+"share_release_pending" = "Yayın tarihi bekleniyor";
+"share_season_complete" = "Sezon tamamlandı";
+"share_messages" = "Mesajlar";
+"share_instagram" = "Instagram";
+"share_copy_link" = "Bağlantıyı Kopyala";
+"share_more" = "Daha Fazla";
+"share_binged" = "MARATON İZLENDİ";
+"share_default_countdown" = "Bunu baştan sona maraton izlemeyi bekliyorum.";
+"share_default_binged %lld" = "Tüm %lld bölümü baştan sona maraton izledim.";
+"share_enter_message" = "Mesajınızı girin...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "ÜCRETSİZ PLAN";
+"free_shows_max %lld" = "MAKSİMUM %lld DİZİ";
+"free_select" = "SEÇIN";
+"free_to_remove" = "KALDIRMAK İÇİN";
+"free_limit_description %lld" = "Ücretsiz %lld diziye kadar takip eder. Kaldırmak istediğiniz dizilere dokunun, sonra onaylayın — siz yapana kadar hiçbir şey kaldırılmaz. Ya da Premium ile sınırsız olun.";
+"free_go_premium_keep %lld" = "◆ PREMİUM'A GEÇ — HEPSİNİ KORU %lld";
+"free_continue_free" = "ÜCRETSİZ DEVAM ET";
+"free_select_to_remove %lld" = "KALDIRMAK İÇİN %lld SEÇİN";
+"free_select_more %lld" = "%lld DAHA SEÇİN";
+"free_remove_selected %lld" = "SEÇİLEN %lld'İ KALDIR";
+"free_marked_to_remove" = "KALDIRILACAK · TUTMAK İÇİN DOKUNUN";
+"free_marked_remove" = "KALDIRILACAK";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "HAZIRSINIZ";
+"downgrade_remove" = "KALDIR";
+"downgrade_to_continue" = "DEVAM ETMEK İÇİN";
+"downgrade_at_limit" = "Dizileriniz ücretsiz limit dahilinde. Devam etmek için dokunun.";
+"downgrade_over_limit %lld" = "Premium aboneliğiniz sona erdi. Ücretsiz hesaplar %lld diziye kadar takip eder. Kaldırılacak dizileri seçin, sonra onaylayın.";
+"downgrade_resubscribe %lld" = "TÜM %lld'İ TUTMAK İÇİN YENİDEN ABONE OL";
+"downgrade_followed %@" = "TAKİP EDİLDİ %@";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "TAM ZAMAN ÇİZELGESİ";
+"timeline_shows_tracked %lld" = "%lld DİZİ TAKİP EDİLİYOR";
+"timeline_now_playing" = "ŞU AN YAYINDA";
+"timeline_finale_countdown" = "FİNAL GERİ SAYIMI";
+"timeline_upcoming_seasons" = "YAKLAŞAN SEZONLAR";
+"timeline_waiting_dates" = "TARİH BEKLENİYOR";
+"timeline_to_finale" = "FİNALE";
+"timeline_to_premiere" = "PRÖMIYERE";
+"timeline_tbd" = "BELİRLENECEK";
+"timeline_expected" = "BEKLENİYOR";
+"timeline_release" = "YAYIN";
+"timeline_season %lld" = "Sezon %lld";
+"timeline_tba" = "DUYURULACAK";
+"network_show_count %lld" = "%lld dizi";
+
+// Additional UI strings
+"timeline_your_shows" = "DİZİLERİNİZ";
+"timeline_countdown_finale" = "FİNALE GERİ SAYIM";
+"detail_to_binge" = "MARATONA";
+"detail_current" = "GÜNCEL";
+"episode_watched" = "İZLENDİ";
+"episode_not_aired" = "HENÜZ YAYINLANMADI";
+"status_now" = "ŞİMDİ";
+"status_season_ended" = "SEZON BİTTİ";
+"paywall_best" = "EN İYİ";
+"poster_placeholder" = "AFİŞ";
+
+// Additional missing strings
+"season_number %lld" = "Sezon %lld";
+"season_episode_info %lld %lld" = "Sezon %lld · %lld bölüm";
+"episode_number %lld" = "Bölüm %lld";
+"episode_short %lld" = "BLM %lld · 45D";
+"today_date %@" = "Bugün · %@";
+"last_updated %@" = "Son güncelleme: %@";
+"no_episodes_available" = "Mevcut bölüm yok";
+"link_terms" = "Koşullar";
+"link_privacy" = "Gizlilik";
+"link_restore" = "Geri Yükle";
+"paywall_tracking_shows %lld" = "%lld diziyi takip ediyorsunuz. Herhangi bir sezon maratona hazır olduğunda anında uyarı almak için Pro'ya geçin.";
+"settings_coming_soon" = "Yakında";
+"binge_watched_count %lld %lld" = "%lld/%lld izlendi";
+"binge_complete_suffix" = " · tamamlandı";
+"binge_current_suffix" = " · güncel";
+"binge_seasons_count %lld" = "%lld sezon";
+"binge_status_complete" = "Tamamlandı";
+"binge_status_current %lld %lld" = "Güncel · %lld/%lld izlendi";
+"unfollow_show" = "Diziyi takipten çıkar";
+"tap_episode_details" = "Detayları görmek için bir bölüme dokunun";
+"countdown_in" = "içinde";
+"view_on_timeline" = "ZAMAN ÇİZELGEMDE GÖR →";
+"timeline_binge_ready_in %lld" = "Zaman çizelgenizde · ~%lld gün içinde maratona hazır";
+"timeline_waiting_anticipated" = "Takip ediliyor · Beklenenler'de bekliyor";
+"notif_binge_ready_alert" = "Maratona hazır uyarısı";
+"notif_ping_when_out" = "Tamamen yayınlandığı gün beni uyar";
+"premieres_date %@" = "PRÖMIYÉR %@";
+"binge_ready_when_airs" = "Bu yayınlandığı anda tüm sezon maratona hazır olacak.";
+"watch_on %@" = "%@ üzerinde izle";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "%lld dizi eklendi. Her sezonu takip edip, her biri maratona hazır olduğunda size haber vereceğiz.";
+"hero_more_count %lld" = "+%lld DAHA";
+"onboarding_shows_count %lld" = "%lld DİZİ";
+"discover_upcoming_count %lld" = "%lld YAKLAŞAN";
+"stats_tracked" = "TAKİP EDİLEN";
+"stats_upcoming" = "YAKLAŞAN";
+
+// Season status badges
+"season_status_new" = "YENİ";
+"season_status_airing" = "YAYINDA";
+"season_status_ready" = "HAZIR";
+
+// Spinoffs tabs
+"tab_episodes" = "Bölümler";
+"tab_spinoffs" = "Uzantı Diziler";
+
+// Show status
+"show_status_returning" = "Devam Ediyor";
+"show_status_ended" = "Bitti";
+"show_status_canceled" = "İptal Edildi";
+"show_status_in_production" = "Yapımda";
+"show_status_planned" = "Planlandı";
+"show_status_pilot" = "Pilot";
+
+// Timeline phases
+"phase_anticipated" = "Bekleniyor";
+"phase_premiering_soon" = "Yakında Başlıyor";
+"phase_now_airing" = "Şu An Yayında";
+"phase_binge_ready" = "Maratona Hazır";
+"phase_unknown" = "Bilinmiyor";
+"phase_ready_to_binge" = "Maratona hazır";
+"phase_binge_ready_in" = "Maratona hazır";
+
+// Countdown display mode
+"countdown_mode_days" = "Günler";
+"countdown_mode_episodes" = "Bölümler";
+
+// Follow hints
+"follow_hint_airing %lld" = "Takip edin, tüm %lld bölümü bekleyelim, sonra izlenebilir olduğu gün sizi uyaralım.";
+"follow_hint_anticipated" = "Takip edin ve Beklenenler'e ekleyelim — bir tarih açıklandığı anda geri sayım başlasın.";
+
+// Episode status
+"episode_status_aired" = "Yayınlandı";
+"episode_status_up_next" = "Sırada";
+"episode_status_not_aired" = "Henüz yayınlanmadı";
+"episode_status_finale" = "Final";
+
+// Rewatch
+"rewatch_single_season %lld" = "S%lld Yeniden İzle";
+"rewatch_season_range %lld %lld" = "S%lld–S%lld Yeniden İzle";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "Takip et · ~%lld gün içinde maratona hazır";
+"follow_prompt_no_date" = "Takip et · henüz yayın tarihi yok";
+
+// Episode actions
+"button_clear" = "Temizle";
+"button_mark_all_watched" = "Tümünü izlendi işaretle";
+"button_mark_aired_watched" = "Yayınlananları izlendi işaretle";
+
+// Episode status text
+"status_complete_rewatch" = "Tamamlandı — yeniden izlenmeye hazır";
+"status_full_season_available" = "Tüm sezon mevcut";
+"status_no_episodes_yet" = "Henüz yayınlanan bölüm yok";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ Zaman çizelgenizde · ~%lld gün içinde maratona hazır";
+"following_waiting_anticipated" = "✓ Takip ediliyor · Beklenenler'de bekliyor";
+"status_partial_aired %lld %lld" = "%lld / %lld yayınlandı · geri kalanı haftalık açılıyor";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ HENÜZ TAKİP EDİLMİYOR";
+"plan_season_episodes %@ %lld" = "%@ · %lld bölüm";
+"episode_count_short %lld" = "%lld blm";
+"episode_placeholder %lld" = "Bölüm %lld";
+"episode_in_days %lld" = " · %lld gün sonra";
+"episode_label_short %lld" = "Blm %lld";
+"episode_label_finale" = "Final";
+"episode_label_aired" = "Yayınlandı";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "Diziler yüklenemedi. Lütfen tekrar deneyin.";
+"error_load_trending" = "Trend diziler yüklenemedi";
+"error_invalid_url" = "Geçersiz URL";
+"error_network %@" = "Ağ hatası: %@";
+"error_decode %@" = "Yanıt çözümlenemedi: %@";
+"error_no_data" = "Veri alınamadı";
+"error_http %lld" = "HTTP hatası: %lld";
+"error_no_purchases" = "Geri yüklenecek önceki satın alma bulunamadı.";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "tüm bölümler yayında";
+"subtext_left_to_release %lld" = "%lld bölüm kaldı";
+"subtext_season_complete" = "sezon tamamlandı";
+"subtext_of_season_released" = "sezonun yayınlandı";
+"subtext_episodes_ready %lld %@" = "%lld bölüm · %@";
+"subtext_all_out" = "tümü yayında";
+"subtext_no_date_yet" = "henüz tarih yok";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "Premium · Ücretsiz deneme";
+"account_free_plan" = "Ücretsiz plan";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "Yayınlandı";
+"legend_up_next" = "Sırada";
+"legend_not_yet_aired" = "Henüz yayınlanmadı";
+"legend_finale" = "Final";
+"legend_start_today" = "Bugün başla";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "Tüm kanallar";
+"season_abbrev" = "S";
+"days_abbrev" = "G";
+"time_days_short %lld" = "%lldG";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "Şu anda hafta hafta yeni bölümler yayınlayan diziler. Finaline en yakın olan yığının üstünde oturur — bir sonraki maraton izleyebileceğiniz budur.";
+"walkthrough_airing_note" = "Her final yayınlandıkça, dizi Maratona Hazır'a düşer ve bir sonraki en üste çıkar.";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "Kesin bir prömiyér tarihi olan diziler, yeni sezon yayınlanmaya başlayana kadar gün gün geri sayım yapıyor.";
+"walkthrough_premiering_note" = "Bir sezon prömiyér yaptığı anda, Şu An Yayında'ya geçer.";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "Henüz yayın tarihi olmayan yenilenmiş diziler. Asla takibini kaybetmemeniz için en altta sessizce beklerler.";
+"walkthrough_anticipated_note" = "Bir tarih açıklanır açıklanmaz, Yakında Başlıyor'a atlar ve geri saymaya başlar.";
+
+// Transitions
+"walkthrough_date_set_hint" = "The Bear bir prömiyér tarihi aldı. Beklenenler'den Yakında Başlıyor'a geçiyor ve geri saymaya başlıyor.";
+"walkthrough_date_set_note" = "Bekleniyor → Yakında Başlıyor";
+"walkthrough_premieres_hint" = "Shogun prömiyér yaptı. Şu An Yayında'ya çıkıyor ve her hafta yeni bölümler yayınlanırken yığına katılıyor.";
+"walkthrough_premieres_note" = "Yakında Başlıyor → Şu An Yayında";
+"walkthrough_finale_hint" = "The Last of Us'ın finali yayınlandı — tüm sezon artık Maratona Hazır. Sonraki sezonu, yeni bir tarih açıklanana kadar Beklenenler'e geri döner.";
+"walkthrough_finale_note" = "Şu An Yayında → Maratona Hazır → sonraki sezon Beklenenler'e";
+"walkthrough_label_date_set" = "TARİH BELİRLENDİ";
+"walkthrough_label_premieres" = "PRÖMIYÉR YAPTI";
+"walkthrough_label_finale" = "FİNAL YAYINLANDI";

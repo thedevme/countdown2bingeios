@@ -2,284 +2,794 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Dutch (Nederlands)
 */
 
 // =============================================================================
 // MARK: - Tab Bar
 // =============================================================================
 
-"tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_timeline" = "Tijdlijn";
+"tab_discover" = "Ontdekken";
+"tab_binge_ready" = "Klaar om te bingen";
+"tab_settings" = "Instellingen";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
-"button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
+"button_follow" = "VOLGEN";
+"button_following" = "VOLGEND";
+"button_cancel" = "Annuleren";
+"button_done" = "Gereed";
+"button_close" = "Sluiten";
+"button_remove" = "Verwijderen";
+"button_share" = "Delen";
+"button_upgrade" = "UPGRADEN";
+"button_restore_purchases" = "Aankopen herstellen";
+"button_start_trial" = "START 7-DAAGSE PROEFPERIODE";
+"button_purchase_lifetime" = "KOOP LEVENSLANG";
+"button_mark_watched" = "Markeer als bekeken";
+"button_mark_all_watched" = "ALLES BEKEKEN MARKEREN";
+"button_clear_season" = "SEIZOEN WISSEN";
+"button_yes" = "Ja";
+"button_no" = "Nee";
+"button_skip" = "Overslaan";
+"button_continue" = "Doorgaan";
+"button_get_started" = "Aan de slag";
 "button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_unfollow" = "Ontvolgen";
+"button_sign_in_apple" = "Inloggen met Apple";
+"button_view_timeline" = "Bekijk volledige tijdlijn";
+"button_hide" = "Verbergen";
+"button_show" = "Tonen";
+"button_upgrade_premium" = "UPGRADE NAAR PREMIUM";
+"button_unfollow_show" = "SERIE ONTVOLGEN";
+"button_completed_show" = "SERIE VOLTOOID";
+"button_archive_show" = "SERIE ARCHIVEREN";
+"button_unarchive" = "DEARCHIVEREN";
+"button_sign_out" = "Uitloggen";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
+"badge_airing" = "NU OP TV";
+"badge_premiering" = "PREMIERE";
+"badge_binge_ready" = "KLAAR OM TE BINGEN";
+"badge_anticipated" = "VERWACHT";
+"badge_cancelled" = "GEANNULEERD";
+"badge_watched" = "BEKEKEN";
+"badge_up_next" = "VOLGENDE";
 "badge_finale" = "FINALE";
 "badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_new" = "NIEUW";
+"badge_latest_added" = "LAATST TOEGEVOEGD";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
 "header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
+"header_catch_up" = "INHALEN VOOR DE FINALE";
+"header_episodes" = "AFLEVERINGEN";
 "header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
+"header_trending" = "TRENDING SERIES";
+"header_ending_soon" = "EINDIGT BINNENKORT";
+"header_premiering_soon" = "BINNENKORT IN PREMIERE";
+"header_currently_airing" = "NU OP TV";
+"header_watch_order" = "AANBEVOLEN KIJKVOLGORDE";
+"header_universe_premium" = "UNIVERSUM — PREMIUM";
 "header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_where_to_watch" = "WAAR TE KIJKEN";
+"header_browse_category" = "Bladeren op categorie";
+"header_binge" = "BINGE";
+"header_seasons_progress" = "SEIZOENEN & KIJKVOORTGANG";
+"header_your_library" = "JOUW BIBLIOTHEEK";
+"header_settings" = "INSTELLINGEN";
+"header_notifications" = "MELDINGEN";
+"header_notification_settings" = "MELDINGINSTELLINGEN";
+"header_anticipated" = "VERWACHT";
+"header_discover" = "ONTDEKKEN";
+"discover_subtitle" = "NIEUW, RECENT & BINNENKORT · VOLG VOORDAT ZE UITKOMEN";
+"discover_sooner" = "EERDER";
+"discover_later" = "LATER";
+"discover_by_network" = "OP NETWERK";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
+"time_days" = "DAGEN";
+"time_day" = "DAG";
+"time_hours" = "UUR";
+"time_hour" = "UUR";
 "time_minutes" = "MIN";
 "time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_episodes" = "AFLEVERINGEN";
+"time_episode" = "AFLEVERING";
+"time_eps_per_day" = "afl/dag";
+"time_ep_per_day" = "afl/dag";
+"time_days_to_watch" = "%d dagen om te kijken";
+"time_start_today" = "Begin vandaag";
+"time_start_date" = "Begin %@";
+"time_already_started" = "Al begonnen";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
+"season_label" = "SEIZOEN";
+"season_of_episodes" = "%d van %d";
+"season_aired" = "uitgezonden";
+"season_watched" = "BEKEKEN";
+"season_episodes_label" = "Afleveringen";
+"season_avg_runtime" = "Gem. speelduur";
 "season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_left_to_drop" = "%d nog te verschijnen";
+"season_main_series" = "HOOFDSERIE";
+"season_you_are_here" = "Hoofdserie · je bent hier";
+"season_progress" = "%d van %d uitgezonden · %d nog te verschijnen";
+
+// Binge Segments
+"segment_active" = "Actief";
+"segment_ended" = "Beëindigd";
+"segment_archived" = "Gearchiveerd";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "Nog niets om te bingen";
+"empty_when_seasons_finish" = "Als seizoenen klaar zijn met uitzenden,\nverschijnen ze hier klaar om te kijken";
+"empty_no_shows" = "Nog geen series gevolgd";
+"empty_search_to_add" = "Zoek om je favoriete series toe te voegen";
+"empty_no_spinoffs" = "Nog geen spin-offs";
+"empty_no_spinoffs_message" = "%@ heeft nog geen spin-offs of prequels. We voegen ze hier toe als er een wordt aangekondigd.";
+"empty_timeline" = "Niets op de tijdlijn";
+"empty_timeline_message" = "Je gevolgde series zijn momenteel niet\nop tv of binnenkort in première";
+"empty_no_results" = "Geen resultaten";
+"empty_no_shows_found" = "Geen series gevonden";
+"empty_slot" = "LEEG";
+"empty_no_active_shows" = "Geen actieve series";
+"empty_no_ended_shows" = "Geen beëindigde series";
+"empty_no_archived_shows" = "Geen gearchiveerde series";
+"empty_active_subtitle" = "Series die je nu kijkt verschijnen hier";
+"empty_ended_subtitle" = "Series die zijn afgelopen verschijnen hier";
+"empty_archived_subtitle" = "Series die je archiveert verschijnen hier";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
+"settings_heading" = "Instellingen";
+"settings_sound" = "Geluid";
+"settings_haptics" = "Trillingen";
+"settings_notifications" = "Meldingen";
+"settings_countdown_mode" = "Aftellen";
+"settings_reminders" = "Herinneringen";
+"settings_cloud_sync" = "Cloud-synchronisatie";
 "settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_get_in_touch" = "Neem contact op";
+"settings_privacy_policy" = "Privacybeleid";
+"settings_terms" = "Gebruiksvoorwaarden";
+"settings_api_credit" = "API geleverd door themoviedb.org";
+"settings_group_alerts" = "Meldingen";
+"settings_group_preferences" = "Voorkeuren";
+"settings_group_account" = "Account";
+"settings_group_developer" = "Ontwikkelaar";
+"settings_group_essentials" = "Essentieel";
+"settings_group_advanced" = "GEAVANCEERD";
+"settings_alerts_advanced" = "Geavanceerde meldingen ingeschakeld";
+"settings_alerts_basic" = "Alleen binge-klaar meldingen";
+"settings_streaming_services" = "Streamingdiensten";
+"settings_appearance" = "Weergave";
+"settings_dark" = "Donker";
+"settings_manage_account" = "Account beheren";
+"settings_help_feedback" = "Help & feedback";
+"settings_debug_premium" = "Debug Premium";
+"settings_enabled" = "Ingeschakeld";
+"settings_disabled" = "Uitgeschakeld";
+"settings_reset_onboarding" = "Onboarding resetten";
+"settings_completed" = "Voltooid";
+"settings_not_completed" = "Niet voltooid";
+"settings_reset_walkthrough" = "Rondleiding resetten";
+"settings_seen" = "Gezien";
+"settings_not_seen" = "Niet gezien";
+"settings_refresh_discover" = "Ontdekken vernieuwen";
+"settings_refreshing" = "Vernieuwen...";
+"settings_reload_data" = "Seriegegevens herladen";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "JE VOLGT NU:";
+"notification_premiere" = "SEIZOENSPREMIERE";
+"notification_new_episode" = "NIEUWE AFLEVERING";
+"notification_finale" = "FINALE HERINNERING";
+"notification_binge_ready" = "SEIZOEN KLAAR OM TE BINGEN";
+"notification_quiet_hours" = "STILLE UREN";
+"notification_default" = "STANDAARD MELDINGEN";
+"notification_applied_to_all" = "Toegepast op alle nieuwe series";
+"notif_push_title" = "Pushmeldingen";
+"notif_push_subtitle" = "Meldingen op dit apparaat";
+"notif_premiere_title" = "Premieredag";
+"notif_premiere_subtitle" = "Als een nieuw seizoen begint";
+"notif_premiere_full_subtitle" = "Als een gevolgd seizoen in première gaat";
+"notif_binge_ready_title" = "Klaar om te bingen";
+"notif_binge_ready_subtitle" = "De dag dat het volledige seizoen uit is";
+"notif_binge_ready_full_subtitle" = "Als een volledig seizoen klaar is met uitbrengen";
+"notif_weekly_title" = "Wekelijkse afleveringen";
+"notif_weekly_subtitle" = "Melding bij elke nieuwe aflevering";
+"notif_email_title" = "E-mailsamenvatting";
+"notif_email_subtitle" = "Wekelijks overzicht in je inbox";
+"notif_remind_early_title" = "Herinner me vroeg";
+"notif_remind_early_subtitle" = "Dagen voor binge-klaar";
+"notif_almost_there_title" = "Bijna klaar";
+"notif_almost_there_subtitle" = "Seintje als een seizoen nog 1 aflevering te gaan heeft";
+"notif_lead_time_title" = "Afteltijd vooraf";
+"notif_lead_time_subtitle" = "Herinner me voor binge-klaar dag";
+"notif_per_show_title" = "Timing per serie";
+"notif_per_show_subtitle" = "Stel meldingen individueel in per serie";
+"notif_weekly_drops_title" = "Wekelijkse afleveringen";
+"notif_weekly_drops_subtitle" = "Melden bij elke nieuwe aflevering (opt-in)";
+"notif_digest_title" = "Samenvatting";
+"notif_digest_subtitle" = "Bundel aankomende series in één overzicht";
+"notif_quiet_hours_title" = "Stille uren";
+"notif_quiet_hours_subtitle" = "Stil 23:00 – 08:00";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "ONTGRENDEL";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
 "premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_unlimited" = "Onbeperkt series";
+"premium_unlimited_desc" = "Volg al je favoriete series";
+"premium_spinoffs" = "Spin-off collecties";
+"premium_spinoffs_desc" = "Ontdek gerelateerde series & universums";
+"premium_notifications" = "Slimme meldingen";
+"premium_cloud_sync" = "Cloud-synchronisatie";
+"premium_yearly" = "JAARLIJKS";
+"premium_monthly" = "MAANDELIJKS";
+"premium_lifetime" = "LEVENSLANG";
+"premium_most_popular" = "MEEST POPULAIR";
+"premium_best_value" = "BESTE WAARDE";
+"premium_free_limit" = "Gratis gebruikers kunnen tot 3 series volgen";
+"premium_notifications_required" = "MELDINGEN VEREISEN PREMIUM";
+"premium_notifications_subtitle" = "Upgrade om meldingen te krijgen wanneer seizoenen klaar zijn om te bingen, premièredagen en meer.";
+"premium_all_alerts_available" = "Je hebt Premium — alle meldingen beschikbaar.";
+"premium_trial_legal" = "Proefperiode verlengt automatisch tenzij 24 uur voor het einde opgezegd.";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "Welkom bij";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "Weet wanneer je kunt bingen.";
+"onboarding_add_shows" = "Voeg je series toe";
+"onboarding_add_shows_desc" = "Zoek en volg je favoriete tv-series";
+"onboarding_notifications" = "Blijf op de hoogte";
+"onboarding_notifications_desc" = "Ontvang meldingen wanneer seizoenen klaar zijn om te bingen";
+"onboarding_complete" = "Je bent klaar!";
+"onboarding_step_of" = "STAP %d VAN %d";
+
+// Pain slide
+"onboarding_pain_label" = "HET PROBLEEM";
+"onboarding_pain_title" = "WACHT — IS DIE SERIE TERUG?";
+"onboarding_pain_description" = "Je ontdekt dat seizoenen weken geleden zijn afgelopen. Of dat je favoriete serie is verlengd zonder dat je het wist.";
+
+// Agitate slide
+"onboarding_agitate_label" = "WAAROM HET GEBEURT";
+"onboarding_agitate_title" = "BIJHOUDEN IS ONMOGELIJK.";
+"onboarding_agitate_description" = "Series verschijnen op verschillende apps, met verschillende schema's. Tegen de tijd dat je eraan denkt, is de finale al uitgezonden.";
+
+// Solution slide
+"onboarding_solution_label" = "DE OPLOSSING";
+"onboarding_solution_title" = "COUNTDOWN2BINGE LOST DIT OP.";
+"onboarding_solution_description" = "Eén plek om elke serie te volgen. Ontvang een melding zodra een seizoen eindigt — zodat je kunt bingen zonder te stoppen.";
+
+// Add shows step
+"onboarding_add_shows_label" = "VOEG JE SERIES TOE";
+"onboarding_add_shows_title" = "WAAR WACHT JE OP?";
+"onboarding_add_shows_description" = "Zoek en volg de series die je wilt bingen. Voeg er zoveel toe als je wilt.";
+
+// Review step
+"onboarding_review_title" = "SELECTIE BEKIJKEN";
+"onboarding_review_description" = "Dit is wat je volgt. Verwijder alles waar je je hebt bedacht, of voeg meer toe.";
+
+// All set step
+"onboarding_all_set_title" = "JE BENT KLAAR.";
+"onboarding_following" = "VOLGEND";
+
+// Paywall step
+"onboarding_choose_plan" = "KIES JE ABONNEMENT";
+"onboarding_never_miss" = "MIS NOOIT EEN FINALE.";
+
+// Buttons
+"button_try_again" = "Opnieuw proberen";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "%@ verwijderen?";
+"alert_remove_message" = "Dit verwijdert de serie uit je gevolgde lijst.";
+"alert_unfollow" = "%@ ontvolgen?";
+"alert_error" = "Fout";
+"alert_purchase_error" = "Aankoopfout";
+"alert_purchase_failed" = "AANKOOP MISLUKT";
+"button_ok" = "OK";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
+"show_detail_overview" = "Overzicht";
+"show_detail_seasons" = "Seizoenen";
 "show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_no_overview" = "Geen overzicht beschikbaar.";
+"show_detail_binge_ready_date" = "KLAAR OM TE BINGEN %@";
+"show_detail_follow_spinoff" = "Volg spin-off";
 
 // =============================================================================
 // MARK: - Spinoff Types
 // =============================================================================
 
 "spinoff_prequel" = "PREQUEL";
-"spinoff_sequel" = "SEQUEL";
-"spinoff_companion" = "COMPANION";
+"spinoff_sequel" = "VERVOLG";
+"spinoff_companion" = "BEGELEIDEND";
 "spinoff_remake" = "REMAKE";
 "spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel_desc" = "Een prequel-serie die zich afspeelt voor de gebeurtenissen van de hoofdserie.";
+"spinoff_sequel_desc" = "Een vervolg dat het verhaal voortzet na de hoofdserie.";
+"spinoff_companion_desc" = "Een begeleidende serie die naast de hoofdserie loopt.";
+"spinoff_remake_desc" = "Een nieuwe versie van de originele serie.";
+"spinoff_spinoff_desc" = "Een spin-off die personages uit de hoofdserie verkent.";
+"spinoff_main_series_desc" = "De originele serie waarmee het allemaal begon.";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "Zoek series om te bingen";
+"search_heading" = "Zoeken";
+"search_see_all" = "ALLES ZIEN";
+"search_try_different" = "Probeer een andere categorie";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
 "category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
+"category_comedy" = "Komedie";
+"category_action" = "Actie & Avontuur";
 "category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
+"category_crime" = "Misdaad";
+"category_mystery" = "Mysterie";
+"category_animation" = "Animatie";
+"category_documentary" = "Documentaire";
 "category_reality" = "Reality";
-"category_family" = "Family";
+"category_family" = "Familie";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
 "account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_signed_in_apple" = "Ingelogd met Apple";
+"account_sync_status" = "Synchronisatiestatus";
+"account_sync_now" = "Nu synchroniseren";
+"account_sign_out" = "Uitloggen";
+"account_delete" = "Account verwijderen";
+"sync_welcome_back" = "Welkom terug!";
+"sync_backed_up" = "Back-up voltooid";
+"sync_restored_one" = "We hebben 1 serie hersteld uit je cloudback-up.";
+"sync_restored_many" = "We hebben %lld series hersteld uit je cloudback-up.";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
 "a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_follow_button" = "Volg %@";
+"a11y_unfollow_button" = "Ontvolg %@";
+"a11y_close_button" = "Sluiten";
+"a11y_settings_button" = "Instellingen";
+"a11y_search_button" = "Zoeken";
+"a11y_play_trailer" = "Speel trailer af";
+"a11y_episode_watched" = "Aflevering %d bekeken";
+"a11y_episode_not_watched" = "Aflevering %d niet bekeken";
+"a11y_season_progress" = "%d van %d afleveringen bekeken";
+"a11y_binge_ready" = "Klaar om te bingen";
+"a11y_currently_airing" = "Momenteel op tv";
+"a11y_days_remaining" = "%d dagen resterend";
+"a11y_swipe_seasons" = "Veeg naar links of rechts om van seizoen te wisselen";
+"a11y_double_tap_details" = "Dubbeltik om details te bekijken";
+"a11y_double_tap_follow" = "Dubbeltik om te volgen";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "GEVOLGD";
+"stats_upcoming" = "AANKOMEND";
+"footer_cycle_message" = "Series komen terug\nals seizoenen eindigen";
+"label_start" = "START";
+"label_eps" = "AFL";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "VOLLEDIG SEIZOEN BESCHIKBAAR";
+"status_premieres_in_days %lld" = "PREMIERE OVER %lld DAG(EN)";
+"status_premieres_date %@" = "PREMIERE %@";
+"status_ready_to_binge" = "Klaar om te bingen";
+"status_until_new_season" = "Tot nieuw seizoen";
+"status_until_binge_ready" = "Tot klaar om te bingen";
+"status_all_episodes_finished %lld" = "Alle %lld afleveringen uit · net afgelopen";
+"status_finale_date %@" = "Finale %@";
+"status_airing_weekly" = "Wekelijks op tv";
+"status_premieres_ready %@ %lld" = "Premiere %@ · ~%lldd klaar";
+"status_coming_soon" = "Binnenkort";
+"status_no_release_date" = "Geen releasedatum aangekondigd";
+
+// Season info
+"season_all_out %lld" = "alle %lld uit";
+"season_partial_out %lld %lld" = "%lld/%lld uit";
+"season_episode_count %lld" = "%lld afleveringen";
+
+// Pills
+"pill_binge_ready %lld" = "Klaar om te bingen · alle %lld uit";
+"pill_now_airing %lld %lld" = "Nu op tv · %lld/%lld uit";
+"pill_premiering_in %lld" = "Binnenkort in première · over %lldd";
+"pill_premiering_soon" = "Binnenkort in première";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "Serie voltooid";
+"follow_badge_airing" = "Nu op tv";
+"follow_badge_premiering" = "Binnenkort in première";
+"follow_stat_binge_ready" = "klaar om te bingen";
+"follow_stat_days_finale" = "dagen tot finale";
+"follow_stat_days_premiere" = "dagen tot première";
+"follow_stat_no_date" = "nog geen datum";
+"follow_line_complete %lld" = "Alle %lld afleveringen zijn uit — begin wanneer je wilt.";
+"follow_line_airing" = "Afleveringen verschijnen wekelijks. We laten je weten wanneer het seizoen klaar is.";
+"follow_line_premiering" = "Binnenkort in première. We melden je wanneer het begint.";
+"follow_line_anticipated" = "Geen releasedatum aangekondigd. We waarschuwen je zodra er een komt.";
+"follow_added_to_timeline" = "TOEGEVOEGD AAN JE TIJDLIJN IN";
+"badge_added_to_timeline" = "TOEGEVOEGD AAN TIJDLIJN";
+
+// Timeline stages
+"timeline_series_complete" = "SERIE VOLTOOID";
+"timeline_now_airing" = "NU OP TV";
+"timeline_premiering" = "IN PREMIÈRE";
+"timeline_anticipated" = "VERWACHT";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "INFO";
+"about_genre" = "Genre";
+"about_seasons" = "Seizoenen";
+"about_episodes" = "Afleveringen";
+"about_status" = "Status";
+"about_network" = "Netwerk";
+"about_first_aired" = "Eerste uitzending";
+"about_rating" = "Beoordeling";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "GERELATEERD";
+"header_spinoffs_related" = "SPIN-OFFS & GERELATEERD";
+"badge_premium" = "PREMIUM";
+"premium_discover_spinoffs" = "Ontdek spin-offs & prequels";
+"button_unlock_premium" = "ONTGRENDEL MET PREMIUM";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "Snelle rondleiding";
+"walkthrough_title" = "JE TIJDLIJN, VOOR JE GESORTEERD.";
+"walkthrough_description" = "Elke serie die je volgt wordt gegroepeerd in drie fasen op basis van hoe dicht het bij bingeklaar is — en series schuiven vanzelf op naarmate de tijd verstrijkt. Stap door om te zien waar elk terecht komt.";
+"walkthrough_show_me" = "LAAT ZIEN →";
+"walkthrough_next" = "VOLGENDE →";
+"walkthrough_got_it" = "BEGREPEN — LATEN WE GAAN";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "SERIE VOLGEN";
+"button_show_less" = "Minder tonen";
+"button_more" = "Meer";
+"button_save" = "OPSLAAN";
+"button_start_free_trial" = "START GRATIS PROEFPERIODE";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "ONTGRENDEL PREMIUM";
+"premium_advanced_features" = "Geavanceerde meldingen, timing per serie & meer";
+"premium_feature" = "PREMIUM FUNCTIE";
+"premium_feature_description" = "Stel precies in wanneer en hoe Countdown2Binge je meldt. Ontgrendel met Premium.";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "Aftellen";
+"share_just_binged" = "Net gebinged";
+"share_until_premiere" = "Tot première";
+"share_release_pending" = "Releasedatum onbekend";
+"share_season_complete" = "Seizoen compleet";
+"share_messages" = "Berichten";
+"share_instagram" = "Instagram";
+"share_copy_link" = "Kopieer link";
+"share_more" = "Meer";
+"share_binged" = "GEBINGED";
+"share_default_countdown" = "Ik wacht om deze van begin tot eind te bingen. 🍿";
+"share_default_binged %lld" = "Net alle %lld afleveringen van begin tot eind gebinged. 🍿✅";
+"share_enter_message" = "Typ je bericht...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "GRATIS ABONNEMENT";
+"free_shows_max %lld" = "%lld SERIES MAXIMUM";
+"free_select" = "SELECTEER";
+"free_to_remove" = "OM TE VERWIJDEREN";
+"free_limit_description %lld" = "Gratis volgt tot %lld series. Tik op de series die je wilt verwijderen, bevestig dan — niets wordt verwijderd tot je bevestigt. Of ga onbeperkt met Premium.";
+"free_go_premium_keep %lld" = "◆ GA PREMIUM — BEHOUD ALLE %lld";
+"free_continue_free" = "DOORGAAN MET GRATIS";
+"free_select_to_remove %lld" = "SELECTEER %lld OM TE VERWIJDEREN";
+"free_select_more %lld" = "SELECTEER %lld MEER";
+"free_remove_selected %lld" = "VERWIJDER %lld GESELECTEERD";
+"free_marked_to_remove" = "GEMARKEERD OM TE VERWIJDEREN · TIK OM TE BEHOUDEN";
+"free_marked_remove" = "GEMARKEERD OM TE VERWIJDEREN";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "JE BENT KLAAR";
+"downgrade_remove" = "VERWIJDER";
+"downgrade_to_continue" = "OM DOOR TE GAAN";
+"downgrade_at_limit" = "Je series vallen binnen de gratis limiet. Tik op doorgaan om verder te gaan.";
+"downgrade_over_limit %lld" = "Je premium-abonnement is verlopen. Gratis accounts volgen tot %lld series. Selecteer series om te verwijderen en bevestig.";
+"downgrade_resubscribe %lld" = "OPNIEUW ABONNEREN OM ALLE %lld TE BEHOUDEN";
+"downgrade_followed %@" = "GEVOLGD %@";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "VOLLEDIGE TIJDLIJN";
+"timeline_shows_tracked %lld" = "%lld SERIES GEVOLGD";
+"timeline_now_playing" = "NU BEZIG";
+"timeline_finale_countdown" = "FINALE AFTELLEN";
+"timeline_upcoming_seasons" = "AANKOMENDE SEIZOENEN";
+"timeline_waiting_dates" = "WACHTEN OP DATUMS";
+"timeline_to_finale" = "TOT FINALE";
+"timeline_to_premiere" = "TOT PREMIÈRE";
+"timeline_tbd" = "NOG ONBEKEND";
+"timeline_expected" = "VERWACHT";
+"timeline_release" = "RELEASE";
+"timeline_season %lld" = "Seizoen %lld";
+"timeline_tba" = "NOG AAN TE KONDIGEN";
+"network_show_count %lld" = "%lld series";
+
+// Additional UI strings
+"timeline_your_shows" = "JOUW SERIES";
+"timeline_countdown_finale" = "AFTELLEN NAAR FINALE";
+"detail_to_binge" = "OM TE BINGEN";
+"detail_current" = "HUIDIG";
+"episode_watched" = "BEKEKEN";
+"episode_not_aired" = "NOG NIET UITGEZONDEN";
+"status_now" = "NU";
+"status_season_ended" = "SEIZOEN BEËINDIGD";
+"paywall_best" = "BESTE";
+"poster_placeholder" = "POSTER";
+
+// Additional missing strings
+"season_number %lld" = "Seizoen %lld";
+"season_episode_info %lld %lld" = "Seizoen %lld · %lld afleveringen";
+"episode_number %lld" = "Aflevering %lld";
+"episode_short %lld" = "AFL %lld · 45M";
+"today_date %@" = "Vandaag · %@";
+"last_updated %@" = "Laatst bijgewerkt: %@";
+"no_episodes_available" = "Geen afleveringen beschikbaar";
+"link_terms" = "Voorwaarden";
+"link_privacy" = "Privacy";
+"link_restore" = "Herstellen";
+"paywall_tracking_shows %lld" = "Je volgt %lld series. Ga Pro om gewaarschuwd te worden zodra een seizoen klaar is om te bingen.";
+"settings_coming_soon" = "Binnenkort beschikbaar";
+"binge_watched_count %lld %lld" = "%lld/%lld bekeken";
+"binge_complete_suffix" = " · compleet";
+"binge_current_suffix" = " · huidig";
+"binge_seasons_count %lld" = "%lld seizoenen";
+"binge_status_complete" = "Compleet";
+"binge_status_current %lld %lld" = "Huidig · %lld/%lld bekeken";
+"unfollow_show" = "Serie ontvolgen";
+"tap_episode_details" = "Tik op een aflevering voor details";
+"countdown_in" = "over";
+"view_on_timeline" = "BEKIJK OP MIJN TIJDLIJN →";
+"timeline_binge_ready_in %lld" = "Op je tijdlijn · klaar om te bingen over ~%lld dagen";
+"timeline_waiting_anticipated" = "Volgend · wachtend in Verwacht";
+"notif_binge_ready_alert" = "Binge-klaar melding";
+"notif_ping_when_out" = "Meld me de dag dat het volledig uit is";
+"premieres_date %@" = "PREMIÈRE %@";
+"binge_ready_when_airs" = "Het hele seizoen is klaar om te bingen zodra dit wordt uitgezonden.";
+"watch_on %@" = "Kijk op %@";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "%lld series toegevoegd. We volgen elk seizoen en melden je zodra elk klaar is om te bingen.";
+"hero_more_count %lld" = "+%lld MEER";
+"onboarding_shows_count %lld" = "%lld SERIES";
+"discover_upcoming_count %lld" = "%lld AANKOMEND";
+
+// Season status badges
+"season_status_new" = "NIEUW";
+"season_status_airing" = "OP TV";
+"season_status_ready" = "KLAAR";
+
+// Spinoffs tabs
+"tab_episodes" = "Afleveringen";
+"tab_spinoffs" = "Spin-offs";
+
+// Show status
+"show_status_returning" = "Keert terug";
+"show_status_ended" = "Beëindigd";
+"show_status_canceled" = "Geannuleerd";
+"show_status_in_production" = "In productie";
+"show_status_planned" = "Gepland";
+"show_status_pilot" = "Pilot";
+
+// Timeline phases
+"phase_anticipated" = "Verwacht";
+"phase_premiering_soon" = "Binnenkort in première";
+"phase_now_airing" = "Nu op tv";
+"phase_binge_ready" = "Klaar om te bingen";
+"phase_unknown" = "Onbekend";
+"phase_ready_to_binge" = "Klaar om te bingen";
+"phase_binge_ready_in" = "Klaar om te bingen over";
+
+// Countdown display mode
+"countdown_mode_days" = "Dagen";
+"countdown_mode_episodes" = "Afleveringen";
+
+// Follow hints
+"follow_hint_airing %lld" = "Volg en we wachten op alle %lld afleveringen, daarna melden we je de dag dat het bingeklaar is.";
+"follow_hint_anticipated" = "Volg het en we plaatsen het in Verwacht — aftellend zodra een datum wordt aangekondigd.";
+
+// Episode status
+"episode_status_aired" = "Uitgezonden";
+"episode_status_up_next" = "Volgende";
+"episode_status_not_aired" = "Nog niet uitgezonden";
+"episode_status_finale" = "Finale";
+
+// Rewatch
+"rewatch_single_season %lld" = "Herkijk S%lld";
+"rewatch_season_range %lld %lld" = "Herkijk S%lld–S%lld";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "Volg om te volgen · klaar om te bingen over ~%lld dagen";
+"follow_prompt_no_date" = "Volg om te volgen · nog geen releasedatum";
+
+// Episode actions
+"button_clear" = "Wissen";
+"button_mark_all_watched" = "Alles bekeken markeren";
+"button_mark_aired_watched" = "Uitgezonden bekeken markeren";
+
+// Episode status text
+"status_complete_rewatch" = "Compleet — beschikbaar om te herkijken";
+"status_full_season_available" = "Volledig seizoen beschikbaar";
+"status_no_episodes_yet" = "Nog geen afleveringen uitgebracht";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ Op je tijdlijn · klaar om te bingen over ~%lld dagen";
+"following_waiting_anticipated" = "✓ Volgend · wachtend in Verwacht";
+"status_partial_aired %lld %lld" = "%lld van %lld uitgezonden · rest verschijnt wekelijks";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ NOG NIET AAN HET VOLGEN";
+"plan_season_episodes %@ %lld" = "%@ · %lld afleveringen";
+"episode_count_short %lld" = "%lld afl";
+"episode_placeholder %lld" = "Aflevering %lld";
+"episode_in_days %lld" = " · over %lldd";
+"episode_label_short %lld" = "Afl %lld";
+"episode_label_finale" = "Finale";
+"episode_label_aired" = "Uitgezonden";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "Laden van series mislukt. Probeer het opnieuw.";
+"error_load_trending" = "Laden van trending series mislukt";
+"error_invalid_url" = "Ongeldige URL";
+"error_network %@" = "Netwerkfout: %@";
+"error_decode %@" = "Decoderen van respons mislukt: %@";
+"error_no_data" = "Geen gegevens ontvangen";
+"error_http %lld" = "HTTP-fout: %lld";
+"error_no_purchases" = "Geen eerdere aankopen gevonden om te herstellen.";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "alle afleveringen uit";
+"subtext_left_to_release %lld" = "%lld nog te verschijnen";
+"subtext_season_complete" = "seizoen compleet";
+"subtext_of_season_released" = "van het seizoen uitgebracht";
+"subtext_episodes_ready %lld %@" = "%lld afleveringen · %@";
+"subtext_all_out" = "alles uit";
+"subtext_no_date_yet" = "nog geen datum";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "Premium · Gratis proefperiode";
+"account_free_plan" = "Gratis abonnement";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "Uitgezonden";
+"legend_up_next" = "Volgende";
+"legend_not_yet_aired" = "Nog niet uitgezonden";
+"legend_finale" = "Finale";
+"legend_start_today" = "Begin vandaag";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "Alle netwerken";
+"season_abbrev" = "S";
+"days_abbrev" = "D";
+"time_days_short %lld" = "%lldD";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "Series die nu nieuwe afleveringen uitbrengen, week na week. Degene die het dichtst bij de finale is, staat bovenop de stapel — dat is wat je hierna kunt bingen.";
+"walkthrough_airing_note" = "Als elke finale wordt uitgezonden, gaat de serie naar Klaar om te bingen en komt de volgende bovenaan.";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "Series met een vastgestelde premièredatum, dag voor dag aftellend tot het nieuwe seizoen begint.";
+"walkthrough_premiering_note" = "Zodra een seizoen in première gaat, schuift het naar Nu op tv.";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "Verlengde series die nog geen releasedatum hebben. Ze wachten rustig onderaan zodat je ze nooit uit het oog verliest.";
+"walkthrough_anticipated_note" = "Zodra een datum wordt aangekondigd, springen ze naar Binnenkort in première en beginnen af te tellen.";
+
+// Transitions
+"walkthrough_date_set_hint" = "The Bear heeft net een premièredatum gekregen. Het schuift omhoog van Verwacht naar Binnenkort in première en begint af te tellen.";
+"walkthrough_date_set_note" = "Verwacht → Binnenkort in première";
+"walkthrough_premieres_hint" = "Shogun is net in première gegaan. Het klimt naar Nu op tv en voegt zich bij de stapel terwijl nieuwe afleveringen elke week verschijnen.";
+"walkthrough_premieres_note" = "Binnenkort in première → Nu op tv";
+"walkthrough_finale_hint" = "De finale van The Last of Us is uitgezonden — het volledige seizoen is nu Klaar om te bingen. Het volgende seizoen keert terug naar Verwacht tot een nieuwe datum wordt aangekondigd.";
+"walkthrough_finale_note" = "Nu op tv → Klaar om te bingen → volgend seizoen naar Verwacht";
+"walkthrough_label_date_set" = "EEN DATUM IS VASTGESTELD";
+"walkthrough_label_premieres" = "HET GAAT IN PREMIÈRE";
+"walkthrough_label_finale" = "DE FINALE WORDT UITGEZONDEN";

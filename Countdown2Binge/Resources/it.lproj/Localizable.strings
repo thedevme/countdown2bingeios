@@ -2,7 +2,7 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Italian (Italiano)
 */
 
 // =============================================================================
@@ -10,203 +10,330 @@
 // =============================================================================
 
 "tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_discover" = "Scopri";
+"tab_binge_ready" = "Pronto per la maratona";
+"tab_settings" = "Impostazioni";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
+"button_follow" = "SEGUI";
+"button_following" = "SEGUITO";
+"button_cancel" = "Annulla";
+"button_done" = "Fatto";
+"button_close" = "Chiudi";
+"button_remove" = "Rimuovi";
+"button_share" = "Condividi";
+"button_upgrade" = "AGGIORNA";
+"button_restore_purchases" = "Ripristina acquisti";
+"button_start_trial" = "INIZIA LA PROVA GRATUITA DI 7 GIORNI";
+"button_purchase_lifetime" = "ACQUISTA A VITA";
+"button_mark_watched" = "Segna come visto";
+"button_mark_all_watched" = "SEGNA TUTTI COME VISTI";
+"button_clear_season" = "CANCELLA STAGIONE";
+"button_yes" = "Si";
 "button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
-"button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_skip" = "Salta";
+"button_continue" = "Continua";
+"button_get_started" = "Inizia";
+"button_start_binge" = "▸ INIZIA MARATONA";
+"button_unfollow" = "Smetti di seguire";
+"button_sign_in_apple" = "Accedi con Apple";
+"button_view_timeline" = "Visualizza tutta la timeline";
+"button_hide" = "Nascondi";
+"button_show" = "Mostra";
+"button_upgrade_premium" = "PASSA A PREMIUM";
+"button_unfollow_show" = "SMETTI DI SEGUIRE";
+"button_completed_show" = "SERIE COMPLETATA";
+"button_archive_show" = "ARCHIVIA SERIE";
+"button_unarchive" = "RIPRISTINA";
+"button_sign_out" = "Esci";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
+"badge_airing" = "IN ONDA";
+"badge_premiering" = "IN ANTEPRIMA";
+"badge_binge_ready" = "PRONTO PER LA MARATONA";
+"badge_anticipated" = "ATTESO";
+"badge_cancelled" = "CANCELLATO";
+"badge_watched" = "VISTO";
+"badge_up_next" = "PROSSIMO";
 "badge_finale" = "FINALE";
 "badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_new" = "NUOVO";
+"badge_latest_added" = "AGGIUNTI DI RECENTE";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
-"header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
-"header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
-"header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_trailers" = "TRAILER E ANTEPRIME";
+"header_catch_up" = "RECUPERA PRIMA DEL FINALE";
+"header_episodes" = "EPISODI";
+"header_spinoffs" = "SPIN-OFF";
+"header_trending" = "SERIE DI TENDENZA";
+"header_ending_soon" = "IN SCADENZA";
+"header_premiering_soon" = "PROSSIMAMENTE";
+"header_currently_airing" = "ATTUALMENTE IN ONDA";
+"header_watch_order" = "ORDINE DI VISIONE CONSIGLIATO";
+"header_universe_premium" = "UNIVERSO — PREMIUM";
+"header_cast_crew" = "CAST E TROUPE";
+"header_where_to_watch" = "DOVE GUARDARE";
+"header_browse_category" = "Sfoglia per categoria";
+"header_binge" = "MARATONA";
+"header_seasons_progress" = "STAGIONI E PROGRESSI";
+"header_your_library" = "LA TUA LIBRERIA";
+"header_settings" = "IMPOSTAZIONI";
+"header_notifications" = "NOTIFICHE";
+"header_notification_settings" = "IMPOSTAZIONI NOTIFICHE";
+"header_anticipated" = "ATTESI";
+"header_discover" = "SCOPRI";
+"discover_subtitle" = "NUOVI, RECENTI E IN ARRIVO · SEGUI PRIMA CHE ESCANO";
+"discover_sooner" = "PRIMA";
+"discover_later" = "DOPO";
+"discover_by_network" = "PER RETE";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
+"time_days" = "GIORNI";
+"time_day" = "GIORNO";
+"time_hours" = "ORE";
+"time_hour" = "ORA";
 "time_minutes" = "MIN";
 "time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_episodes" = "EPISODI";
+"time_episode" = "EPISODIO";
+"time_eps_per_day" = "ep/giorno";
+"time_ep_per_day" = "ep/giorno";
+"time_days_to_watch" = "%d giorni per guardare";
+"time_start_today" = "Inizia oggi";
+"time_start_date" = "Inizia il %@";
+"time_already_started" = "Gia iniziato";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
+"season_label" = "STAGIONE";
+"season_of_episodes" = "%d di %d";
+"season_aired" = "trasmesso";
+"season_watched" = "VISTO";
+"season_episodes_label" = "Episodi";
+"season_avg_runtime" = "Durata media";
 "season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_left_to_drop" = "%d da uscire";
+"season_main_series" = "SERIE PRINCIPALE";
+"season_you_are_here" = "Serie principale · sei qui";
+"season_progress" = "%d di %d trasmessi · %d da uscire";
+
+// Binge Segments
+"segment_active" = "Attivi";
+"segment_ended" = "Terminati";
+"segment_archived" = "Archiviati";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "Niente da guardare in maratona";
+"empty_when_seasons_finish" = "Quando le stagioni finiranno di andare in onda,\nappariranno qui pronte da guardare";
+"empty_no_shows" = "Nessuna serie seguita";
+"empty_search_to_add" = "Cerca per aggiungere le tue serie preferite";
+"empty_no_spinoffs" = "Nessuno spin-off";
+"empty_no_spinoffs_message" = "%@ non ha spin-off o prequel. Li aggiungeremo qui se ne viene annunciato uno.";
+"empty_timeline" = "Niente sulla Timeline";
+"empty_timeline_message" = "Le serie che segui non sono attualmente\nin onda o in arrivo";
+"empty_no_results" = "Nessun risultato";
+"empty_no_shows_found" = "Nessuna serie trovata";
+"empty_slot" = "VUOTO";
+"empty_no_active_shows" = "Nessuna serie attiva";
+"empty_no_ended_shows" = "Nessuna serie terminata";
+"empty_no_archived_shows" = "Nessuna serie archiviata";
+"empty_active_subtitle" = "Le serie che stai guardando appariranno qui";
+"empty_ended_subtitle" = "Le serie terminate appariranno qui";
+"empty_archived_subtitle" = "Le serie archiviate appariranno qui";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
+"settings_heading" = "Impostazioni";
+"settings_sound" = "Suono";
+"settings_haptics" = "Feedback aptico";
+"settings_notifications" = "Notifiche";
+"settings_countdown_mode" = "Conto alla rovescia";
+"settings_reminders" = "Promemoria";
+"settings_cloud_sync" = "Sincronizzazione cloud";
 "settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_get_in_touch" = "Contattaci";
+"settings_privacy_policy" = "Informativa sulla privacy";
+"settings_terms" = "Termini di utilizzo";
+"settings_api_credit" = "API fornita da themoviedb.org";
+"settings_group_alerts" = "Avvisi";
+"settings_group_preferences" = "Preferenze";
+"settings_group_account" = "Account";
+"settings_group_developer" = "Sviluppatore";
+"settings_group_essentials" = "Essenziali";
+"settings_group_advanced" = "AVANZATE";
+"settings_alerts_advanced" = "Avvisi avanzati attivati";
+"settings_alerts_basic" = "Solo avvisi maratona";
+"settings_streaming_services" = "Servizi di streaming";
+"settings_appearance" = "Aspetto";
+"settings_dark" = "Scuro";
+"settings_manage_account" = "Gestisci account";
+"settings_help_feedback" = "Aiuto e feedback";
+"settings_debug_premium" = "Debug Premium";
+"settings_enabled" = "Attivato";
+"settings_disabled" = "Disattivato";
+"settings_reset_onboarding" = "Reimposta onboarding";
+"settings_completed" = "Completato";
+"settings_not_completed" = "Non completato";
+"settings_reset_walkthrough" = "Reimposta tutorial";
+"settings_seen" = "Visto";
+"settings_not_seen" = "Non visto";
+"settings_refresh_discover" = "Aggiorna Scopri";
+"settings_refreshing" = "Aggiornamento...";
+"settings_reload_data" = "Ricarica dati serie";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "ORA STAI SEGUENDO:";
+"notification_premiere" = "PREMIERE DELLA STAGIONE";
+"notification_new_episode" = "NUOVO EPISODIO";
+"notification_finale" = "PROMEMORIA FINALE";
+"notification_binge_ready" = "STAGIONE PRONTA PER LA MARATONA";
+"notification_quiet_hours" = "ORE DI SILENZIO";
+"notification_default" = "NOTIFICHE PREDEFINITE";
+"notification_applied_to_all" = "Applicato a tutte le nuove serie";
+"notif_push_title" = "Notifiche push";
+"notif_push_subtitle" = "Avvisi su questo dispositivo";
+"notif_premiere_title" = "Giorno della premiere";
+"notif_premiere_subtitle" = "Quando inizia una nuova stagione";
+"notif_premiere_full_subtitle" = "Quando una stagione seguita va in onda";
+"notif_binge_ready_title" = "Pronto per la maratona";
+"notif_binge_ready_subtitle" = "Il giorno in cui esce la stagione completa";
+"notif_binge_ready_full_subtitle" = "Quando una stagione completa finisce di uscire";
+"notif_weekly_title" = "Episodi settimanali";
+"notif_weekly_subtitle" = "Avviso per ogni nuovo episodio";
+"notif_email_title" = "Riepilogo email";
+"notif_email_subtitle" = "Riassunto settimanale nella tua casella";
+"notif_remind_early_title" = "Ricordami in anticipo";
+"notif_remind_early_subtitle" = "Giorni prima che sia pronto per la maratona";
+"notif_almost_there_title" = "Ci siamo quasi";
+"notif_almost_there_subtitle" = "Avviso quando manca 1 episodio alla fine";
+"notif_lead_time_title" = "Anticipo del conto alla rovescia";
+"notif_lead_time_subtitle" = "Ricordami prima del giorno della maratona";
+"notif_per_show_title" = "Tempistiche per serie";
+"notif_per_show_subtitle" = "Imposta avvisi individualmente per ogni serie";
+"notif_weekly_drops_title" = "Uscite episodi settimanali";
+"notif_weekly_drops_subtitle" = "Notifica per ogni nuovo episodio (opzionale)";
+"notif_digest_title" = "Riepilogo";
+"notif_digest_subtitle" = "Raggruppa le serie in arrivo in un unico sommario";
+"notif_quiet_hours_title" = "Ore di silenzio";
+"notif_quiet_hours_subtitle" = "Silenzia 23:00 - 08:00";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "SBLOCCA";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
 "premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_unlimited" = "Serie illimitate";
+"premium_unlimited_desc" = "Tieni traccia di tutte le tue serie preferite";
+"premium_spinoffs" = "Collezioni di spin-off";
+"premium_spinoffs_desc" = "Scopri serie correlate e universi";
+"premium_notifications" = "Notifiche intelligenti";
+"premium_cloud_sync" = "Sincronizzazione cloud";
+"premium_yearly" = "ANNUALE";
+"premium_monthly" = "MENSILE";
+"premium_lifetime" = "A VITA";
+"premium_most_popular" = "PIU POPOLARE";
+"premium_best_value" = "MIGLIOR VALORE";
+"premium_free_limit" = "Gli utenti gratuiti possono seguire fino a 3 serie";
+"premium_notifications_required" = "LE NOTIFICHE RICHIEDONO PREMIUM";
+"premium_notifications_subtitle" = "Aggiorna per ricevere notifiche quando le stagioni sono pronte per la maratona, i giorni delle premiere e altro.";
+"premium_all_alerts_available" = "Hai Premium - tutti gli avvisi disponibili.";
+"premium_trial_legal" = "La prova si rinnova automaticamente se non annullata 24 ore prima della scadenza.";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "Benvenuto su";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "Saprai quando e pronto per la maratona.";
+"onboarding_add_shows" = "Aggiungi le tue serie";
+"onboarding_add_shows_desc" = "Cerca e segui le tue serie TV preferite";
+"onboarding_notifications" = "Resta aggiornato";
+"onboarding_notifications_desc" = "Ricevi notifiche quando le stagioni sono pronte per la maratona";
+"onboarding_complete" = "Tutto pronto!";
+"onboarding_step_of" = "PASSO %d DI %d";
+
+// Pain slide
+"onboarding_pain_label" = "IL PROBLEMA";
+"onboarding_pain_title" = "ASPETTA — QUELLA SERIE E TORNATA?";
+"onboarding_pain_description" = "Scopri che le stagioni sono finite settimane fa. O che la tua serie preferita e stata rinnovata e non ne sapevi nulla.";
+
+// Agitate slide
+"onboarding_agitate_label" = "PERCHE SUCCEDE";
+"onboarding_agitate_title" = "TENERE TRACCIA E IMPOSSIBILE.";
+"onboarding_agitate_description" = "Le serie escono su app diverse, con calendari diversi. Quando te ne ricordi, il finale e gia andato in onda.";
+
+// Solution slide
+"onboarding_solution_label" = "LA SOLUZIONE";
+"onboarding_solution_title" = "COUNTDOWN2BINGE RISOLVE QUESTO.";
+"onboarding_solution_description" = "Un unico posto per tracciare ogni serie. Ricevi una notifica nel momento in cui una stagione finisce - cosi puoi guardarla in maratona senza fermarti.";
+
+// Add shows step
+"onboarding_add_shows_label" = "AGGIUNGI LE TUE SERIE";
+"onboarding_add_shows_title" = "COSA STAI ASPETTANDO?";
+"onboarding_add_shows_description" = "Cerca e segui le serie che vuoi guardare in maratona. Aggiungine quante ne vuoi.";
+
+// Review step
+"onboarding_review_title" = "RIVEDI LA SELEZIONE";
+"onboarding_review_description" = "Ecco cosa stai monitorando. Rimuovi quello che hai cambiato idea, o aggiungine altre.";
+
+// All set step
+"onboarding_all_set_title" = "TUTTO PRONTO.";
+"onboarding_following" = "STAI SEGUENDO";
+
+// Paywall step
+"onboarding_choose_plan" = "SCEGLI IL TUO PIANO";
+"onboarding_never_miss" = "NON PERDERE MAI UN FINALE.";
+
+// Buttons
+"button_try_again" = "Riprova";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "Rimuovere %@?";
+"alert_remove_message" = "Questo rimuovera la serie dalla tua lista.";
+"alert_unfollow" = "Smettere di seguire %@?";
+"alert_error" = "Errore";
+"alert_purchase_error" = "Errore di acquisto";
+"alert_purchase_failed" = "ACQUISTO FALLITO";
+"button_ok" = "OK";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
-"show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_overview" = "Panoramica";
+"show_detail_seasons" = "Stagioni";
+"show_detail_spinoffs" = "Spin-off";
+"show_detail_no_overview" = "Nessuna panoramica disponibile.";
+"show_detail_binge_ready_date" = "PRONTO PER LA MARATONA %@";
+"show_detail_follow_spinoff" = "Segui spin-off";
 
 // =============================================================================
 // MARK: - Spinoff Types
@@ -217,69 +344,454 @@
 "spinoff_companion" = "COMPANION";
 "spinoff_remake" = "REMAKE";
 "spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel_desc" = "Una serie prequel ambientata prima degli eventi della serie principale.";
+"spinoff_sequel_desc" = "Un sequel che continua la storia dopo la serie principale.";
+"spinoff_companion_desc" = "Una serie companion che si svolge parallelamente alla serie principale.";
+"spinoff_remake_desc" = "Una reinterpretazione della serie originale.";
+"spinoff_spinoff_desc" = "Uno spin-off che esplora i personaggi della serie principale.";
+"spinoff_main_series_desc" = "La serie originale che ha dato inizio a tutto.";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "Cerca serie da guardare in maratona";
+"search_heading" = "Cerca";
+"search_see_all" = "VEDI TUTTO";
+"search_try_different" = "Prova una categoria diversa";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
-"category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
-"category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
+"category_drama" = "Drammatico";
+"category_comedy" = "Commedia";
+"category_action" = "Azione e avventura";
+"category_scifi" = "Fantascienza e fantasy";
+"category_crime" = "Poliziesco";
+"category_mystery" = "Mistero";
+"category_animation" = "Animazione";
+"category_documentary" = "Documentario";
 "category_reality" = "Reality";
-"category_family" = "Family";
+"category_family" = "Famiglia";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
 "account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_signed_in_apple" = "Accesso effettuato con Apple";
+"account_sync_status" = "Stato sincronizzazione";
+"account_sync_now" = "Sincronizza ora";
+"account_sign_out" = "Esci";
+"account_delete" = "Elimina account";
+"sync_welcome_back" = "Bentornato!";
+"sync_backed_up" = "Backup completato";
+"sync_restored_one" = "Abbiamo ripristinato 1 serie dal tuo backup cloud.";
+"sync_restored_many" = "Abbiamo ripristinato %lld serie dal tuo backup cloud.";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
-"a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_show_poster" = "Locandina di %@";
+"a11y_follow_button" = "Segui %@";
+"a11y_unfollow_button" = "Smetti di seguire %@";
+"a11y_close_button" = "Chiudi";
+"a11y_settings_button" = "Impostazioni";
+"a11y_search_button" = "Cerca";
+"a11y_play_trailer" = "Riproduci trailer";
+"a11y_episode_watched" = "Episodio %d visto";
+"a11y_episode_not_watched" = "Episodio %d non visto";
+"a11y_season_progress" = "%d di %d episodi visti";
+"a11y_binge_ready" = "Pronto per la maratona";
+"a11y_currently_airing" = "Attualmente in onda";
+"a11y_days_remaining" = "%d giorni rimanenti";
+"a11y_swipe_seasons" = "Scorri a sinistra o destra per cambiare stagione";
+"a11y_double_tap_details" = "Tocca due volte per vedere i dettagli";
+"a11y_double_tap_follow" = "Tocca due volte per seguire";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "Monitorate";
+"stats_upcoming" = "In arrivo";
+"footer_cycle_message" = "Le serie tornano in ciclo\nquando le stagioni finiscono";
+"label_start" = "INIZIO";
+"label_eps" = "EP";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "STAGIONE COMPLETA DISPONIBILE";
+"status_premieres_in_days %lld" = "PREMIERE TRA %lld GIORNO/I";
+"status_premieres_date %@" = "PREMIERE %@";
+"status_ready_to_binge" = "Pronto per la maratona";
+"status_until_new_season" = "Fino alla nuova stagione";
+"status_until_binge_ready" = "Fino a pronto per la maratona";
+"status_all_episodes_finished %lld" = "Tutti i %lld episodi usciti · appena terminato";
+"status_finale_date %@" = "Finale %@";
+"status_airing_weekly" = "In onda settimanalmente";
+"status_premieres_ready %@ %lld" = "Premiere %@ · ~%lldg pronto";
+"status_coming_soon" = "Prossimamente";
+"status_no_release_date" = "Nessuna data di uscita annunciata";
+
+// Season info
+"season_all_out %lld" = "tutti i %lld usciti";
+"season_partial_out %lld %lld" = "%lld/%lld usciti";
+"season_episode_count %lld" = "%lld episodi";
+
+// Pills
+"pill_binge_ready %lld" = "Pronto per la maratona · tutti i %lld usciti";
+"pill_now_airing %lld %lld" = "In onda ora · %lld/%lld usciti";
+"pill_premiering_in %lld" = "Prossimamente · tra %lldg";
+"pill_premiering_soon" = "Prossimamente";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "Serie completa";
+"follow_badge_airing" = "In onda ora";
+"follow_badge_premiering" = "Prossimamente";
+"follow_stat_binge_ready" = "pronto per la maratona";
+"follow_stat_days_finale" = "giorni al finale";
+"follow_stat_days_premiere" = "giorni alla premiere";
+"follow_stat_no_date" = "nessuna data ancora";
+"follow_line_complete %lld" = "Tutti i %lld episodi sono usciti — inizia quando vuoi.";
+"follow_line_airing" = "Episodi in uscita settimanalmente. Ti avviseremo il giorno in cui la stagione finisce.";
+"follow_line_premiering" = "In uscita presto. Ti avviseremo quando inizia la messa in onda.";
+"follow_line_anticipated" = "Nessuna data di uscita annunciata. Ti avviseremo nel momento in cui ne viene annunciata una.";
+"follow_added_to_timeline" = "AGGIUNTO ALLA TUA TIMELINE IN";
+"badge_added_to_timeline" = "AGGIUNTO ALLA TIMELINE";
+
+// Timeline stages
+"timeline_series_complete" = "SERIE COMPLETA";
+"timeline_now_airing" = "IN ONDA ORA";
+"timeline_premiering" = "IN ARRIVO";
+"timeline_anticipated" = "ATTESO";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "INFORMAZIONI";
+"about_genre" = "Genere";
+"about_seasons" = "Stagioni";
+"about_episodes" = "Episodi";
+"about_status" = "Stato";
+"about_network" = "Rete";
+"about_first_aired" = "Prima messa in onda";
+"about_rating" = "Valutazione";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "CORRELATI";
+"header_spinoffs_related" = "SPINOFF E CORRELATI";
+"badge_premium" = "PREMIUM";
+"premium_discover_spinoffs" = "Scopri spinoff e prequel";
+"button_unlock_premium" = "SBLOCCA CON PREMIUM";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "Tour veloce";
+"walkthrough_title" = "LA TUA TIMELINE, ORDINATA PER TE.";
+"walkthrough_description" = "Ogni serie che segui e raggruppata in tre fasi in base a quanto e vicina all'essere guardabile in maratona — e le serie si spostano automaticamente col passare del tempo. Scorri per vedere dove si trova ciascuna.";
+"walkthrough_show_me" = "MOSTRAMI →";
+"walkthrough_next" = "AVANTI →";
+"walkthrough_got_it" = "CAPITO — ANDIAMO";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "SEGUI SERIE";
+"button_show_less" = "Mostra meno";
+"button_more" = "Altro";
+"button_save" = "SALVA";
+"button_start_free_trial" = "INIZIA LA PROVA GRATUITA";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "SBLOCCA PREMIUM";
+"premium_advanced_features" = "Notifiche avanzate, tempistiche per serie e altro";
+"premium_feature" = "FUNZIONE PREMIUM";
+"premium_feature_description" = "Personalizza esattamente quando e come Countdown2Binge ti avvisa. Sblocca con Premium.";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "Conto alla rovescia";
+"share_just_binged" = "Appena visto in maratona";
+"share_until_premiere" = "Fino alla premiere";
+"share_release_pending" = "Data di uscita in attesa";
+"share_season_complete" = "Stagione completa";
+"share_messages" = "Messaggi";
+"share_instagram" = "Instagram";
+"share_copy_link" = "Copia link";
+"share_more" = "Altro";
+"share_binged" = "VISTO IN MARATONA";
+"share_default_countdown" = "Sto aspettando di guardare questa in maratona dall'inizio alla fine. 🍿";
+"share_default_binged %lld" = "Ho appena visto tutti i %lld episodi dall'inizio alla fine. 🍿✅";
+"share_enter_message" = "Inserisci il tuo messaggio...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "PIANO GRATUITO";
+"free_shows_max %lld" = "MASSIMO %lld SERIE";
+"free_select" = "SELEZIONA";
+"free_to_remove" = "DA RIMUOVERE";
+"free_limit_description %lld" = "Il piano gratuito traccia fino a %lld serie. Tocca le serie che vuoi rimuovere, poi conferma — niente viene rimosso finche non lo fai. Oppure vai illimitato con Premium.";
+"free_go_premium_keep %lld" = "◆ PASSA A PREMIUM — TIENI TUTTE LE %lld";
+"free_continue_free" = "CONTINUA CON IL PIANO GRATUITO";
+"free_select_to_remove %lld" = "SELEZIONA %lld DA RIMUOVERE";
+"free_select_more %lld" = "SELEZIONA ALTRE %lld";
+"free_remove_selected %lld" = "RIMUOVI %lld SELEZIONATE";
+"free_marked_to_remove" = "CONTRASSEGNATA PER RIMUOVERE · TOCCA PER MANTENERE";
+"free_marked_remove" = "CONTRASSEGNATA PER RIMUOVERE";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "TUTTO PRONTO";
+"downgrade_remove" = "RIMUOVI";
+"downgrade_to_continue" = "PER CONTINUARE";
+"downgrade_at_limit" = "Le tue serie sono entro il limite gratuito. Tocca continua per procedere.";
+"downgrade_over_limit %lld" = "Il tuo abbonamento premium e terminato. Gli account gratuiti tracciano fino a %lld serie. Seleziona le serie da rimuovere, poi conferma.";
+"downgrade_resubscribe %lld" = "RIABBONATI PER MANTENERE TUTTE LE %lld";
+"downgrade_followed %@" = "SEGUITO %@";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "TIMELINE COMPLETA";
+"timeline_shows_tracked %lld" = "%lld SERIE MONITORATE";
+"timeline_now_playing" = "IN RIPRODUZIONE";
+"timeline_finale_countdown" = "CONTO ALLA ROVESCIA DEL FINALE";
+"timeline_upcoming_seasons" = "STAGIONI IN ARRIVO";
+"timeline_waiting_dates" = "IN ATTESA DI DATE";
+"timeline_to_finale" = "AL FINALE";
+"timeline_to_premiere" = "ALLA PREMIERE";
+"timeline_tbd" = "DA DEFINIRE";
+"timeline_expected" = "PREVISTO";
+"timeline_release" = "USCITA";
+"timeline_season %lld" = "Stagione %lld";
+"timeline_tba" = "DA ANNUNCIARE";
+"network_show_count %lld" = "%lld serie";
+
+// Additional UI strings
+"timeline_your_shows" = "LE TUE SERIE";
+"timeline_countdown_finale" = "CONTO ALLA ROVESCIA AL FINALE";
+"detail_to_binge" = "ALLA MARATONA";
+"detail_current" = "ATTUALE";
+"episode_watched" = "VISTO";
+"episode_not_aired" = "NON ANCORA TRASMESSO";
+"status_now" = "ORA";
+"status_season_ended" = "STAGIONE TERMINATA";
+"paywall_best" = "MIGLIORE";
+"poster_placeholder" = "LOCANDINA";
+
+// Additional missing strings
+"season_number %lld" = "Stagione %lld";
+"season_episode_info %lld %lld" = "Stagione %lld · %lld episodi";
+"episode_number %lld" = "Episodio %lld";
+"episode_short %lld" = "EP %lld · 45M";
+"today_date %@" = "Oggi · %@";
+"last_updated %@" = "Ultimo aggiornamento: %@";
+"no_episodes_available" = "Nessun episodio disponibile";
+"link_terms" = "Termini";
+"link_privacy" = "Privacy";
+"link_restore" = "Ripristina";
+"paywall_tracking_shows %lld" = "Stai monitorando %lld serie. Passa a Pro per ricevere avvisi nel momento in cui una stagione e pronta per la maratona.";
+"settings_coming_soon" = "Prossimamente";
+"binge_watched_count %lld %lld" = "%lld/%lld visti";
+"binge_complete_suffix" = " · completa";
+"binge_current_suffix" = " · attuale";
+"binge_seasons_count %lld" = "%lld stagioni";
+"binge_status_complete" = "Completa";
+"binge_status_current %lld %lld" = "Attuale · %lld/%lld visti";
+"unfollow_show" = "Smetti di seguire la serie";
+"tap_episode_details" = "Tocca un episodio per vedere i dettagli";
+"countdown_in" = "tra";
+"view_on_timeline" = "VEDI SULLA MIA TIMELINE →";
+"timeline_binge_ready_in %lld" = "Sulla tua timeline · pronto per la maratona tra ~%lld giorni";
+"timeline_waiting_anticipated" = "Seguendo · in attesa negli Attesi";
+"notif_binge_ready_alert" = "Avviso pronto per la maratona";
+"notif_ping_when_out" = "Avvisami il giorno in cui e tutto disponibile";
+"premieres_date %@" = "PREMIERE %@";
+"binge_ready_when_airs" = "L'intera stagione e pronta per la maratona nel momento in cui questo va in onda.";
+"watch_on %@" = "Guarda su %@";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "%lld serie aggiunte. Monitoreremo ogni stagione e ti avviseremo nel momento in cui ciascuna e pronta per la maratona.";
+"hero_more_count %lld" = "+%lld ALTRE";
+"onboarding_shows_count %lld" = "%lld SERIE";
+"discover_upcoming_count %lld" = "%lld IN ARRIVO";
+"stats_tracked" = "MONITORATE";
+"stats_upcoming" = "IN ARRIVO";
+
+// Season status badges
+"season_status_new" = "NUOVO";
+"season_status_airing" = "IN ONDA";
+"season_status_ready" = "PRONTO";
+
+// Spinoffs tabs
+"tab_episodes" = "Episodi";
+"tab_spinoffs" = "Spin-off";
+
+// Show status
+"show_status_returning" = "In corso";
+"show_status_ended" = "Terminata";
+"show_status_canceled" = "Cancellata";
+"show_status_in_production" = "In produzione";
+"show_status_planned" = "Pianificata";
+"show_status_pilot" = "Pilota";
+
+// Timeline phases
+"phase_anticipated" = "Atteso";
+"phase_premiering_soon" = "Prossimamente";
+"phase_now_airing" = "In onda ora";
+"phase_binge_ready" = "Pronto per la maratona";
+"phase_unknown" = "Sconosciuto";
+"phase_ready_to_binge" = "Pronto per la maratona";
+"phase_binge_ready_in" = "Pronto per la maratona tra";
+
+// Countdown display mode
+"countdown_mode_days" = "Giorni";
+"countdown_mode_episodes" = "Episodi";
+
+// Follow hints
+"follow_hint_airing %lld" = "Segui e aspetteremo tutti i %lld episodi, poi ti avviseremo il giorno in cui sara guardabile in maratona.";
+"follow_hint_anticipated" = "Seguila e la metteremo negli Attesi — contando alla rovescia nel momento in cui viene annunciata una data.";
+
+// Episode status
+"episode_status_aired" = "Trasmesso";
+"episode_status_up_next" = "Prossimo";
+"episode_status_not_aired" = "Non ancora trasmesso";
+"episode_status_finale" = "Finale";
+
+// Rewatch
+"rewatch_single_season %lld" = "Riguarda S%lld";
+"rewatch_season_range %lld %lld" = "Riguarda S%lld–S%lld";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "Segui per monitorare · pronto per la maratona tra ~%lld giorni";
+"follow_prompt_no_date" = "Segui per monitorare · nessuna data di uscita ancora";
+
+// Episode actions
+"button_clear" = "Cancella";
+"button_mark_all_watched" = "Segna tutti come visti";
+"button_mark_aired_watched" = "Segna trasmessi come visti";
+
+// Episode status text
+"status_complete_rewatch" = "Completa — disponibile per riguardare";
+"status_full_season_available" = "Stagione completa disponibile";
+"status_no_episodes_yet" = "Nessun episodio ancora uscito";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ Sulla tua timeline · pronto per la maratona tra ~%lld giorni";
+"following_waiting_anticipated" = "✓ Seguendo · in attesa negli Attesi";
+"status_partial_aired %lld %lld" = "%lld di %lld trasmessi · resto in uscita settimanalmente";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ NON ANCORA MONITORATO";
+"plan_season_episodes %@ %lld" = "%@ · %lld episodi";
+"episode_count_short %lld" = "%lld ep";
+"episode_placeholder %lld" = "Episodio %lld";
+"episode_in_days %lld" = " · tra %lldg";
+"episode_label_short %lld" = "Ep %lld";
+"episode_label_finale" = "Finale";
+"episode_label_aired" = "Trasmesso";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "Impossibile caricare le serie. Riprova.";
+"error_load_trending" = "Impossibile caricare le serie di tendenza";
+"error_invalid_url" = "URL non valido";
+"error_network %@" = "Errore di rete: %@";
+"error_decode %@" = "Impossibile decodificare la risposta: %@";
+"error_no_data" = "Nessun dato ricevuto";
+"error_http %lld" = "Errore HTTP: %lld";
+"error_no_purchases" = "Nessun acquisto precedente trovato da ripristinare.";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "tutti gli episodi usciti";
+"subtext_left_to_release %lld" = "%lld da uscire";
+"subtext_season_complete" = "stagione completa";
+"subtext_of_season_released" = "della stagione uscita";
+"subtext_episodes_ready %lld %@" = "%lld episodi · %@";
+"subtext_all_out" = "tutti usciti";
+"subtext_no_date_yet" = "nessuna data ancora";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "Premium · Prova gratuita";
+"account_free_plan" = "Piano gratuito";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "Trasmesso";
+"legend_up_next" = "Prossimo";
+"legend_not_yet_aired" = "Non ancora trasmesso";
+"legend_finale" = "Finale";
+"legend_start_today" = "Inizia oggi";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "Tutte le reti";
+"season_abbrev" = "S";
+"days_abbrev" = "G";
+"time_days_short %lld" = "%lldG";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "Serie che stanno rilasciando nuovi episodi in questo momento, settimana dopo settimana. Quella piu vicina al suo finale si trova in cima alla pila — sara quella che potrai guardare in maratona dopo.";
+"walkthrough_airing_note" = "Quando ogni finale va in onda, la serie scende in Pronto per la maratona e la successiva sale in cima.";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "Serie con una data di premiere confermata, in conto alla rovescia giorno dopo giorno fino all'inizio della nuova stagione.";
+"walkthrough_premiering_note" = "Nel momento in cui una stagione va in onda, si sposta in In onda ora.";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "Serie rinnovate che non hanno ancora una data di uscita. Aspettano silenziosamente in fondo cosi non le perdi mai di vista.";
+"walkthrough_anticipated_note" = "Non appena viene annunciata una data, saltano in Prossimamente e iniziano il conto alla rovescia.";
+
+// Transitions
+"walkthrough_date_set_hint" = "The Bear ha appena ricevuto una data di premiere. Si sposta dagli Attesi a Prossimamente e inizia il conto alla rovescia.";
+"walkthrough_date_set_note" = "Atteso → Prossimamente";
+"walkthrough_premieres_hint" = "Shogun e appena andato in onda. Sale in In onda ora e si unisce alla pila mentre i nuovi episodi escono ogni settimana.";
+"walkthrough_premieres_note" = "Prossimamente → In onda ora";
+"walkthrough_finale_hint" = "Il finale di The Last of Us e andato in onda — l'intera stagione e ora Pronta per la maratona. La prossima stagione torna negli Attesi fino a quando non viene annunciata una nuova data.";
+"walkthrough_finale_note" = "In onda ora → Pronto per la maratona → prossima stagione negli Attesi";
+"walkthrough_label_date_set" = "DATA FISSATA";
+"walkthrough_label_premieres" = "VA IN ONDA";
+"walkthrough_label_finale" = "IL FINALE VA IN ONDA";

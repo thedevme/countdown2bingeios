@@ -2,284 +2,796 @@
   Localizable.strings
   Countdown2Binge
 
-  English (Base Language)
+  Simplified Chinese (简体中文)
 */
 
 // =============================================================================
 // MARK: - Tab Bar
 // =============================================================================
 
-"tab_timeline" = "Timeline";
-"tab_discover" = "Discover";
-"tab_binge_ready" = "Binge Ready";
-"tab_settings" = "Settings";
+"tab_timeline" = "时间线";
+"tab_discover" = "发现";
+"tab_binge_ready" = "可追剧";
+"tab_settings" = "设置";
 
 // =============================================================================
 // MARK: - Buttons & Actions
 // =============================================================================
 
-"button_follow" = "FOLLOW";
-"button_following" = "FOLLOWING";
-"button_cancel" = "Cancel";
-"button_done" = "Done";
-"button_close" = "Close";
-"button_remove" = "Remove";
-"button_share" = "Share";
-"button_upgrade" = "UPGRADE";
-"button_restore_purchases" = "Restore Purchases";
-"button_start_trial" = "START 7-DAY FREE TRIAL";
-"button_purchase_lifetime" = "PURCHASE LIFETIME";
-"button_mark_watched" = "Mark Watched";
-"button_mark_all_watched" = "MARK ALL WATCHED";
-"button_clear_season" = "CLEAR SEASON";
-"button_yes" = "Yes";
-"button_no" = "No";
-"button_skip" = "Skip";
-"button_continue" = "Continue";
-"button_get_started" = "Get Started";
-"button_start_binge" = "▸ START BINGE";
-"button_unfollow" = "Unfollow";
-"button_sign_in_apple" = "Sign in with Apple";
+"button_follow" = "关注";
+"button_following" = "已关注";
+"button_cancel" = "取消";
+"button_done" = "完成";
+"button_close" = "关闭";
+"button_remove" = "移除";
+"button_share" = "分享";
+"button_upgrade" = "升级";
+"button_restore_purchases" = "恢复购买";
+"button_start_trial" = "开始7天免费试用";
+"button_purchase_lifetime" = "购买永久版";
+"button_mark_watched" = "标记已看";
+"button_mark_all_watched" = "全部标记已看";
+"button_clear_season" = "清除本季";
+"button_yes" = "是";
+"button_no" = "否";
+"button_skip" = "跳过";
+"button_continue" = "继续";
+"button_get_started" = "开始使用";
+"button_start_binge" = "▸ 开始追剧";
+"button_unfollow" = "取消关注";
+"button_sign_in_apple" = "通过 Apple 登录";
+"button_view_timeline" = "查看完整时间线";
+"button_hide" = "隐藏";
+"button_show" = "显示";
+"button_upgrade_premium" = "升级高级版";
+"button_unfollow_show" = "取消关注剧集";
+"button_completed_show" = "已完结剧集";
+"button_archive_show" = "归档剧集";
+"button_unarchive" = "取消归档";
+"button_sign_out" = "退出登录";
 
 // =============================================================================
 // MARK: - Status Badges
 // =============================================================================
 
-"badge_airing" = "AIRING";
-"badge_premiering" = "PREMIERING";
-"badge_binge_ready" = "BINGE READY";
-"badge_anticipated" = "ANTICIPATED";
-"badge_cancelled" = "CANCELLED";
-"badge_watched" = "WATCHED";
-"badge_up_next" = "UP NEXT";
-"badge_finale" = "FINALE";
-"badge_premiere" = "PREMIERE";
-"badge_new" = "NEW";
+"badge_airing" = "播出中";
+"badge_premiering" = "即将首播";
+"badge_binge_ready" = "可追剧";
+"badge_anticipated" = "期待中";
+"badge_cancelled" = "已取消";
+"badge_watched" = "已看";
+"badge_up_next" = "下一集";
+"badge_finale" = "大结局";
+"badge_premiere" = "首播";
+"badge_new" = "新";
+"badge_latest_added" = "最新添加";
 
 // =============================================================================
 // MARK: - Section Headers
 // =============================================================================
 
-"header_trailers" = "TRAILERS & PREVIEWS";
-"header_catch_up" = "CATCH UP BEFORE FINALE";
-"header_episodes" = "EPISODES";
-"header_spinoffs" = "SPIN-OFFS";
-"header_trending" = "TRENDING SHOWS";
-"header_ending_soon" = "ENDING SOON";
-"header_premiering_soon" = "PREMIERING SOON";
-"header_currently_airing" = "CURRENTLY AIRING";
-"header_watch_order" = "RECOMMENDED WATCH ORDER";
-"header_universe_premium" = "UNIVERSE — PREMIUM";
-"header_cast_crew" = "CAST & CREW";
-"header_where_to_watch" = "WHERE TO WATCH";
-"header_browse_category" = "Browse by Category";
+"header_trailers" = "预告片和精彩片段";
+"header_catch_up" = "大结局前补剧";
+"header_episodes" = "剧集";
+"header_spinoffs" = "衍生剧";
+"header_trending" = "热门剧集";
+"header_ending_soon" = "即将完结";
+"header_premiering_soon" = "即将首播";
+"header_currently_airing" = "正在播出";
+"header_watch_order" = "推荐观看顺序";
+"header_universe_premium" = "宇宙系列 - 高级版";
+"header_cast_crew" = "演职人员";
+"header_where_to_watch" = "在哪观看";
+"header_browse_category" = "按类型浏览";
+"header_binge" = "追剧";
+"header_seasons_progress" = "季度和观看进度";
+"header_your_library" = "我的片库";
+"header_settings" = "设置";
+"header_notifications" = "通知";
+"header_notification_settings" = "通知设置";
+"header_anticipated" = "期待中";
+"header_discover" = "发现";
+"discover_subtitle" = "新剧、近期和即将上线 · 开播前关注";
+"discover_sooner" = "更近";
+"discover_later" = "更远";
+"discover_by_network" = "按平台";
 
 // =============================================================================
 // MARK: - Time & Countdown Labels
 // =============================================================================
 
-"time_days" = "DAYS";
-"time_day" = "DAY";
-"time_hours" = "HRS";
-"time_hour" = "HR";
-"time_minutes" = "MIN";
-"time_seconds" = "SEC";
-"time_episodes" = "EPISODES";
-"time_episode" = "EPISODE";
-"time_eps_per_day" = "eps/day";
-"time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
-"time_start_today" = "Start today";
-"time_start_date" = "Start %@";
-"time_already_started" = "Already started";
+"time_days" = "天";
+"time_day" = "天";
+"time_hours" = "小时";
+"time_hour" = "小时";
+"time_minutes" = "分钟";
+"time_seconds" = "秒";
+"time_episodes" = "集";
+"time_episode" = "集";
+"time_eps_per_day" = "集/天";
+"time_ep_per_day" = "集/天";
+"time_days_to_watch" = "%d 天内观看";
+"time_start_today" = "今天开始";
+"time_start_date" = "%@ 开始";
+"time_already_started" = "已经开始";
 
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
 
-"season_label" = "SEASON";
-"season_of_episodes" = "%d of %d";
-"season_aired" = "aired";
-"season_watched" = "WATCHED";
-"season_episodes_label" = "Episodes";
-"season_avg_runtime" = "Avg Runtime";
-"season_runtime_minutes" = "%d min";
-"season_left_to_drop" = "%d left to drop";
-"season_main_series" = "MAIN SERIES";
-"season_you_are_here" = "Main series · you are here";
+"season_label" = "季";
+"season_of_episodes" = "%d / %d";
+"season_aired" = "已播出";
+"season_watched" = "已看";
+"season_episodes_label" = "集数";
+"season_avg_runtime" = "平均时长";
+"season_runtime_minutes" = "%d 分钟";
+"season_left_to_drop" = "还有 %d 集未播";
+"season_main_series" = "主系列";
+"season_you_are_here" = "主系列 · 当前位置";
+"season_progress" = "已播 %d / %d 集 · 还有 %d 集未播";
+
+// Binge Segments
+"segment_active" = "追剧中";
+"segment_ended" = "已完结";
+"segment_archived" = "已归档";
 
 // =============================================================================
 // MARK: - Empty States
 // =============================================================================
 
-"empty_nothing_to_binge" = "Nothing to Binge Yet";
-"empty_when_seasons_finish" = "When seasons finish airing, they'll\nappear here ready to watch";
-"empty_no_shows" = "No shows followed yet";
-"empty_search_to_add" = "Search to add your favorite shows";
-"empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
-"empty_timeline" = "Nothing on the Timeline";
-"empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
-"empty_no_results" = "No Results";
-"empty_no_shows_found" = "No shows found";
+"empty_nothing_to_binge" = "暂无可追剧集";
+"empty_when_seasons_finish" = "当季度完结后，\n它们会显示在这里等待观看";
+"empty_no_shows" = "尚未关注任何剧集";
+"empty_search_to_add" = "搜索添加你喜欢的剧集";
+"empty_no_spinoffs" = "暂无衍生剧";
+"empty_no_spinoffs_message" = "%@ 目前没有衍生剧或前传。如有新作公布，我们会在此显示。";
+"empty_timeline" = "时间线暂无内容";
+"empty_timeline_message" = "你关注的剧集目前\n没有正在播出或即将首播的";
+"empty_no_results" = "无结果";
+"empty_no_shows_found" = "未找到剧集";
+"empty_slot" = "空";
+"empty_no_active_shows" = "没有正在追的剧";
+"empty_no_ended_shows" = "没有已完结的剧";
+"empty_no_archived_shows" = "没有已归档的剧";
+"empty_active_subtitle" = "正在追的剧会显示在这里";
+"empty_ended_subtitle" = "已完结的剧会显示在这里";
+"empty_archived_subtitle" = "归档的剧会显示在这里";
 
 // =============================================================================
 // MARK: - Settings
 // =============================================================================
 
-"settings_heading" = "Settings";
-"settings_sound" = "Sound";
-"settings_haptics" = "Haptics";
-"settings_notifications" = "Notifications";
-"settings_countdown_mode" = "Countdown";
-"settings_reminders" = "Reminders";
-"settings_cloud_sync" = "Cloud Sync";
-"settings_account" = "Account";
-"settings_get_in_touch" = "Get in touch";
-"settings_privacy_policy" = "Privacy Policy";
-"settings_terms" = "Terms of Use";
-"settings_api_credit" = "API provided by themoviedb.org";
+"settings_heading" = "设置";
+"settings_sound" = "声音";
+"settings_haptics" = "触感反馈";
+"settings_notifications" = "通知";
+"settings_countdown_mode" = "倒计时";
+"settings_reminders" = "提醒";
+"settings_cloud_sync" = "云同步";
+"settings_account" = "账户";
+"settings_get_in_touch" = "联系我们";
+"settings_privacy_policy" = "隐私政策";
+"settings_terms" = "使用条款";
+"settings_api_credit" = "数据由 themoviedb.org 提供";
+"settings_group_alerts" = "提醒";
+"settings_group_preferences" = "偏好设置";
+"settings_group_account" = "账户";
+"settings_group_developer" = "开发者";
+"settings_group_essentials" = "基本功能";
+"settings_group_advanced" = "高级";
+"settings_alerts_advanced" = "已启用高级提醒";
+"settings_alerts_basic" = "仅追剧提醒";
+"settings_streaming_services" = "流媒体服务";
+"settings_appearance" = "外观";
+"settings_dark" = "深色";
+"settings_manage_account" = "管理账户";
+"settings_help_feedback" = "帮助与反馈";
+"settings_debug_premium" = "调试高级版";
+"settings_enabled" = "已启用";
+"settings_disabled" = "已禁用";
+"settings_reset_onboarding" = "重置引导";
+"settings_completed" = "已完成";
+"settings_not_completed" = "未完成";
+"settings_reset_walkthrough" = "重置教程";
+"settings_seen" = "已看";
+"settings_not_seen" = "未看";
+"settings_refresh_discover" = "刷新发现页";
+"settings_refreshing" = "刷新中...";
+"settings_reload_data" = "重新加载剧集数据";
 
 // =============================================================================
 // MARK: - Notifications
 // =============================================================================
 
-"notification_you_are_following" = "YOU ARE NOW FOLLOWING:";
-"notification_premiere" = "SEASON PREMIERE";
-"notification_new_episode" = "NEW EPISODE";
-"notification_finale" = "FINALE REMINDER";
-"notification_binge_ready" = "SEASON BINGE-READY";
-"notification_quiet_hours" = "QUIET HOURS";
-"notification_default" = "DEFAULT NOTIFICATIONS";
-"notification_applied_to_all" = "Applied to all new shows";
+"notification_you_are_following" = "你正在关注：";
+"notification_premiere" = "新季首播";
+"notification_new_episode" = "新剧集";
+"notification_finale" = "大结局提醒";
+"notification_binge_ready" = "本季可追剧";
+"notification_quiet_hours" = "免打扰时段";
+"notification_default" = "默认通知";
+"notification_applied_to_all" = "应用于所有新剧集";
+"notif_push_title" = "推送通知";
+"notif_push_subtitle" = "在此设备上接收提醒";
+"notif_premiere_title" = "首播日";
+"notif_premiere_subtitle" = "新季开始播出时";
+"notif_premiere_full_subtitle" = "关注的剧集首播时";
+"notif_binge_ready_title" = "可追剧";
+"notif_binge_ready_subtitle" = "整季播完的那天";
+"notif_binge_ready_full_subtitle" = "整季播出完毕时";
+"notif_weekly_title" = "每周更新";
+"notif_weekly_subtitle" = "每集更新时通知";
+"notif_email_title" = "邮件摘要";
+"notif_email_subtitle" = "每周发送到你的邮箱";
+"notif_remind_early_title" = "提前提醒";
+"notif_remind_early_subtitle" = "可追剧前几天";
+"notif_almost_there_title" = "即将完结";
+"notif_almost_there_subtitle" = "还差一集完结时通知";
+"notif_lead_time_title" = "倒计时提前量";
+"notif_lead_time_subtitle" = "可追剧日前提醒我";
+"notif_per_show_title" = "单剧设置";
+"notif_per_show_subtitle" = "为每部剧单独设置提醒";
+"notif_weekly_drops_title" = "每周更新通知";
+"notif_weekly_drops_subtitle" = "每集更新时通知（可选）";
+"notif_digest_title" = "汇总";
+"notif_digest_subtitle" = "将即将播出的剧集汇总通知";
+"notif_quiet_hours_title" = "免打扰时段";
+"notif_quiet_hours_subtitle" = "晚11点至早8点静音";
 
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================
 
-"premium_unlock" = "UNLOCK";
+"premium_unlock" = "解锁";
 "premium_countdown2binge" = "COUNTDOWN2BINGE";
-"premium_heading" = "Premium";
-"premium_unlimited" = "Unlimited Shows";
-"premium_unlimited_desc" = "Track all your favorite series";
-"premium_spinoffs" = "Spinoff Collections";
-"premium_spinoffs_desc" = "Discover related series & universes";
-"premium_notifications" = "Smart Notifications";
-"premium_cloud_sync" = "Cloud Sync";
-"premium_yearly" = "YEARLY";
-"premium_monthly" = "MONTHLY";
-"premium_lifetime" = "LIFETIME";
-"premium_most_popular" = "MOST POPULAR";
-"premium_best_value" = "BEST VALUE";
-"premium_free_limit" = "Free users can follow up to 3 shows";
+"premium_heading" = "高级版";
+"premium_unlimited" = "无限剧集";
+"premium_unlimited_desc" = "追踪所有你喜欢的剧集";
+"premium_spinoffs" = "衍生剧合集";
+"premium_spinoffs_desc" = "发现相关系列和宇宙";
+"premium_notifications" = "智能通知";
+"premium_cloud_sync" = "云同步";
+"premium_yearly" = "年付";
+"premium_monthly" = "月付";
+"premium_lifetime" = "永久";
+"premium_most_popular" = "最受欢迎";
+"premium_best_value" = "最超值";
+"premium_free_limit" = "免费用户最多关注3部剧";
+"premium_notifications_required" = "通知需要高级版";
+"premium_notifications_subtitle" = "升级后可在季度可追剧、首播日等时间收到通知。";
+"premium_all_alerts_available" = "你已是高级版用户 - 可使用所有提醒功能。";
+"premium_trial_legal" = "试用期结束前24小时未取消将自动续订。";
 
 // =============================================================================
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "欢迎使用";
 "onboarding_app_name" = "Countdown2Binge";
-"onboarding_tagline" = "Know when it's binge-ready.";
-"onboarding_add_shows" = "Add Your Shows";
-"onboarding_add_shows_desc" = "Search and follow your favorite TV shows";
-"onboarding_notifications" = "Stay Updated";
-"onboarding_notifications_desc" = "Get notified when seasons are ready to binge";
-"onboarding_complete" = "You're All Set!";
-"onboarding_step_of" = "STEP %d OF %d";
+"onboarding_tagline" = "知道何时可以追剧。";
+"onboarding_add_shows" = "添加你的剧集";
+"onboarding_add_shows_desc" = "搜索并关注你喜欢的电视剧";
+"onboarding_notifications" = "保持更新";
+"onboarding_notifications_desc" = "季度可追剧时收到通知";
+"onboarding_complete" = "设置完成！";
+"onboarding_step_of" = "第 %d 步，共 %d 步";
+
+// Pain slide
+"onboarding_pain_label" = "问题所在";
+"onboarding_pain_title" = "等等 - 那部剧回归了？";
+"onboarding_pain_description" = "你发现季度早在几周前就完结了。或者你最爱的剧续订了，你却毫不知情。";
+
+// Agitate slide
+"onboarding_agitate_label" = "原因";
+"onboarding_agitate_title" = "追踪剧集太难了。";
+"onboarding_agitate_description" = "剧集在不同平台、不同时间播出。等你想起来时，大结局早就播完了。";
+
+// Solution slide
+"onboarding_solution_label" = "解决方案";
+"onboarding_solution_title" = "COUNTDOWN2BINGE 解决这个问题。";
+"onboarding_solution_description" = "一个地方追踪所有剧集。季度完结时立即通知你 - 让你一口气追完不中断。";
+
+// Add shows step
+"onboarding_add_shows_label" = "添加你的剧集";
+"onboarding_add_shows_title" = "你在等什么剧？";
+"onboarding_add_shows_description" = "搜索并关注你想追的剧。想加多少都可以。";
+
+// Review step
+"onboarding_review_title" = "确认选择";
+"onboarding_review_description" = "这是你正在追踪的剧集。可以移除不想要的，或添加更多。";
+
+// All set step
+"onboarding_all_set_title" = "设置完成。";
+"onboarding_following" = "已关注";
+
+// Paywall step
+"onboarding_choose_plan" = "选择你的方案";
+"onboarding_never_miss" = "不再错过大结局。";
+
+// Buttons
+"button_try_again" = "重试";
 
 // =============================================================================
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
-"alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
-"alert_error" = "Error";
-"alert_purchase_error" = "Purchase Error";
+"alert_remove_show" = "移除 %@？";
+"alert_remove_message" = "这将从你的关注列表中移除该剧。";
+"alert_unfollow" = "取消关注 %@？";
+"alert_error" = "错误";
+"alert_purchase_error" = "购买错误";
+"alert_purchase_failed" = "购买失败";
+"button_ok" = "好的";
 
 // =============================================================================
 // MARK: - Show Detail
 // =============================================================================
 
-"show_detail_overview" = "Overview";
-"show_detail_seasons" = "Seasons";
-"show_detail_spinoffs" = "Spin-offs";
-"show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
-"show_detail_follow_spinoff" = "Follow spin-off";
+"show_detail_overview" = "简介";
+"show_detail_seasons" = "季度";
+"show_detail_spinoffs" = "衍生剧";
+"show_detail_no_overview" = "暂无简介。";
+"show_detail_binge_ready_date" = "%@ 可追剧";
+"show_detail_follow_spinoff" = "关注衍生剧";
 
 // =============================================================================
 // MARK: - Spinoff Types
 // =============================================================================
 
-"spinoff_prequel" = "PREQUEL";
-"spinoff_sequel" = "SEQUEL";
-"spinoff_companion" = "COMPANION";
-"spinoff_remake" = "REMAKE";
-"spinoff_spinoff" = "SPIN-OFF";
-"spinoff_prequel_desc" = "A prequel series set before the events of the main show.";
-"spinoff_sequel_desc" = "A sequel continuing the story after the main series.";
-"spinoff_companion_desc" = "A companion series running alongside the main show.";
-"spinoff_remake_desc" = "A reimagining of the original series.";
-"spinoff_spinoff_desc" = "A spin-off exploring characters from the main series.";
-"spinoff_main_series_desc" = "The original series that started it all.";
+"spinoff_prequel" = "前传";
+"spinoff_sequel" = "续集";
+"spinoff_companion" = "伴生剧";
+"spinoff_remake" = "翻拍";
+"spinoff_spinoff" = "衍生剧";
+"spinoff_prequel_desc" = "发生在主剧故事之前的前传系列。";
+"spinoff_sequel_desc" = "延续主剧故事的续集系列。";
+"spinoff_companion_desc" = "与主剧同时进行的伴生系列。";
+"spinoff_remake_desc" = "原剧的重新诠释版本。";
+"spinoff_spinoff_desc" = "探索主剧角色的衍生系列。";
+"spinoff_main_series_desc" = "开启一切的原创系列。";
 
 // =============================================================================
 // MARK: - Search
 // =============================================================================
 
-"search_placeholder" = "Search shows to binge";
-"search_heading" = "Search";
-"search_see_all" = "SEE ALL";
-"search_try_different" = "Try a different category";
+"search_placeholder" = "搜索想追的剧";
+"search_heading" = "搜索";
+"search_see_all" = "查看全部";
+"search_try_different" = "试试其他类型";
 
 // =============================================================================
 // MARK: - Categories/Genres
 // =============================================================================
 
-"category_drama" = "Drama";
-"category_comedy" = "Comedy";
-"category_action" = "Action & Adventure";
-"category_scifi" = "Sci-Fi & Fantasy";
-"category_crime" = "Crime";
-"category_mystery" = "Mystery";
-"category_animation" = "Animation";
-"category_documentary" = "Documentary";
-"category_reality" = "Reality";
-"category_family" = "Family";
+"category_drama" = "剧情";
+"category_comedy" = "喜剧";
+"category_action" = "动作冒险";
+"category_scifi" = "科幻奇幻";
+"category_crime" = "犯罪";
+"category_mystery" = "悬疑";
+"category_animation" = "动画";
+"category_documentary" = "纪录片";
+"category_reality" = "真人秀";
+"category_family" = "家庭";
 
 // =============================================================================
 // MARK: - Account & Sync
 // =============================================================================
 
-"account_title" = "Account";
-"account_signed_in_apple" = "Signed in with Apple";
-"account_sync_status" = "Sync Status";
-"account_sync_now" = "Sync Now";
-"account_sign_out" = "Sign Out";
-"account_delete" = "Delete Account";
-"sync_welcome_back" = "Welcome Back!";
-"sync_backed_up" = "Backup Complete";
-"sync_restored_one" = "We restored 1 show from your cloud backup.";
-"sync_restored_many" = "We restored %lld shows from your cloud backup.";
+"account_title" = "账户";
+"account_signed_in_apple" = "已通过 Apple 登录";
+"account_sync_status" = "同步状态";
+"account_sync_now" = "立即同步";
+"account_sign_out" = "退出登录";
+"account_delete" = "删除账户";
+"sync_welcome_back" = "欢迎回来！";
+"sync_backed_up" = "备份完成";
+"sync_restored_one" = "已从云备份恢复 1 部剧集。";
+"sync_restored_many" = "已从云备份恢复 %lld 部剧集。";
 
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
 
-"a11y_show_poster" = "%@ poster";
-"a11y_follow_button" = "Follow %@";
-"a11y_unfollow_button" = "Unfollow %@";
-"a11y_close_button" = "Close";
-"a11y_settings_button" = "Settings";
-"a11y_search_button" = "Search";
-"a11y_play_trailer" = "Play trailer";
-"a11y_episode_watched" = "Episode %d watched";
-"a11y_episode_not_watched" = "Episode %d not watched";
-"a11y_season_progress" = "%d of %d episodes watched";
-"a11y_binge_ready" = "Binge ready";
-"a11y_currently_airing" = "Currently airing";
-"a11y_days_remaining" = "%d days remaining";
-"a11y_swipe_seasons" = "Swipe left or right to change seasons";
-"a11y_double_tap_details" = "Double tap to view details";
-"a11y_double_tap_follow" = "Double tap to follow";
+"a11y_show_poster" = "%@ 海报";
+"a11y_follow_button" = "关注 %@";
+"a11y_unfollow_button" = "取消关注 %@";
+"a11y_close_button" = "关闭";
+"a11y_settings_button" = "设置";
+"a11y_search_button" = "搜索";
+"a11y_play_trailer" = "播放预告片";
+"a11y_episode_watched" = "第 %d 集已看";
+"a11y_episode_not_watched" = "第 %d 集未看";
+"a11y_season_progress" = "已看 %d 集，共 %d 集";
+"a11y_binge_ready" = "可追剧";
+"a11y_currently_airing" = "正在播出";
+"a11y_days_remaining" = "还剩 %d 天";
+"a11y_swipe_seasons" = "左右滑动切换季度";
+"a11y_double_tap_details" = "双击查看详情";
+"a11y_double_tap_follow" = "双击关注";
+
+// =============================================================================
+// MARK: - Timeline & Stats
+// =============================================================================
+
+"stats_tracked" = "已追踪";
+"stats_upcoming" = "即将播出";
+"footer_cycle_message" = "季度完结后\n剧集会循环回来";
+"label_start" = "开始";
+"label_eps" = "集";
+
+// =============================================================================
+// MARK: - Show Status
+// =============================================================================
+
+"status_full_season_available" = "整季已播出";
+"status_premieres_in_days %lld" = "%lld 天后首播";
+"status_premieres_date %@" = "%@ 首播";
+"status_ready_to_binge" = "可以追剧";
+"status_until_new_season" = "距离新季";
+"status_until_binge_ready" = "距离可追剧";
+"status_all_episodes_finished %lld" = "全部 %lld 集已播出 · 刚完结";
+"status_finale_date %@" = "大结局 %@";
+"status_airing_weekly" = "每周更新中";
+"status_premieres_ready %@ %lld" = "%@ 首播 · 约 %lld 天可追剧";
+"status_coming_soon" = "即将上线";
+"status_no_release_date" = "播出日期未公布";
+
+// Season info
+"season_all_out %lld" = "全部 %lld 集已播";
+"season_partial_out %lld %lld" = "%lld/%lld 集已播";
+"season_episode_count %lld" = "%lld 集";
+
+// Pills
+"pill_binge_ready %lld" = "可追剧 · 全部 %lld 集已播";
+"pill_now_airing %lld %lld" = "播出中 · %lld/%lld 集已播";
+"pill_premiering_in %lld" = "即将首播 · %lld 天后";
+"pill_premiering_soon" = "即将首播";
+
+// =============================================================================
+// MARK: - Follow Confirmation
+// =============================================================================
+
+"follow_badge_complete" = "剧集完结";
+"follow_badge_airing" = "正在播出";
+"follow_badge_premiering" = "即将首播";
+"follow_stat_binge_ready" = "可追剧";
+"follow_stat_days_finale" = "天后大结局";
+"follow_stat_days_premiere" = "天后首播";
+"follow_stat_no_date" = "日期待定";
+"follow_line_complete %lld" = "全部 %lld 集已播完 - 随时可以开始追。";
+"follow_line_airing" = "每周更新中。季度完结时我们会通知你。";
+"follow_line_premiering" = "即将首播。开始播出时我们会通知你。";
+"follow_line_anticipated" = "播出日期未公布。一旦确定我们会立即提醒你。";
+"follow_added_to_timeline" = "已添加到你的时间线";
+"badge_added_to_timeline" = "已添加到时间线";
+
+// Timeline stages
+"timeline_series_complete" = "剧集完结";
+"timeline_now_airing" = "正在播出";
+"timeline_premiering" = "即将首播";
+"timeline_anticipated" = "期待中";
+
+// =============================================================================
+// MARK: - About Section
+// =============================================================================
+
+"header_about" = "关于";
+"about_genre" = "类型";
+"about_seasons" = "季度";
+"about_episodes" = "集数";
+"about_status" = "状态";
+"about_network" = "播出平台";
+"about_first_aired" = "首播日期";
+"about_rating" = "评分";
+
+// =============================================================================
+// MARK: - Related Section
+// =============================================================================
+
+"header_related" = "相关";
+"header_spinoffs_related" = "衍生剧和相关作品";
+"badge_premium" = "高级版";
+"premium_discover_spinoffs" = "发现衍生剧和前传";
+"button_unlock_premium" = "升级高级版解锁";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+"walkthrough_quick_tour" = "快速导览";
+"walkthrough_title" = "你的时间线，自动整理。";
+"walkthrough_description" = "你关注的每部剧都会按照可追剧的时间远近分组 - 随着时间推移自动上移。逐步了解每部剧的位置。";
+"walkthrough_show_me" = "带我看看 →";
+"walkthrough_next" = "下一步 →";
+"walkthrough_got_it" = "明白了 - 开始吧";
+
+// =============================================================================
+// MARK: - Additional Buttons
+// =============================================================================
+
+"button_follow_show" = "关注剧集";
+"button_show_less" = "收起";
+"button_more" = "更多";
+"button_save" = "保存";
+"button_start_free_trial" = "开始免费试用";
+
+// =============================================================================
+// MARK: - Premium CTA
+// =============================================================================
+
+"premium_unlock_premium" = "解锁高级版";
+"premium_advanced_features" = "高级通知、单剧设置等更多功能";
+"premium_feature" = "高级版功能";
+"premium_feature_description" = "精确设置 Countdown2Binge 何时以何种方式通知你。升级高级版解锁。";
+
+// =============================================================================
+// MARK: - Share Sheet
+// =============================================================================
+
+"share_counting_down" = "倒计时中";
+"share_just_binged" = "刚追完";
+"share_until_premiere" = "距离首播";
+"share_release_pending" = "播出日期待定";
+"share_season_complete" = "本季完结";
+"share_messages" = "信息";
+"share_instagram" = "Instagram";
+"share_copy_link" = "复制链接";
+"share_more" = "更多";
+"share_binged" = "已追完";
+"share_default_countdown" = "我在等着一口气追完这部剧。🍿";
+"share_default_binged %lld" = "刚一口气追完了全部 %lld 集。🍿✅";
+"share_enter_message" = "输入你的留言...";
+
+// =============================================================================
+// MARK: - Free Limit Modal
+// =============================================================================
+
+"free_plan_badge" = "免费版";
+"free_shows_max %lld" = "最多 %lld 部剧";
+"free_select" = "选择";
+"free_to_remove" = "要移除的";
+"free_limit_description %lld" = "免费版最多追踪 %lld 部剧。点击要移除的剧，然后确认 - 确认前不会移除任何内容。或升级高级版无限追踪。";
+"free_go_premium_keep %lld" = "◆ 升级高级版 - 保留全部 %lld 部";
+"free_continue_free" = "继续使用免费版";
+"free_select_to_remove %lld" = "选择 %lld 部移除";
+"free_select_more %lld" = "再选择 %lld 部";
+"free_remove_selected %lld" = "移除已选的 %lld 部";
+"free_marked_to_remove" = "已标记移除 · 点击保留";
+"free_marked_remove" = "已标记移除";
+
+// =============================================================================
+// MARK: - Downgrade Modal
+// =============================================================================
+
+"downgrade_all_set" = "设置完成";
+"downgrade_remove" = "移除";
+"downgrade_to_continue" = "以继续";
+"downgrade_at_limit" = "你的剧集数量在免费版限制内。点击继续。";
+"downgrade_over_limit %lld" = "你的高级订阅已结束。免费账户最多追踪 %lld 部剧。选择要移除的剧，然后确认。";
+"downgrade_resubscribe %lld" = "重新订阅以保留全部 %lld 部";
+"downgrade_followed %@" = "关注于 %@";
+
+// =============================================================================
+// MARK: - Full Timeline
+// =============================================================================
+
+"header_full_timeline" = "完整时间线";
+"timeline_shows_tracked %lld" = "已追踪 %lld 部剧";
+"timeline_now_playing" = "正在播出";
+"timeline_finale_countdown" = "大结局倒计时";
+"timeline_upcoming_seasons" = "即将播出的季度";
+"timeline_waiting_dates" = "等待日期公布";
+"timeline_to_finale" = "距离大结局";
+"timeline_to_premiere" = "距离首播";
+"timeline_tbd" = "待定";
+"timeline_expected" = "预计";
+"timeline_release" = "播出";
+"timeline_season %lld" = "第 %lld 季";
+"timeline_tba" = "待公布";
+"network_show_count %lld" = "%lld 部剧";
+
+// Additional UI strings
+"timeline_your_shows" = "你的剧集";
+"timeline_countdown_finale" = "大结局倒计时";
+"detail_to_binge" = "距离可追剧";
+"detail_current" = "当前";
+"episode_watched" = "已看";
+"episode_not_aired" = "未播出";
+"status_now" = "现在";
+"status_season_ended" = "本季完结";
+"paywall_best" = "最佳";
+"poster_placeholder" = "海报";
+
+// Additional missing strings
+"season_number %lld" = "第 %lld 季";
+"season_episode_info %lld %lld" = "第 %lld 季 · %lld 集";
+"episode_number %lld" = "第 %lld 集";
+"episode_short %lld" = "第 %lld 集 · 45分钟";
+"today_date %@" = "今天 · %@";
+"last_updated %@" = "最后更新：%@";
+"no_episodes_available" = "暂无剧集";
+"link_terms" = "条款";
+"link_privacy" = "隐私";
+"link_restore" = "恢复";
+"paywall_tracking_shows %lld" = "你正在追踪 %lld 部剧。升级 Pro 版，在任何季度可追剧时立即收到通知。";
+"settings_coming_soon" = "即将推出";
+"binge_watched_count %lld %lld" = "已看 %lld/%lld";
+"binge_complete_suffix" = " · 完结";
+"binge_current_suffix" = " · 当前";
+"binge_seasons_count %lld" = "%lld 季";
+"binge_status_complete" = "完结";
+"binge_status_current %lld %lld" = "当前 · 已看 %lld/%lld";
+"unfollow_show" = "取消关注剧集";
+"tap_episode_details" = "点击剧集查看详情";
+"countdown_in" = "还有";
+"view_on_timeline" = "在时间线中查看 →";
+"timeline_binge_ready_in %lld" = "在你的时间线上 · 约 %lld 天后可追剧";
+"timeline_waiting_anticipated" = "已关注 · 在期待中等待";
+"notif_binge_ready_alert" = "可追剧提醒";
+"notif_ping_when_out" = "整季播完时通知我";
+"premieres_date %@" = "%@ 首播";
+"binge_ready_when_airs" = "此集播出后整季即可追剧。";
+"watch_on %@" = "在 %@ 观看";
+"app_version %@" = "COUNTDOWN2BINGE · %@";
+"onboarding_all_set_description %lld" = "已添加 %lld 部剧。我们会追踪每一季，在可追剧时立即通知你。";
+"hero_more_count %lld" = "+%lld 更多";
+"onboarding_shows_count %lld" = "%lld 部剧";
+"discover_upcoming_count %lld" = "%lld 部即将上线";
+"stats_tracked" = "已追踪";
+"stats_upcoming" = "即将播出";
+
+// Season status badges
+"season_status_new" = "新";
+"season_status_airing" = "播出中";
+"season_status_ready" = "可追";
+
+// Spinoffs tabs
+"tab_episodes" = "剧集";
+"tab_spinoffs" = "衍生剧";
+
+// Show status
+"show_status_returning" = "续订中";
+"show_status_ended" = "已完结";
+"show_status_canceled" = "已取消";
+"show_status_in_production" = "制作中";
+"show_status_planned" = "计划中";
+"show_status_pilot" = "试播";
+
+// Timeline phases
+"phase_anticipated" = "期待中";
+"phase_premiering_soon" = "即将首播";
+"phase_now_airing" = "正在播出";
+"phase_binge_ready" = "可追剧";
+"phase_unknown" = "未知";
+"phase_ready_to_binge" = "可以追剧";
+"phase_binge_ready_in" = "距离可追剧";
+
+// Countdown display mode
+"countdown_mode_days" = "天";
+"countdown_mode_episodes" = "集";
+
+// Follow hints
+"follow_hint_airing %lld" = "关注后我们会等全部 %lld 集播完，然后在可追剧当天提醒你。";
+"follow_hint_anticipated" = "关注后会加入期待列表 - 一旦公布日期就开始倒计时。";
+
+// Episode status
+"episode_status_aired" = "已播出";
+"episode_status_up_next" = "下一集";
+"episode_status_not_aired" = "未播出";
+"episode_status_finale" = "大结局";
+
+// Rewatch
+"rewatch_single_season %lld" = "重看第 %lld 季";
+"rewatch_season_range %lld %lld" = "重看第 %lld-%lld 季";
+
+// Follow prompts
+"follow_prompt_with_days %lld" = "关注以追踪 · 约 %lld 天后可追剧";
+"follow_prompt_no_date" = "关注以追踪 · 日期待定";
+
+// Episode actions
+"button_clear" = "清除";
+"button_mark_all_watched" = "全部标记已看";
+"button_mark_aired_watched" = "已播出的标记已看";
+
+// Episode status text
+"status_complete_rewatch" = "完结 - 可重看";
+"status_full_season_available" = "整季已播出";
+"status_no_episodes_yet" = "暂无剧集播出";
+
+// Following status
+"following_binge_ready_in %lld" = "✓ 在你的时间线上 · 约 %lld 天后可追剧";
+"following_waiting_anticipated" = "✓ 已关注 · 在期待中等待";
+"status_partial_aired %lld %lld" = "已播 %lld/%lld 集 · 每周更新";
+
+// =============================================================================
+// MARK: - Episode Detail Panel
+// =============================================================================
+
+"not_tracking_yet" = "◇ 尚未追踪";
+"plan_season_episodes %@ %lld" = "%@ · %lld 集";
+"episode_count_short %lld" = "%lld 集";
+"episode_placeholder %lld" = "第 %lld 集";
+"episode_in_days %lld" = " · %lld 天后";
+"episode_label_short %lld" = "第 %lld 集";
+"episode_label_finale" = "大结局";
+"episode_label_aired" = "已播出";
+
+// =============================================================================
+// MARK: - Error Messages
+// =============================================================================
+
+"error_load_shows" = "加载剧集失败，请重试。";
+"error_load_trending" = "加载热门剧集失败";
+"error_invalid_url" = "无效的链接";
+"error_network %@" = "网络错误：%@";
+"error_decode %@" = "解析响应失败：%@";
+"error_no_data" = "未收到数据";
+"error_http %lld" = "HTTP 错误：%lld";
+"error_no_purchases" = "未找到可恢复的购买记录。";
+
+// =============================================================================
+// MARK: - Subtext / Status Labels
+// =============================================================================
+
+"subtext_all_episodes_out" = "全部剧集已播";
+"subtext_left_to_release %lld" = "还有 %lld 集未播";
+"subtext_season_complete" = "本季完结";
+"subtext_of_season_released" = "本季已播出";
+"subtext_episodes_ready %lld %@" = "%lld 集 · %@";
+"subtext_all_out" = "全部已播";
+"subtext_no_date_yet" = "日期待定";
+
+// =============================================================================
+// MARK: - Account Status
+// =============================================================================
+
+"account_premium_trial" = "高级版 · 免费试用";
+"account_free_plan" = "免费版";
+
+// =============================================================================
+// MARK: - Calendar Legend
+// =============================================================================
+
+"legend_aired" = "已播出";
+"legend_up_next" = "下一集";
+"legend_not_yet_aired" = "未播出";
+"legend_finale" = "大结局";
+"legend_start_today" = "今天开始";
+
+// =============================================================================
+// MARK: - Discover
+// =============================================================================
+
+"discover_all_networks" = "所有平台";
+"season_abbrev" = "季";
+"days_abbrev" = "天";
+"time_days_short %lld" = "%lld天";
+
+// =============================================================================
+// MARK: - Walkthrough
+// =============================================================================
+
+// Now Airing bucket
+"walkthrough_airing_hint" = "正在每周更新的剧集。最接近大结局的排在最上面 - 那是你下一部可追的剧。";
+"walkthrough_airing_note" = "每当大结局播出，剧集就会移到可追剧区，下一部上升到顶部。";
+
+// Premiering Soon bucket
+"walkthrough_premiering_hint" = "已确定首播日期的剧集，每天倒计时直到新季开播。";
+"walkthrough_premiering_note" = "新季首播后，会移动到正在播出区。";
+
+// Anticipated bucket
+"walkthrough_anticipated_hint" = "已续订但还没有播出日期的剧集。它们安静地等在底部，让你不会忘记它们。";
+"walkthrough_anticipated_note" = "一旦公布日期，它们就会跳到即将首播区开始倒计时。";
+
+// Transitions
+"walkthrough_date_set_hint" = "《大熊餐厅》刚刚确定了首播日期。它从期待中移到即将首播区，开始倒计时。";
+"walkthrough_date_set_note" = "期待中 → 即将首播";
+"walkthrough_premieres_hint" = "《幕府将军》刚刚首播。它进入正在播出区，每周更新新剧集。";
+"walkthrough_premieres_note" = "即将首播 → 正在播出";
+"walkthrough_finale_hint" = "《最后生还者》大结局已播出 - 整季现在可追剧。下一季会回到期待中，等待新的播出日期。";
+"walkthrough_finale_note" = "正在播出 → 可追剧 → 下一季到期待中";
+"walkthrough_label_date_set" = "日期已定";
+"walkthrough_label_premieres" = "正式首播";
+"walkthrough_label_finale" = "大结局播出";
