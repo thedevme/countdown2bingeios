@@ -1,0 +1,8 @@
+What's New in This Version:
+
+• Full localization support for 15 languages
+• Improved timeline organization
+• Better episode tracking with countdown timers
+• Bug fixes and performance improvements
+
+Now available in: English, Spanish, French, German, Portuguese, Italian, Japanese, Korean, Chinese, Arabic, Russian, Turkish, Polish, Dutch, and Thai.

@@ -1,0 +1,8 @@
+Novedades en esta version:
+
+- Soporte completo de localizacion para 15 idiomas
+- Organizacion mejorada de la linea de tiempo
+- Mejor seguimiento de episodios con temporizadores de cuenta regresiva
+- Correcciones de errores y mejoras de rendimiento
+
+Ahora disponible en: Ingles, Espanol, Frances, Aleman, Portugues, Italiano, Japones, Coreano, Chino, Arabe, Ruso, Turco, Polaco, Holandes y Tailandes.

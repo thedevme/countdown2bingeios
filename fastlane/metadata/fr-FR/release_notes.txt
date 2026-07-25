@@ -1,0 +1,8 @@
+Nouveautes de cette version :
+
+- Support complet de localisation pour 15 langues
+- Organisation amelioree de la timeline
+- Meilleur suivi des episodes avec compte a rebours
+- Corrections de bugs et ameliorations des performances
+
+Maintenant disponible en : anglais, espagnol, francais, allemand, portugais, italien, japonais, coreen, chinois, arabe, russe, turc, polonais, neerlandais et thai.

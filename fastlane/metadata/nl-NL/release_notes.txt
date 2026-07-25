@@ -1,0 +1,8 @@
+Wat is er nieuw in deze versie:
+
+• Volledige lokalisatie-ondersteuning voor 15 talen
+• Verbeterde tijdlijn-organisatie
+• Betere afleveringstracking met countdown-timers
+• Bugfixes en prestatieverbeteringen
+
+Nu beschikbaar in: Engels, Spaans, Frans, Duits, Portugees, Italiaans, Japans, Koreaans, Chinees, Arabisch, Russisch, Turks, Pools, Nederlands en Thais.

@@ -1,0 +1,8 @@
+Bu Surumdeki Yenilikler:
+
+• 15 dil icin tam yerelleştirme destegi
+• Gelistirilmis zaman cizelgesi duzeni
+• Geri sayim sayaclariyla daha iyi bolum takibi
+• Hata duzeltmeleri ve performans iyilestirmeleri
+
+Artik mevcut: Ingilizce, Ispanyolca, Fransizca, Almanca, Portekizce, Italyanca, Japonca, Korece, Cince, Arapca, Rusca, Turkce, Lehce, Hollandaca ve Tayca.

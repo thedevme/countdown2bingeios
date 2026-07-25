@@ -1,0 +1,8 @@
+Co nowego w tej wersji:
+
+- Pelna lokalizacja dla 15 jezykow
+- Ulepszona organizacja osi czasu
+- Lepsze sledzenie odcinkow z licznikami czasu
+- Poprawki bledow i ulepszenia wydajnosci
+
+Teraz dostepne w jezykach: angielski, hiszpanski, francuski, niemiecki, portugalski, wloski, japonski, koreanski, chinski, arabski, rosyjski, turecki, polski, holenderski i tajski.

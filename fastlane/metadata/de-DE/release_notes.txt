@@ -1,0 +1,8 @@
+Neu in dieser Version:
+
+- Volle Lokalisierungsunterstutzung fur 15 Sprachen
+- Verbesserte Timeline-Organisation
+- Bessere Episodenverfolgung mit Countdown-Timern
+- Fehlerbehebungen und Leistungsverbesserungen
+
+Jetzt verfugbar in: Englisch, Spanisch, Franzosisch, Deutsch, Portugiesisch, Italienisch, Japanisch, Koreanisch, Chinesisch, Arabisch, Russisch, Turkisch, Polnisch, Niederlandisch und Thailandisch.
