@@ -106,9 +106,7 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
 
     var yearString: String? {
         guard let date = firstAirDate else { return nil }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        return formatter.string(from: date)
+        return date.localizedYear
     }
 
     // MARK: - Lifecycle Helpers
@@ -382,12 +380,7 @@ struct EpisodeData: Identifiable, Codable, Sendable, Hashable {
 
     var runtimeFormatted: String? {
         guard let runtime, runtime > 0 else { return nil }
-        if runtime >= 60 {
-            let hours = runtime / 60
-            let mins = runtime % 60
-            return mins > 0 ? "\(hours)h \(mins)m" : "\(hours)h"
-        }
-        return "\(runtime)m"
+        return runtime.localizedRuntime
     }
 }
 

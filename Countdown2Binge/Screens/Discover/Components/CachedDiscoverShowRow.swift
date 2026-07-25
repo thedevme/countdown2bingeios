@@ -43,9 +43,7 @@ struct CachedDiscoverShowRow: View {
         } else if days <= 7 {
             return String(localized: "status_premieres_in_days \(days)")
         } else if let date = show.firstAirDate {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d"
-            return String(localized: "status_premieres_date \(formatter.string(from: date).uppercased())")
+            return String(localized: "status_premieres_date \(date.localizedShortDate.uppercased())")
         } else {
             return String(localized: "status_coming_soon")
         }

@@ -115,6 +115,14 @@
 "time_start_date" = "%@ 开始";
 "time_already_started" = "已经开始";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld分钟";
+"runtime_hours_only %lld" = "%lld小时";
+"runtime_hours_minutes %lld %lld" = "%lld小时%lld分钟";
+
+// Date placeholders
+"date_tba" = "待定";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

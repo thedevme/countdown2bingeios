@@ -136,8 +136,6 @@ struct DiscoverShowCard: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date).uppercased()
+        date.localizedShortDate.uppercased()
     }
 }

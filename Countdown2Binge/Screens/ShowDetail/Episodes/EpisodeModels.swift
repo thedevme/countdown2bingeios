@@ -56,21 +56,17 @@ struct EpisodeDisplayModel: Identifiable {
     }
 
     var formattedRuntime: String {
-        "\(runtime)m"
+        runtime.localizedRuntime
     }
 
     var formattedAirDate: String {
-        guard let date = airDate else { return "TBA" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, MMM d"
-        return formatter.string(from: date)
+        guard let date = airDate else { return String(localized: "date_tba") }
+        return date.localizedWeekdayDate
     }
 
     var shortAirDate: String {
-        guard let date = airDate else { return "TBA" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date)
+        guard let date = airDate else { return String(localized: "date_tba") }
+        return date.localizedShortDate
     }
 
     var daysUntilAir: Int? {

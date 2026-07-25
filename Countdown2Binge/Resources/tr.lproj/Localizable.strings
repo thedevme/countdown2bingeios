@@ -115,6 +115,14 @@
 "time_start_date" = "%@ başla";
 "time_already_started" = "Zaten başladı";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld dk";
+"runtime_hours_only %lld" = "%lld sa";
+"runtime_hours_minutes %lld %lld" = "%lld sa %lld dk";
+
+// Date placeholders
+"date_tba" = "Belirlenecek";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

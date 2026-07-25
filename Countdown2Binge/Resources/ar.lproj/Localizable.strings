@@ -115,6 +115,14 @@
 "time_start_date" = "ابدأ %@";
 "time_already_started" = "بدأ بالفعل";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld د";
+"runtime_hours_only %lld" = "%lld س";
+"runtime_hours_minutes %lld %lld" = "%lld س %lld د";
+
+// Date placeholders
+"date_tba" = "يُحدد لاحقاً";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

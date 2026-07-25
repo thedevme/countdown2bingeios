@@ -69,10 +69,8 @@ struct CountdownHeader: View {
     }
 
     private var formattedFinaleDate: String {
-        guard let date = finaleDate else { return "TBA" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, MMM d"
-        return formatter.string(from: date)
+        guard let date = finaleDate else { return String(localized: "date_tba") }
+        return date.localizedWeekdayDate
     }
 }
 

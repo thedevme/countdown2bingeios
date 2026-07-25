@@ -142,9 +142,7 @@ private struct PaceOptionRow: View {
     let onSelect: () -> Void
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, MMM d"
-        return formatter.string(from: startDate)
+        startDate.localizedWeekdayDate
     }
 
     private var isStartToday: Bool {

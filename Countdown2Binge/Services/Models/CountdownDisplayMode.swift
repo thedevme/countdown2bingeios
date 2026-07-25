@@ -3,6 +3,8 @@
 //  Countdown2Binge
 //
 
+import Foundation
+
 enum CountdownDisplayMode: String, CaseIterable {
     case days
     case episodes

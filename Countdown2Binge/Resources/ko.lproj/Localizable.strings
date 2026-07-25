@@ -115,6 +115,14 @@
 "time_start_date" = "%@ 시작";
 "time_already_started" = "이미 시작됨";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld분";
+"runtime_hours_only %lld" = "%lld시간";
+"runtime_hours_minutes %lld %lld" = "%lld시간 %lld분";
+
+// Date placeholders
+"date_tba" = "미정";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

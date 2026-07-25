@@ -401,9 +401,7 @@ struct DayTicker: View {
     }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: Date())
+        Date().localizedShortDate
     }
 }
 

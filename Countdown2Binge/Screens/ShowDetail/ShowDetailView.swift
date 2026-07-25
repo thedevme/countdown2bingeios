@@ -240,18 +240,14 @@ struct ShowDetailView: View {
             return String(localized: "status_all_episodes_finished \(eps)")
         case .airingNow:
             if let finaleDate = show.currentSeason?.finaleDate {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d"
-                return String(localized: "status_finale_date \(formatter.string(from: finaleDate))")
+                return String(localized: "status_finale_date \(finaleDate.localizedShortDate)")
             }
             return String(localized: "status_airing_weekly")
         case .premieringSoon:
             if let premiereDate = show.currentSeason?.airDate,
                let days = show.daysUntilPremiere {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d"
                 let readyDays = days + (show.currentSeason?.episodeCount ?? 8) * 7
-                return String(localized: "status_premieres_ready \(formatter.string(from: premiereDate)) \(readyDays)")
+                return String(localized: "status_premieres_ready \(premiereDate.localizedShortDate) \(readyDays)")
             }
             return String(localized: "status_coming_soon")
         case .anticipated:

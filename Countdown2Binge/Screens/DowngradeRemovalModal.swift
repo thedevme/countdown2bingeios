@@ -379,8 +379,6 @@ private struct DowngradeShowCard: View {
     }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: show.followedAt)
+        show.followedAt.localizedShortDate
     }
 }

@@ -115,6 +115,14 @@
 "time_start_date" = "เริ่ม %@";
 "time_already_started" = "เริ่มแล้ว";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld นาที";
+"runtime_hours_only %lld" = "%lld ชม.";
+"runtime_hours_minutes %lld %lld" = "%lld ชม. %lld นาที";
+
+// Date placeholders
+"date_tba" = "รอประกาศ";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

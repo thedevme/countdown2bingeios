@@ -281,16 +281,12 @@ struct EpisodeDetailPanel: View {
     // MARK: - Helpers
 
     private var formattedToday: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: Date())
+        Date().localizedShortDate
     }
 
     private var formattedFinaleDate: String {
-        guard let date = finaleDate else { return "TBA" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date)
+        guard let date = finaleDate else { return String(localized: "date_tba") }
+        return date.localizedShortDate
     }
 }
 
@@ -304,9 +300,7 @@ private struct PaceOptionRow: View {
     let onSelect: () -> Void
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, MMM d"
-        return formatter.string(from: startDate)
+        startDate.localizedWeekdayDate
     }
 
     private var isStartToday: Bool {

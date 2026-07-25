@@ -115,6 +115,14 @@
 "time_start_date" = "Empezar %@";
 "time_already_started" = "Ya comenzado";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lldmin";
+"runtime_hours_only %lld" = "%lldh";
+"runtime_hours_minutes %lld %lld" = "%lldh %lldmin";
+
+// Date placeholders
+"date_tba" = "Por confirmar";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

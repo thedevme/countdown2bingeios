@@ -115,6 +115,14 @@
 "time_start_date" = "Начать %@";
 "time_already_started" = "Уже началось";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld мин";
+"runtime_hours_only %lld" = "%lld ч";
+"runtime_hours_minutes %lld %lld" = "%lld ч %lld мин";
+
+// Date placeholders
+"date_tba" = "Уточняется";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

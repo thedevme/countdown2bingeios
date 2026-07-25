@@ -115,6 +115,14 @@
 "time_start_date" = "Start %@";
 "time_already_started" = "Bereits gestartet";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld Min.";
+"runtime_hours_only %lld" = "%lld Std.";
+"runtime_hours_minutes %lld %lld" = "%lld Std. %lld Min.";
+
+// Date placeholders
+"date_tba" = "Noch offen";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================

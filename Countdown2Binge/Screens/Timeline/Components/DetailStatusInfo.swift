@@ -37,9 +37,7 @@ struct DetailStatusInfo: View {
                 .textCase(.uppercase)
 
             if let date = finaleDate {
-                let formatter = DateFormatter()
-                let _ = formatter.dateFormat = "MMM d, yyyy"
-                Text(formatter.string(from: date))
+                Text(date.localizedFullDate)
                     .font(.system(size: 13))
                     .foregroundColor(.c2bDim)
                     .padding(.top, 6)

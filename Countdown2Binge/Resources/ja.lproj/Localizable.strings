@@ -115,6 +115,14 @@
 "time_start_date" = "%@から開始";
 "time_already_started" = "すでに開始済み";
 
+// Runtime formatting (locale-aware)
+"runtime_minutes_only %lld" = "%lld分";
+"runtime_hours_only %lld" = "%lld時間";
+"runtime_hours_minutes %lld %lld" = "%lld時間%lld分";
+
+// Date placeholders
+"date_tba" = "未定";
+
 // =============================================================================
 // MARK: - Season & Episodes
 // =============================================================================
