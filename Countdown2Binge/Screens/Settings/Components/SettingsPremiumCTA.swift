@@ -36,7 +36,7 @@ struct SettingsPremiumCTA: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                DirectionalIcon(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.c2bMuted)
             }

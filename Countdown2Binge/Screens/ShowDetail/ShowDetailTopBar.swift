@@ -25,7 +25,7 @@ struct ShowDetailTopBar: View {
                                 .stroke(Color.white.opacity(0.2), lineWidth: 1)
                         )
                         .overlay(
-                            Image(systemName: "chevron.left")
+                            DirectionalIcon(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.white)
                         )

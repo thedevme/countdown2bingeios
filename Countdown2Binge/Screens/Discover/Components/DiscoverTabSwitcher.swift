@@ -14,7 +14,7 @@ struct DiscoverTabSwitcher: View {
                 HStack(spacing: 8) {
                     Text("discover_sooner")
                         .font(.custom(.oswald.bold, size: 13))
-                    Image(systemName: "arrow.right")
+                    DirectionalIcon(systemName: "arrow.right")
                         .font(.system(size: 10, weight: .bold))
                     Text("discover_later")
                         .font(.custom(.oswald.bold, size: 13))

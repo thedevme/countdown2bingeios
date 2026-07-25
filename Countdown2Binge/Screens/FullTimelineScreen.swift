@@ -15,7 +15,7 @@ struct FullTimelineScreen: View {
                     // Back button
                     HStack {
                         Button(action: { dismiss() }) {
-                            Image(systemName: "chevron.left")
+                            DirectionalIcon(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.c2bText)
                                 .frame(width: 50, height: 50)

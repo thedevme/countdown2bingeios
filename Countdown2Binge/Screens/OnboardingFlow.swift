@@ -235,7 +235,7 @@ struct OnboardingHeader: View {
             HStack(spacing: 12) {
                 // Back button
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left")
+                    DirectionalIcon(systemName: "chevron.left")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(Color(hex: "#cccccc"))
                         .frame(width: 34, height: 34)

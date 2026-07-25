@@ -216,3 +216,52 @@ struct C2BLayout {
     static let smallRadius: CGFloat = 12
     static let chipRadius: CGFloat = 999
 }
+
+// MARK: - RTL Support
+
+/// Directional icon that automatically flips for RTL languages (Arabic, Hebrew, etc.)
+struct DirectionalIcon: View {
+    let systemName: String
+    @Environment(\.layoutDirection) var layoutDirection
+
+    /// Maps LTR icon names to their RTL equivalents
+    private static let rtlMappings: [String: String] = [
+        "chevron.left": "chevron.right",
+        "chevron.right": "chevron.left",
+        "arrow.left": "arrow.right",
+        "arrow.right": "arrow.left",
+        "arrow.left.circle": "arrow.right.circle",
+        "arrow.right.circle": "arrow.left.circle",
+        "arrow.left.circle.fill": "arrow.right.circle.fill",
+        "arrow.right.circle.fill": "arrow.left.circle.fill",
+        "chevron.backward": "chevron.forward",
+        "chevron.forward": "chevron.forward",
+        "arrow.backward": "arrow.forward",
+        "arrow.forward": "arrow.backward"
+    ]
+
+    private var resolvedName: String {
+        guard layoutDirection == .rightToLeft else { return systemName }
+        return Self.rtlMappings[systemName] ?? systemName
+    }
+
+    var body: some View {
+        Image(systemName: resolvedName)
+    }
+}
+
+extension View {
+    /// Flips the view horizontally when in RTL layout direction
+    func flipForRTL() -> some View {
+        modifier(RTLFlipModifier())
+    }
+}
+
+private struct RTLFlipModifier: ViewModifier {
+    @Environment(\.layoutDirection) var layoutDirection
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(x: layoutDirection == .rightToLeft ? -1 : 1, y: 1)
+    }
+}

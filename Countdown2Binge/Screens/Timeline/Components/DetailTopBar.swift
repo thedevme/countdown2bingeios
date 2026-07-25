@@ -21,7 +21,7 @@ struct DetailTopBar: View {
                         .fill(Color.black.opacity(0.55))
                         .frame(width: 38, height: 38)
                         .overlay(
-                            Image(systemName: "chevron.left")
+                            DirectionalIcon(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.white)
                         )

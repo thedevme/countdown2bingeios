@@ -110,7 +110,7 @@ struct EpisodeCalendar: View {
                             .stroke(Color.white.opacity(0.14), lineWidth: 1)
                     )
                     .overlay(
-                        Image(systemName: "chevron.left")
+                        DirectionalIcon(systemName: "chevron.left")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.white.opacity(0.85))
                     )
@@ -142,7 +142,7 @@ struct EpisodeCalendar: View {
                             .stroke(Color.white.opacity(0.14), lineWidth: 1)
                     )
                     .overlay(
-                        Image(systemName: "chevron.right")
+                        DirectionalIcon(systemName: "chevron.right")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.white.opacity(0.85))
                     )

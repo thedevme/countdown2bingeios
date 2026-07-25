@@ -170,7 +170,7 @@ private struct PaceOptionRow: View {
                 .frame(width: 80, alignment: .leading)
 
                 // Arrow
-                Image(systemName: "arrow.right")
+                DirectionalIcon(systemName: "arrow.right")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(.c2bMuted)
                     .padding(.horizontal, 8)

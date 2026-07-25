@@ -53,7 +53,7 @@ struct DiscoverNetworkSection: View {
                         .foregroundColor(.c2bMuted)
                         .tracking(0.8)
 
-                    Image(systemName: "chevron.right")
+                    DirectionalIcon(systemName: "chevron.right")
                         .font(.system(size: 8, weight: .medium))
                         .foregroundColor(.c2bMuted)
 
