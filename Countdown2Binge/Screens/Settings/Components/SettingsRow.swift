@@ -261,3 +261,60 @@ struct SettingsRowCustom<RightContent: View>: View {
         )
     }
 }
+
+// MARK: - Settings Link Row Content (for use with Link)
+struct SettingsLinkRowContent: View {
+    var icon: String? = nil
+    var iconColor: Color = Color(white: 0.81)
+    let title: String
+    var subtitle: String? = nil
+    var isLast: Bool = false
+
+    var body: some View {
+        HStack(spacing: 13) {
+            if let icon = icon {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 9)
+                        .fill(Color.white.opacity(0.06))
+                        .frame(width: 30, height: 30)
+
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 11.5))
+                        .foregroundColor(.c2bMuted)
+                }
+            }
+
+            Spacer()
+
+            DirectionalIcon(systemName: "chevron.right")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.c2bMuted)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            VStack {
+                Spacer()
+                if !isLast {
+                    Rectangle()
+                        .fill(Color.white.opacity(0.06))
+                        .frame(height: 1)
+                }
+            }
+        )
+    }
+}

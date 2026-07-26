@@ -10,11 +10,11 @@ import SwiftData
 
 @Model
 final class DiscoverCacheMetadata {
-    @Attribute(.unique) var id: String = "discover_cache"
+    @Attribute(.unique) var id: String
     var lastFetchDate: Date?
 
-    init() {
-        self.id = "discover_cache"
+    init(id: String = "discover_cache") {
+        self.id = id
         self.lastFetchDate = nil
     }
 

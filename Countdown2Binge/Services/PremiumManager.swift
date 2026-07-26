@@ -41,6 +41,20 @@ final class PremiumManager {
     /// Tracks when user downgrades from premium to free (for showing removal modal)
     var didDowngradeFromPremium: Bool = false
 
+    // MARK: - Grace Period State
+
+    /// Whether user is currently in a grace period after downgrading
+    private(set) var isInGracePeriod: Bool = false
+
+    /// When the grace period expires
+    private(set) var gracePeriodExpiry: Date? = nil
+
+    /// When the grace period started
+    private(set) var gracePeriodStartedAt: Date? = nil
+
+    /// Number of shows when grace period started
+    private(set) var gracePeriodShowCount: Int = 0
+
     #if DEBUG
     private static let debugPremiumKey = "PremiumManager.debugPremiumOverride"
 
@@ -77,6 +91,19 @@ final class PremiumManager {
         return max(0, days ?? 0)
     }
 
+    /// Days remaining in grace period
+    var gracePeriodDaysRemaining: Int? {
+        guard let expiry = gracePeriodExpiry else { return nil }
+        let days = Calendar.current.dateComponents([.day], from: Date(), to: expiry).day
+        return max(0, days ?? 0)
+    }
+
+    /// Whether the grace period has expired
+    var isGracePeriodExpired: Bool {
+        guard let expiry = gracePeriodExpiry else { return false }
+        return Date() >= expiry
+    }
+
     // MARK: - Computed Properties
 
     /// Maximum number of shows allowed
@@ -89,9 +116,10 @@ final class PremiumManager {
         isPremium
     }
 
-    /// Whether cloud sync is available
+    /// Whether cloud sync is available (disabled during grace period)
     var canUseCloudSync: Bool {
-        isPremium
+        if isInGracePeriod { return false }
+        return isPremium
     }
 
     /// Whether spinoff collections are available
@@ -122,7 +150,9 @@ final class PremiumManager {
     /// - Parameter currentCount: Current number of followed shows
     /// - Returns: `true` if user can add more shows
     func canAddShow(currentCount: Int) -> Bool {
-        currentCount < showLimit
+        // Block adding shows during grace period
+        if isInGracePeriod { return false }
+        return currentCount < showLimit
     }
 
     // MARK: - RevenueCat Configuration
@@ -185,6 +215,14 @@ final class PremiumManager {
         let premiumEntitlement = customerInfo.entitlements["premium"]
         isPremium = premiumEntitlement?.isActive == true
 
+        // Handle re-subscription during grace period
+        if isPremium && isInGracePeriod {
+            Task {
+                await clearGracePeriod()
+                print("PremiumManager: Grace period cleared - user re-subscribed")
+            }
+        }
+
         // Detect downgrade from premium to free
         if wasPremium && !isPremium {
             didDowngradeFromPremium = true
@@ -242,5 +280,76 @@ final class PremiumManager {
     func restorePurchases() async throws {
         let customerInfo = try await Purchases.shared.restorePurchases()
         updateState(from: customerInfo)
+    }
+
+    // MARK: - Grace Period
+
+    /// Start a 3-day grace period when user downgrades with more than 3 shows
+    /// - Parameter showCount: Number of shows at time of downgrade
+    func startGracePeriod(showCount: Int) async {
+        let now = Date()
+        let expiry = Calendar.current.date(byAdding: .day, value: 3, to: now)!
+
+        gracePeriodExpiry = expiry
+        gracePeriodStartedAt = now
+        gracePeriodShowCount = showCount
+        isInGracePeriod = true
+
+        print("PremiumManager: Started 3-day grace period (expires: \(expiry), shows: \(showCount))")
+
+        // Persist to CloudKit
+        do {
+            try await CloudKitManager.shared.saveUserSettings(
+                gracePeriodExpiry: expiry,
+                gracePeriodStartedAt: now,
+                premiumShowCount: showCount
+            )
+        } catch {
+            print("PremiumManager: Failed to save grace period to CloudKit - \(error)")
+        }
+    }
+
+    /// Clear grace period (user re-subscribed or completed show selection)
+    func clearGracePeriod() async {
+        gracePeriodExpiry = nil
+        gracePeriodStartedAt = nil
+        gracePeriodShowCount = 0
+        isInGracePeriod = false
+        didDowngradeFromPremium = false
+
+        print("PremiumManager: Cleared grace period")
+
+        // Clear from CloudKit
+        do {
+            try await CloudKitManager.shared.clearGracePeriod()
+        } catch {
+            print("PremiumManager: Failed to clear grace period from CloudKit - \(error)")
+        }
+    }
+
+    /// Load grace period state from CloudKit (call on app launch)
+    func loadGracePeriodState() async {
+        do {
+            let settings = try await CloudKitManager.shared.fetchUserSettings()
+
+            if let expiry = settings.gracePeriodExpiry {
+                gracePeriodExpiry = expiry
+                gracePeriodStartedAt = settings.gracePeriodStartedAt
+                gracePeriodShowCount = settings.premiumShowCount ?? 0
+
+                // Check if still active or expired
+                if Date() < expiry {
+                    isInGracePeriod = true
+                    print("PremiumManager: Loaded active grace period (expires: \(expiry))")
+                } else {
+                    // Grace period expired - keep data but mark as expired
+                    // ContentView will show the removal modal
+                    isInGracePeriod = true
+                    print("PremiumManager: Loaded expired grace period")
+                }
+            }
+        } catch {
+            print("PremiumManager: Failed to load grace period state - \(error)")
+        }
     }
 }

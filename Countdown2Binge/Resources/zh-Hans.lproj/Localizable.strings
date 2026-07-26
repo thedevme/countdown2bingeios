@@ -186,6 +186,13 @@
 "settings_group_preferences" = "偏好设置";
 "settings_group_account" = "账户";
 "settings_group_developer" = "开发者";
+"settings_group_about" = "关于";
+
+// About section
+"settings_api_provided_by" = "数据由 TMDB 提供";
+"settings_privacy_policy" = "隐私政策";
+"settings_terms_of_use" = "使用条款";
+
 "settings_group_essentials" = "基本功能";
 "settings_group_advanced" = "高级";
 "settings_alerts_advanced" = "已启用高级提醒";
@@ -398,6 +405,27 @@
 "sync_restored_one" = "已从云备份恢复 1 部剧集。";
 "sync_restored_many" = "已从云备份恢复 %lld 部剧集。";
 
+// Cloud Sync Status Messages
+"sync_failed" = "同步失败，请重试。";
+"sync_restored %lld" = "已恢复 %lld 个节目";
+"sync_backed_up %lld" = "已备份 %lld 个节目";
+"sync_up_to_date" = "所有节目已同步";
+"sync_in_progress" = "同步中...";
+"sync_last_synced %@" = "上次同步 %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "云同步是高级功能";
+"sync_no_icloud" = "请登录iCloud以启用同步";
+"sync_icloud_restricted" = "此设备上的iCloud受到限制";
+"sync_temporarily_unavailable" = "iCloud暂时不可用";
+"sync_unavailable" = "云同步不可用";
+
+// Settings Sync Row
+"settings_cloud_sync" = "云同步";
+"settings_cloud_sync_on" = "已开启 · 已与iCloud同步";
+"settings_cloud_sync_off" = "已关闭";
+"settings_sync_now" = "立即同步";
+
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
@@ -425,6 +453,13 @@
 
 "stats_tracked" = "已追踪";
 "stats_upcoming" = "即将播出";
+
+// Salutations
+"salutation_morning" = "早上好";
+"salutation_afternoon" = "下午好";
+"salutation_evening" = "晚上好";
+"salutation_night" = "晚安";
+
 "footer_cycle_message" = "季度完结后\n剧集会循环回来";
 "label_start" = "开始";
 "label_eps" = "集";
@@ -757,6 +792,61 @@
 
 "account_premium_trial" = "高级版 · 免费试用";
 "account_free_plan" = "免费版";
+"settings_default_username" = "追剧达人";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "个人资料";
+"header_edit_profile" = "编辑资料";
+"profile_account_settings" = "账户设置 →";
+
+// Identity card
+"profile_edit_button" = "编辑资料";
+"profile_share_lineup" = "分享片单";
+"profile_edit_hint" = "点击编辑来个性化您的资料";
+"profile_premium_member" = "高级会员";
+
+// Stats
+"profile_stat_following" = "追剧中";
+"profile_stat_ready_now" = "可追";
+"profile_stat_episodes" = "集数";
+"profile_tracked_header" = "追踪中";
+"profile_stat_seasons" = "季";
+"profile_stat_show_time" = "观看时间";
+"profile_stat_shows_followed" = "已追剧";
+
+// Sync status
+"profile_shows_synced" = "已同步剧集";
+"profile_icloud_on" = "ICLOUD 已开启";
+"profile_icloud_off" = "ICLOUD 已关闭";
+"profile_sync_upgrade_hint" = "升级到高级版，通过 iCloud 在所有设备上同步您的剧集。";
+"profile_sync_status_premium %lld %@" = "%lld 部剧集已同步 · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld 部剧集已同步";
+"profile_sync_status_free %lld" = "%lld 部剧集 · 仅本地";
+
+// Show row
+"profile_season" = "季";
+"profile_seasons" = "季";
+"profile_episodes_label" = "集";
+"profile_synced" = "已同步";
+"profile_local_only" = "仅本地";
+
+// Edit profile
+"profile_display_name" = "显示名称";
+"profile_name_hint" = "显示在您的资料卡上";
+"profile_avatar_color" = "头像颜色";
+"profile_initials_hint" = "您的姓名首字母将显示在头像上";
+"profile_photo" = "个人照片";
+"profile_upload_photo" = "上传照片";
+"profile_choose_library" = "从相册选择";
+"profile_premium_feature" = "高级功能";
+"profile_save_button" = "保存更改";
+
+// Share sheet
+"share_seasons_tracked" = "季度追踪中";
+"share_days_to_binge" = "天后开追";
 
 // =============================================================================
 // MARK: - Calendar Legend

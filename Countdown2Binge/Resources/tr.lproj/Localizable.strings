@@ -186,6 +186,14 @@
 "settings_group_preferences" = "Tercihler";
 "settings_group_account" = "Hesap";
 "settings_group_developer" = "Geliştirici";
+
+"settings_group_about" = "Hakkında";
+
+// About section
+"settings_api_provided_by" = "Veriler TMDB tarafından sağlanmaktadır";
+"settings_privacy_policy" = "Gizlilik Politikası";
+"settings_terms_of_use" = "Kullanım Şartları";
+
 "settings_group_essentials" = "Temel Özellikler";
 "settings_group_advanced" = "GELİŞMİŞ";
 "settings_alerts_advanced" = "Gelişmiş uyarılar etkin";
@@ -397,6 +405,27 @@
 "sync_backed_up" = "Yedekleme Tamamlandı";
 "sync_restored_one" = "Bulut yedeklemesinden 1 dizi geri yüklendi.";
 "sync_restored_many" = "Bulut yedeklemesinden %lld dizi geri yüklendi.";
+
+// Cloud Sync Status Messages
+"sync_failed" = "Senkronizasyon başarısız. Lütfen tekrar deneyin.";
+"sync_restored %lld" = "%lld dizi geri yüklendi";
+"sync_backed_up %lld" = "%lld dizi yedeklendi";
+"sync_up_to_date" = "Tüm diziler senkronize";
+"sync_in_progress" = "Senkronize ediliyor...";
+"sync_last_synced %@" = "Son senkronizasyon %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "Bulut senkronizasyonu Premium özelliğidir";
+"sync_no_icloud" = "Senkronizasyonu etkinleştirmek için iCloud'a giriş yapın";
+"sync_icloud_restricted" = "Bu cihazda iCloud kısıtlı";
+"sync_temporarily_unavailable" = "iCloud geçici olarak kullanılamıyor";
+"sync_unavailable" = "Bulut senkronizasyonu kullanılamıyor";
+
+// Settings Sync Row
+"settings_cloud_sync" = "Bulut Senkronizasyonu";
+"settings_cloud_sync_on" = "Açık · iCloud ile senkronize";
+"settings_cloud_sync_off" = "Kapalı";
+"settings_sync_now" = "Şimdi Senkronize Et";
 
 // =============================================================================
 // MARK: - Accessibility Labels
@@ -650,6 +679,12 @@
 "stats_tracked" = "TAKİP EDİLEN";
 "stats_upcoming" = "YAKLAŞAN";
 
+// Salutations
+"salutation_morning" = "GÜNAYIN";
+"salutation_afternoon" = "İYİ GÜNLER";
+"salutation_evening" = "İYİ AKŞAMLAR";
+"salutation_night" = "İYİ GECELER";
+
 // Season status badges
 "season_status_new" = "YENİ";
 "season_status_airing" = "YAYINDA";
@@ -757,6 +792,61 @@
 
 "account_premium_trial" = "Premium · Ücretsiz deneme";
 "account_free_plan" = "Ücretsiz plan";
+"settings_default_username" = "Dizi Tutkunu";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "Profil";
+"header_edit_profile" = "Profili Düzenle";
+"profile_account_settings" = "HESAP AYARLARI →";
+
+// Identity card
+"profile_edit_button" = "PROFİLİ DÜZENLE";
+"profile_share_lineup" = "LİSTEYİ PAYLAŞ";
+"profile_edit_hint" = "Profilinizi kişiselleştirmek için düzenle'ye dokunun";
+"profile_premium_member" = "Premium Üye";
+
+// Stats
+"profile_stat_following" = "TAKİP EDİLEN";
+"profile_stat_ready_now" = "HAZIR";
+"profile_stat_episodes" = "BÖLÜM";
+"profile_tracked_header" = "TAKİP EDİLEN";
+"profile_stat_seasons" = "SEZON";
+"profile_stat_show_time" = "İZLEME SÜRESİ";
+"profile_stat_shows_followed" = "TAKİP EDİLEN DİZİ";
+
+// Sync status
+"profile_shows_synced" = "SENKRONİZE EDİLEN DİZİLER";
+"profile_icloud_on" = "ICLOUD AÇIK";
+"profile_icloud_off" = "ICLOUD KAPALI";
+"profile_sync_upgrade_hint" = "iCloud ile tüm cihazlarınızda dizilerinizi senkronize etmek için Premium'a yükseltin.";
+"profile_sync_status_premium %lld %@" = "%lld dizi senkronize edildi · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld dizi senkronize edildi";
+"profile_sync_status_free %lld" = "%lld dizi · sadece yerel";
+
+// Show row
+"profile_season" = "sezon";
+"profile_seasons" = "sezon";
+"profile_episodes_label" = "bl";
+"profile_synced" = "SENKRONİZE";
+"profile_local_only" = "SADECE YEREL";
+
+// Edit profile
+"profile_display_name" = "GÖRÜNEN AD";
+"profile_name_hint" = "Profil kartınızda gösterilir";
+"profile_avatar_color" = "AVATAR RENGİ";
+"profile_initials_hint" = "Baş harfleriniz avatarda görünecek";
+"profile_photo" = "PROFİL FOTOĞRAFI";
+"profile_upload_photo" = "Fotoğraf Yükle";
+"profile_choose_library" = "Kütüphaneden seç";
+"profile_premium_feature" = "Premium özellik";
+"profile_save_button" = "DEĞİŞİKLİKLERİ KAYDET";
+
+// Share sheet
+"share_seasons_tracked" = "sezon takip ediliyor";
+"share_days_to_binge" = "MARATONA GÜN";
 
 // =============================================================================
 // MARK: - Calendar Legend

@@ -186,7 +186,13 @@
 "settings_group_preferences" = "Preferences";
 "settings_group_account" = "Account";
 "settings_group_developer" = "Developer";
+"settings_group_about" = "About";
 "settings_group_essentials" = "Essentials";
+
+// About section
+"settings_api_provided_by" = "Data provided by TMDB";
+"settings_privacy_policy" = "Privacy Policy";
+"settings_terms_of_use" = "Terms of Use";
 "settings_group_advanced" = "ADVANCED";
 "settings_alerts_advanced" = "Advanced alerts enabled";
 "settings_alerts_basic" = "Binge-ready alerts only";
@@ -398,6 +404,27 @@
 "sync_restored_one" = "We restored 1 show from your cloud backup.";
 "sync_restored_many" = "We restored %lld shows from your cloud backup.";
 
+// Cloud Sync Status Messages
+"sync_failed" = "Sync failed. Please try again.";
+"sync_restored %lld" = "Restored %lld shows";
+"sync_backed_up %lld" = "Backed up %lld shows";
+"sync_up_to_date" = "All shows synced";
+"sync_in_progress" = "Syncing...";
+"sync_last_synced %@" = "Last synced %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "Cloud sync is a Premium feature";
+"sync_no_icloud" = "Sign in to iCloud to enable sync";
+"sync_icloud_restricted" = "iCloud is restricted on this device";
+"sync_temporarily_unavailable" = "iCloud is temporarily unavailable";
+"sync_unavailable" = "Cloud sync is unavailable";
+
+// Settings Sync Row
+"settings_cloud_sync" = "Cloud Sync";
+"settings_cloud_sync_on" = "On · synced to iCloud";
+"settings_cloud_sync_off" = "Off";
+"settings_sync_now" = "Sync Now";
+
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
@@ -425,6 +452,12 @@
 
 "stats_tracked" = "Tracked";
 "stats_upcoming" = "Upcoming";
+
+// Salutations
+"salutation_morning" = "GOOD MORNING";
+"salutation_afternoon" = "GOOD AFTERNOON";
+"salutation_evening" = "GOOD EVENING";
+"salutation_night" = "GOOD NIGHT";
 "footer_cycle_message" = "Shows cycle back\nwhen seasons end";
 "label_start" = "START";
 "label_eps" = "EPS";
@@ -533,6 +566,19 @@
 "premium_advanced_features" = "Advanced notifications, per-show timing & more";
 "premium_feature" = "PREMIUM FEATURE";
 "premium_feature_description" = "Fine-tune exactly when and how Countdown2Binge pings you. Unlock with Premium.";
+
+// =============================================================================
+// MARK: - Grace Period (Downgrade)
+// =============================================================================
+
+"grace_title_days %lld" = "%lld DAYS TO CHOOSE";
+"grace_title_day_one" = "LAST DAY TO CHOOSE";
+"grace_title_expired" = "TIME TO CHOOSE";
+"grace_subtitle %lld" = "You have %lld shows. Select 3 to keep or upgrade.";
+"grace_choose_now" = "CHOOSE NOW";
+"grace_upgrade" = "UPGRADE";
+"grace_cannot_follow_title" = "Cannot Follow New Shows";
+"grace_cannot_follow_message" = "Choose which shows to keep before following new ones.";
 
 // =============================================================================
 // MARK: - Share Sheet
@@ -757,6 +803,65 @@
 
 "account_premium_trial" = "Premium · Free trial";
 "account_free_plan" = "Free plan";
+"settings_default_username" = "Binge Watcher";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "Profile";
+"header_edit_profile" = "Edit Profile";
+"profile_account_settings" = "ACCOUNT SETTINGS →";
+
+// Identity card
+"profile_edit_button" = "EDIT PROFILE";
+"profile_share_lineup" = "SHARE LINEUP";
+"profile_edit_hint" = "Tap edit to personalize your profile";
+"profile_premium_member" = "Premium Member";
+
+// Stats
+"profile_stat_following" = "FOLLOWING";
+"profile_stat_ready_now" = "READY NOW";
+"profile_stat_episodes" = "EPISODES";
+"profile_tracked_header" = "TRACKED";
+"profile_stat_seasons" = "SEASONS";
+"profile_stat_show_time" = "OF SHOW TIME";
+"profile_stat_shows_followed" = "SHOWS FOLLOWED";
+
+// Sync status
+"profile_shows_synced" = "SHOWS SYNCED";
+"profile_icloud_on" = "ICLOUD ON";
+"profile_icloud_off" = "ICLOUD OFF";
+"profile_sync_upgrade_hint" = "Upgrade to Premium to sync your shows across all your devices with iCloud.";
+"profile_sync_status_premium %lld %@" = "%lld shows synced · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld shows synced";
+"profile_sync_status_free %lld" = "%lld shows · local only";
+
+// Show row
+"profile_season" = "season";
+"profile_seasons" = "seasons";
+"profile_episodes_label" = "eps";
+"profile_synced" = "SYNCED";
+"profile_local_only" = "LOCAL ONLY";
+
+// Edit profile
+"profile_display_name" = "DISPLAY NAME";
+"profile_name_hint" = "Shown on your profile card";
+"profile_avatar_color" = "AVATAR COLOR";
+"profile_initials_hint" = "Your initials will appear on the avatar";
+"profile_photo" = "PROFILE PHOTO";
+"profile_upload_photo" = "Upload Photo";
+"profile_choose_library" = "Choose from library";
+"profile_premium_feature" = "Premium feature";
+"profile_choose_photo" = "Choose Photo";
+"profile_take_photo" = "Take Photo";
+"profile_choose_from_library" = "Choose from Library";
+"profile_remove_photo" = "Remove Photo";
+"profile_save_button" = "SAVE CHANGES";
+
+// Share sheet
+"share_seasons_tracked" = "seasons tracked";
+"share_days_to_binge" = "DAYS TO BINGE";
 
 // =============================================================================
 // MARK: - Calendar Legend

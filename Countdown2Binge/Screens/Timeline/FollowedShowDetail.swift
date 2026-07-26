@@ -108,11 +108,9 @@ struct FollowedShowDetail: View {
             // Custom share sheet overlay
             if showShareSheet {
                 ShareSheet(show: show, onClose: { showShareSheet = false })
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
                     .zIndex(100)
             }
         }
-        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showShareSheet)
         .navigationBarHidden(true)
     }
 }

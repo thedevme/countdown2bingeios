@@ -186,6 +186,13 @@
 "settings_group_preferences" = "التفضيلات";
 "settings_group_account" = "الحساب";
 "settings_group_developer" = "المطور";
+"settings_group_about" = "حول";
+
+// About section
+"settings_api_provided_by" = "البيانات مقدمة من TMDB";
+"settings_privacy_policy" = "سياسة الخصوصية";
+"settings_terms_of_use" = "شروط الاستخدام";
+
 "settings_group_essentials" = "الأساسيات";
 "settings_group_advanced" = "متقدم";
 "settings_alerts_advanced" = "التنبيهات المتقدمة مفعّلة";
@@ -397,6 +404,27 @@
 "sync_backed_up" = "اكتمل النسخ الاحتياطي";
 "sync_restored_one" = "تمت استعادة مسلسل واحد من نسختك الاحتياطية السحابية.";
 "sync_restored_many" = "تمت استعادة %lld مسلسل من نسختك الاحتياطية السحابية.";
+
+// Cloud Sync Status Messages
+"sync_failed" = "فشلت المزامنة. يرجى المحاولة مرة أخرى.";
+"sync_restored %lld" = "تم استعادة %lld مسلسل";
+"sync_backed_up %lld" = "تم نسخ %lld مسلسل احتياطياً";
+"sync_up_to_date" = "جميع المسلسلات متزامنة";
+"sync_in_progress" = "جارٍ المزامنة...";
+"sync_last_synced %@" = "آخر مزامنة %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "المزامنة السحابية ميزة مميزة";
+"sync_no_icloud" = "سجّل الدخول إلى iCloud لتفعيل المزامنة";
+"sync_icloud_restricted" = "iCloud مقيد على هذا الجهاز";
+"sync_temporarily_unavailable" = "iCloud غير متاح مؤقتاً";
+"sync_unavailable" = "المزامنة السحابية غير متاحة";
+
+// Settings Sync Row
+"settings_cloud_sync" = "المزامنة السحابية";
+"settings_cloud_sync_on" = "مفعّل · متزامن مع iCloud";
+"settings_cloud_sync_off" = "معطّل";
+"settings_sync_now" = "مزامنة الآن";
 
 // =============================================================================
 // MARK: - Accessibility Labels
@@ -650,6 +678,12 @@
 "stats_tracked" = "متابَع";
 "stats_upcoming" = "قادم";
 
+// Salutations
+"salutation_morning" = "صباح الخير";
+"salutation_afternoon" = "مساء الخير";
+"salutation_evening" = "مساء الخير";
+"salutation_night" = "تصبح على خير";
+
 // Season status badges
 "season_status_new" = "جديد";
 "season_status_airing" = "يُعرض";
@@ -757,6 +791,61 @@
 
 "account_premium_trial" = "بريميوم · تجربة مجانية";
 "account_free_plan" = "الخطة المجانية";
+"settings_default_username" = "مشاهد نهم";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "الملف الشخصي";
+"header_edit_profile" = "تعديل الملف الشخصي";
+"profile_account_settings" = "إعدادات الحساب ←";
+
+// Identity card
+"profile_edit_button" = "تعديل";
+"profile_share_lineup" = "مشاركة القائمة";
+"profile_edit_hint" = "انقر على تعديل لتخصيص ملفك الشخصي";
+"profile_premium_member" = "عضو بريميوم";
+
+// Stats
+"profile_stat_following" = "متابَعة";
+"profile_stat_ready_now" = "جاهزة";
+"profile_stat_episodes" = "حلقات";
+"profile_tracked_header" = "متابَع";
+"profile_stat_seasons" = "مواسم";
+"profile_stat_show_time" = "وقت المشاهدة";
+"profile_stat_shows_followed" = "مسلسلات متابَعة";
+
+// Sync status
+"profile_shows_synced" = "المسلسلات المتزامنة";
+"profile_icloud_on" = "ICLOUD مفعّل";
+"profile_icloud_off" = "ICLOUD معطّل";
+"profile_sync_upgrade_hint" = "قم بالترقية إلى بريميوم لمزامنة مسلسلاتك عبر جميع أجهزتك باستخدام iCloud.";
+"profile_sync_status_premium %lld %@" = "تمت مزامنة %lld مسلسل · %@";
+"profile_sync_status_premium_no_sync %lld" = "تمت مزامنة %lld مسلسل";
+"profile_sync_status_free %lld" = "%lld مسلسل · محلي فقط";
+
+// Show row
+"profile_season" = "موسم";
+"profile_seasons" = "مواسم";
+"profile_episodes_label" = "ح";
+"profile_synced" = "متزامن";
+"profile_local_only" = "محلي فقط";
+
+// Edit profile
+"profile_display_name" = "اسم العرض";
+"profile_name_hint" = "يظهر على بطاقة ملفك الشخصي";
+"profile_avatar_color" = "لون الصورة الرمزية";
+"profile_initials_hint" = "ستظهر الأحرف الأولى من اسمك على الصورة الرمزية";
+"profile_photo" = "صورة الملف الشخصي";
+"profile_upload_photo" = "رفع صورة";
+"profile_choose_library" = "اختر من المكتبة";
+"profile_premium_feature" = "ميزة بريميوم";
+"profile_save_button" = "حفظ التغييرات";
+
+// Share sheet
+"share_seasons_tracked" = "مواسم متابَعة";
+"share_days_to_binge" = "أيام للمشاهدة المتواصلة";
 
 // =============================================================================
 // MARK: - Calendar Legend

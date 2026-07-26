@@ -13,6 +13,7 @@ struct TimelineScreen: View {
     @State private var heroCardIndex: Int = 0
     @State private var showNotificationSettings = false
     @State private var navigationPath = NavigationPath()
+    @State private var profile = ProfileManager.shared.profile
 
     /// Countdown value for the currently displayed hero card
     private var currentHeroCountdown: Int? {
@@ -29,8 +30,10 @@ struct TimelineScreen: View {
             VStack(spacing: 0) {
                 // Header
                 TimelineHeader(
+                    userName: profile.name,
                     onBellTap: { showNotificationSettings = true },
-                    onInfoTap: onInfoTap
+                    onInfoTap: onInfoTap,
+                    lastUpdated: viewModel.lastRefreshedAt
                 )
 
                     // Stats Bar
@@ -98,6 +101,7 @@ struct TimelineScreen: View {
             }
             .onAppear {
                 viewModel.configure(with: modelContext)
+                profile = ProfileManager.shared.profile
                 Task {
                     await viewModel.loadFollowedShows()
                 }
@@ -106,6 +110,9 @@ struct TimelineScreen: View {
                 Task {
                     await viewModel.loadFollowedShows()
                 }
+            }
+            .onChange(of: ProfileManager.shared.profile) { _, newProfile in
+                profile = newProfile
             }
             .navigationDestination(for: ShowData.self) { show in
                 FollowedShowDetail(
@@ -141,7 +148,8 @@ struct TimelineScreen: View {
         TimelineSection(
             title: String(localized: "header_premiering_soon"),
             tone: .c2bTeal,
-            count: viewModel.premieringSoonShows.count
+            count: viewModel.premieringSoonShows.count,
+            storageKey: "timeline_premiering_expanded"
         ) { isExpanded in
             VStack(spacing: isExpanded ? 16 : 10) {
                 if viewModel.premieringSoonShows.isEmpty {
@@ -173,7 +181,8 @@ struct TimelineScreen: View {
         TimelineSection(
             title: String(localized: "header_anticipated"),
             tone: .c2bMuted,
-            count: viewModel.anticipatedShows.count
+            count: viewModel.anticipatedShows.count,
+            storageKey: "timeline_anticipated_expanded"
         ) { isExpanded in
             VStack(spacing: isExpanded ? 16 : 10) {
                 if viewModel.anticipatedShows.isEmpty {
@@ -222,32 +231,87 @@ struct TimelineEmptySection: View {
 
 // MARK: - Timeline Header
 struct TimelineHeader: View {
+    let userName: String
     let onBellTap: () -> Void
     var onInfoTap: (() -> Void)? = nil
+    var lastUpdated: Date? = nil
+
+    private var salutation: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12:
+            return String(localized: "salutation_morning")
+        case 12..<17:
+            return String(localized: "salutation_afternoon")
+        case 17..<21:
+            return String(localized: "salutation_evening")
+        default:
+            return String(localized: "salutation_night")
+        }
+    }
+
+    private var initials: String {
+        let parts = userName.split(separator: " ")
+        if parts.count >= 2 {
+            return String(parts[0].prefix(1) + parts[1].prefix(1)).uppercased()
+        }
+        return String(userName.prefix(2)).uppercased()
+    }
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Notifications Button (left)
-            Button(action: onBellTap) {
-                Image(systemName: "bell")
-                    .font(.system(size: 19, weight: .regular))
-                    .foregroundColor(Color(hex: "#cfcfcf"))
-                    .frame(width: 42, height: 42)
-                    .background(Color.white.opacity(0.04))
-                    .cornerRadius(21)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
-            }
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                // User Avatar (left)
+                ZStack(alignment: .bottomTrailing) {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "#2a2a2e"), Color(hex: "#131315")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 46, height: 46)
+                        .overlay(
+                            Text(initials)
+                                .font(.custom(.oswald.bold, size: 18))
+                                .foregroundColor(.c2bTealBright)
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
 
-            Spacer()
+                    // Online indicator dot
+                    Circle()
+                        .fill(Color.c2bTeal)
+                        .frame(width: 12, height: 12)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.c2bBackground, lineWidth: 2)
+                        )
+                        .offset(x: 2, y: 2)
+                }
 
-            // Info Button (right - launches walkthrough)
-            if let onInfoTap {
-                Button(action: onInfoTap) {
-                    Image(systemName: "info")
-                        .font(.system(size: 19, weight: .semibold))
+                // Salutation and Name
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(salutation)
+                        .font(.custom(.jetbrains.regular, size: 10))
+                        .tracking(1.5)
+                        .foregroundColor(.c2bMuted)
+
+                    Text(userName.uppercased())
+                        .font(.custom(.oswald.bold, size: 20))
+                        .tracking(0.4)
+                        .foregroundColor(.white)
+                }
+
+                Spacer()
+
+                // Notifications Button
+                Button(action: onBellTap) {
+                    Image(systemName: "bell")
+                        .font(.system(size: 18, weight: .regular))
                         .foregroundColor(Color(hex: "#cfcfcf"))
                         .frame(width: 42, height: 42)
                         .background(Color.white.opacity(0.04))
@@ -257,6 +321,30 @@ struct TimelineHeader: View {
                                 .stroke(Color.white.opacity(0.1), lineWidth: 1)
                         )
                 }
+
+                // Info Button (launches walkthrough)
+                if let onInfoTap {
+                    Button(action: onInfoTap) {
+                        Image(systemName: "info")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(Color(hex: "#cfcfcf"))
+                            .frame(width: 42, height: 42)
+                            .background(Color.white.opacity(0.04))
+                            .cornerRadius(21)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                            )
+                    }
+                }
+            }
+
+            // Last Updated
+            if let lastUpdated {
+                Text("Last updated: \(lastUpdated.formatted(date: .omitted, time: .shortened))")
+                    .font(.custom(.jetbrains.regular, size: 11))
+                    .tracking(0.5)
+                    .foregroundColor(.c2bMuted)
             }
         }
         .padding(.horizontal, C2BLayout.horizontalPadding)
@@ -410,13 +498,43 @@ struct TimelineSection<Content: View>: View {
     let title: String
     let tone: Color
     let count: Int
+    let storageKey: String?
     @ViewBuilder let content: (_ isExpanded: Bool) -> Content
-    @State private var isExpanded: Bool = true
+    @AppStorage private var isExpandedStored: Bool
+    @State private var isExpandedLocal: Bool = true
+
+    init(
+        title: String,
+        tone: Color,
+        count: Int,
+        storageKey: String? = nil,
+        @ViewBuilder content: @escaping (_ isExpanded: Bool) -> Content
+    ) {
+        self.title = title
+        self.tone = tone
+        self.count = count
+        self.storageKey = storageKey
+        self.content = content
+        // Use storage key if provided, otherwise use a dummy key
+        self._isExpandedStored = AppStorage(wrappedValue: true, storageKey ?? "timeline_section_default")
+    }
+
+    private var isExpanded: Bool {
+        get { storageKey != nil ? isExpandedStored : isExpandedLocal }
+    }
+
+    private func toggleExpanded() {
+        if storageKey != nil {
+            isExpandedStored.toggle()
+        } else {
+            isExpandedLocal.toggle()
+        }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Section Header
-            Button(action: { withAnimation { isExpanded.toggle() }}) {
+            Button(action: { withAnimation { toggleExpanded() }}) {
                 HStack(spacing: 9) {
                     Circle()
                         .fill(tone)

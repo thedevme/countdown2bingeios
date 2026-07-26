@@ -186,6 +186,12 @@
 "settings_group_preferences" = "การตั้งค่า";
 "settings_group_account" = "บัญชี";
 "settings_group_developer" = "นักพัฒนา";
+"settings_group_about" = "เกี่ยวกับ";
+
+// About section
+"settings_api_provided_by" = "ข้อมูลจัดทำโดย TMDB";
+"settings_privacy_policy" = "นโยบายความเป็นส่วนตัว";
+"settings_terms_of_use" = "ข้อกำหนดการใช้งาน";
 "settings_group_essentials" = "สิ่งจำเป็น";
 "settings_group_advanced" = "ขั้นสูง";
 "settings_alerts_advanced" = "เปิดใช้การแจ้งเตือนขั้นสูง";
@@ -397,6 +403,27 @@
 "sync_backed_up" = "สำรองข้อมูลเสร็จสิ้น";
 "sync_restored_one" = "เรากู้คืน 1 ซีรีส์จากข้อมูลสำรองคลาวด์ของคุณ";
 "sync_restored_many" = "เรากู้คืน %lld ซีรีส์จากข้อมูลสำรองคลาวด์ของคุณ";
+
+// Cloud Sync Status Messages
+"sync_failed" = "การซิงค์ล้มเหลว กรุณาลองใหม่อีกครั้ง";
+"sync_restored %lld" = "กู้คืน %lld ซีรีส์แล้ว";
+"sync_backed_up %lld" = "สำรอง %lld ซีรีส์แล้ว";
+"sync_up_to_date" = "ซีรีส์ทั้งหมดซิงค์แล้ว";
+"sync_in_progress" = "กำลังซิงค์...";
+"sync_last_synced %@" = "ซิงค์ล่าสุด %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "การซิงค์คลาวด์เป็นฟีเจอร์พรีเมียม";
+"sync_no_icloud" = "ลงชื่อเข้า iCloud เพื่อเปิดใช้การซิงค์";
+"sync_icloud_restricted" = "iCloud ถูกจำกัดบนอุปกรณ์นี้";
+"sync_temporarily_unavailable" = "iCloud ไม่พร้อมใช้งานชั่วคราว";
+"sync_unavailable" = "การซิงค์คลาวด์ไม่พร้อมใช้งาน";
+
+// Settings Sync Row
+"settings_cloud_sync" = "การซิงค์คลาวด์";
+"settings_cloud_sync_on" = "เปิด · ซิงค์กับ iCloud แล้ว";
+"settings_cloud_sync_off" = "ปิด";
+"settings_sync_now" = "ซิงค์เดี๋ยวนี้";
 
 // =============================================================================
 // MARK: - Accessibility Labels
@@ -650,6 +677,12 @@
 "stats_tracked" = "ติดตาม";
 "stats_upcoming" = "กำลังจะมา";
 
+// Salutations
+"salutation_morning" = "สวัสดีตอนเช้า";
+"salutation_afternoon" = "สวัสดีตอนบ่าย";
+"salutation_evening" = "สวัสดีตอนเย็น";
+"salutation_night" = "ราตรีสวัสดิ์";
+
 // Season status badges
 "season_status_new" = "ใหม่";
 "season_status_airing" = "ออกอากาศ";
@@ -757,6 +790,61 @@
 
 "account_premium_trial" = "พรีเมียม · ทดลองใช้ฟรี";
 "account_free_plan" = "แผนฟรี";
+"settings_default_username" = "นักดูซีรีส์";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "โปรไฟล์";
+"header_edit_profile" = "แก้ไขโปรไฟล์";
+"profile_account_settings" = "ตั้งค่าบัญชี →";
+
+// Identity card
+"profile_edit_button" = "แก้ไขโปรไฟล์";
+"profile_share_lineup" = "แชร์รายการ";
+"profile_edit_hint" = "แตะแก้ไขเพื่อปรับแต่งโปรไฟล์ของคุณ";
+"profile_premium_member" = "สมาชิกพรีเมียม";
+
+// Stats
+"profile_stat_following" = "ติดตาม";
+"profile_stat_ready_now" = "พร้อมดู";
+"profile_stat_episodes" = "ตอน";
+"profile_tracked_header" = "ติดตาม";
+"profile_stat_seasons" = "ซีซัน";
+"profile_stat_show_time" = "เวลาดู";
+"profile_stat_shows_followed" = "ซีรีส์ที่ติดตาม";
+
+// Sync status
+"profile_shows_synced" = "ซีรีส์ที่ซิงค์แล้ว";
+"profile_icloud_on" = "เปิด ICLOUD";
+"profile_icloud_off" = "ปิด ICLOUD";
+"profile_sync_upgrade_hint" = "อัปเกรดเป็นพรีเมียมเพื่อซิงค์ซีรีส์ของคุณในทุกอุปกรณ์ด้วย iCloud";
+"profile_sync_status_premium %lld %@" = "ซิงค์แล้ว %lld ซีรีส์ · %@";
+"profile_sync_status_premium_no_sync %lld" = "ซิงค์แล้ว %lld ซีรีส์";
+"profile_sync_status_free %lld" = "%lld ซีรีส์ · เฉพาะในเครื่อง";
+
+// Show row
+"profile_season" = "ซีซัน";
+"profile_seasons" = "ซีซัน";
+"profile_episodes_label" = "ตอน";
+"profile_synced" = "ซิงค์แล้ว";
+"profile_local_only" = "เฉพาะในเครื่อง";
+
+// Edit profile
+"profile_display_name" = "ชื่อที่แสดง";
+"profile_name_hint" = "แสดงบนการ์ดโปรไฟล์ของคุณ";
+"profile_avatar_color" = "สีอวาตาร์";
+"profile_initials_hint" = "ตัวอักษรย่อของคุณจะแสดงบนอวาตาร์";
+"profile_photo" = "รูปโปรไฟล์";
+"profile_upload_photo" = "อัปโหลดรูป";
+"profile_choose_library" = "เลือกจากคลังภาพ";
+"profile_premium_feature" = "ฟีเจอร์พรีเมียม";
+"profile_save_button" = "บันทึกการเปลี่ยนแปลง";
+
+// Share sheet
+"share_seasons_tracked" = "ซีซันที่ติดตาม";
+"share_days_to_binge" = "วันจนถึงมาราธอน";
 
 // =============================================================================
 // MARK: - Calendar Legend

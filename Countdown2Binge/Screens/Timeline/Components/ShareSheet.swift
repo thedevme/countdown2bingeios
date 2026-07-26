@@ -14,6 +14,7 @@ struct ShareSheet: View {
     @State private var variant: ShareVariant = .countingDown
     @State private var countdownText = "I'm waiting to binge this one start to finish. 🍿"
     @State private var bingedText = ""
+    @State private var isPresented = false
 
     enum ShareVariant {
         case countingDown
@@ -58,128 +59,143 @@ struct ShareSheet: View {
 
     var body: some View {
         ZStack {
-            // Backdrop
-            Color.black.opacity(0.72)
+            // Backdrop - fades in separately
+            Color.black.opacity(isPresented ? 0.72 : 0)
                 .ignoresSafeArea()
-                .onTapGesture { onClose() }
+                .animation(.easeOut(duration: 0.2), value: isPresented)
+                .onTapGesture { dismissSheet() }
 
             VStack {
                 Spacer()
 
-                // Sheet content
-                VStack(spacing: 0) {
-                    // Drag handle
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.white.opacity(0.2))
-                        .frame(width: 40, height: 4)
-                        .padding(.top, 8)
+                if isPresented {
+                    // Sheet content
+                    VStack(spacing: 0) {
+                        // Drag handle
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.white.opacity(0.2))
+                            .frame(width: 40, height: 4)
+                            .padding(.top, 8)
+                            .padding(.bottom, 12)
+
+                        // Variant toggle
+                        HStack(spacing: 4) {
+                            VariantButton(
+                                title: String(localized: "share_counting_down"),
+                                isSelected: variant == .countingDown,
+                                action: { variant = .countingDown }
+                            )
+                            VariantButton(
+                                title: String(localized: "share_just_binged"),
+                                isSelected: variant == .justBinged,
+                                action: { variant = .justBinged }
+                            )
+                        }
+                        .padding(3)
+                        .background(Color.white.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        )
+                        .cornerRadius(10)
+                        .padding(.horizontal, 20)
                         .padding(.bottom, 12)
 
-                    // Variant toggle
-                    HStack(spacing: 4) {
-                        VariantButton(
-                            title: String(localized: "share_counting_down"),
-                            isSelected: variant == .countingDown,
-                            action: { variant = .countingDown }
+                        // Binge Card
+                        BingeCard(
+                            show: show,
+                            variant: variant,
+                            seasonNumber: seasonNumber,
+                            statBig: statBig,
+                            statLabel: statLabel,
+                            customText: variant == .countingDown ? countdownText : (bingedText.isEmpty ? defaultBingedText : bingedText)
                         )
-                        VariantButton(
-                            title: String(localized: "share_just_binged"),
-                            isSelected: variant == .justBinged,
-                            action: { variant = .justBinged }
-                        )
-                    }
-                    .padding(3)
-                    .background(Color.white.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
-                    )
-                    .cornerRadius(10)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 12)
+                        .padding(.horizontal, 20)
 
-                    // Binge Card
-                    BingeCard(
-                        show: show,
-                        variant: variant,
-                        seasonNumber: seasonNumber,
-                        statBig: statBig,
-                        statLabel: statLabel,
-                        customText: variant == .countingDown ? countdownText : (bingedText.isEmpty ? defaultBingedText : bingedText)
-                    )
-                    .padding(.horizontal, 20)
-
-                    // Editable message
-                    HStack {
-                        Image(systemName: "pencil")
-                            .font(.system(size: 12))
-                            .foregroundColor(.c2bMuted)
-
-                        if variant == .countingDown {
-                            TextField("share_enter_message", text: $countdownText)
+                        // Editable message
+                        HStack {
+                            Image(systemName: "pencil")
                                 .font(.system(size: 12))
-                                .foregroundColor(.white)
-                                .tint(.c2bTeal)
-                        } else {
-                            TextField(defaultBingedText, text: $bingedText)
-                                .font(.system(size: 12))
-                                .foregroundColor(.white)
-                                .tint(.c2bTeal)
+                                .foregroundColor(.c2bMuted)
+
+                            if variant == .countingDown {
+                                TextField("share_enter_message", text: $countdownText)
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                    .tint(.c2bTeal)
+                            } else {
+                                TextField(defaultBingedText, text: $bingedText)
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                    .tint(.c2bTeal)
+                            }
                         }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.04))
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+
+                        // Share destinations
+                        HStack(spacing: 8) {
+                            ShareDestination(label: String(localized: "share_messages"), color: Color(hex: "#34C759"), icon: "message.fill")
+                            ShareDestination(label: String(localized: "share_instagram"), color: Color(hex: "#E1306C"), icon: "camera.fill")
+                            ShareDestination(label: String(localized: "share_copy_link"), color: Color(hex: "#8E8E93"), icon: "link")
+                            ShareDestination(label: String(localized: "share_more"), color: Color(hex: "#48484A"), icon: "ellipsis")
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+
+                        // Cancel button
+                        Button(action: { dismissSheet() }) {
+                            Text("button_cancel")
+                                .font(.custom(.oswald.regular, size: 13))
+                                .tracking(0.78)
+                                .foregroundColor(.c2bDim)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 13)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                                )
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        .padding(.bottom, 20)
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(Color.white.opacity(0.04))
-                    .cornerRadius(10)
+                    .background(Color(hex: "#0e0e0f"))
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 24,
+                            topTrailingRadius: 24
+                        )
+                    )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 24,
+                            topTrailingRadius: 24
+                        )
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
                     )
-                    .padding(.horizontal, 20)
-                    .padding(.top, 12)
-
-                    // Share destinations
-                    HStack(spacing: 8) {
-                        ShareDestination(label: String(localized: "share_messages"), color: Color(hex: "#34C759"), icon: "message.fill")
-                        ShareDestination(label: String(localized: "share_instagram"), color: Color(hex: "#E1306C"), icon: "camera.fill")
-                        ShareDestination(label: String(localized: "share_copy_link"), color: Color(hex: "#8E8E93"), icon: "link")
-                        ShareDestination(label: String(localized: "share_more"), color: Color(hex: "#48484A"), icon: "ellipsis")
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-
-                    // Cancel button
-                    Button(action: onClose) {
-                        Text("button_cancel")
-                            .font(.custom(.oswald.regular, size: 13))
-                            .tracking(0.78)
-                            .foregroundColor(.c2bDim)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 13)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
-                            )
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                    .padding(.bottom, 20)
+                    .transition(.move(edge: .bottom))
                 }
-                .background(Color(hex: "#0e0e0f"))
-                .clipShape(
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 24,
-                        topTrailingRadius: 24
-                    )
-                )
-                .overlay(
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 24,
-                        topTrailingRadius: 24
-                    )
-                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                )
             }
+            .animation(.spring(response: 0.35, dampingFraction: 0.85), value: isPresented)
+        }
+        .onAppear {
+            isPresented = true
+        }
+    }
+
+    private func dismissSheet() {
+        isPresented = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            onClose()
         }
     }
 }

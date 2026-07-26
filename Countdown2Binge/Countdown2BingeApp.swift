@@ -24,7 +24,13 @@ struct Countdown2BingeApp: App {
             CachedDiscoverShow.self,
             DiscoverCacheMetadata.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+        // Explicitly disable CloudKit sync - we use our own CloudKitManager
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none  // This disables automatic CloudKit sync
+        )
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -48,8 +54,18 @@ struct Countdown2BingeApp: App {
                         hasLaunched = true
                         Task {
                             await PremiumManager.shared.configure()
+                            await PremiumManager.shared.loadGracePeriodState()
                             await FranchiseService.shared.fetchFranchises()
                             await stateRefreshService.onAppLaunch()
+
+                            // Cloud sync on launch (if eligible)
+                            if await CloudSyncService.shared.canSync {
+                                let context = sharedModelContainer.mainContext
+                                let result = await CloudSyncService.shared.fullSync(modelContext: context)
+                                if !result.isEmpty {
+                                    print("CloudSync: \(result.message)")
+                                }
+                            }
                         }
                     }
                 }

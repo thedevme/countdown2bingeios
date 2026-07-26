@@ -89,6 +89,9 @@ struct DowngradeRemovalModal: View {
             do {
                 try store.unfollow(tmdbId: tmdbId)
                 try seriesStore.delete(tmdbId: tmdbId)
+
+                // Remove from cloud (will be skipped if not premium)
+                Task { await CloudSyncService.shared.removeShow(tmdbId: tmdbId) }
             } catch {
                 print("Error removing show \(tmdbId): \(error)")
             }
@@ -98,8 +101,11 @@ struct DowngradeRemovalModal: View {
         loadFollowedShows()
         markedForRemoval.removeAll()
 
-        // Clear downgrade flag
+        // Clear downgrade flag and grace period
         PremiumManager.shared.didDowngradeFromPremium = false
+        Task {
+            await PremiumManager.shared.clearGracePeriod()
+        }
 
         if atLimit {
             dismissModal()
@@ -107,8 +113,11 @@ struct DowngradeRemovalModal: View {
     }
 
     private func handleUpgrade() {
-        // Clear the flag and dismiss - user will go to paywall
+        // Clear the flags and dismiss - user will go to paywall
         PremiumManager.shared.didDowngradeFromPremium = false
+        Task {
+            await PremiumManager.shared.clearGracePeriod()
+        }
         dismissModal()
         // TODO: Present paywall
     }

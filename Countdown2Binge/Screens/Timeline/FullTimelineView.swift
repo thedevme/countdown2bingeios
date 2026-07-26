@@ -15,6 +15,11 @@ struct FullTimelineView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
 
+    // Persisted expand/collapse states for full timeline
+    @AppStorage("full_timeline_now_playing_expanded") private var nowPlayingExpanded = true
+    @AppStorage("full_timeline_premiering_expanded") private var premieringExpanded = true
+    @AppStorage("full_timeline_anticipated_expanded") private var anticipatedExpanded = true
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -86,20 +91,29 @@ struct FullTimelineView: View {
                 title: String(localized: "timeline_now_playing"),
                 count: viewModel.airingNowShows.count,
                 tone: .c2bTeal,
-                subtitle: String(localized: "timeline_finale_countdown")
+                subtitle: String(localized: "timeline_finale_countdown"),
+                isExpanded: $nowPlayingExpanded
             )
 
             // Cards
-            VStack(spacing: 16) {
+            VStack(spacing: nowPlayingExpanded ? 16 : 10) {
                 if viewModel.airingNowShows.isEmpty {
-                    TimelineEmptySection()
+                    if nowPlayingExpanded {
+                        TimelineEmptySection()
+                    } else {
+                        MiniEmptySection(dim: false)
+                    }
                 } else {
                     ForEach(viewModel.airingNowShows, id: \.id) { show in
                         Button(action: { navigationPath.append(show) }) {
-                            NowPlayingCard(showData: show)
+                            if nowPlayingExpanded {
+                                NowPlayingCard(showData: show)
+                            } else {
+                                MiniNowPlayingCard(showData: show)
+                            }
                         }
                         .buttonStyle(.plain)
-                                            }
+                    }
                 }
             }
             .padding(.top, 16)
@@ -116,20 +130,29 @@ struct FullTimelineView: View {
                 title: String(localized: "header_premiering_soon"),
                 count: viewModel.premieringSoonShows.count,
                 tone: .c2bTeal,
-                subtitle: String(localized: "timeline_upcoming_seasons")
+                subtitle: String(localized: "timeline_upcoming_seasons"),
+                isExpanded: $premieringExpanded
             )
 
             // Cards
-            VStack(spacing: 16) {
+            VStack(spacing: premieringExpanded ? 16 : 10) {
                 if viewModel.premieringSoonShows.isEmpty {
-                    TimelineEmptySection()
+                    if premieringExpanded {
+                        TimelineEmptySection()
+                    } else {
+                        MiniEmptySection(dim: false)
+                    }
                 } else {
                     ForEach(viewModel.premieringSoonShows, id: \.id) { show in
                         Button(action: { navigationPath.append(show) }) {
-                            PremieringCard(showData: show)
+                            if premieringExpanded {
+                                PremieringCard(showData: show)
+                            } else {
+                                MiniPremieringCard(showData: show)
+                            }
                         }
                         .buttonStyle(.plain)
-                                            }
+                    }
                 }
             }
             .padding(.top, 16)
@@ -146,17 +169,26 @@ struct FullTimelineView: View {
                 title: String(localized: "header_anticipated"),
                 count: viewModel.anticipatedShows.count,
                 tone: .c2bMuted,
-                subtitle: String(localized: "timeline_waiting_dates")
+                subtitle: String(localized: "timeline_waiting_dates"),
+                isExpanded: $anticipatedExpanded
             )
 
             // Cards
-            VStack(spacing: 16) {
+            VStack(spacing: anticipatedExpanded ? 16 : 10) {
                 if viewModel.anticipatedShows.isEmpty {
-                    TimelineEmptySection()
+                    if anticipatedExpanded {
+                        TimelineEmptySection()
+                    } else {
+                        MiniEmptySection(dim: true)
+                    }
                 } else {
                     ForEach(viewModel.anticipatedShows, id: \.id) { show in
                         Button(action: { navigationPath.append(show) }) {
-                            AnticipatedCard(showData: show)
+                            if anticipatedExpanded {
+                                AnticipatedCard(showData: show)
+                            } else {
+                                MiniAnticipatedCard(showData: show)
+                            }
                         }
                         .buttonStyle(.plain)
                     }
@@ -169,39 +201,52 @@ struct FullTimelineView: View {
 
     // MARK: - Section Header
 
-    private func sectionHeader(title: String, count: Int, tone: Color, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 9) {
-                Circle()
-                    .fill(tone)
-                    .frame(width: 8, height: 8)
+    private func sectionHeader(title: String, count: Int, tone: Color, subtitle: String, isExpanded: Binding<Bool>) -> some View {
+        Button(action: { withAnimation { isExpanded.wrappedValue.toggle() }}) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 9) {
+                    Circle()
+                        .fill(tone)
+                        .frame(width: 8, height: 8)
 
-                Text(title)
-                    .font(.custom(.oswald.bold, size: 16))
-                    .foregroundColor(.white)
+                    Text(title)
+                        .font(.custom(.oswald.bold, size: 16))
+                        .foregroundColor(.white)
 
-                Text("\(count)")
-                    .font(.custom(.jetbrains.bold, size: 9))
-                    .foregroundColor(tone == .c2bMuted ? .c2bDim : .c2bTealBright)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 2)
-                    .background(
-                        tone == .c2bMuted ?
-                        Color.white.opacity(0.06) :
-                        Color.c2bTeal.opacity(0.12)
-                    )
-                    .cornerRadius(C2BLayout.chipRadius)
+                    Text("\(count)")
+                        .font(.custom(.jetbrains.bold, size: 9))
+                        .foregroundColor(tone == .c2bMuted ? .c2bDim : .c2bTealBright)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2)
+                        .background(
+                            tone == .c2bMuted ?
+                            Color.white.opacity(0.06) :
+                            Color.c2bTeal.opacity(0.12)
+                        )
+                        .cornerRadius(C2BLayout.chipRadius)
 
-                Spacer()
+                    Spacer()
+
+                    Text(isExpanded.wrappedValue ? String(localized: "button_hide") : String(localized: "button_show"))
+                        .font(.custom(.jetbrains.bold, size: 8.5))
+                        .foregroundColor(.c2bMuted)
+                        .tracking(0.6)
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.c2bMuted)
+                        .rotationEffect(.degrees(isExpanded.wrappedValue ? 180 : 0))
+                }
+
+                Text(subtitle)
+                    .font(.custom(.jetbrains.regular, size: 8))
+                    .foregroundColor(.c2bDim)
+                    .tracking(0.8)
+                    .padding(.leading, 17)
             }
-
-            Text(subtitle)
-                .font(.custom(.jetbrains.regular, size: 8))
-                .foregroundColor(.c2bDim)
-                .tracking(0.8)
-                .padding(.leading, 17)
+            .padding(.horizontal, C2BLayout.horizontalPadding)
         }
-        .padding(.horizontal, C2BLayout.horizontalPadding)
+        .buttonStyle(.plain)
     }
 }
 

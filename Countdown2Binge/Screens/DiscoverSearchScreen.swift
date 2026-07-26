@@ -13,6 +13,7 @@ struct SearchScreen: View {
     @State private var selectedPlan: String = "yearly"
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
+    @State private var showGracePeriodAlert: Bool = false
 
     /// Badge manager for tab notifications
     var badgeManager: TabBadgeManager?
@@ -249,6 +250,12 @@ struct SearchScreen: View {
                 viewModel.showPremiumUpgrade = false
             }
         }
+        .onChange(of: viewModel.showGracePeriodBlock) { _, show in
+            if show {
+                showGracePeriodAlert = true
+                viewModel.showGracePeriodBlock = false
+            }
+        }
         .sheet(isPresented: $showPaywall) {
             DiscoverPaywallSheet(
                 selectedPlan: $selectedPlan,
@@ -256,6 +263,14 @@ struct SearchScreen: View {
                 purchaseError: $purchaseError,
                 onDismiss: { showPaywall = false }
             )
+        }
+        .alert(
+            String(localized: "grace_cannot_follow_title"),
+            isPresented: $showGracePeriodAlert
+        ) {
+            Button(String(localized: "button_ok"), role: .cancel) {}
+        } message: {
+            Text("grace_cannot_follow_message")
         }
     }
 }

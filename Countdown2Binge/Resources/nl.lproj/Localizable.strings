@@ -186,6 +186,12 @@
 "settings_group_preferences" = "Voorkeuren";
 "settings_group_account" = "Account";
 "settings_group_developer" = "Ontwikkelaar";
+"settings_group_about" = "Over";
+
+// About section
+"settings_api_provided_by" = "Gegevens geleverd door TMDB";
+"settings_privacy_policy" = "Privacybeleid";
+"settings_terms_of_use" = "Gebruiksvoorwaarden";
 "settings_group_essentials" = "Essentieel";
 "settings_group_advanced" = "GEAVANCEERD";
 "settings_alerts_advanced" = "Geavanceerde meldingen ingeschakeld";
@@ -398,6 +404,27 @@
 "sync_restored_one" = "We hebben 1 serie hersteld uit je cloudback-up.";
 "sync_restored_many" = "We hebben %lld series hersteld uit je cloudback-up.";
 
+// Cloud Sync Status Messages
+"sync_failed" = "Synchronisatie mislukt. Probeer opnieuw.";
+"sync_restored %lld" = "%lld series hersteld";
+"sync_backed_up %lld" = "%lld series geback-upt";
+"sync_up_to_date" = "Alle series gesynchroniseerd";
+"sync_in_progress" = "Synchroniseren...";
+"sync_last_synced %@" = "Laatst gesynchroniseerd %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "Cloudsynchronisatie is een Premium-functie";
+"sync_no_icloud" = "Log in bij iCloud om synchronisatie in te schakelen";
+"sync_icloud_restricted" = "iCloud is beperkt op dit apparaat";
+"sync_temporarily_unavailable" = "iCloud is tijdelijk niet beschikbaar";
+"sync_unavailable" = "Cloudsynchronisatie niet beschikbaar";
+
+// Settings Sync Row
+"settings_cloud_sync" = "Cloudsynchronisatie";
+"settings_cloud_sync_on" = "Aan · gesynchroniseerd met iCloud";
+"settings_cloud_sync_off" = "Uit";
+"settings_sync_now" = "Nu synchroniseren";
+
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
@@ -425,6 +452,12 @@
 
 "stats_tracked" = "GEVOLGD";
 "stats_upcoming" = "AANKOMEND";
+
+// Salutations
+"salutation_morning" = "GOEDEMORGEN";
+"salutation_afternoon" = "GOEDEMIDDAG";
+"salutation_evening" = "GOEDENAVOND";
+"salutation_night" = "GOEDENACHT";
 "footer_cycle_message" = "Series komen terug\nals seizoenen eindigen";
 "label_start" = "START";
 "label_eps" = "AFL";
@@ -755,6 +788,61 @@
 
 "account_premium_trial" = "Premium · Gratis proefperiode";
 "account_free_plan" = "Gratis abonnement";
+"settings_default_username" = "Serieverslaafde";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "Profiel";
+"header_edit_profile" = "Profiel Bewerken";
+"profile_account_settings" = "ACCOUNTINSTELLINGEN →";
+
+// Identity card
+"profile_edit_button" = "PROFIEL BEWERKEN";
+"profile_share_lineup" = "LIJST DELEN";
+"profile_edit_hint" = "Tik op bewerken om je profiel te personaliseren";
+"profile_premium_member" = "Premium Lid";
+
+// Stats
+"profile_stat_following" = "VOLGEND";
+"profile_stat_ready_now" = "KLAAR";
+"profile_stat_episodes" = "AFLEVERINGEN";
+"profile_tracked_header" = "GEVOLGD";
+"profile_stat_seasons" = "SEIZOENEN";
+"profile_stat_show_time" = "KIJKTIJD";
+"profile_stat_shows_followed" = "SERIES GEVOLGD";
+
+// Sync status
+"profile_shows_synced" = "GESYNCHRONISEERDE SERIES";
+"profile_icloud_on" = "ICLOUD AAN";
+"profile_icloud_off" = "ICLOUD UIT";
+"profile_sync_upgrade_hint" = "Upgrade naar Premium om je series te synchroniseren op al je apparaten met iCloud.";
+"profile_sync_status_premium %lld %@" = "%lld series gesynchroniseerd · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld series gesynchroniseerd";
+"profile_sync_status_free %lld" = "%lld series · alleen lokaal";
+
+// Show row
+"profile_season" = "seizoen";
+"profile_seasons" = "seizoenen";
+"profile_episodes_label" = "afl";
+"profile_synced" = "GESYNCHRONISEERD";
+"profile_local_only" = "ALLEEN LOKAAL";
+
+// Edit profile
+"profile_display_name" = "WEERGAVENAAM";
+"profile_name_hint" = "Wordt getoond op je profielkaart";
+"profile_avatar_color" = "AVATAR KLEUR";
+"profile_initials_hint" = "Je initialen verschijnen op de avatar";
+"profile_photo" = "PROFIELFOTO";
+"profile_upload_photo" = "Foto Uploaden";
+"profile_choose_library" = "Kies uit bibliotheek";
+"profile_premium_feature" = "Premium functie";
+"profile_save_button" = "WIJZIGINGEN OPSLAAN";
+
+// Share sheet
+"share_seasons_tracked" = "seizoenen gevolgd";
+"share_days_to_binge" = "DAGEN TOT MARATHON";
 
 // =============================================================================
 // MARK: - Calendar Legend

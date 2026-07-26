@@ -83,6 +83,9 @@ final class DiscoverViewModel {
     /// Set to true when user hits free tier limit - triggers paywall
     var showPremiumUpgrade: Bool = false
 
+    /// Set to true when user tries to follow during grace period - shows alert
+    var showGracePeriodBlock: Bool = false
+
     var searchText: String = "" {
         didSet {
             searchTask?.cancel()
@@ -187,10 +190,19 @@ final class DiscoverViewModel {
                 try store.unfollow(tmdbId: show.id)
                 try seriesStore.delete(tmdbId: show.id)
                 followedShowIds.remove(show.id)
+
+                // Remove from cloud
+                Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
             } catch {
                 print("Error unfollowing show: \(error)")
             }
         } else {
+            // Check grace period first - user must choose shows before following new ones
+            if PremiumManager.shared.isInGracePeriod {
+                showGracePeriodBlock = true
+                return
+            }
+
             // Check premium limit before following
             if !PremiumManager.shared.canAddShow(currentCount: followedShowIds.count) {
                 showPremiumUpgrade = true
@@ -209,7 +221,7 @@ final class DiscoverViewModel {
 
     /// Actually follow the pending show (called when user taps SAVE)
     func confirmPendingFollow() async {
-        guard let show = pendingFollowShow, let store, let seriesStore else { return }
+        guard let show = pendingFollowShow, let store, let seriesStore, let modelContext else { return }
 
         do {
             let summary = ShowSummary(
@@ -230,6 +242,15 @@ final class DiscoverViewModel {
 
             // Save franchise/spinoff data for this show
             await store.saveFranchiseData(for: show.id)
+
+            // Push to cloud
+            Task {
+                await CloudSyncService.shared.pushShow(
+                    tmdbId: show.id,
+                    followedAt: Date(),
+                    modelContext: modelContext
+                )
+            }
         } catch {
             print("Error following show: \(error)")
         }
@@ -342,6 +363,13 @@ final class DiscoverViewModel {
         )
 
         if willFollow {
+            // Check grace period first - user must choose shows before following new ones
+            if PremiumManager.shared.isInGracePeriod {
+                showGracePeriodBlock = true
+                loadingFollowId = nil
+                return
+            }
+
             // Check premium limit before following
             if !PremiumManager.shared.canAddShow(currentCount: followedShowIds.count) {
                 showPremiumUpgrade = true

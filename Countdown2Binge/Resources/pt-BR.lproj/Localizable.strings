@@ -186,6 +186,12 @@
 "settings_group_preferences" = "Preferências";
 "settings_group_account" = "Conta";
 "settings_group_developer" = "Desenvolvedor";
+"settings_group_about" = "Sobre";
+
+// About section
+"settings_api_provided_by" = "Dados fornecidos por TMDB";
+"settings_privacy_policy" = "Política de Privacidade";
+"settings_terms_of_use" = "Termos de Uso";
 "settings_group_essentials" = "Essenciais";
 "settings_group_advanced" = "AVANÇADO";
 "settings_alerts_advanced" = "Alertas avançados ativados";
@@ -398,6 +404,27 @@
 "sync_restored_one" = "Restauramos 1 série do seu backup na nuvem.";
 "sync_restored_many" = "Restauramos %lld séries do seu backup na nuvem.";
 
+// Cloud Sync Status Messages
+"sync_failed" = "Falha na sincronização. Tente novamente.";
+"sync_restored %lld" = "%lld séries restauradas";
+"sync_backed_up %lld" = "%lld séries no backup";
+"sync_up_to_date" = "Todas as séries sincronizadas";
+"sync_in_progress" = "Sincronizando...";
+"sync_last_synced %@" = "Última sincronização %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "Sincronização na nuvem é um recurso Premium";
+"sync_no_icloud" = "Entre no iCloud para ativar a sincronização";
+"sync_icloud_restricted" = "iCloud está restrito neste dispositivo";
+"sync_temporarily_unavailable" = "iCloud está temporariamente indisponível";
+"sync_unavailable" = "Sincronização na nuvem indisponível";
+
+// Settings Sync Row
+"settings_cloud_sync" = "Sincronização na nuvem";
+"settings_cloud_sync_on" = "Ativado · sincronizado com iCloud";
+"settings_cloud_sync_off" = "Desativado";
+"settings_sync_now" = "Sincronizar agora";
+
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
@@ -425,6 +452,13 @@
 
 "stats_tracked" = "Acompanhadas";
 "stats_upcoming" = "Próximas";
+
+// Salutations
+"salutation_morning" = "BOM DIA";
+"salutation_afternoon" = "BOA TARDE";
+"salutation_evening" = "BOA NOITE";
+"salutation_night" = "BOA NOITE";
+
 "footer_cycle_message" = "Séries retornam\nquando temporadas terminam";
 "label_start" = "INÍCIO";
 "label_eps" = "EPS";
@@ -757,6 +791,61 @@
 
 "account_premium_trial" = "Premium · Teste gratuito";
 "account_free_plan" = "Plano gratuito";
+"settings_default_username" = "Maratonista";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "Perfil";
+"header_edit_profile" = "Editar Perfil";
+"profile_account_settings" = "CONFIGURAÇÕES DA CONTA →";
+
+// Identity card
+"profile_edit_button" = "EDITAR PERFIL";
+"profile_share_lineup" = "COMPARTILHAR LISTA";
+"profile_edit_hint" = "Toque em editar para personalizar seu perfil";
+"profile_premium_member" = "Membro Premium";
+
+// Stats
+"profile_stat_following" = "SEGUINDO";
+"profile_stat_ready_now" = "PRONTAS";
+"profile_stat_episodes" = "EPISÓDIOS";
+"profile_tracked_header" = "ACOMPANHANDO";
+"profile_stat_seasons" = "TEMPORADAS";
+"profile_stat_show_time" = "TEMPO DE SÉRIE";
+"profile_stat_shows_followed" = "SÉRIES SEGUIDAS";
+
+// Sync status
+"profile_shows_synced" = "SÉRIES SINCRONIZADAS";
+"profile_icloud_on" = "ICLOUD LIGADO";
+"profile_icloud_off" = "ICLOUD DESLIGADO";
+"profile_sync_upgrade_hint" = "Assine o Premium para sincronizar suas séries em todos os seus dispositivos com o iCloud.";
+"profile_sync_status_premium %lld %@" = "%lld séries sincronizadas · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld séries sincronizadas";
+"profile_sync_status_free %lld" = "%lld séries · apenas local";
+
+// Show row
+"profile_season" = "temporada";
+"profile_seasons" = "temporadas";
+"profile_episodes_label" = "eps";
+"profile_synced" = "SINCRONIZADO";
+"profile_local_only" = "APENAS LOCAL";
+
+// Edit profile
+"profile_display_name" = "NOME DE EXIBIÇÃO";
+"profile_name_hint" = "Mostrado no seu cartão de perfil";
+"profile_avatar_color" = "COR DO AVATAR";
+"profile_initials_hint" = "Suas iniciais aparecerão no avatar";
+"profile_photo" = "FOTO DO PERFIL";
+"profile_upload_photo" = "Enviar Foto";
+"profile_choose_library" = "Escolher da biblioteca";
+"profile_premium_feature" = "Recurso Premium";
+"profile_save_button" = "SALVAR ALTERAÇÕES";
+
+// Share sheet
+"share_seasons_tracked" = "temporadas acompanhadas";
+"share_days_to_binge" = "DIAS PARA A MARATONA";
 
 // =============================================================================
 // MARK: - Calendar Legend

@@ -352,6 +352,9 @@ final class BingeReadyViewModel {
             try store.unfollow(tmdbId: show.id)
             // Force reload from database to ensure consistency
             followedShows = try await store.getAllFollowedAsShowData()
+
+            // Remove from cloud
+            Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
         } catch {
             print("Error unfollowing show: \(error)")
             // Fallback to local removal
@@ -443,6 +446,7 @@ struct BingeProgressRing: View {
 }
 
 // MARK: - Watch Progress Manager
+@MainActor
 final class WatchProgressManager: ObservableObject {
     static let shared = WatchProgressManager()
 
@@ -461,6 +465,19 @@ final class WatchProgressManager: ObservableObject {
     }
 
     private func saveWatched() {
+        if let data = try? JSONEncoder().encode(watchedEpisodes) {
+            UserDefaults.standard.set(data, forKey: storageKey)
+        }
+
+        // Push to cloud (fire-and-forget)
+        Task {
+            await CloudSyncService.shared.pushWatchProgress(watchedEpisodeKeys: watchedEpisodes)
+        }
+    }
+
+    /// Restore watch progress from cloud (called during sync)
+    func restoreFromCloud(_ cloudWatchedKeys: Set<String>) {
+        watchedEpisodes = cloudWatchedKeys
         if let data = try? JSONEncoder().encode(watchedEpisodes) {
             UserDefaults.standard.set(data, forKey: storageKey)
         }
@@ -1085,10 +1102,12 @@ private struct BingeSegmentBar: View {
 
                 Button(action: { selectedSegment = segment }) {
                     HStack(spacing: 6) {
-                        Text(segment.rawValue)
+                        Text(String(localized: String.LocalizationValue(segment.rawValue)))
                             .font(.custom(.jetbrains.bold, size: 10))
                             .tracking(1.2)
                             .textCase(.uppercase)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
 
                         Text("\(count(for: segment))")
                             .font(.custom(.jetbrains.bold, size: 9))

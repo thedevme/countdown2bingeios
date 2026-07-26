@@ -20,9 +20,12 @@ struct ContentView: View {
     @State private var showWalkthrough: Bool = false
     @State private var showFreeLimitModal: Bool = false
     @State private var showDowngradeModal: Bool = false
-    @State private var selectedPlan: String = ""
+    @State private var selectedPlan: String = "yearly"
     @State private var followedShows: [ShowSummary] = []
     @State private var timelineRefreshTrigger: UUID = UUID()
+    @State private var showPremiumPaywall: Bool = false
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String?
 
     // Badge manager for tab notifications (shared instance)
     private var badgeManager: TabBadgeManager { TabBadgeManager.shared }
@@ -138,6 +141,28 @@ struct ContentView: View {
                     .zIndex(90)
             }
 
+            // Grace period banner (when in grace period but not expired)
+            if PremiumManager.shared.isInGracePeriod && !PremiumManager.shared.isGracePeriodExpired {
+                VStack {
+                    GracePeriodBanner(
+                        daysRemaining: PremiumManager.shared.gracePeriodDaysRemaining ?? 0,
+                        totalShows: PremiumManager.shared.gracePeriodShowCount,
+                        onChooseNow: {
+                            showDowngradeModal = true
+                        },
+                        onUpgrade: {
+                            showPremiumPaywall = true
+                        }
+                    )
+                    .padding(.top, 60)
+
+                    Spacer()
+                }
+                .zIndex(80)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .animation(.easeInOut, value: PremiumManager.shared.isInGracePeriod)
+            }
+
             // Downgrade removal modal (when premium -> free with >3 shows)
             if showDowngradeModal {
                 DowngradeRemovalModal(isPresented: $showDowngradeModal)
@@ -145,8 +170,17 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(isPresented: $showPremiumPaywall) {
+            DiscoverPaywallSheet(
+                selectedPlan: $selectedPlan,
+                isPurchasing: $isPurchasing,
+                purchaseError: $purchaseError,
+                onDismiss: { showPremiumPaywall = false }
+            )
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             checkForDowngrade()
+            checkGracePeriodExpiry()
         }
         .onChange(of: PremiumManager.shared.didDowngradeFromPremium) { _, didDowngrade in
             if didDowngrade {
@@ -155,7 +189,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Downgrade Check
+    // MARK: - Downgrade & Grace Period Check
 
     private func checkForDowngrade() {
         guard PremiumManager.shared.didDowngradeFromPremium else { return }
@@ -164,10 +198,31 @@ struct ContentView: View {
         let followedCount = store.getFollowedCount()
 
         if followedCount > 3 {
-            showDowngradeModal = true
+            // Check if already in grace period
+            if PremiumManager.shared.isInGracePeriod {
+                // Check if expired
+                if PremiumManager.shared.isGracePeriodExpired {
+                    showDowngradeModal = true
+                }
+                // Otherwise, banner will show - no modal yet
+            } else {
+                // Start grace period
+                Task {
+                    await PremiumManager.shared.startGracePeriod(showCount: followedCount)
+                }
+            }
         } else {
-            // At or below limit, just clear the flag
+            // At or below limit, clear everything
             PremiumManager.shared.didDowngradeFromPremium = false
+            Task {
+                await PremiumManager.shared.clearGracePeriod()
+            }
+        }
+    }
+
+    private func checkGracePeriodExpiry() {
+        if PremiumManager.shared.isInGracePeriod && PremiumManager.shared.isGracePeriodExpired {
+            showDowngradeModal = true
         }
     }
 
@@ -183,6 +238,15 @@ struct ContentView: View {
         for show in shows {
             do {
                 try store.follow(summary: show)
+
+                // Push to cloud (fire-and-forget, will retry on next sync if fails)
+                Task {
+                    await CloudSyncService.shared.pushShow(
+                        tmdbId: show.id,
+                        followedAt: Date(),
+                        modelContext: modelContext
+                    )
+                }
             } catch {
                 print("Error saving show \(show.name): \(error)")
             }

@@ -23,18 +23,22 @@ final class FollowedShow {
     /// Whether this follow has been synced to cloud
     var isSynced: Bool
 
+    /// CloudKit record name for this follow (for bi-directional sync)
+    var cloudKitRecordName: String?
+
     /// Cached show data (metadata from TMDB)
     @Relationship(deleteRule: .cascade)
     var cachedData: CachedShowData?
 
     /// Related show IDs from franchise data (spinoffs)
-    var relatedShowIds: [Int] = []
+    var relatedShowIds: [Int]
 
-    init(tmdbId: Int, followedAt: Date = Date(), isSynced: Bool = false) {
+    init(tmdbId: Int, followedAt: Date = Date(), isSynced: Bool = false, cloudKitRecordName: String? = nil) {
         self.tmdbId = tmdbId
         self.followedAt = followedAt
         self.lastRefreshedAt = nil
         self.isSynced = isSynced
+        self.cloudKitRecordName = cloudKitRecordName
         self.relatedShowIds = []
     }
 

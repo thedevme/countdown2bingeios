@@ -30,7 +30,7 @@ final class Series {
 
     /// Seasons in this series
     @Relationship(deleteRule: .cascade, inverse: \SeriesSeason.series)
-    var seasons: [SeriesSeason] = []
+    var seasons: [SeriesSeason]
 
     /// When this was last updated
     var updatedAt: Date
@@ -42,6 +42,7 @@ final class Series {
         self.numberOfSeasons = numberOfSeasons
         self.numberOfEpisodes = numberOfEpisodes
         self.updatedAt = Date()
+        self.seasons = []
     }
 
     // MARK: - Computed
@@ -88,7 +89,7 @@ final class SeriesSeason {
 
     /// Episodes in this season
     @Relationship(deleteRule: .cascade, inverse: \SeriesEpisode.season)
-    var episodes: [SeriesEpisode] = []
+    var episodes: [SeriesEpisode]
 
     init(tmdbId: Int, seasonNumber: Int, name: String, airDate: Date? = nil, episodeCount: Int = 0) {
         self.tmdbId = tmdbId
@@ -96,6 +97,7 @@ final class SeriesSeason {
         self.name = name
         self.airDate = airDate
         self.episodeCount = episodeCount
+        self.episodes = []
     }
 
     // MARK: - Computed

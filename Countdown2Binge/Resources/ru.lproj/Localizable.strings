@@ -186,6 +186,12 @@
 "settings_group_preferences" = "Предпочтения";
 "settings_group_account" = "Аккаунт";
 "settings_group_developer" = "Для разработчиков";
+"settings_group_about" = "О приложении";
+
+// About section
+"settings_api_provided_by" = "Данные предоставлены TMDB";
+"settings_privacy_policy" = "Политика конфиденциальности";
+"settings_terms_of_use" = "Условия использования";
 "settings_group_essentials" = "Основное";
 "settings_group_advanced" = "ДОПОЛНИТЕЛЬНО";
 "settings_alerts_advanced" = "Расширенные оповещения включены";
@@ -397,6 +403,27 @@
 "sync_backed_up" = "Резервная копия создана";
 "sync_restored_one" = "Мы восстановили 1 сериал из облачной резервной копии.";
 "sync_restored_many" = "Мы восстановили %lld сериалов из облачной резервной копии.";
+
+// Cloud Sync Status Messages
+"sync_failed" = "Ошибка синхронизации. Попробуйте снова.";
+"sync_restored %lld" = "Восстановлено сериалов: %lld";
+"sync_backed_up %lld" = "Сохранено в резерв: %lld";
+"sync_up_to_date" = "Все сериалы синхронизированы";
+"sync_in_progress" = "Синхронизация...";
+"sync_last_synced %@" = "Последняя синхр. %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "Облачная синхронизация — функция Premium";
+"sync_no_icloud" = "Войдите в iCloud для синхронизации";
+"sync_icloud_restricted" = "iCloud ограничен на этом устройстве";
+"sync_temporarily_unavailable" = "iCloud временно недоступен";
+"sync_unavailable" = "Облачная синхр. недоступна";
+
+// Settings Sync Row
+"settings_cloud_sync" = "Облачная синхронизация";
+"settings_cloud_sync_on" = "Вкл · синхронизировано с iCloud";
+"settings_cloud_sync_off" = "Выкл";
+"settings_sync_now" = "Синхронизировать";
 
 // =============================================================================
 // MARK: - Accessibility Labels
@@ -650,6 +677,12 @@
 "stats_tracked" = "ОТСЛЕЖИВАЕТСЯ";
 "stats_upcoming" = "ПРЕДСТОЯЩИЕ";
 
+// Salutations
+"salutation_morning" = "ДОБРОЕ УТРО";
+"salutation_afternoon" = "ДОБРЫЙ ДЕНЬ";
+"salutation_evening" = "ДОБРЫЙ ВЕЧЕР";
+"salutation_night" = "ДОБРОЙ НОЧИ";
+
 // Season status badges
 "season_status_new" = "НОВЫЙ";
 "season_status_airing" = "В ЭФИРЕ";
@@ -757,6 +790,61 @@
 
 "account_premium_trial" = "Премиум · Пробный период";
 "account_free_plan" = "Бесплатный тариф";
+"settings_default_username" = "Сериаломан";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "Профиль";
+"header_edit_profile" = "Редактировать профиль";
+"profile_account_settings" = "НАСТРОЙКИ АККАУНТА →";
+
+// Identity card
+"profile_edit_button" = "РЕДАКТИРОВАТЬ";
+"profile_share_lineup" = "ПОДЕЛИТЬСЯ";
+"profile_edit_hint" = "Нажмите редактировать, чтобы настроить профиль";
+"profile_premium_member" = "Премиум-участник";
+
+// Stats
+"profile_stat_following" = "ОТСЛЕЖИВАЮ";
+"profile_stat_ready_now" = "ГОТОВО";
+"profile_stat_episodes" = "ЭПИЗОДОВ";
+"profile_tracked_header" = "ОТСЛЕЖИВАЕМОЕ";
+"profile_stat_seasons" = "СЕЗОНОВ";
+"profile_stat_show_time" = "ВРЕМЯ ПРОСМОТРА";
+"profile_stat_shows_followed" = "СЕРИАЛОВ";
+
+// Sync status
+"profile_shows_synced" = "СИНХРОНИЗИРОВАНО СЕРИАЛОВ";
+"profile_icloud_on" = "ICLOUD ВКЛ";
+"profile_icloud_off" = "ICLOUD ВЫКЛ";
+"profile_sync_upgrade_hint" = "Перейдите на Премиум, чтобы синхронизировать сериалы на всех устройствах через iCloud.";
+"profile_sync_status_premium %lld %@" = "Синхронизировано %lld сериалов · %@";
+"profile_sync_status_premium_no_sync %lld" = "Синхронизировано %lld сериалов";
+"profile_sync_status_free %lld" = "%lld сериалов · только локально";
+
+// Show row
+"profile_season" = "сезон";
+"profile_seasons" = "сезонов";
+"profile_episodes_label" = "эп";
+"profile_synced" = "СИНХРОНИЗИРОВАНО";
+"profile_local_only" = "ТОЛЬКО ЛОКАЛЬНО";
+
+// Edit profile
+"profile_display_name" = "ОТОБРАЖАЕМОЕ ИМЯ";
+"profile_name_hint" = "Отображается на карточке профиля";
+"profile_avatar_color" = "ЦВЕТ АВАТАРА";
+"profile_initials_hint" = "Ваши инициалы появятся на аватаре";
+"profile_photo" = "ФОТО ПРОФИЛЯ";
+"profile_upload_photo" = "Загрузить фото";
+"profile_choose_library" = "Выбрать из библиотеки";
+"profile_premium_feature" = "Премиум-функция";
+"profile_save_button" = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
+
+// Share sheet
+"share_seasons_tracked" = "сезонов отслеживается";
+"share_days_to_binge" = "ДНЕЙ ДО МАРАФОНА";
 
 // =============================================================================
 // MARK: - Calendar Legend

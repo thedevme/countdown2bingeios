@@ -186,6 +186,12 @@
 "settings_group_preferences" = "환경설정";
 "settings_group_account" = "계정";
 "settings_group_developer" = "개발자";
+"settings_group_about" = "정보";
+
+// About section
+"settings_api_provided_by" = "TMDB 제공 데이터";
+"settings_privacy_policy" = "개인정보 처리방침";
+"settings_terms_of_use" = "이용약관";
 "settings_group_essentials" = "필수 항목";
 "settings_group_advanced" = "고급";
 "settings_alerts_advanced" = "고급 알림 활성화됨";
@@ -398,6 +404,27 @@
 "sync_restored_one" = "클라우드 백업에서 1개의 프로그램을 복원했습니다.";
 "sync_restored_many" = "클라우드 백업에서 %lld개의 프로그램을 복원했습니다.";
 
+// Cloud Sync Status Messages
+"sync_failed" = "동기화 실패. 다시 시도해 주세요.";
+"sync_restored %lld" = "%lld개 프로그램 복원됨";
+"sync_backed_up %lld" = "%lld개 프로그램 백업됨";
+"sync_up_to_date" = "모든 프로그램 동기화됨";
+"sync_in_progress" = "동기화 중...";
+"sync_last_synced %@" = "마지막 동기화 %@";
+
+// Sync Eligibility
+"sync_requires_premium" = "클라우드 동기화는 프리미엄 기능입니다";
+"sync_no_icloud" = "동기화를 활성화하려면 iCloud에 로그인하세요";
+"sync_icloud_restricted" = "이 기기에서 iCloud가 제한되어 있습니다";
+"sync_temporarily_unavailable" = "iCloud를 일시적으로 사용할 수 없습니다";
+"sync_unavailable" = "클라우드 동기화를 사용할 수 없습니다";
+
+// Settings Sync Row
+"settings_cloud_sync" = "클라우드 동기화";
+"settings_cloud_sync_on" = "켜짐 · iCloud와 동기화됨";
+"settings_cloud_sync_off" = "꺼짐";
+"settings_sync_now" = "지금 동기화";
+
 // =============================================================================
 // MARK: - Accessibility Labels
 // =============================================================================
@@ -425,6 +452,13 @@
 
 "stats_tracked" = "추적 중";
 "stats_upcoming" = "예정";
+
+// Salutations
+"salutation_morning" = "좋은 아침";
+"salutation_afternoon" = "좋은 오후";
+"salutation_evening" = "좋은 저녁";
+"salutation_night" = "좋은 밤";
+
 "footer_cycle_message" = "시즌이 끝나면\n프로그램이 순환됩니다";
 "label_start" = "시작";
 "label_eps" = "회";
@@ -757,6 +791,61 @@
 
 "account_premium_trial" = "프리미엄 · 무료 체험";
 "account_free_plan" = "무료 플랜";
+"settings_default_username" = "정주행러";
+
+// =============================================================================
+// MARK: - Profile
+// =============================================================================
+
+"header_profile" = "프로필";
+"header_edit_profile" = "프로필 편집";
+"profile_account_settings" = "계정 설정 →";
+
+// Identity card
+"profile_edit_button" = "프로필 편집";
+"profile_share_lineup" = "라인업 공유";
+"profile_edit_hint" = "편집을 탭하여 프로필을 맞춤 설정하세요";
+"profile_premium_member" = "프리미엄 멤버";
+
+// Stats
+"profile_stat_following" = "팔로우 중";
+"profile_stat_ready_now" = "준비 완료";
+"profile_stat_episodes" = "에피소드";
+"profile_tracked_header" = "트래킹";
+"profile_stat_seasons" = "시즌";
+"profile_stat_show_time" = "시청 시간";
+"profile_stat_shows_followed" = "팔로우 중";
+
+// Sync status
+"profile_shows_synced" = "동기화된 시리즈";
+"profile_icloud_on" = "ICLOUD 켜짐";
+"profile_icloud_off" = "ICLOUD 꺼짐";
+"profile_sync_upgrade_hint" = "프리미엄으로 업그레이드하여 iCloud로 모든 기기에서 시리즈를 동기화하세요.";
+"profile_sync_status_premium %lld %@" = "%lld개 시리즈 동기화됨 · %@";
+"profile_sync_status_premium_no_sync %lld" = "%lld개 시리즈 동기화됨";
+"profile_sync_status_free %lld" = "%lld개 시리즈 · 로컬만";
+
+// Show row
+"profile_season" = "시즌";
+"profile_seasons" = "시즌";
+"profile_episodes_label" = "회";
+"profile_synced" = "동기화됨";
+"profile_local_only" = "로컬만";
+
+// Edit profile
+"profile_display_name" = "표시 이름";
+"profile_name_hint" = "프로필 카드에 표시됩니다";
+"profile_avatar_color" = "아바타 색상";
+"profile_initials_hint" = "이니셜이 아바타에 표시됩니다";
+"profile_photo" = "프로필 사진";
+"profile_upload_photo" = "사진 업로드";
+"profile_choose_library" = "라이브러리에서 선택";
+"profile_premium_feature" = "프리미엄 기능";
+"profile_save_button" = "변경 사항 저장";
+
+// Share sheet
+"share_seasons_tracked" = "시즌 트래킹 중";
+"share_days_to_binge" = "정주행까지";
 
 // =============================================================================
 // MARK: - Calendar Legend

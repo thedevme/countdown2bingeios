@@ -185,9 +185,12 @@ final class FollowedShowsStore {
     // MARK: - Sync
 
     /// Mark a show as synced to cloud
-    func markAsSynced(tmdbId: Int) throws {
+    func markAsSynced(tmdbId: Int, cloudKitRecordName: String? = nil) throws {
         guard let followedShow = getFollowedShow(tmdbId: tmdbId) else { return }
         followedShow.isSynced = true
+        if let recordName = cloudKitRecordName {
+            followedShow.cloudKitRecordName = recordName
+        }
         try modelContext.save()
     }
 
@@ -197,6 +200,38 @@ final class FollowedShowsStore {
             predicate: #Predicate { $0.isSynced == false }
         )
         return try modelContext.fetch(descriptor)
+    }
+
+    // MARK: - Cloud Restore
+
+    /// Follow a show restored from cloud (with specific timestamp and record name)
+    func follow(tmdbId: Int, followedAt: Date, cloudKitRecordName: String) throws {
+        // Check if already following
+        guard !isFollowing(tmdbId: tmdbId) else {
+            // Update existing record with cloud data
+            if let existing = getFollowedShow(tmdbId: tmdbId) {
+                existing.cloudKitRecordName = cloudKitRecordName
+                existing.isSynced = true
+                try modelContext.save()
+            }
+            return
+        }
+
+        let followedShow = FollowedShow(
+            tmdbId: tmdbId,
+            followedAt: followedAt,
+            isSynced: true,
+            cloudKitRecordName: cloudKitRecordName
+        )
+        modelContext.insert(followedShow)
+        try modelContext.save()
+    }
+
+    /// Get all TMDB IDs of followed shows
+    func getAllFollowedTmdbIds() throws -> Set<Int> {
+        let descriptor = FetchDescriptor<FollowedShow>()
+        let shows = try modelContext.fetch(descriptor)
+        return Set(shows.map { $0.tmdbId })
     }
 }
 

@@ -13,12 +13,17 @@ struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
     @State private var showPaywall = false
+    @State private var showProfile = false
     @State private var selectedPlan = "yearly"
     @State private var isPurchasing = false
     @State private var purchaseError: String?
     @State private var isRefreshingDiscover = false
+    @State private var isSyncing = false
+    @State private var syncStatus: String = ""
+    @State private var profile = ProfileManager.shared.profile
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
+    private var cloudSyncService: CloudSyncService { CloudSyncService.shared }
 
     // Reset flags
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
@@ -37,8 +42,9 @@ struct SettingsScreen: View {
 
                     // Account Card
                     SettingsAccountCard(
-                        userName: "Alex",
-                        isPremium: isPremium
+                        userName: profile.name,
+                        isPremium: isPremium,
+                        onTap: { showProfile = true }
                     )
 
                     // Alerts Group
@@ -76,6 +82,22 @@ struct SettingsScreen: View {
                             isLast: true,
                             action: { }
                         )
+                    }
+
+                    // Cloud Sync Group (Premium only)
+                    if isPremium {
+                        SettingsGroup(label: String(localized: "settings_cloud_sync")) {
+                            SettingsRowAction(
+                                icon: "icloud.fill",
+                                iconColor: .c2bTeal,
+                                title: String(localized: "settings_sync_now"),
+                                subtitle: cloudSyncSubtitle,
+                                isLast: true,
+                                action: {
+                                    Task { await performSync() }
+                                }
+                            )
+                        }
                     }
 
                     // Account Group
@@ -141,6 +163,31 @@ struct SettingsScreen: View {
                         )
                     }
 
+                    // About Group
+                    SettingsGroup(label: String(localized: "settings_group_about")) {
+                        Link(destination: URL(string: "https://www.themoviedb.org")!) {
+                            SettingsLinkRowContent(
+                                icon: "powerplug.fill",
+                                title: String(localized: "settings_api_provided_by")
+                            )
+                        }
+
+                        Link(destination: URL(string: "https://countdown2binge.app/privacy")!) {
+                            SettingsLinkRowContent(
+                                icon: "doc.plaintext.fill",
+                                title: String(localized: "settings_privacy_policy")
+                            )
+                        }
+
+                        Link(destination: URL(string: "https://countdown2binge.app/terms")!) {
+                            SettingsLinkRowContent(
+                                icon: "doc.text.magnifyingglass",
+                                title: String(localized: "settings_terms_of_use"),
+                                isLast: true
+                            )
+                        }
+                    }
+
                     // Sign Out Group
                     SettingsGroup {
                         SettingsRowDanger(
@@ -169,6 +216,9 @@ struct SettingsScreen: View {
             .navigationDestination(isPresented: $showNotifications) {
                 NotificationsScreen(isPremium: isPremium)
             }
+            .navigationDestination(isPresented: $showProfile) {
+                ProfileScreen(isPremium: isPremium)
+            }
             .sheet(isPresented: $showPaywall) {
                 DiscoverPaywallSheet(
                     selectedPlan: $selectedPlan,
@@ -176,6 +226,9 @@ struct SettingsScreen: View {
                     purchaseError: $purchaseError,
                     onDismiss: { showPaywall = false }
                 )
+            }
+            .onChange(of: ProfileManager.shared.profile) { _, newProfile in
+                profile = newProfile
             }
         }
     }
@@ -186,5 +239,42 @@ struct SettingsScreen: View {
         let cacheService = DiscoverCacheService(modelContext: modelContext)
         await cacheService.refreshCache()
         isRefreshingDiscover = false
+    }
+
+    // MARK: - Cloud Sync
+
+    private var cloudSyncSubtitle: String {
+        if isSyncing {
+            return String(localized: "sync_in_progress")
+        }
+
+        if !syncStatus.isEmpty {
+            return syncStatus
+        }
+
+        if let lastSynced = cloudSyncService.lastSyncedAt {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.unitsStyle = .abbreviated
+            return String(localized: "sync_last_synced \(formatter.localizedString(for: lastSynced, relativeTo: Date()))")
+        }
+
+        return String(localized: "settings_cloud_sync_on")
+    }
+
+    @MainActor
+    private func performSync() async {
+        guard !isSyncing else { return }
+
+        isSyncing = true
+        syncStatus = ""
+
+        let result = await cloudSyncService.fullSync(modelContext: modelContext)
+
+        isSyncing = false
+        syncStatus = result.message
+
+        // Clear status after a few seconds
+        try? await Task.sleep(for: .seconds(3))
+        syncStatus = ""
     }
 }

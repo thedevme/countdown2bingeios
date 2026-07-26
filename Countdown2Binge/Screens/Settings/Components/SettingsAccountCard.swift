@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsAccountCard: View {
     let userName: String
     let isPremium: Bool
+    var onTap: (() -> Void)? = nil
 
     private var initials: String {
         let parts = userName.split(separator: " ")
@@ -20,61 +21,69 @@ struct SettingsAccountCard: View {
     }
 
     var body: some View {
-        HStack(spacing: 14) {
-            // Avatar
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "#2a2a2e"), Color(hex: "#131315")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+        Button(action: { onTap?() }) {
+            HStack(spacing: 14) {
+                // Avatar
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "#2a2a2e"), Color(hex: "#131315")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .frame(width: 52, height: 52)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
+                        .frame(width: 52, height: 52)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
 
-                Text(initials)
-                    .font(.custom(.oswald.regular, size: 22))
-                    .foregroundColor(.c2bTealBright)
-            }
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text(userName)
-                    .font(.custom(.oswald.bold, size: 20))
-                    .foregroundColor(.white)
-
-                HStack(spacing: 5) {
-                    Image(systemName: "crown.fill")
-                        .font(.system(size: 9))
+                    Text(initials)
+                        .font(.custom(.oswald.bold, size: 22))
                         .foregroundColor(.c2bTealBright)
-
-                    Text(isPremium ? "account_premium_trial" : "account_free_plan")
-                        .font(.custom(.jetbrains.regular, size: 9))
-                        .tracking(0.9)
-                        .foregroundColor(.c2bTealBright)
-                        .textCase(.uppercase)
                 }
-            }
 
-            Spacer()
-        }
-        .padding(16)
-        .background(
-            LinearGradient(
-                colors: [Color.c2bTeal.opacity(0.14), Color.c2bTeal.opacity(0.02)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(userName)
+                        .font(.custom(.oswald.bold, size: 20))
+                        .foregroundColor(.white)
+
+                    HStack(spacing: 5) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 9))
+                            .foregroundColor(.c2bTealBright)
+
+                        Text(isPremium ? "account_premium_trial" : "account_free_plan")
+                            .font(.custom(.jetbrains.regular, size: 9))
+                            .tracking(0.9)
+                            .foregroundColor(.c2bTealBright)
+                            .textCase(.uppercase)
+                    }
+                }
+
+                Spacer()
+
+                // Chevron
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.c2bMuted)
+            }
+            .padding(16)
+            .background(
+                LinearGradient(
+                    colors: [Color.c2bTeal.opacity(0.14), Color.c2bTeal.opacity(0.02)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Color.c2bTealLine, lineWidth: 1)
-        )
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.c2bTealLine, lineWidth: 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
         .padding(.bottom, 22)
     }
 }

@@ -29,5 +29,9 @@
 		<string>JetBrainsMono-Bold.ttf</string>
 		<string>JetBrainsMono-Regular.ttf</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Countdown2Binge uses your camera to take a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Countdown2Binge accesses your photo library to choose a profile photo.</string>
 </dict>
 </plist>

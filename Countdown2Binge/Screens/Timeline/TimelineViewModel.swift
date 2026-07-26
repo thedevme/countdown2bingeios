@@ -16,6 +16,7 @@ final class TimelineViewModel {
 
     private(set) var followedShows: [ShowData] = []
     private(set) var isLoading = false
+    private(set) var lastRefreshedAt: Date? = nil
 
     // MARK: - Categorized Shows
 
@@ -118,6 +119,7 @@ final class TimelineViewModel {
 
         do {
             followedShows = try await store.getAllFollowedAsShowData()
+            lastRefreshedAt = Date()
         } catch {
             print("Error loading followed shows: \(error)")
             followedShows = []
@@ -138,6 +140,9 @@ final class TimelineViewModel {
             try store.unfollow(tmdbId: show.id)
             // Remove from local list
             followedShows.removeAll { $0.id == show.id }
+
+            // Remove from cloud
+            Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
         } catch {
             print("Error unfollowing show: \(error)")
         }

@@ -67,9 +67,9 @@ struct MiniPremieringCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            VStack(spacing: 3) {
+            VStack(alignment: .leading, spacing: -4) {
                 Text("\(daysUntilPremiere)")
-                    .font(.custom(.oswald.bold, size: 30))
+                    .font(.custom(.oswald.bold, size: 38))
                     .foregroundColor(.white)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
@@ -78,8 +78,100 @@ struct MiniPremieringCard: View {
                     .font(.custom(.jetbrains.bold, size: 6.5))
                     .tracking(0.8)
                     .foregroundColor(.c2bTealBright)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.bottom, 4)
             }
-            .frame(width: 48)
+            .frame(width: 68, alignment: .leading)
+
+            HStack(alignment: .center, spacing: 8) {
+                HStack(spacing: 0) {
+                    Text("season_abbrev")
+                        .font(.custom(.oswald.bold, size: 20))
+                        .foregroundColor(.white)
+
+                    Text(seasonNumber)
+                        .font(.custom(.oswald.light, size: 20))
+                        .foregroundColor(.white)
+                }
+
+                Text(showData.name)
+                    .font(.custom(.oswald.bold, size: 17))
+                    .foregroundColor(.c2bText)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let network = showData.networks.first {
+                Text(network.name.uppercased())
+                    .font(.custom(.jetbrains.bold, size: 8))
+                    .tracking(0.3)
+                    .foregroundColor(Color(hex: "#e7e7e7"))
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(Color.white.opacity(0.06))
+                    .cornerRadius(6)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 60)
+        .background(Color.white.opacity(0.03))
+        .overlay(
+            Rectangle()
+                .fill(Color.c2bTealLine)
+                .frame(width: 2),
+            alignment: .leading
+        )
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Mini Now Playing Card (for Full Timeline - shows days to finale)
+struct MiniNowPlayingCard: View {
+    let showData: ShowData
+
+    private var daysUntilFinale: Int? {
+        showData.daysUntilFinale
+    }
+
+    private var seasonNumber: String {
+        String(showData.numberOfSeasons)
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: -4) {
+                if let days = daysUntilFinale {
+                    Text("\(days)")
+                        .font(.custom(.oswald.bold, size: 38))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                } else {
+                    Text("--")
+                        .font(.custom(.oswald.bold, size: 38))
+                        .foregroundColor(.white)
+                }
+
+                Text("timeline_to_finale")
+                    .font(.custom(.jetbrains.bold, size: 6.5))
+                    .tracking(0.8)
+                    .foregroundColor(.c2bTealBright)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.bottom, 4)
+            }
+            .frame(width: 68, alignment: .leading)
 
             HStack(alignment: .center, spacing: 8) {
                 HStack(spacing: 0) {
@@ -148,9 +240,9 @@ struct MiniAnticipatedCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            VStack(spacing: 3) {
+            VStack(alignment: .leading, spacing: -2) {
                 Text(expectedYear)
-                    .font(.custom(.oswald.bold, size: 24))
+                    .font(.custom(.oswald.bold, size: 28))
                     .foregroundColor(.c2bDim)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
@@ -160,7 +252,7 @@ struct MiniAnticipatedCard: View {
                     .tracking(0.8)
                     .foregroundColor(.c2bMuted)
             }
-            .frame(width: 48)
+            .frame(width: 68, alignment: .leading)
 
             HStack(alignment: .center, spacing: 8) {
                 HStack(spacing: 0) {
@@ -221,17 +313,19 @@ struct MiniEmptySection: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            VStack(spacing: 3) {
+            VStack(alignment: .leading, spacing: -2) {
                 Text("--")
-                    .font(.custom(.oswald.bold, size: dim ? 24 : 30))
+                    .font(.custom(.oswald.bold, size: dim ? 28 : 38))
                     .foregroundColor(dim ? .c2bDim : Color.white.opacity(0.4))
 
                 Text(dim ? "timeline_expected" : "timeline_to_premiere")
                     .font(.custom(.jetbrains.bold, size: 6.5))
                     .tracking(0.8)
                     .foregroundColor(dim ? .c2bMuted : .c2bTealBright.opacity(0.5))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
-            .frame(width: 48)
+            .frame(width: 68, alignment: .leading)
 
             Spacer()
         }
