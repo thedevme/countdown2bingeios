@@ -29,6 +29,8 @@
 		<string>JetBrainsMono-Bold.ttf</string>
 		<string>JetBrainsMono-Regular.ttf</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Countdown2Binge uses your camera to take a profile photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

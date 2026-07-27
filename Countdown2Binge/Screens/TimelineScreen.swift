@@ -13,7 +13,7 @@ struct TimelineScreen: View {
     @State private var heroCardIndex: Int = 0
     @State private var showNotificationSettings = false
     @State private var navigationPath = NavigationPath()
-    @State private var profile = ProfileManager.shared.profile
+    private var profile: UserProfile { ProfileManager.shared.profile }
 
     /// Countdown value for the currently displayed hero card
     private var currentHeroCountdown: Int? {
@@ -101,7 +101,6 @@ struct TimelineScreen: View {
             }
             .onAppear {
                 viewModel.configure(with: modelContext)
-                profile = ProfileManager.shared.profile
                 Task {
                     await viewModel.loadFollowedShows()
                 }
@@ -110,9 +109,6 @@ struct TimelineScreen: View {
                 Task {
                     await viewModel.loadFollowedShows()
                 }
-            }
-            .onChange(of: ProfileManager.shared.profile) { _, newProfile in
-                profile = newProfile
             }
             .navigationDestination(for: ShowData.self) { show in
                 FollowedShowDetail(

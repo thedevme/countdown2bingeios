@@ -110,9 +110,9 @@
 "time_episode" = "EPISODE";
 "time_eps_per_day" = "eps/day";
 "time_ep_per_day" = "ep/day";
-"time_days_to_watch" = "%d days to watch";
+"time_days_to_watch %lld" = "%lld days to watch";
 "time_start_today" = "Start today";
-"time_start_date" = "Start %@";
+"time_start_date %@" = "Start %@";
 "time_already_started" = "Already started";
 
 // Runtime formatting (locale-aware)
@@ -137,7 +137,7 @@
 "season_left_to_drop" = "%d left to drop";
 "season_main_series" = "MAIN SERIES";
 "season_you_are_here" = "Main series · you are here";
-"season_progress" = "%d of %d aired · %d left to drop";
+"season_progress %lld %lld %lld" = "%lld of %lld aired · %lld left to drop";
 
 // Binge Segments
 "segment_active" = "Active";
@@ -153,7 +153,8 @@
 "empty_no_shows" = "No shows followed yet";
 "empty_search_to_add" = "Search to add your favorite shows";
 "empty_no_spinoffs" = "No spin-offs yet";
-"empty_no_spinoffs_message" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
+"empty_no_spinoffs_message %@" = "%@ doesn't have any spin-offs or prequels. We'll add them here if one is announced.";
+"premium_spinoffs_track %@" = "Track %@ and its entire universe with Premium";
 "empty_timeline" = "Nothing on the Timeline";
 "empty_timeline_message" = "Your followed shows aren't currently\nairing or premiering soon";
 "empty_no_results" = "No Results";
@@ -330,9 +331,9 @@
 // MARK: - Alerts & Confirmations
 // =============================================================================
 
-"alert_remove_show" = "Remove %@?";
+"alert_remove_show %@" = "Remove %@?";
 "alert_remove_message" = "This will remove the show from your followed list.";
-"alert_unfollow" = "Unfollow %@?";
+"alert_unfollow %@" = "Unfollow %@?";
 "alert_error" = "Error";
 "alert_purchase_error" = "Purchase Error";
 "alert_purchase_failed" = "PURCHASE FAILED";
@@ -346,7 +347,7 @@
 "show_detail_seasons" = "Seasons";
 "show_detail_spinoffs" = "Spin-offs";
 "show_detail_no_overview" = "No overview available.";
-"show_detail_binge_ready_date" = "BINGE READY %@";
+"show_detail_binge_ready_date %@" = "BINGE READY %@";
 "show_detail_follow_spinoff" = "Follow spin-off";
 
 // =============================================================================
@@ -701,9 +702,11 @@
 "season_status_airing" = "AIRING";
 "season_status_ready" = "READY";
 
-// Spinoffs tabs
+// Show detail tabs
+"tab_catch_up" = "Catch Up";
 "tab_episodes" = "Episodes";
 "tab_spinoffs" = "Spin-offs";
+"catch_up_all_caught_up" = "You're all caught up! No prior seasons to watch.";
 
 // Show status
 "show_status_returning" = "Returning";

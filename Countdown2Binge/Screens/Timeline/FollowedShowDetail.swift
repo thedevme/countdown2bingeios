@@ -28,6 +28,20 @@ struct FollowedShowDetail: View {
         return franchise.allTmdbIds.filter { $0 != show.id }.count
     }
 
+    private var hasSpinoffs: Bool {
+        PremiumManager.shared.canViewSpinoffs && spinoffCount > 0
+    }
+
+    private var showCatchUp: Bool {
+        // Show catch up tab if show is airing and has a finale date coming up
+        show.lifecycleState == .airing && show.daysUntilFinale != nil
+    }
+
+    private var showTabs: Bool {
+        // Show tabs if we have catch up OR spinoffs (always show episodes)
+        showCatchUp || hasSpinoffs
+    }
+
     init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
         self.show = show
         self.onDismiss = onDismiss
@@ -67,19 +81,24 @@ struct FollowedShowDetail: View {
                         BingeClock(days: days)
                     }
 
-                    // Episodes / Spin-offs Tab Switcher (only show if spinoffs exist and premium)
-                    if PremiumManager.shared.canViewSpinoffs && spinoffCount > 0 {
+                    // Tab Switcher (show if catch up or spinoffs available)
+                    if showTabs {
                         ShowDetailTabSwitcher(
                             selectedTab: $selectedTab,
+                            showCatchUp: showCatchUp,
+                            showSpinoffs: hasSpinoffs,
                             spinoffCount: spinoffCount
                         )
                         .padding(.top, 26)
                         .padding(.bottom, 4)
 
                         // Tab Content
-                        if selectedTab == .episodes {
+                        switch selectedTab {
+                        case .catchUp:
+                            DetailCatchUpSection(show: show)
+                        case .episodes:
                             DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
-                        } else {
+                        case .spinoffs:
                             ShowDetailSpinoffsSection(
                                 show: show,
                                 franchise: franchise,
@@ -87,7 +106,7 @@ struct FollowedShowDetail: View {
                             )
                         }
                     } else {
-                        // No spinoffs or non-premium: just show episodes
+                        // No tabs needed: just show episodes
                         DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
                     }
 

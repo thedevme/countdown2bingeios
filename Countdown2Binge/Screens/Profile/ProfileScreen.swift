@@ -14,7 +14,7 @@ struct ProfileScreen: View {
 
     let isPremium: Bool
 
-    @State private var profile = ProfileManager.shared.profile
+    private var profile: UserProfile { ProfileManager.shared.profile }
     @State private var followedShows: [FollowedShow] = []
     @State private var showEditProfile = false
     @State private var showShareSheet = false
@@ -150,9 +150,6 @@ struct ProfileScreen: View {
             .onAppear {
                 loadData()
             }
-            .onChange(of: ProfileManager.shared.profile) { _, newProfile in
-                profile = newProfile
-            }
             .sheet(isPresented: $showEditProfile) {
                 EditProfileScreen(isPremium: isPremium)
             }
@@ -170,7 +167,6 @@ struct ProfileScreen: View {
     }
 
     private func loadData() {
-        profile = ProfileManager.shared.profile
         let store = FollowedShowsStore(modelContext: modelContext)
         followedShows = (try? store.getAllFollowed()) ?? []
     }

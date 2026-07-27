@@ -137,9 +137,11 @@ struct ShowDetailView: View {
                     .padding(.top, 12)
 
                     // Episodes / Spin-offs Tab Switcher (Premium feature)
-                    if PremiumManager.shared.canViewSpinoffs {
+                    if PremiumManager.shared.canViewSpinoffs && spinoffCount > 0 {
                         ShowDetailTabSwitcher(
                             selectedTab: $selectedTab,
+                            showCatchUp: false,
+                            showSpinoffs: true,
                             spinoffCount: spinoffCount
                         )
                         .padding(.top, 26)

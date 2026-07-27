@@ -2,7 +2,8 @@
 //  DetailEpisodeSection.swift
 //  Countdown2Binge
 //
-//  Episode section wrapper that bridges ShowData to EpisodesSection.
+//  Episode section showing episode cards in a horizontal carousel.
+//  Always shows the EpisodeCarousel regardless of airing state.
 //
 
 import SwiftUI
@@ -27,26 +28,17 @@ struct DetailEpisodeSection: View {
         show.seasonDisplayModel(seasonNumber: seasonNumber, watchProgress: watchProgress)
     }
 
-    private var allSeasonDisplayModels: [SeasonDisplayModel] {
-        show.toSeasonDisplayModels(watchProgress: watchProgress)
-    }
-
     private var synopsis: String {
         season?.overview ?? show.overview ?? ""
     }
 
-    private var daysUntilReady: Int? {
-        season?.daysUntilFinale
-    }
-
     var body: some View {
         if let displaySeason = seasonDisplayModel {
-            EpisodesSection(
+            // Always show episode cards carousel
+            EpisodeCarousel(
                 season: displaySeason,
-                allSeasons: allSeasonDisplayModels,
                 showImageURL: show.backdropURL ?? show.posterURL,
                 synopsis: synopsis,
-                daysUntilReady: daysUntilReady,
                 onToggleWatched: { episode in
                     watchProgress.toggleWatched(
                         showId: show.id,

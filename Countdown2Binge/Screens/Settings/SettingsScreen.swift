@@ -20,7 +20,7 @@ struct SettingsScreen: View {
     @State private var isRefreshingDiscover = false
     @State private var isSyncing = false
     @State private var syncStatus: String = ""
-    @State private var profile = ProfileManager.shared.profile
+    private var profile: UserProfile { ProfileManager.shared.profile }
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
     private var cloudSyncService: CloudSyncService { CloudSyncService.shared }
@@ -226,9 +226,6 @@ struct SettingsScreen: View {
                     purchaseError: $purchaseError,
                     onDismiss: { showPaywall = false }
                 )
-            }
-            .onChange(of: ProfileManager.shared.profile) { _, newProfile in
-                profile = newProfile
             }
         }
     }

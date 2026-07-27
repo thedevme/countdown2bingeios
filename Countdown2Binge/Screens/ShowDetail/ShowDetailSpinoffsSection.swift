@@ -554,8 +554,9 @@ extension SpinoffShow.SpinoffType {
 
 // MARK: - Tab Enum
 
-enum ShowDetailTab: String, CaseIterable {
+enum ShowDetailTab: String {
     case episodes = "tab_episodes"
+    case catchUp = "tab_catch_up"
     case spinoffs = "tab_spinoffs"
 }
 
@@ -563,11 +564,20 @@ enum ShowDetailTab: String, CaseIterable {
 
 struct ShowDetailTabSwitcher: View {
     @Binding var selectedTab: ShowDetailTab
+    let showCatchUp: Bool
+    let showSpinoffs: Bool
     let spinoffCount: Int
+
+    private var visibleTabs: [ShowDetailTab] {
+        var tabs: [ShowDetailTab] = [.episodes]
+        if showCatchUp { tabs.append(.catchUp) }
+        if showSpinoffs { tabs.append(.spinoffs) }
+        return tabs
+    }
 
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(ShowDetailTab.allCases, id: \.self) { tab in
+            ForEach(visibleTabs, id: \.self) { tab in
                 ShowDetailTabButton(
                     tab: tab,
                     isSelected: selectedTab == tab,

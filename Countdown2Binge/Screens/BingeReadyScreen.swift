@@ -171,13 +171,49 @@ struct BingeReadyScreen: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 12)
 
-                        // Episode Strip
-                        BingeEpisodeStrip(
-                            show: show,
-                            season: season,
-                            watchProgress: watchProgress
-                        )
-                        .padding(.top, 22)
+                        // Episode Carousel (same cards as followed show detail)
+                        if let displaySeason = show.seasonDisplayModel(seasonNumber: season.seasonNumber, watchProgress: watchProgress) {
+                            EpisodeCarousel(
+                                season: displaySeason,
+                                showImageURL: show.backdropURL ?? show.posterURL,
+                                synopsis: season.overview ?? show.overview ?? "",
+                                onToggleWatched: { episode in
+                                    watchProgress.toggleWatched(
+                                        showId: show.id,
+                                        season: season.seasonNumber,
+                                        episode: episode.number
+                                    )
+                                },
+                                onMarkAllAired: {
+                                    let airedEpisodes = season.episodes
+                                        .filter { $0.hasAired }
+                                        .map { $0.episodeNumber }
+                                    watchProgress.markAiredWatched(
+                                        showId: show.id,
+                                        season: season.seasonNumber,
+                                        airedEpisodes: airedEpisodes
+                                    )
+                                },
+                                onClearAll: {
+                                    watchProgress.setSeasonWatched(
+                                        showId: show.id,
+                                        season: season.seasonNumber,
+                                        episodeCount: season.episodeCount,
+                                        watched: false
+                                    )
+                                }
+                            )
+                            .padding(.horizontal, 20)
+                            .padding(.top, 22)
+                        } else {
+                            // Fallback to simple strip if no detailed episode data
+                            BingeEpisodeStrip(
+                                show: show,
+                                season: season,
+                                watchProgress: watchProgress
+                            )
+                            .padding(.top, 22)
+                        }
                     }
 
                     // Archive Button
