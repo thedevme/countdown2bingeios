@@ -15,31 +15,21 @@ struct FollowedShowDetail: View {
 
     @State private var selectedSeason: Int
     @State private var showShareSheet = false
-    @State private var selectedTab: ShowDetailTab = .episodes
+    @State private var selectedTab: FollowedDetailTab = .seasonInfo
 
-    // Franchise data for spinoffs
+    // Data for Show Info tab (fetched on appear)
+    @State private var cast: [TMDBCastMember] = []
+    @State private var videos: [TMDBVideo] = []
+    @State private var isLoadingShowInfo = false
+
+    // Spinoff count from stored data (set when show was followed)
+    private var spinoffCount: Int {
+        show.spinoffCount ?? 0
+    }
+
+    // Franchise data for displaying spinoffs tab content
     private var franchise: Franchise? {
         FranchiseService.shared.franchise(forShowId: show.id)
-    }
-
-    private var spinoffCount: Int {
-        guard let franchise = franchise else { return 0 }
-        // Count all related shows in the franchise (excluding current show)
-        return franchise.allTmdbIds.filter { $0 != show.id }.count
-    }
-
-    private var hasSpinoffs: Bool {
-        PremiumManager.shared.canViewSpinoffs && spinoffCount > 0
-    }
-
-    private var showCatchUp: Bool {
-        // Show catch up tab if show is airing and has a finale date coming up
-        show.lifecycleState == .airing && show.daysUntilFinale != nil
-    }
-
-    private var showTabs: Bool {
-        // Show tabs if we have catch up OR spinoffs (always show episodes)
-        showCatchUp || hasSpinoffs
     }
 
     init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
@@ -47,57 +37,58 @@ struct FollowedShowDetail: View {
         self.onDismiss = onDismiss
         self.onUnfollow = onUnfollow
         self.onSpinoffTap = onSpinoffTap
-        self._selectedSeason = State(initialValue: show.numberOfSeasons)
+        // Default to current season (not anticipated), falling back to numberOfSeasons
+        let initialSeason = show.currentSeason?.seasonNumber ?? show.numberOfSeasons
+        self._selectedSeason = State(initialValue: initialSeason)
     }
 
     var body: some View {
         ZStack {
             ScrollView {
                 VStack(spacing: 0) {
+                    // MARK: - Hero Section
                     DetailHeroSection(
                         show: show,
                         onDismiss: onDismiss,
                         onShare: { showShareSheet = true }
                     )
 
-                VStack(spacing: 0) {
-                    // Streaming app deep link
-                    StreamingLinkButton(
-                        network: show.primaryNetwork,
-                        showName: show.name
-                    )
-                    .padding(.bottom, 16)
-
-                    DetailSeasonPicker(
-                        show: show,
-                        selectedSeason: $selectedSeason
-                    )
-                    .padding(.bottom, 16)
-
-                    DetailStatusBlock(show: show)
-
-                    // Countdown clock (only when days remaining)
-                    if let days = show.daysUntilFinale ?? show.daysUntilPremiere, days > 0 {
-                        BingeClock(days: days)
-                    }
-
-                    // Tab Switcher (show if catch up or spinoffs available)
-                    if showTabs {
-                        ShowDetailTabSwitcher(
+                    // MARK: - Content Section
+                    VStack(spacing: 0) {
+                        // MARK: - Segmented Tab Bar
+                        FollowedDetailTabBar(
                             selectedTab: $selectedTab,
-                            showCatchUp: showCatchUp,
-                            showSpinoffs: hasSpinoffs,
-                            spinoffCount: spinoffCount
+                            showSpinoffs: spinoffCount > 0
                         )
-                        .padding(.top, 26)
-                        .padding(.bottom, 4)
+                        .padding(.top, 18)
+                        .padding(.bottom, 16)
 
-                        // Tab Content
+                        // Season picker and status block (only on Season Info tab)
+                        if selectedTab == .seasonInfo {
+                            DetailSeasonPicker(show: show, selectedSeason: $selectedSeason)
+                                .padding(.bottom, 16)
+
+                            // Status card with countdown + lifecycle + clock
+                            DetailStatusBlock(show: show, selectedSeason: selectedSeason)
+                                .padding(.bottom, 16)
+                        }
+
+                        // MARK: - Tab Content
                         switch selectedTab {
-                        case .catchUp:
-                            DetailCatchUpSection(show: show)
-                        case .episodes:
-                            DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
+                        case .seasonInfo:
+                            SeasonInfoTabContent(
+                                show: show,
+                                selectedSeason: selectedSeason
+                            )
+
+                        case .showInfo:
+                            ShowInfoTabContent(
+                                show: show,
+                                cast: cast,
+                                videos: videos,
+                                isLoading: isLoadingShowInfo
+                            )
+
                         case .spinoffs:
                             ShowDetailSpinoffsSection(
                                 show: show,
@@ -105,20 +96,17 @@ struct FollowedShowDetail: View {
                                 onSpinoffTap: onSpinoffTap
                             )
                         }
-                    } else {
-                        // No tabs needed: just show episodes
-                        DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
-                    }
 
-                    DetailActionButtons(show: show, onUnfollow: {
-                        onUnfollow()
-                        onDismiss()
-                    })
+                        // Action buttons
+                        DetailActionButtons(show: show, onUnfollow: {
+                            onUnfollow()
+                            onDismiss()
+                        })
                         .padding(.top, 22)
-                }
-                .padding(.horizontal, 22)
-                .padding(.top, 20)
-                .padding(.bottom, 150)
+                    }
+                    .padding(.horizontal, 22)
+                    .padding(.top, 20)
+                    .padding(.bottom, 150)
                 }
             }
             .background(Color.c2bBackground)
@@ -131,5 +119,100 @@ struct FollowedShowDetail: View {
             }
         }
         .navigationBarHidden(true)
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    if value.startLocation.x < 50 && value.translation.width > 80 {
+                        onDismiss()
+                    }
+                }
+        )
+        .task {
+            await loadShowInfo()
+        }
+    }
+
+    // MARK: - Data Loading
+
+    private func loadShowInfo() async {
+        guard !isLoadingShowInfo else { return }
+        isLoadingShowInfo = true
+
+        do {
+            let tmdbService = TMDBService()
+            async let creditsResult = tmdbService.getShowCredits(id: show.id)
+            async let videosResult = tmdbService.getShowVideos(id: show.id)
+
+            let (credits, fetchedVideos) = try await (creditsResult, videosResult)
+            cast = credits.cast
+            videos = fetchedVideos
+        } catch {
+            print("Failed to load show info: \(error)")
+        }
+
+        isLoadingShowInfo = false
+    }
+}
+
+// MARK: - Season Info Tab Content
+
+private struct SeasonInfoTabContent: View {
+    let show: ShowData
+    let selectedSeason: Int
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Episode list
+            DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
+        }
+    }
+}
+
+// MARK: - Show Info Tab Content
+
+private struct ShowInfoTabContent: View {
+    let show: ShowData
+    let cast: [TMDBCastMember]
+    let videos: [TMDBVideo]
+    let isLoading: Bool
+
+    private var yearString: String {
+        guard let date = show.firstAirDate else { return "" }
+        return String(Calendar.current.component(.year, from: date))
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if isLoading {
+                ProgressView()
+                    .tint(.c2bTeal)
+                    .padding(.vertical, 40)
+            } else {
+                // Metadata row (year, runtime, badges)
+                ShowDetailMetadataRow(
+                    year: yearString,
+                    runtime: "~55 min",
+                    rating: "14+",
+                    contentBadges: ["TV-MA", "4K"],
+                    hasDolbyVision: true,
+                    hasDolbyAtmos: true,
+                    accessibilityBadges: ["CC", "SDH", "AD"]
+                )
+                .padding(.bottom, 16)
+
+                // Synopsis
+                DetailSynopsisSection(overview: show.overview)
+                    .padding(.bottom, 24)
+
+                // Trailers & Previews
+                ShowDetailTrailersSection(videos: videos)
+
+                // Cast & Crew
+                ShowDetailCastSection(cast: cast)
+
+                // About
+                ShowDetailAboutSection(show: show)
+            }
+        }
     }
 }

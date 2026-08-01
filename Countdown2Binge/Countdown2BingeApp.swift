@@ -51,6 +51,7 @@ struct Countdown2BingeApp: App {
             ContentView()
                 .onAppear {
                     if !hasLaunched {
+                        print("🎬 Craig's Countdown2Binge Debug Mode")
                         hasLaunched = true
                         Task {
                             await PremiumManager.shared.configure()
@@ -59,12 +60,24 @@ struct Countdown2BingeApp: App {
                             await stateRefreshService.onAppLaunch()
 
                             // Cloud sync on launch (if eligible)
+                            let syncEligibility = await CloudSyncService.shared.checkSyncEligibility()
+                            print("☁️ CloudSync: Eligibility check = \(syncEligibility)")
+
                             if await CloudSyncService.shared.canSync {
+                                print("☁️ CloudSync: Starting full sync...")
                                 let context = sharedModelContainer.mainContext
                                 let result = await CloudSyncService.shared.fullSync(modelContext: context)
+                                print("☁️ CloudSync: Result - Restored: \(result.showsRestored), Backed up: \(result.showsBackedUp), Errors: \(result.errors)")
                                 if !result.isEmpty {
                                     print("CloudSync: \(result.message)")
                                 }
+                                // Set up CloudKit subscriptions for real-time sync
+                                await CloudSyncService.shared.setupSubscriptions()
+                            } else {
+                                print("☁️ CloudSync: Cannot sync - checking why...")
+                                print("☁️ CloudSync: isPremium = \(PremiumManager.shared.isPremium)")
+                                print("☁️ CloudSync: canUseCloudSync = \(PremiumManager.shared.canUseCloudSync)")
+                                print("☁️ CloudSync: iCloud available = \(await CloudKitManager.shared.isAvailable)")
                             }
                         }
                     }

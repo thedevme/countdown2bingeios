@@ -19,6 +19,10 @@ struct DetailEpisodeSection: View {
 
     private var season: SeasonData? {
         if let selectedSeason = selectedSeason {
+            // If viewing the current season, use currentSeason which has full episode data
+            if let current = show.currentSeason, current.seasonNumber == selectedSeason {
+                return current
+            }
             return show.seasons.first { $0.seasonNumber == selectedSeason }
         }
         return show.currentSeason
@@ -32,9 +36,17 @@ struct DetailEpisodeSection: View {
         season?.overview ?? show.overview ?? ""
     }
 
+    private var isAnticipatedSeason: Bool {
+        guard let selected = selectedSeason else { return false }
+        return show.isAnticipatedSeason(selected)
+    }
+
     var body: some View {
-        if let displaySeason = seasonDisplayModel {
-            // Always show episode cards carousel
+        // For anticipated seasons, show a placeholder message
+        if isAnticipatedSeason {
+            anticipatedSeasonPlaceholder
+        } else if let displaySeason = seasonDisplayModel {
+            // Show episode cards carousel
             EpisodeCarousel(
                 season: displaySeason,
                 showImageURL: show.backdropURL ?? show.posterURL,
@@ -178,6 +190,30 @@ struct DetailEpisodeSection: View {
             }
         }
         .padding(.top, 22)
+    }
+
+    // MARK: - Anticipated Season Placeholder
+
+    private var anticipatedSeasonPlaceholder: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 40))
+                .foregroundColor(.c2bMuted)
+
+            Text("episodes_not_announced")
+                .font(.custom(.jetbrains.bold, size: 11))
+                .foregroundColor(.c2bMuted)
+                .tracking(1.2)
+                .textCase(.uppercase)
+
+            Text("episodes_coming_soon_description")
+                .font(.system(size: 13))
+                .foregroundColor(.c2bDim)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .padding(.horizontal, 20)
     }
 }
 

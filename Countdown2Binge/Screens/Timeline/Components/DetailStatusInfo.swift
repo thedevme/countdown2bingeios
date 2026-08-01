@@ -8,13 +8,16 @@ import SwiftUI
 struct DetailStatusInfo: View {
     let show: ShowData
     let isReady: Bool
+    var isAnticipated: Bool = false
     let phaseTone: Color
     let phaseLabel: String
 
-    /// Get the finale date (last episode's air date) for airing shows,
-    /// or premiere date for premiering soon shows
-    private var finaleDate: Date? {
-        if show.timelineCategory == .airingNow {
+    /// Get the relevant date based on show state
+    private var displayDate: Date? {
+        if isAnticipated {
+            // For anticipated seasons, show the premiere date
+            return show.anticipatedSeason?.airDate ?? show.anticipatedSeason?.premiereDate
+        } else if show.timelineCategory == .airingNow {
             // For airing shows, show the finale date (last episode)
             return show.currentSeason?.episodes
                 .filter { $0.airDate != nil }
@@ -28,15 +31,25 @@ struct DetailStatusInfo: View {
         }
     }
 
+    private var statusText: String {
+        if isReady {
+            return String(localized: "phase_ready_to_binge")
+        } else if isAnticipated {
+            return String(localized: "status_until_premiere")
+        } else {
+            return String(localized: "status_until_binge_ready")
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(isReady ? "phase_ready_to_binge" : "status_until_binge_ready")
+            Text(statusText)
                 .font(.custom(.jetbrains.bold, size: 9.5))
                 .foregroundColor(phaseTone)
                 .tracking(1.6)
                 .textCase(.uppercase)
 
-            if let date = finaleDate {
+            if let date = displayDate {
                 Text(date.localizedFullDate)
                     .font(.system(size: 13))
                     .foregroundColor(.c2bDim)

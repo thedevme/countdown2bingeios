@@ -115,6 +115,9 @@
 "time_start_date %@" = "Start %@";
 "time_already_started" = "Already started";
 
+// Countdown labels
+"countdown_episode_in" = "EPISODE IN";
+
 // Runtime formatting (locale-aware)
 "runtime_minutes_only %lld" = "%lldm";
 "runtime_hours_only %lld" = "%lldh";
@@ -122,6 +125,8 @@
 
 // Date placeholders
 "date_tba" = "TBA";
+"date_tbd" = "TBD";
+"date_finale" = "FINALE";
 
 // =============================================================================
 // MARK: - Season & Episodes
@@ -425,6 +430,13 @@
 "settings_cloud_sync_on" = "On · synced to iCloud";
 "settings_cloud_sync_off" = "Off";
 "settings_sync_now" = "Sync Now";
+"settings_icloud_unavailable" = "iCloud Unavailable";
+"settings_sign_in_icloud" = "Sign in to iCloud in Settings";
+"settings_icloud_restricted" = "iCloud is restricted on this device";
+"settings_icloud_temp_unavailable" = "iCloud temporarily unavailable";
+"settings_icloud_error" = "Unable to connect to iCloud";
+"settings_icloud_checking" = "Checking iCloud status...";
+"settings_premium_required" = "Premium required for cloud sync";
 
 // =============================================================================
 // MARK: - Accessibility Labels
@@ -473,12 +485,15 @@
 "status_ready_to_binge" = "Ready to binge";
 "status_until_new_season" = "Until new season";
 "status_until_binge_ready" = "Until binge ready";
+"status_until_premiere" = "Until premiere";
 "status_all_episodes_finished %lld" = "All %lld episodes out · just finished";
 "status_finale_date %@" = "Finale %@";
 "status_airing_weekly" = "Airing weekly";
 "status_premieres_ready %@ %lld" = "Premieres %@ · ~%lldd ready";
 "status_coming_soon" = "Coming soon";
 "status_no_release_date" = "No release date announced";
+"status_all_episodes_out %lld" = "All %lld episodes out";
+"status_complete_all_out %lld" = "COMPLETE · ALL %lld OUT";
 
 // Season info
 "season_all_out %lld" = "all %lld out";
@@ -645,13 +660,16 @@
 "timeline_release" = "RELEASE";
 "timeline_season %lld" = "Season %lld";
 "timeline_tba" = "TBA";
+"timeline_no_shows_airing" = "No shows currently airing";
 "network_show_count %lld" = "%lld shows";
 
 // Additional UI strings
 "timeline_your_shows" = "YOUR SHOWS";
 "timeline_countdown_finale" = "COUNTDOWN TO FINALE";
+"timeline_countdown_premiere" = "COUNTDOWN TO PREMIERE";
 "detail_to_binge" = "TO BINGE";
 "detail_current" = "CURRENT";
+"detail_anticipated" = "ANTICIPATED";
 "episode_watched" = "WATCHED";
 "episode_not_aired" = "NOT YET AIRED";
 "status_now" = "NOW";
@@ -667,6 +685,8 @@
 "today_date %@" = "Today · %@";
 "last_updated %@" = "Last updated: %@";
 "no_episodes_available" = "No episodes available";
+"episodes_not_announced" = "Episodes not yet announced";
+"episodes_coming_soon_description" = "Episode details will be available closer to the premiere date.";
 "link_terms" = "Terms";
 "link_privacy" = "Privacy";
 "link_restore" = "Restore";
@@ -706,6 +726,8 @@
 "tab_catch_up" = "Catch Up";
 "tab_episodes" = "Episodes";
 "tab_spinoffs" = "Spin-offs";
+"tab_season_info" = "Season Info";
+"tab_show_info" = "Show Info";
 "catch_up_all_caught_up" = "You're all caught up! No prior seasons to watch.";
 
 // Show status

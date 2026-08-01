@@ -202,7 +202,15 @@ extension ShowData {
         seasonNumber: Int,
         watchProgress: WatchProgressManager
     ) -> SeasonDisplayModel? {
-        guard let season = seasons.first(where: { $0.seasonNumber == seasonNumber }) else {
+        // Prefer currentSeason if it matches the requested season (has full episode data)
+        let season: SeasonData?
+        if let current = currentSeason, current.seasonNumber == seasonNumber {
+            season = current
+        } else {
+            season = seasons.first(where: { $0.seasonNumber == seasonNumber })
+        }
+
+        guard let season = season else {
             return nil
         }
 

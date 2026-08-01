@@ -68,6 +68,15 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
     let inProduction: Bool
     let voteAverage: Double?
 
+    /// Cached finale date from SwiftData (overrides computed value when set)
+    var cachedFinaleDate: Date?
+
+    /// Cached premiere date from SwiftData (overrides computed value when set)
+    var cachedPremiereDate: Date?
+
+    /// Number of spinoffs/related shows (stored when following, not computed on view)
+    var spinoffCount: Int?
+
     // MARK: Hashable
 
     func hash(into hasher: inout Hasher) {
@@ -111,28 +120,114 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
 
     // MARK: - Lifecycle Helpers
 
-    /// Current season (latest non-special season)
+    /// Current season - the season that is currently airing or most recently completed
+    /// Does NOT include anticipated/future seasons that haven't started yet
     var currentSeason: SeasonData? {
-        seasons
-            .filter { !$0.isSpecials }
-            .max(by: { $0.seasonNumber < $1.seasonNumber })
+        let today = Calendar.current.startOfDay(for: Date())
+        let regularSeasons = seasons.filter { !$0.isSpecials }
+
+        // Find seasons that have started but NOT completed (currently airing)
+        let airingSeasons = regularSeasons.filter { season in
+            guard let premiere = season.premiereDate else { return false }
+            let hasStarted = Calendar.current.startOfDay(for: premiere) <= today
+
+            // Check if finale is still in the future (not complete)
+            if let finale = season.finaleDate {
+                let isComplete = Calendar.current.startOfDay(for: finale) < today
+                return hasStarted && !isComplete
+            }
+            // No finale date = assume not complete if started
+            return hasStarted
+        }
+
+        // Return the LOWEST season number among airing seasons
+        if let current = airingSeasons.min(by: { $0.seasonNumber < $1.seasonNumber }) {
+            return current
+        }
+
+        // Fallback: most recently COMPLETED season (not anticipated/future)
+        let completedSeasons = regularSeasons.filter { season in
+            guard let premiere = season.premiereDate else { return false }
+            let hasStarted = Calendar.current.startOfDay(for: premiere) <= today
+            return hasStarted
+        }
+
+        // Return highest season number among completed seasons
+        if let mostRecent = completedSeasons.max(by: { $0.seasonNumber < $1.seasonNumber }) {
+            return mostRecent
+        }
+
+        // Last resort: if no seasons have started, return nil (show is fully anticipated)
+        return nil
     }
 
-    /// Upcoming season (next season with future air date)
+    /// Anticipated season - announced but hasn't started airing yet
+    var anticipatedSeason: SeasonData? {
+        let today = Calendar.current.startOfDay(for: Date())
+        return seasons
+            .filter { !$0.isSpecials }
+            .filter { season in
+                // Season hasn't started yet
+                guard let premiere = season.premiereDate else {
+                    // No premiere date = anticipated if it's beyond current season
+                    if let current = currentSeason {
+                        return season.seasonNumber > current.seasonNumber
+                    }
+                    return true
+                }
+                return Calendar.current.startOfDay(for: premiere) > today
+            }
+            .min(by: { $0.seasonNumber < $1.seasonNumber })
+    }
+
+    /// Whether a specific season number is anticipated (not yet started)
+    func isAnticipatedSeason(_ seasonNumber: Int) -> Bool {
+        guard let season = seasons.first(where: { $0.seasonNumber == seasonNumber && !$0.isSpecials }) else {
+            return false
+        }
+        let today = Calendar.current.startOfDay(for: Date())
+        guard let premiere = season.premiereDate else {
+            // No premiere date - anticipated if beyond current season
+            if let current = currentSeason {
+                return seasonNumber > current.seasonNumber
+            }
+            return true
+        }
+        return Calendar.current.startOfDay(for: premiere) > today
+    }
+
+    /// Upcoming season (next season with future air date that hasn't started)
     var upcomingSeason: SeasonData? {
-        seasons
-            .filter { !$0.isSpecials && !$0.hasStarted && $0.airDate != nil }
-            .min(by: { ($0.airDate ?? .distantFuture) < ($1.airDate ?? .distantFuture) })
+        anticipatedSeason
     }
 
     /// Days until next premiere (from upcoming or current season)
+    /// Uses cached date from SwiftData if available
     var daysUntilPremiere: Int? {
-        upcomingSeason?.daysUntilPremiere ?? currentSeason?.daysUntilPremiere
+        // Use cached premiere date from SwiftData if available
+        if let cachedDate = cachedPremiereDate {
+            return daysUntil(cachedDate)
+        }
+        return upcomingSeason?.daysUntilPremiere ?? currentSeason?.daysUntilPremiere
     }
 
     /// Days until current season finale
+    /// Uses cached date from SwiftData if available
     var daysUntilFinale: Int? {
-        currentSeason?.daysUntilFinale
+        // Use cached finale date from SwiftData if available
+        if let cachedDate = cachedFinaleDate {
+            return daysUntil(cachedDate)
+        }
+        return currentSeason?.daysUntilFinale
+    }
+
+    /// Helper to calculate days until a date
+    private func daysUntil(_ date: Date) -> Int? {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfDate = calendar.startOfDay(for: date)
+        guard startOfDate >= startOfToday else { return nil }
+        return calendar.dateComponents([.day], from: startOfToday, to: startOfDate).day
     }
 
     /// Derived lifecycle state
@@ -262,9 +357,16 @@ struct SeasonData: Identifiable, Codable, Sendable, Hashable {
             .min(by: { $0.episodeNumber < $1.episodeNumber })
     }
 
-    /// Finale episode - explicitly marked as finale type
+    /// Finale episode - explicitly marked as finale type, or last episode by number
     var finaleEpisode: EpisodeData? {
-        episodes.first { $0.episodeType == .finale }
+        // First try to find explicitly marked finale
+        if let finale = episodes.first(where: { $0.episodeType == .finale }) {
+            return finale
+        }
+        // Fallback to last episode by episode number
+        return episodes
+            .filter { $0.episodeNumber > 0 }
+            .max(by: { $0.episodeNumber < $1.episodeNumber })
     }
 
     /// Premiere date from first episode's air date
