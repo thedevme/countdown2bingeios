@@ -11,9 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
 
-    // Persistent first-time flags
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
-    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough: Bool = false
+    // Cloud-synced onboarding flags (persists across devices via iCloud)
+    private var cloudSettings: CloudSettingsStore { CloudSettingsStore.shared }
 
     @State private var activeTab: String = "timeline"
     @State private var showOnboarding: Bool = false
@@ -48,12 +47,8 @@ struct ContentView: View {
                 }
                 .badge(badgeManager.timelineBadge ? 1 : 0)
 
-                Tab("tab_discover", systemImage: "safari", value: "discover") {
-                    DiscoverScreen(badgeManager: badgeManager)
-                }
-
-                Tab("tab_binge_ready", systemImage: "popcorn", value: "binge") {
-                    BingeReadyScreen()
+                Tab("tab_my_list", systemImage: "rectangle.stack", value: "mylist") {
+                    MyListScreen()
                 }
                 .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
@@ -73,7 +68,7 @@ struct ContentView: View {
             .onAppear {
                 configureTabBarAppearance()
                 // Show onboarding if not completed
-                if !hasCompletedOnboarding {
+                if !cloudSettings.hasCompletedOnboarding {
                     showOnboarding = true
                 }
             }
@@ -89,7 +84,7 @@ struct ContentView: View {
                         followedShowNames = shows.map { $0.name }
 
                         // Mark onboarding as completed
-                        hasCompletedOnboarding = true
+                        cloudSettings.hasCompletedOnboarding = true
 
                         // Save to SwiftData, then show walkthrough
                         Task {
@@ -102,9 +97,9 @@ struct ContentView: View {
                                 // Show Free Limit Modal if free plan and >3 shows
                                 if plan == "free" && shows.count > 3 {
                                     showFreeLimitModal = true
-                                } else if !hasSeenWalkthrough {
+                                } else if !cloudSettings.hasSeenWalkthrough {
                                     showWalkthrough = true
-                                    hasSeenWalkthrough = true
+                                    cloudSettings.hasSeenWalkthrough = true
                                 }
                             }
                         }
@@ -125,11 +120,11 @@ struct ContentView: View {
                 )
                 .zIndex(95)
                 .onChange(of: showFreeLimitModal) { oldValue, newValue in
-                    if !newValue && !hasSeenWalkthrough {
+                    if !newValue && !cloudSettings.hasSeenWalkthrough {
                         // Show walkthrough after modal dismisses (only if not seen)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             showWalkthrough = true
-                            hasSeenWalkthrough = true
+                            cloudSettings.hasSeenWalkthrough = true
                         }
                     }
                 }
@@ -353,10 +348,10 @@ struct SettingsPlaceholder: View {
     .preferredColorScheme(.dark)
 }
 
-#Preview("Binge Ready") {
+#Preview("My List") {
     ZStack {
         Color.c2bBackground.ignoresSafeArea()
-        BingeReadyScreen()
+        MyListScreen()
     }
     .preferredColorScheme(.dark)
 }
@@ -365,14 +360,6 @@ struct SettingsPlaceholder: View {
     ZStack {
         Color.c2bBackground.ignoresSafeArea()
         SearchScreen()
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Discover") {
-    ZStack {
-        Color.c2bBackground.ignoresSafeArea()
-        DiscoverScreen()
     }
     .preferredColorScheme(.dark)
 }

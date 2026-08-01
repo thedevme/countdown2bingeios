@@ -12,7 +12,54 @@
 "tab_timeline" = "Timeline";
 "tab_discover" = "Discover";
 "tab_binge_ready" = "Binge Ready";
+"tab_my_list" = "My List";
 "tab_settings" = "Settings";
+
+// =============================================================================
+// MARK: - My List Screen
+// =============================================================================
+
+"mylist_title" = "MY LIST";
+"mylist_count %lld %@" = "%lld shows · %@";
+
+// Tabs
+"mylist_tab_active" = "Active";
+"mylist_tab_ended" = "Ended";
+"mylist_tab_archived" = "Archived";
+
+// Tab descriptions
+"mylist_desc_active" = "Shows still airing or counting down to a new season.";
+"mylist_desc_ended" = "Series no longer in production — the story's complete.";
+"mylist_desc_archived" = "Shows you've fully watched or set aside for later.";
+
+// Section headers
+"mylist_section_ready" = "Ready to Binge";
+"mylist_section_ready_sub %lld" = "%lld season(s) just wrapped";
+"mylist_section_counting" = "Still Counting Down";
+"mylist_section_counting_sub %lld" = "%lld season(s) in progress";
+"mylist_section_nodate" = "No Date Yet";
+"mylist_section_nodate_sub %lld" = "%lld season(s) awaiting a release date";
+
+// Empty states
+"mylist_empty_active_title" = "No active shows";
+"mylist_empty_active_sub" = "Follow shows to start tracking their release schedule.";
+"mylist_empty_ended_title" = "No ended series";
+"mylist_empty_ended_sub" = "Series that have finished for good land here.";
+"mylist_empty_archived_title" = "Nothing archived";
+"mylist_empty_archived_sub" = "Shows you set aside stay here, out of your timeline.";
+
+// Poster notes
+"mylist_note_finale_today" = "Finale aired today";
+"mylist_note_finale_yesterday" = "Finale aired yesterday";
+"mylist_note_finale_days %lld" = "Finale aired %lld days ago";
+"mylist_note_ready" = "Ready to binge";
+"mylist_note_binge_in %lld" = "Binge ready in %lld days";
+"mylist_note_premieres_in %lld" = "Premieres in %lld days";
+"mylist_note_ended %lld" = "Series finale · %lld";
+"mylist_note_series_ended" = "Series ended";
+"mylist_note_archived" = "Archived";
+"mylist_note_date_tbd" = "Renewed · Date TBD";
+"mylist_note_expected %lld" = "Expected %lld";
 
 // =============================================================================
 // MARK: - Buttons & Actions
@@ -47,7 +94,8 @@
 "button_unfollow_show" = "UNFOLLOW SHOW";
 "button_completed_show" = "COMPLETED SHOW";
 "button_archive_show" = "ARCHIVE SHOW";
-"button_unarchive" = "UNARCHIVE";
+"button_archive" = "Archive";
+"button_unarchive" = "Unarchive";
 "button_sign_out" = "Sign out";
 
 // =============================================================================
@@ -339,6 +387,10 @@
 "alert_remove_show %@" = "Remove %@?";
 "alert_remove_message" = "This will remove the show from your followed list.";
 "alert_unfollow %@" = "Unfollow %@?";
+"alert_archive_title" = "Archive this show?";
+"alert_archive_message" = "Archived shows are hidden from your timeline but remain in your list.";
+"alert_unarchive_title" = "Unarchive this show?";
+"alert_unarchive_message" = "This show will appear in your timeline again.";
 "alert_error" = "Error";
 "alert_purchase_error" = "Purchase Error";
 "alert_purchase_failed" = "PURCHASE FAILED";

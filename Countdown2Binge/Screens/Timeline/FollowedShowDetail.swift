@@ -16,11 +16,15 @@ struct FollowedShowDetail: View {
     @State private var selectedSeason: Int
     @State private var showShareSheet = false
     @State private var selectedTab: FollowedDetailTab = .seasonInfo
+    @State private var isArchived: Bool = false
 
     // Data for Show Info tab (fetched on appear)
     @State private var cast: [TMDBCastMember] = []
     @State private var videos: [TMDBVideo] = []
     @State private var isLoadingShowInfo = false
+
+    // Archive storage key (shared with MyListViewModel)
+    private let archivedShowsKey = "archivedShowIds"
 
     // Spinoff count from stored data (set when show was followed)
     private var spinoffCount: Int {
@@ -50,7 +54,15 @@ struct FollowedShowDetail: View {
                     DetailHeroSection(
                         show: show,
                         onDismiss: onDismiss,
-                        onShare: { showShareSheet = true }
+                        onShare: { showShareSheet = true },
+                        onUnfollow: {
+                            onUnfollow()
+                            onDismiss()
+                        },
+                        isArchived: isArchived,
+                        onArchive: {
+                            toggleArchive()
+                        }
                     )
 
                     // MARK: - Content Section
@@ -96,13 +108,6 @@ struct FollowedShowDetail: View {
                                 onSpinoffTap: onSpinoffTap
                             )
                         }
-
-                        // Action buttons
-                        DetailActionButtons(show: show, onUnfollow: {
-                            onUnfollow()
-                            onDismiss()
-                        })
-                        .padding(.top, 22)
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 20)
@@ -130,6 +135,9 @@ struct FollowedShowDetail: View {
         .task {
             await loadShowInfo()
         }
+        .onAppear {
+            loadArchiveState()
+        }
     }
 
     // MARK: - Data Loading
@@ -151,6 +159,31 @@ struct FollowedShowDetail: View {
         }
 
         isLoadingShowInfo = false
+    }
+
+    // MARK: - Archive Management
+
+    private func loadArchiveState() {
+        if let ids = UserDefaults.standard.array(forKey: archivedShowsKey) as? [Int] {
+            isArchived = ids.contains(show.id)
+        }
+    }
+
+    private func toggleArchive() {
+        var ids = Set(UserDefaults.standard.array(forKey: archivedShowsKey) as? [Int] ?? [])
+
+        if isArchived {
+            // Unarchive - stay on page
+            ids.remove(show.id)
+            UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
+            isArchived = false
+        } else {
+            // Archive - dismiss and go back
+            ids.insert(show.id)
+            UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
+            isArchived = true
+            onDismiss()
+        }
     }
 }
 
@@ -216,3 +249,4 @@ private struct ShowInfoTabContent: View {
         }
     }
 }
+
