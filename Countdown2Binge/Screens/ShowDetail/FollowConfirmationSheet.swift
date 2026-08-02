@@ -52,90 +52,96 @@ struct FollowConfirmationSheet: View {
                 .fill(Color.white.opacity(0.3))
                 .frame(width: 36, height: 4)
                 .padding(.top, 10)
-                .padding(.bottom, 16)
+                .padding(.bottom, 12)
 
-            // Show Header
-            FollowNotificationHeader(
-                show: show,
-                badge: statusBadge,
-                scheduledText: scheduledText
-            )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Show Header
+                    FollowNotificationHeader(
+                        show: show,
+                        badge: statusBadge,
+                        scheduledText: scheduledText
+                    )
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
 
-            // Notification Options
-            VStack(spacing: 12) {
-                // Season Premiere
-                NotificationOptionRow(
-                    title: String(localized: "notif_option_premiere"),
-                    subtitle: String(localized: "notif_option_premiere_sub"),
-                    isOn: $settings.seasonPremiere
-                )
+                    // Notification Options
+                    VStack(spacing: 10) {
+                        // Season Premiere
+                        NotificationOptionRow(
+                            title: String(localized: "notif_option_premiere"),
+                            subtitle: String(localized: "notif_option_premiere_sub"),
+                            isOn: $settings.seasonPremiere
+                        )
 
-                // New Episodes
-                NotificationOptionRow(
-                    title: String(localized: "notif_option_episodes"),
-                    subtitle: String(localized: "notif_option_episodes_sub"),
-                    isOn: $settings.newEpisodes
-                )
+                        // New Episodes
+                        NotificationOptionRow(
+                            title: String(localized: "notif_option_episodes"),
+                            subtitle: String(localized: "notif_option_episodes_sub"),
+                            isOn: $settings.newEpisodes
+                        )
 
-                // Finale Reminder
-                NotificationFinaleRow(
-                    isOn: $settings.finaleReminder,
-                    timing: $settings.finaleTiming
-                )
-            }
-            .padding(.horizontal, 20)
+                        // Finale Reminder
+                        NotificationFinaleRow(
+                            isOn: $settings.finaleReminder,
+                            timing: $settings.finaleTiming
+                        )
+                    }
+                    .padding(.horizontal, 20)
 
-            // Use as Default
-            Button(action: { useAsDefault.toggle() }) {
-                HStack(spacing: 12) {
-                    Image(systemName: useAsDefault ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 18))
-                        .foregroundColor(useAsDefault ? .c2bTeal : .c2bMuted)
+                    // Use as Default
+                    Button(action: { useAsDefault.toggle() }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: useAsDefault ? "checkmark.square.fill" : "square")
+                                .font(.system(size: 18))
+                                .foregroundColor(useAsDefault ? .c2bTeal : .c2bMuted)
 
-                    Text("notif_use_as_default")
-                        .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.9))
+                            Text("notif_use_as_default")
+                                .font(.system(size: 14))
+                                .foregroundColor(.white.opacity(0.9))
 
-                    Spacer()
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            .scrollBounceBehavior(.basedOnSize)
 
-            Spacer()
-                .frame(height: 24)
+            // Fixed bottom buttons
+            VStack(spacing: 0) {
+                // Save Button
+                Button(action: saveNotifications) {
+                    HStack(spacing: 10) {
+                        Text("notif_save_button")
+                            .font(.custom(.oswald.bold, size: 16))
+                            .tracking(0.48)
 
-            // Save Button
-            Button(action: saveNotifications) {
-                HStack(spacing: 10) {
-                    Text("notif_save_button")
-                        .font(.custom(.oswald.bold, size: 16))
-                        .tracking(0.48)
-
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 14, weight: .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundColor(Color(hex: "#04201c"))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.c2bTeal)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
-                .foregroundColor(Color(hex: "#04201c"))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.c2bTeal)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .padding(.horizontal, 20)
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
 
-            // Not Now
-            Button(action: onSkip) {
-                Text("notif_not_now")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.c2bMuted)
+                // Not Now
+                Button(action: onSkip) {
+                    Text("notif_not_now")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.c2bMuted)
+                }
+                .padding(.top, 12)
+                .padding(.bottom, 24)
             }
-            .padding(.top, 14)
-            .padding(.bottom, 30)
         }
         .background(Color(hex: "#0e0e0f"))
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.height(580), .large])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(24)
         .presentationBackground(Color(hex: "#0e0e0f"))
