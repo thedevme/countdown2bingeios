@@ -124,14 +124,7 @@ struct FollowedShowDetail: View {
             }
         }
         .navigationBarHidden(true)
-        .gesture(
-            DragGesture()
-                .onEnded { value in
-                    if value.startLocation.x < 50 && value.translation.width > 80 {
-                        onDismiss()
-                    }
-                }
-        )
+        .swipeBack(onDismiss: onDismiss)
         .task {
             await loadShowInfo()
         }
