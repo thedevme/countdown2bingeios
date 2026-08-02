@@ -189,6 +189,56 @@ final class NotificationService: ObservableObject {
             print("  - \(request.identifier): \(request.content.title)")
         }
     }
+
+    #if DEBUG
+    /// Schedule a test notification that fires in a few seconds
+    func scheduleTestNotification(type: TestNotificationType, delaySeconds: TimeInterval = 5) async {
+        // Ensure we have permission
+        if !isAuthorized {
+            let granted = await requestAuthorization()
+            guard granted else {
+                print("DEBUG: Notification permission denied")
+                return
+            }
+        }
+
+        let identifier = "debug-test-\(UUID().uuidString)"
+        let content = UNMutableNotificationContent()
+        content.sound = .default
+
+        switch type {
+        case .premiere:
+            content.title = "Season Premiere Today!"
+            content.body = "Stranger Things Season 5 premieres today"
+        case .episode:
+            content.title = "New Episode: Stranger Things"
+            content.body = "Episode 3 \"The Monster\" is now available"
+        case .finale:
+            content.title = "Finale Reminder"
+            content.body = "Stranger Things season finale is tomorrow"
+        case .bingeReady:
+            content.title = "Binge Ready!"
+            content.body = "The full season of Stranger Things is now available to binge"
+        }
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: delaySeconds, repeats: false)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+
+        do {
+            try await center.add(request)
+            print("DEBUG: Test notification scheduled, fires in \(delaySeconds) seconds")
+        } catch {
+            print("DEBUG: Failed to schedule test notification: \(error)")
+        }
+    }
+
+    enum TestNotificationType: String, CaseIterable {
+        case premiere = "Premiere"
+        case episode = "Episode"
+        case finale = "Finale"
+        case bingeReady = "Binge Ready"
+    }
+    #endif
 }
 
 // MARK: - Show Notification Settings

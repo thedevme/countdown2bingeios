@@ -20,14 +20,15 @@ struct SettingsScreen: View {
     @State private var isRefreshingDiscover = false
     @State private var isSyncing = false
     @State private var syncStatus: String = ""
+    @State private var iCloudAvailable: Bool = true
+    @State private var syncEligibility: SyncEligibility = .eligible
     private var profile: UserProfile { ProfileManager.shared.profile }
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
     private var cloudSyncService: CloudSyncService { CloudSyncService.shared }
 
-    // Reset flags
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
-    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough: Bool = false
+    // Cloud-synced onboarding flags
+    private var cloudSettings: CloudSettingsStore { CloudSettingsStore.shared }
 
     var body: some View {
         NavigationStack {
@@ -88,15 +89,20 @@ struct SettingsScreen: View {
                     if isPremium {
                         SettingsGroup(label: String(localized: "settings_cloud_sync")) {
                             SettingsRowAction(
-                                icon: "icloud.fill",
-                                iconColor: .c2bTeal,
-                                title: String(localized: "settings_sync_now"),
+                                icon: iCloudAvailable ? "icloud.fill" : "icloud.slash.fill",
+                                iconColor: iCloudAvailable ? .c2bTeal : .c2bMuted,
+                                title: iCloudAvailable ? String(localized: "settings_sync_now") : String(localized: "settings_icloud_unavailable"),
                                 subtitle: cloudSyncSubtitle,
                                 isLast: true,
                                 action: {
-                                    Task { await performSync() }
+                                    if iCloudAvailable {
+                                        Task { await performSync() }
+                                    }
                                 }
                             )
+                        }
+                        .task {
+                            await checkiCloudStatus()
                         }
                     }
 
@@ -129,15 +135,64 @@ struct SettingsScreen: View {
                                 set: { PremiumManager.shared.debugPremiumOverride = $0 }
                             )
                         )
+
+                        // Notification Testing
+                        SettingsRowAction(
+                            icon: "bell.badge",
+                            iconColor: .orange,
+                            title: "Test Premiere Notification",
+                            subtitle: "Fires in 5 seconds",
+                            action: {
+                                Task {
+                                    await NotificationService.shared.scheduleTestNotification(type: .premiere)
+                                }
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "bell.badge",
+                            iconColor: .blue,
+                            title: "Test Episode Notification",
+                            subtitle: "Fires in 5 seconds",
+                            action: {
+                                Task {
+                                    await NotificationService.shared.scheduleTestNotification(type: .episode)
+                                }
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "bell.badge",
+                            iconColor: .purple,
+                            title: "Test Finale Notification",
+                            subtitle: "Fires in 5 seconds",
+                            action: {
+                                Task {
+                                    await NotificationService.shared.scheduleTestNotification(type: .finale)
+                                }
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "bell.badge",
+                            iconColor: .c2bTeal,
+                            title: "Test Binge Ready Notification",
+                            subtitle: "Fires in 5 seconds",
+                            action: {
+                                Task {
+                                    await NotificationService.shared.scheduleTestNotification(type: .bingeReady)
+                                }
+                            }
+                        )
                         #endif
 
                         SettingsRowAction(
                             icon: "arrow.counterclockwise",
                             iconColor: .c2bMuted,
                             title: String(localized: "settings_reset_onboarding"),
-                            subtitle: hasCompletedOnboarding ? String(localized: "settings_completed") : String(localized: "settings_not_completed"),
+                            subtitle: cloudSettings.hasCompletedOnboarding ? String(localized: "settings_completed") : String(localized: "settings_not_completed"),
                             action: {
-                                hasCompletedOnboarding = false
+                                cloudSettings.hasCompletedOnboarding = false
                             }
                         )
 
@@ -145,9 +200,9 @@ struct SettingsScreen: View {
                             icon: "play.circle",
                             iconColor: .c2bMuted,
                             title: String(localized: "settings_reset_walkthrough"),
-                            subtitle: hasSeenWalkthrough ? String(localized: "settings_seen") : String(localized: "settings_not_seen"),
+                            subtitle: cloudSettings.hasSeenWalkthrough ? String(localized: "settings_seen") : String(localized: "settings_not_seen"),
                             action: {
-                                hasSeenWalkthrough = false
+                                cloudSettings.hasSeenWalkthrough = false
                             }
                         )
 
@@ -241,6 +296,27 @@ struct SettingsScreen: View {
     // MARK: - Cloud Sync
 
     private var cloudSyncSubtitle: String {
+        // Show iCloud unavailable reason first
+        if !iCloudAvailable {
+            switch syncEligibility {
+            case .eligible:
+                return String(localized: "settings_icloud_checking")
+            case .notEligible(let reason):
+                switch reason {
+                case .noICloudAccount:
+                    return String(localized: "settings_sign_in_icloud")
+                case .iCloudRestricted:
+                    return String(localized: "settings_icloud_restricted")
+                case .temporarilyUnavailable:
+                    return String(localized: "settings_icloud_temp_unavailable")
+                case .notPremium:
+                    return String(localized: "settings_premium_required")
+                case .unknown:
+                    return String(localized: "settings_icloud_error")
+                }
+            }
+        }
+
         if isSyncing {
             return String(localized: "sync_in_progress")
         }
@@ -256,6 +332,17 @@ struct SettingsScreen: View {
         }
 
         return String(localized: "settings_cloud_sync_on")
+    }
+
+    @MainActor
+    private func checkiCloudStatus() async {
+        syncEligibility = await cloudSyncService.checkSyncEligibility()
+        switch syncEligibility {
+        case .eligible:
+            iCloudAvailable = true
+        case .notEligible:
+            iCloudAvailable = false
+        }
     }
 
     @MainActor
