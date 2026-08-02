@@ -6,8 +6,6 @@ import RevenueCat
 struct SearchScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = DiscoverViewModel()
-    @State private var selectedTab: String = "trending"
-    @State private var selectedGenre: String = "All"
     @State private var navigationPath = NavigationPath()
     @State private var showPaywall: Bool = false
     @State private var selectedPlan: String = "yearly"
@@ -18,171 +16,115 @@ struct SearchScreen: View {
     /// Badge manager for tab notifications
     var badgeManager: TabBadgeManager?
 
-    private let tabs = ["trending": "Trending", "genres": "Genres", "networks": "Networks"]
-    private let genres = ["All", "Action", "Drama", "Sci-Fi", "Comedy", "Crime", "Fantasy", "Thriller", "Romance"]
-
     var body: some View {
         NavigationStack(path: $navigationPath) {
-        ZStack(alignment: .bottom) {
-            VStack(spacing: 0) {
-                // Header
-                Text("header_search")
-                    .displayStyle(size: 26, color: .c2bText)
-                    .padding(.top, 52)
-                    .padding(.bottom, 14)
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Show search results or browse content
+                    if !viewModel.searchText.isEmpty {
+                        // Search results
+                        if viewModel.isSearching && viewModel.searchResults.isEmpty {
+                            ProgressView()
+                                .tint(Color(hex: "#71717a"))
+                                .padding(.top, 40)
+                        } else if viewModel.searchResults.isEmpty {
+                            Text(String(localized: "search_no_results"))
+                                .monoStyle(size: 12, color: .c2bMuted)
+                                .padding(.top, 40)
+                        } else {
+                            ShowGrid(
+                                shows: viewModel.searchResults,
+                                isFollowing: { viewModel.isFollowing($0) },
+                                onTap: { summary in
+                                    Task {
+                                        await viewModel.loadShowDetail(for: summary)
+                                        if let showData = viewModel.selectedShowData {
+                                            navigationPath.append(showData)
+                                        }
+                                    }
+                                },
+                                onFollowTap: { show in
+                                    Task { await viewModel.toggleFollow(show) }
+                                }
+                            )
+                            .padding(.horizontal, C2BLayout.horizontalPadding)
+                            .padding(.top, 20)
+                        }
+                    } else {
+                        // Genre chips (tappable)
+                        GenreChipRow(
+                            genres: DiscoverViewModel.genres,
+                            onGenreTap: { genre in
+                                navigationPath.append(genre)
+                            }
+                        )
+                        .padding(.top, 16)
 
-                // Search Bar
-                SearchBar(text: $viewModel.searchText)
-                    .padding(.horizontal, C2BLayout.horizontalPadding)
+                        // Trending Shows title
+                        HStack {
+                            Text("Trending Shows")
+                                .displayStyle(size: 20, color: .c2bText)
+                            Spacer()
+                        }
+                        .padding(.horizontal, C2BLayout.horizontalPadding)
+                        .padding(.top, 24)
 
-                // Tab Selector (hide when searching)
-                if viewModel.searchText.isEmpty {
-                    SegmentedTabControl(
-                        tabs: tabs,
-                        selectedTab: $selectedTab
-                    )
-                    .padding(.horizontal, C2BLayout.horizontalPadding)
-                    .padding(.top, 16)
-                }
+                        // Trending shows grid with infinite scroll
+                        if viewModel.isLoading && viewModel.trendingShows.isEmpty {
+                            ProgressView()
+                                .tint(Color(hex: "#71717a"))
+                                .padding(.top, 40)
+                        } else {
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+                                ForEach(Array(viewModel.trendingShows.enumerated()), id: \.element.id) { index, show in
+                                    ShowGridCard(
+                                        show: show,
+                                        isFollowing: viewModel.isFollowing(show),
+                                        onTap: {
+                                            Task {
+                                                await viewModel.loadShowDetail(for: show)
+                                                if let showData = viewModel.selectedShowData {
+                                                    navigationPath.append(showData)
+                                                }
+                                            }
+                                        },
+                                        onFollowTap: {
+                                            Task { await viewModel.toggleFollow(show) }
+                                        }
+                                    )
+                                    .id("\(show.id)-\(viewModel.isFollowing(show))")
+                                    .onAppear {
+                                        // Load more when approaching the end (last 4 items)
+                                        if index >= viewModel.trendingShows.count - 4 {
+                                            Task {
+                                                await viewModel.loadMoreTrendingShows()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, C2BLayout.horizontalPadding)
+                            .padding(.top, 16)
 
-                ScrollView {
-                    VStack(spacing: 20) {
-                        // Show search results or tab content
-                        if !viewModel.searchText.isEmpty {
-                            // Search results
-                            if viewModel.isSearching && viewModel.searchResults.isEmpty {
+                            // Loading indicator for pagination
+                            if viewModel.isLoadingMoreTrending {
                                 ProgressView()
                                     .tint(Color(hex: "#71717a"))
-                                    .padding(.top, 40)
-                            } else if viewModel.searchResults.isEmpty {
-                                Text("search_no_results")
-                                    .monoStyle(size: 12, color: .c2bMuted)
-                                    .padding(.top, 40)
-                            } else {
-                                ShowGrid(
-                                    shows: viewModel.searchResults,
-                                    isFollowing: { viewModel.isFollowing($0) },
-                                    onTap: { summary in
-                                        Task {
-                                            await viewModel.loadShowDetail(for: summary)
-                                            if let showData = viewModel.selectedShowData {
-                                                navigationPath.append(showData)
-                                            }
-                                        }
-                                    },
-                                    onFollowTap: { show in
-                                        Task { await viewModel.toggleFollow(show) }
-                                    }
-                                )
-                                .padding(.horizontal, C2BLayout.horizontalPadding)
-                            }
-                        } else {
-                            // Genre chips for genres tab
-                            if selectedTab == "genres" {
-                                GenreChipScroll(selectedGenre: $selectedGenre, genres: genres)
                                     .padding(.top, 20)
-                            }
-
-                            // Content based on selected tab
-                            if selectedTab == "trending" {
-                                if viewModel.isLoading {
-                                    ProgressView()
-                                        .tint(Color(hex: "#71717a"))
-                                        .padding(.top, 40)
-                                } else {
-                                    ShowGrid(
-                                        shows: viewModel.trendingShows,
-                                        isFollowing: { viewModel.isFollowing($0) },
-                                        onTap: { summary in
-                                            Task {
-                                                await viewModel.loadShowDetail(for: summary)
-                                                if let showData = viewModel.selectedShowData {
-                                                    navigationPath.append(showData)
-                                                }
-                                            }
-                                        },
-                                        onFollowTap: { show in
-                                            Task { await viewModel.toggleFollow(show) }
-                                        }
-                                    )
-                                    .padding(.horizontal, C2BLayout.horizontalPadding)
-                                }
-                            } else if selectedTab == "genres" {
-                                if viewModel.isLoadingGenre && viewModel.genreShows.isEmpty {
-                                    ProgressView()
-                                        .tint(Color(hex: "#71717a"))
-                                        .padding(.top, 40)
-                                } else {
-                                    VStack(spacing: 24) {
-                                        ForEach(DiscoverViewModel.genres) { genre in
-                                            if let shows = viewModel.genreShows[genre.id], !shows.isEmpty {
-                                                GenreRowSection(
-                                                    genreName: genre.name,
-                                                    shows: shows,
-                                                    isFollowing: { viewModel.isFollowing($0) },
-                                                    onTap: { summary in
-                                                        Task {
-                                                            await viewModel.loadShowDetail(for: summary)
-                                                            if let showData = viewModel.selectedShowData {
-                                                                navigationPath.append(showData)
-                                                            }
-                                                        }
-                                                    },
-                                                    onFollowTap: { show in
-                                                        Task { await viewModel.toggleFollow(show) }
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-                                    .padding(.horizontal, C2BLayout.horizontalPadding)
-                                }
-                            } else if selectedTab == "networks" {
-                                if viewModel.isLoadingNetwork && viewModel.networkShows.isEmpty {
-                                    ProgressView()
-                                        .tint(Color(hex: "#71717a"))
-                                        .padding(.top, 40)
-                                } else {
-                                    NetworkList(
-                                        viewModel: viewModel,
-                                        onTap: { summary in
-                                            Task {
-                                                await viewModel.loadShowDetail(for: summary)
-                                                if let showData = viewModel.selectedShowData {
-                                                    navigationPath.append(showData)
-                                                }
-                                            }
-                                        },
-                                        onFollowTap: { show in
-                                            Task { await viewModel.toggleFollow(show) }
-                                        }
-                                    )
-                                    .padding(.horizontal, C2BLayout.horizontalPadding)
-                                }
                             }
                         }
                     }
-                    .padding(.top, selectedTab == "genres" && viewModel.searchText.isEmpty ? 0 : 20)
-
-                    Spacer()
-                        .frame(height: 150)
                 }
+                .padding(.bottom, 150)
             }
-        }
-        .task {
-            viewModel.configure(with: modelContext)
-            await viewModel.loadTrendingShows()
-        }
-        .onChange(of: selectedTab) { _, newTab in
-            Task {
-                if newTab == "genres" {
-                    await viewModel.loadAllGenres()
-                } else if newTab == "networks" {
-                    await viewModel.loadAllNetworks()
-                }
+            .scrollDismissesKeyboard(.immediately)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
-        }
-        .navigationDestination(for: ShowData.self) { showData in
+            .navigationTitle(String(localized: "search_heading"))
+            .searchable(text: $viewModel.searchText, prompt: String(localized: "search_placeholder"))
+            .navigationDestination(for: ShowData.self) { showData in
             ShowDetailView(
                 show: showData,
                 cast: viewModel.selectedShowCast,
@@ -227,7 +169,28 @@ struct SearchScreen: View {
                 }
             )
         }
-        } // NavigationStack
+        .navigationDestination(for: GenreDefinition.self) { genre in
+            GenreShowsScreen(
+                genre: genre,
+                viewModel: viewModel,
+                onShowTap: { summary in
+                    Task {
+                        await viewModel.loadShowDetail(for: summary)
+                        if let showData = viewModel.selectedShowData {
+                            navigationPath.append(showData)
+                        }
+                    }
+                },
+                onFollowTap: { show in
+                    Task { await viewModel.toggleFollow(show) }
+                }
+            )
+        }
+        }
+        .task {
+            viewModel.configure(with: modelContext)
+            await viewModel.loadTrendingShows()
+        }
         .sheet(item: Binding(
             get: { viewModel.pendingFollowShow },
             set: { _ in viewModel.clearPendingFollow() }
@@ -236,6 +199,14 @@ struct SearchScreen: View {
                 show: pendingShow,
                 onSave: {
                     // Trigger badge based on show state
+                    badgeManager?.showFollowed(pendingShow)
+
+                    Task {
+                        await viewModel.confirmPendingFollow()
+                    }
+                },
+                onSkip: {
+                    // Still follow but skip notification setup
                     badgeManager?.showFollowed(pendingShow)
 
                     Task {
@@ -275,7 +246,8 @@ struct SearchScreen: View {
     }
 }
 
-// MARK: - Search Bar
+
+// MARK: - Search Bar (for Onboarding)
 struct SearchBar: View {
     @Binding var text: String
 
@@ -341,7 +313,121 @@ struct SegmentedTabControl: View {
     }
 }
 
-// MARK: - Genre Chip Scroll
+// MARK: - Genre Chip Row (tappable, scrollable)
+struct GenreChipRow: View {
+    let genres: [GenreDefinition]
+    let onGenreTap: (GenreDefinition) -> Void
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 9) {
+                ForEach(genres) { genre in
+                    Button(action: { onGenreTap(genre) }) {
+                        ChipView(genre.name, isActive: false)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 5)
+                    }
+                }
+            }
+            .padding(.horizontal, C2BLayout.horizontalPadding)
+            .padding(.bottom, 4)
+        }
+    }
+}
+
+// MARK: - Genre Shows Screen
+struct GenreShowsScreen: View {
+    let genre: GenreDefinition
+    let viewModel: DiscoverViewModel
+    let onShowTap: (ShowSummary) -> Void
+    let onFollowTap: (ShowSummary) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    private var shows: [ShowSummary] {
+        viewModel.genreShows[genre.id] ?? []
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                // Shows grid
+                if viewModel.isLoadingGenre && shows.isEmpty {
+                    ProgressView()
+                        .tint(Color(hex: "#71717a"))
+                        .padding(.top, 60)
+                } else if !shows.isEmpty {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
+                        ForEach(Array(shows.enumerated()), id: \.element.id) { index, show in
+                            ShowGridCard(
+                                show: show,
+                                isFollowing: viewModel.isFollowing(show),
+                                onTap: { onShowTap(show) },
+                                onFollowTap: { onFollowTap(show) }
+                            )
+                            .id("\(show.id)-\(viewModel.isFollowing(show))")
+                            .onAppear {
+                                // Load more when approaching the end (last 4 items)
+                                if index >= shows.count - 4 {
+                                    Task {
+                                        await viewModel.loadMoreShowsForGenre(genre.id)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, C2BLayout.horizontalPadding)
+                    .padding(.top, 20)
+
+                    // Loading indicator for pagination
+                    if viewModel.isLoadingMoreGenre {
+                        ProgressView()
+                            .tint(Color(hex: "#71717a"))
+                            .padding(.top, 20)
+                    }
+                } else {
+                    Text(String(localized: "search_no_results"))
+                        .monoStyle(size: 12, color: .c2bMuted)
+                        .padding(.top, 60)
+                }
+
+                Spacer()
+                    .frame(height: 150)
+            }
+        }
+        .background(Color.c2bBackground)
+        .navigationTitle(genre.name)
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .semibold))
+                        Text("Back")
+                            .font(.system(size: 17))
+                    }
+                    .foregroundColor(.c2bTeal)
+                }
+            }
+        }
+        .task {
+            await viewModel.loadShowsForGenre(genre.id)
+        }
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    // Swipe from left edge to go back
+                    if value.startLocation.x < 50 && value.translation.width > 80 {
+                        dismiss()
+                    }
+                }
+        )
+    }
+}
+
+// MARK: - Genre Chip Scroll (selectable)
 struct GenreChipScroll: View {
     @Binding var selectedGenre: String
     let genres: [String]

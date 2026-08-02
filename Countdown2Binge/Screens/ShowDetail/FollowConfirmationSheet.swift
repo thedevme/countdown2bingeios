@@ -2,7 +2,7 @@
 //  FollowConfirmationSheet.swift
 //  Countdown2Binge
 //
-//  Modal shown after following a show with timeline placement and notification settings.
+//  Modal shown after following a show with notification settings.
 //
 
 import SwiftUI
@@ -10,321 +10,320 @@ import SwiftUI
 struct FollowConfirmationSheet: View {
     let show: ShowData
     let onSave: () -> Void
+    let onSkip: () -> Void
 
-    private var phaseInfo: FollowPhaseInfo {
+    @StateObject private var settingsStore = NotificationSettingsStore.shared
+    @State private var settings: ShowNotificationSettings
+    @State private var useAsDefault = false
+
+    private var statusBadge: (text: String, color: Color) {
         switch show.timelineCategory {
         case .bingeReady:
-            return FollowPhaseInfo(
-                key: "ready",
-                badge: String(localized: "follow_badge_complete"),
-                tone: Color.c2bTealBright,
-                stat: "NOW",
-                statUnit: String(localized: "follow_stat_binge_ready"),
-                line: String(localized: "follow_line_complete \(show.currentSeason?.episodeCount ?? show.numberOfEpisodes)")
-            )
+            return (String(localized: "badge_binge_ready"), .c2bTealBright)
         case .airingNow:
-            let days = show.daysUntilFinale ?? 0
-            return FollowPhaseInfo(
-                key: "airing",
-                badge: String(localized: "follow_badge_airing"),
-                tone: Color.c2bTeal,
-                stat: "\(max(0, days))",
-                statUnit: String(localized: "follow_stat_days_finale"),
-                line: String(localized: "follow_line_airing")
-            )
+            return (String(localized: "badge_airing"), .c2bTeal)
         case .premieringSoon:
-            let days = show.daysUntilPremiere ?? 0
-            return FollowPhaseInfo(
-                key: "premiering",
-                badge: String(localized: "follow_badge_premiering"),
-                tone: Color.c2bTeal,
-                stat: "\(max(0, days))",
-                statUnit: String(localized: "follow_stat_days_premiere"),
-                line: String(localized: "follow_line_premiering")
-            )
+            return (String(localized: "badge_premiering"), .c2bTeal)
         case .anticipated:
-            return FollowPhaseInfo(
-                key: "anticipated",
-                badge: String(localized: "badge_anticipated"),
-                tone: Color.c2bMuted,
-                stat: "TBD",
-                statUnit: String(localized: "follow_stat_no_date"),
-                line: String(localized: "follow_line_anticipated")
-            )
+            return ("TBD", .c2bMuted)
         }
+    }
+
+    private var scheduledText: String {
+        let count = [settings.seasonPremiere, settings.newEpisodes, settings.finaleReminder].filter { $0 }.count
+        if count == 0 {
+            return String(localized: "notif_none_scheduled")
+        }
+        return String(localized: "notif_count_scheduled \(count)")
+    }
+
+    init(show: ShowData, onSave: @escaping () -> Void, onSkip: @escaping () -> Void = {}) {
+        self.show = show
+        self.onSave = onSave
+        self.onSkip = onSkip
+        // Initialize with global defaults
+        self._settings = State(initialValue: NotificationSettingsStore.shared.defaults)
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Hero Section
-            FollowConfirmHero(show: show)
+            // Drag handle
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.white.opacity(0.3))
+                .frame(width: 36, height: 4)
+                .padding(.top, 10)
+                .padding(.bottom, 16)
 
-            // Content
-            VStack(alignment: .leading, spacing: 0) {
-                // Section Title
-                Text("follow_added_to_timeline")
-                    .font(.custom(.oswald.bold, size: 20))
-                    .tracking(0.4)
-                    .foregroundColor(.white)
-                    .padding(.bottom, 14)
+            // Show Header
+            FollowNotificationHeader(
+                show: show,
+                badge: statusBadge,
+                scheduledText: scheduledText
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
 
-                // Timeline Stepper
-                FollowTimelineStepper(activePhase: phaseInfo.key)
-                    .padding(.bottom, 16)
+            // Notification Options
+            VStack(spacing: 12) {
+                // Season Premiere
+                NotificationOptionRow(
+                    title: String(localized: "notif_option_premiere"),
+                    subtitle: String(localized: "notif_option_premiere_sub"),
+                    isOn: $settings.seasonPremiere
+                )
 
-                // Status Card
-                FollowStatusCard(info: phaseInfo)
+                // New Episodes
+                NotificationOptionRow(
+                    title: String(localized: "notif_option_episodes"),
+                    subtitle: String(localized: "notif_option_episodes_sub"),
+                    isOn: $settings.newEpisodes
+                )
 
-                // Save Button
-                Button(action: onSave) {
-                    Text("button_save")
-                        .font(.custom(.oswald.bold, size: 16))
-                        .tracking(0.48)
-                        .foregroundColor(Color(hex: "#04201c"))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.c2bTeal)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                }
-                .padding(.top, 20)
-                .padding(.bottom, 34)
+                // Finale Reminder
+                NotificationFinaleRow(
+                    isOn: $settings.finaleReminder,
+                    timing: $settings.finaleTiming
+                )
             }
             .padding(.horizontal, 20)
-            .padding(.top, 18)
+
+            // Use as Default
+            Button(action: { useAsDefault.toggle() }) {
+                HStack(spacing: 12) {
+                    Image(systemName: useAsDefault ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 18))
+                        .foregroundColor(useAsDefault ? .c2bTeal : .c2bMuted)
+
+                    Text("notif_use_as_default")
+                        .font(.system(size: 14))
+                        .foregroundColor(.white.opacity(0.9))
+
+                    Spacer()
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+
+            Spacer()
+                .frame(height: 24)
+
+            // Save Button
+            Button(action: saveNotifications) {
+                HStack(spacing: 10) {
+                    Text("notif_save_button")
+                        .font(.custom(.oswald.bold, size: 16))
+                        .tracking(0.48)
+
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundColor(Color(hex: "#04201c"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.c2bTeal)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .padding(.horizontal, 20)
+
+            // Not Now
+            Button(action: onSkip) {
+                Text("notif_not_now")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.c2bMuted)
+            }
+            .padding(.top, 14)
+            .padding(.bottom, 30)
         }
         .background(Color(hex: "#0e0e0f"))
         .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        .presentationDragIndicator(.hidden)
         .presentationCornerRadius(24)
         .presentationBackground(Color(hex: "#0e0e0f"))
     }
+
+    private func saveNotifications() {
+        // Save settings for this show
+        settingsStore.saveSettings(settings, for: show.id)
+
+        // Update defaults if checkbox is checked
+        if useAsDefault {
+            settingsStore.setAsDefault(settings)
+        }
+
+        // Schedule actual notifications
+        Task {
+            await NotificationService.shared.scheduleNotifications(for: show, settings: settings)
+        }
+
+        onSave()
+    }
 }
 
-// MARK: - Phase Info
-private struct FollowPhaseInfo {
-    let key: String
-    let badge: String
-    let tone: Color
-    let stat: String
-    let statUnit: String
-    let line: String
+// MARK: - Show Header
 
-    var isDim: Bool { key == "anticipated" }
-}
-
-// MARK: - Hero Section
-private struct FollowConfirmHero: View {
+private struct FollowNotificationHeader: View {
     let show: ShowData
-
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            // Background image
-            AsyncImage(url: show.backdropURL ?? show.posterURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 150)
-                        .clipped()
-                default:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .frame(height: 150)
-                }
-            }
-            .frame(height: 150)
-
-            // Gradient
-            LinearGradient(
-                colors: [Color(hex: "#0e0e0f"), Color(hex: "#0e0e0f").opacity(0.2), Color(hex: "#0e0e0f").opacity(0.5)],
-                startPoint: .bottom,
-                endPoint: .top
-            )
-
-            // Content
-            VStack(alignment: .leading, spacing: 10) {
-                // Badge
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(Color(hex: "#04201c"))
-
-                    Text("badge_added_to_timeline")
-                        .font(.custom(.jetbrains.bold, size: 8.5))
-                        .tracking(1.02)
-                        .foregroundColor(Color(hex: "#04201c"))
-                }
-                .padding(.horizontal, 11)
-                .padding(.vertical, 5)
-                .background(Color.c2bTeal)
-                .clipShape(Capsule())
-
-                // Title
-                Text(show.name.uppercased())
-                    .font(.custom(.oswald.bold, size: 26))
-                    .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.7), radius: 10, y: 2)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 14)
-        }
-        .frame(height: 150)
-    }
-}
-
-// MARK: - Timeline Stepper
-private struct FollowTimelineStepper: View {
-    let activePhase: String
-
-    private var stages: [(String, String)] {
-        [
-            ("ready", String(localized: "timeline_series_complete")),
-            ("airing", String(localized: "timeline_now_airing")),
-            ("premiering", String(localized: "timeline_premiering")),
-            ("anticipated", String(localized: "timeline_anticipated"))
-        ]
-    }
-
-    private var activeIndex: Int {
-        stages.firstIndex { $0.0 == activePhase } ?? 3
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Nodes and line
-            GeometryReader { geo in
-                let nodeSpacing = geo.size.width / CGFloat(stages.count)
-
-                ZStack {
-                    // Background line
-                    Rectangle()
-                        .fill(Color.white.opacity(0.12))
-                        .frame(height: 2)
-                        .padding(.horizontal, nodeSpacing / 2)
-
-                    // Active line (from right to active node)
-                    HStack {
-                        Spacer()
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.c2bTeal, .c2bTealBright],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: CGFloat(stages.count - 1 - activeIndex) * nodeSpacing, height: 2)
-                    }
-                    .padding(.horizontal, nodeSpacing / 2)
-
-                    // Nodes
-                    HStack(spacing: 0) {
-                        ForEach(Array(stages.enumerated()), id: \.offset) { index, stage in
-                            let isOn = index >= activeIndex
-                            let isNow = index == activeIndex
-
-                            Circle()
-                                .fill(isOn ? (isNow ? Color.c2bTealBright : Color.c2bTeal) : Color(hex: "#1a1a1c"))
-                                .frame(width: isNow ? 15 : 11, height: isNow ? 15 : 11)
-                                .overlay(
-                                    Circle()
-                                        .stroke(isOn ? Color.clear : Color.white.opacity(0.2), lineWidth: 1.5)
-                                )
-                                .shadow(color: isNow ? Color.c2bTeal.opacity(0.4) : .clear, radius: 8)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                }
-            }
-            .frame(height: 20)
-
-            // Labels
-            HStack(spacing: 0) {
-                ForEach(Array(stages.enumerated()), id: \.offset) { index, stage in
-                    let isNow = index == activeIndex
-
-                    Text(stage.1)
-                        .font(.custom(.jetbrains.regular, size: 7.5))
-                        .tracking(0.38)
-                        .foregroundColor(isNow ? .c2bTealBright : .c2bMuted)
-                        .fontWeight(isNow ? .bold : .regular)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.top, 8)
-        }
-    }
-}
-
-// MARK: - Status Card
-private struct FollowStatusCard: View {
-    let info: FollowPhaseInfo
+    let badge: (text: String, color: Color)
+    let scheduledText: String
 
     var body: some View {
         HStack(spacing: 14) {
-            // Icon
-            Circle()
-                .fill(info.isDim ? Color.white.opacity(0.06) : Color.c2bTeal.opacity(0.16))
-                .frame(width: 46, height: 46)
-                .overlay(
-                    Circle()
-                        .stroke(info.isDim ? Color.white.opacity(0.12) : Color.c2bTealLine, lineWidth: 1)
-                )
-                .overlay(
-                    Circle()
-                        .fill(info.tone)
-                        .frame(width: 12, height: 12)
-                        .shadow(color: info.isDim ? .clear : Color.c2bTeal.opacity(0.4), radius: 8)
-                )
+            // Poster
+            CachedAsyncImage(url: show.posterURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.c2bSurface)
+            }
+            .frame(width: 80, height: 120)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
+            )
 
-            // Text
-            VStack(alignment: .leading, spacing: 5) {
-                Text(info.badge.uppercased())
-                    .font(.custom(.oswald.bold, size: 21))
-                    .foregroundColor(info.isDim ? .c2bDim : .white)
+            // Info
+            VStack(alignment: .leading, spacing: 8) {
+                // Title
+                Text(show.name.uppercased())
+                    .font(.custom(.oswald.bold, size: 20))
+                    .foregroundColor(.white)
+                    .lineLimit(2)
 
-                Text(info.line)
+                // Badge
+                Text(badge.text)
+                    .font(.custom(.jetbrains.bold, size: 9))
+                    .tracking(0.9)
+                    .foregroundColor(badge.color == .c2bMuted ? .white.opacity(0.7) : Color(hex: "#04201c"))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(badge.color)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                // Scheduled count
+                Text(scheduledText)
                     .font(.system(size: 12))
                     .foregroundColor(.c2bMuted)
-                    .lineSpacing(1.4)
+            }
+
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Notification Option Row
+
+private struct NotificationOptionRow: View {
+    let title: String
+    let subtitle: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.custom(.oswald.bold, size: 15))
+                    .tracking(0.3)
+                    .foregroundColor(.white)
+
+                Text(subtitle)
+                    .font(.system(size: 11.5))
+                    .foregroundColor(.c2bMuted)
             }
 
             Spacer()
 
-            // Stat
-            VStack(spacing: 5) {
-                Text(info.stat)
-                    .font(.custom(.oswald.bold, size: info.stat == "NOW" || info.stat == "TBD" ? 24 : 36))
-                    .foregroundColor(info.key == "ready" ? .c2bTealBright : (info.isDim ? .c2bMuted : .white))
-
-                Text(info.statUnit.uppercased())
-                    .font(.custom(.jetbrains.bold, size: 7.5))
-                    .tracking(0.75)
-                    .foregroundColor(.c2bDim)
-            }
-            .frame(minWidth: 56)
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(.c2bTeal)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 15)
-        .background(
-            info.isDim
-                ? AnyShapeStyle(Color.white.opacity(0.03))
-                : AnyShapeStyle(
-                    LinearGradient(
-                        colors: [Color.c2bTeal.opacity(0.14), Color.c2bTeal.opacity(0.02)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.vertical, 14)
+        .background(Color.white.opacity(0.03))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(info.isDim ? Color.white.opacity(0.09) : Color.c2bTealLine, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
     }
 }
 
+// MARK: - Finale Reminder Row
+
+private struct NotificationFinaleRow: View {
+    @Binding var isOn: Bool
+    @Binding var timing: FinaleReminderTiming
+
+    var body: some View {
+        VStack(spacing: 14) {
+            // Header row with toggle
+            HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("notif_option_finale")
+                        .font(.custom(.oswald.bold, size: 15))
+                        .tracking(0.3)
+                        .foregroundColor(.white)
+
+                    Text("notif_option_finale_sub")
+                        .font(.system(size: 11.5))
+                        .foregroundColor(.c2bMuted)
+                }
+
+                Spacer()
+
+                Toggle("", isOn: $isOn)
+                    .labelsHidden()
+                    .tint(.c2bTeal)
+            }
+
+            // Timing picker (2x2 grid)
+            if isOn {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                    ForEach(FinaleReminderTiming.allCases, id: \.self) { option in
+                        FinaleTimingButton(
+                            timing: option,
+                            isSelected: timing == option,
+                            onTap: { timing = option }
+                        )
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color.white.opacity(0.03))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        )
+        .animation(.easeInOut(duration: 0.2), value: isOn)
+    }
+}
+
+// MARK: - Finale Timing Button
+
+private struct FinaleTimingButton: View {
+    let timing: FinaleReminderTiming
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            Text(timing.shortText)
+                .font(.custom(.jetbrains.bold, size: 10))
+                .tracking(0.5)
+                .foregroundColor(isSelected ? Color(hex: "#04201c") : .white.opacity(0.8))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(isSelected ? Color.c2bTeal : Color.white.opacity(0.06))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(isSelected ? Color.clear : Color.white.opacity(0.12), lineWidth: 1)
+                )
+        }
+    }
+}

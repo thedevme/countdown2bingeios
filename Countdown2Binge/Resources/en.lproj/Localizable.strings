@@ -307,6 +307,34 @@
 "notif_quiet_hours_title" = "Quiet hours";
 "notif_quiet_hours_subtitle" = "Mute 11pm – 8am";
 
+// Follow confirmation sheet
+"notif_none_scheduled" = "No scheduled notifications";
+"notif_one_scheduled" = "1 notification type enabled";
+"notif_count_scheduled %lld" = "%lld notification types enabled";
+"notif_option_premiere" = "SEASON PREMIERE";
+"notif_option_premiere_sub" = "Get notified when a new season premieres";
+"notif_option_episodes" = "NEW EPISODES";
+"notif_option_episodes_sub" = "Get notified when new episodes air";
+"notif_option_finale" = "FINALE REMINDER";
+"notif_option_finale_sub" = "Get reminded before the season finale";
+"notif_use_as_default" = "Use as Default";
+"notif_save_button" = "SAVE NOTIFICATIONS";
+"notif_not_now" = "NOT NOW";
+
+// Finale timing options
+"finale_timing_day_of" = "Day of finale";
+"finale_timing_1_day" = "1 day before";
+"finale_timing_2_days" = "2 days before";
+"finale_timing_1_week" = "1 week before";
+
+// Notification alert content
+"notif_premiere_alert_title" = "Season Premiere Today!";
+"notif_premiere_alert_body %@ %lld" = "%@ Season %lld premieres today";
+"notif_episode_alert_title %@" = "New Episode: %@";
+"notif_episode_alert_body %lld %@" = "Episode %lld \"%@\" is now available";
+"notif_finale_alert_title" = "Finale Reminder";
+"notif_finale_alert_body %@ %@" = "%@ season finale is %@";
+
 // =============================================================================
 // MARK: - Premium & Paywall
 // =============================================================================

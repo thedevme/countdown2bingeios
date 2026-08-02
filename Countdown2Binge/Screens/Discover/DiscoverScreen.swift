@@ -165,6 +165,14 @@ struct DiscoverScreen: View {
                     Task {
                         await viewModel.confirmPendingFollow()
                     }
+                },
+                onSkip: {
+                    // Still follow but skip notification setup
+                    badgeManager?.showFollowed(pendingShow)
+
+                    Task {
+                        await viewModel.confirmPendingFollow()
+                    }
                 }
             )
         }
