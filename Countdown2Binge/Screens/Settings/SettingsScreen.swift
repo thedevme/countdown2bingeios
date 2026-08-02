@@ -135,55 +135,6 @@ struct SettingsScreen: View {
                                 set: { PremiumManager.shared.debugPremiumOverride = $0 }
                             )
                         )
-
-                        // Notification Testing
-                        SettingsRowAction(
-                            icon: "bell.badge",
-                            iconColor: .orange,
-                            title: "Test Premiere Notification",
-                            subtitle: "Fires in 5 seconds",
-                            action: {
-                                Task {
-                                    await NotificationService.shared.scheduleTestNotification(type: .premiere)
-                                }
-                            }
-                        )
-
-                        SettingsRowAction(
-                            icon: "bell.badge",
-                            iconColor: .blue,
-                            title: "Test Episode Notification",
-                            subtitle: "Fires in 5 seconds",
-                            action: {
-                                Task {
-                                    await NotificationService.shared.scheduleTestNotification(type: .episode)
-                                }
-                            }
-                        )
-
-                        SettingsRowAction(
-                            icon: "bell.badge",
-                            iconColor: .purple,
-                            title: "Test Finale Notification",
-                            subtitle: "Fires in 5 seconds",
-                            action: {
-                                Task {
-                                    await NotificationService.shared.scheduleTestNotification(type: .finale)
-                                }
-                            }
-                        )
-
-                        SettingsRowAction(
-                            icon: "bell.badge",
-                            iconColor: .c2bTeal,
-                            title: "Test Binge Ready Notification",
-                            subtitle: "Fires in 5 seconds",
-                            action: {
-                                Task {
-                                    await NotificationService.shared.scheduleTestNotification(type: .bingeReady)
-                                }
-                            }
-                        )
                         #endif
 
                         SettingsRowAction(
@@ -268,9 +219,6 @@ struct SettingsScreen: View {
             }
             .background(Color.c2bBackground)
             .navigationBarHidden(true)
-            .navigationDestination(isPresented: $showNotifications) {
-                NotificationsScreen(isPremium: isPremium)
-            }
             .navigationDestination(isPresented: $showProfile) {
                 ProfileScreen(isPremium: isPremium)
             }
@@ -282,6 +230,16 @@ struct SettingsScreen: View {
                     onDismiss: { showPaywall = false }
                 )
             }
+            .overlay {
+                if showNotifications {
+                    NotificationSettingsOverlay(onDismiss: {
+                        showNotifications = false
+                    })
+                    .transition(.opacity)
+                    .zIndex(100)
+                }
+            }
+            .animation(.easeInOut(duration: 0.25), value: showNotifications)
         }
     }
 

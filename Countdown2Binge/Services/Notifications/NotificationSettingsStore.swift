@@ -14,6 +14,10 @@ final class NotificationSettingsStore: ObservableObject {
 
     private let defaultsKey = "c2b_notification_defaults"
     private let showSettingsKey = "c2b_notification_shows"
+    private let onboardingCompleteKey = "c2b_notification_onboarding_complete"
+
+    /// Whether the user has completed the one-time notification onboarding
+    @Published private(set) var hasCompletedOnboarding: Bool
 
     /// Global default settings applied to new follows
     @Published var defaults: ShowNotificationSettings {
@@ -24,6 +28,9 @@ final class NotificationSettingsStore: ObservableObject {
     @Published private(set) var showSettings: [Int: ShowNotificationSettings] = [:]
 
     private init() {
+        // Load onboarding state
+        self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: onboardingCompleteKey)
+
         // Load defaults
         if let data = UserDefaults.standard.data(forKey: defaultsKey),
            let decoded = try? JSONDecoder().decode(ShowNotificationSettings.self, from: data) {
@@ -37,6 +44,20 @@ final class NotificationSettingsStore: ObservableObject {
            let decoded = try? JSONDecoder().decode([Int: ShowNotificationSettings].self, from: data) {
             self.showSettings = decoded
         }
+    }
+
+    // MARK: - Onboarding
+
+    /// Mark the one-time notification onboarding as complete
+    func markOnboardingComplete() {
+        hasCompletedOnboarding = true
+        UserDefaults.standard.set(true, forKey: onboardingCompleteKey)
+    }
+
+    /// Reset onboarding (for testing/debug)
+    func resetOnboarding() {
+        hasCompletedOnboarding = false
+        UserDefaults.standard.set(false, forKey: onboardingCompleteKey)
     }
 
     // MARK: - Defaults

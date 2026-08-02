@@ -286,7 +286,6 @@ struct BingeReadyScreen: View {
                     Task { await viewModel.unfollowShow(show) }
                 }
             )
-                .navigationBarHidden(true)
         }
         }
     }

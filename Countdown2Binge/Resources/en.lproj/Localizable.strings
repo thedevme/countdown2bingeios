@@ -827,6 +827,26 @@
 "phase_ready_to_binge" = "Ready to binge";
 "phase_binge_ready_in" = "Binge ready in";
 
+// Follow confirmation sheet
+"phase_series_complete" = "Series Complete";
+"phase_stat_now" = "NOW";
+"phase_stat_tbd" = "TBD";
+"phase_no_date" = "no date yet";
+"phase_days_to_finale" = "days to finale";
+"phase_days_to_premiere" = "days to premiere";
+"phase_ready_description %lld" = "All %lld episodes are out — start whenever you want.";
+"phase_airing_description" = "Episodes releasing weekly. We'll tell you the day the season finishes.";
+"phase_premiering_description" = "Premieres soon. We'll notify you when it starts airing.";
+"phase_anticipated_description" = "No release date announced. We'll alert you the moment one drops.";
+"follow_added_badge" = "ADDED TO TIMELINE";
+"follow_added_to_timeline" = "ADDED TO YOUR TIMELINE IN";
+
+// Notification onboarding
+"notif_onboarding_title" = "Set Up Notifications";
+"notif_onboarding_subtitle" = "Choose which alerts you'd like for all your followed shows. You can change this anytime in Settings.";
+"notif_onboarding_save" = "SAVE DEFAULTS";
+"notif_settings_title" = "Notification Settings";
+
 // Countdown display mode
 "countdown_mode_days" = "Days";
 "countdown_mode_episodes" = "Episodes";

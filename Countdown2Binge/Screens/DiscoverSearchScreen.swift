@@ -12,9 +12,13 @@ struct SearchScreen: View {
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
     @State private var showGracePeriodAlert: Bool = false
+    @State private var showNotificationOnboarding: Bool = false
 
     /// Badge manager for tab notifications
     var badgeManager: TabBadgeManager?
+
+    /// Notification settings store for onboarding check
+    private var notificationSettingsStore: NotificationSettingsStore { NotificationSettingsStore.shared }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -204,17 +208,26 @@ struct SearchScreen: View {
                     Task {
                         await viewModel.confirmPendingFollow()
                     }
-                },
-                onSkip: {
-                    // Still follow but skip notification setup
-                    badgeManager?.showFollowed(pendingShow)
 
-                    Task {
-                        await viewModel.confirmPendingFollow()
+                    // Show notification onboarding if this is the first follow
+                    if !notificationSettingsStore.hasCompletedOnboarding {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showNotificationOnboarding = true
+                        }
                     }
                 }
             )
         }
+        .overlay {
+            if showNotificationOnboarding {
+                NotificationOnboardingOverlay(onSave: {
+                    showNotificationOnboarding = false
+                })
+                .transition(.opacity)
+                .zIndex(100)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: showNotificationOnboarding)
         .onChange(of: viewModel.showPremiumUpgrade) { _, show in
             if show {
                 showPaywall = true

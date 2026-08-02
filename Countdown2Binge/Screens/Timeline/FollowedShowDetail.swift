@@ -123,8 +123,6 @@ struct FollowedShowDetail: View {
                     .zIndex(100)
             }
         }
-        .navigationBarHidden(true)
-        .swipeBack(onDismiss: onDismiss)
         .task {
             await loadShowInfo()
         }

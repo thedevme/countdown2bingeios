@@ -119,7 +119,12 @@ struct MyListScreen: View {
                         VStack(spacing: 0) {
                             switch selectedTab {
                             case .active:
-                                activeTabContent
+                                MyListPosterGrid(
+                                    shows: shows,
+                                    variant: .active,
+                                    watchProgress: watchProgress,
+                                    onTap: { show in navigationPath.append(show) }
+                                )
                             case .ended:
                                 MyListPosterGrid(
                                     shows: shows,
@@ -161,81 +166,10 @@ struct MyListScreen: View {
                         Task { await viewModel.unfollowShow(show) }
                     }
                 )
-                .navigationBarHidden(true)
             }
         }
     }
 
-    // MARK: - Active Tab Content
-
-    @ViewBuilder
-    private var activeTabContent: some View {
-        let bingeReady = viewModel.bingeReadyShows
-        let countingDown = viewModel.countingDownShows
-        let noDate = viewModel.noDateShows
-
-        VStack(spacing: 30) {
-            // Ready to Binge section
-            if !bingeReady.isEmpty {
-                VStack(alignment: .leading, spacing: 14) {
-                    MyListSectionHeader(
-                        icon: "checkmark",
-                        iconColor: Color(hex: "#04201c"),
-                        tint: .c2bTeal,
-                        title: String(localized: "mylist_section_ready"),
-                        subtitle: String(localized: "mylist_section_ready_sub \(bingeReady.count)")
-                    )
-
-                    MyListPosterGrid(
-                        shows: bingeReady,
-                        variant: .justDone,
-                        watchProgress: watchProgress,
-                        onTap: { show in navigationPath.append(show) }
-                    )
-                }
-            }
-
-            // Still Counting Down section
-            if !countingDown.isEmpty {
-                VStack(alignment: .leading, spacing: 14) {
-                    MyListSectionHeader(
-                        icon: "clock",
-                        iconColor: Color(hex: "#e5e5e5"),
-                        tint: Color(hex: "#3f3f46"),
-                        title: String(localized: "mylist_section_counting"),
-                        subtitle: String(localized: "mylist_section_counting_sub \(countingDown.count)")
-                    )
-
-                    MyListPosterGrid(
-                        shows: countingDown,
-                        variant: .active,
-                        watchProgress: watchProgress,
-                        onTap: { show in navigationPath.append(show) }
-                    )
-                }
-            }
-
-            // No Date Yet section
-            if !noDate.isEmpty {
-                VStack(alignment: .leading, spacing: 14) {
-                    MyListSectionHeader(
-                        icon: "questionmark",
-                        iconColor: Color(hex: "#a1a1aa"),
-                        tint: Color(hex: "#27272a"),
-                        title: String(localized: "mylist_section_nodate"),
-                        subtitle: String(localized: "mylist_section_nodate_sub \(noDate.count)")
-                    )
-
-                    MyListPosterGrid(
-                        shows: noDate,
-                        variant: .noDate,
-                        watchProgress: watchProgress,
-                        onTap: { show in navigationPath.append(show) }
-                    )
-                }
-            }
-        }
-    }
 }
 
 // MARK: - View Model

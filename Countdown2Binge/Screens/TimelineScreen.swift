@@ -99,6 +99,12 @@ struct TimelineScreen: View {
                         .frame(height: 150)
                 }
             }
+            .refreshable {
+                // Pull-to-refresh: Force fetch from TMDB API
+                let refreshService = StateRefreshService(modelContainer: modelContext.container)
+                await refreshService.forceRefreshAllShows()
+                await viewModel.loadFollowedShows()
+            }
             .onAppear {
                 viewModel.configure(with: modelContext)
                 Task {
@@ -118,7 +124,6 @@ struct TimelineScreen: View {
                         Task { await viewModel.unfollowShow(show) }
                     }
                 )
-                .navigationBarHidden(true)
             }
             .navigationDestination(for: String.self) { route in
                 if route == "fullTimeline" {
@@ -132,9 +137,14 @@ struct TimelineScreen: View {
         }
         .overlay {
             if showNotificationSettings {
-                NotificationSettingsModal(onDismiss: { showNotificationSettings = false })
+                NotificationSettingsOverlay(onDismiss: {
+                    showNotificationSettings = false
+                })
+                .transition(.opacity)
+                .zIndex(100)
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: showNotificationSettings)
     }
 
     // MARK: - Section Views
