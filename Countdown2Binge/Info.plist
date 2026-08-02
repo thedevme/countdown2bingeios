@@ -35,5 +35,18 @@
 	<string>Countdown2Binge uses your camera to take a profile photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Countdown2Binge accesses your photo library to choose a profile photo.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>netflix</string>
+		<string>aiv</string>
+		<string>disneyplus</string>
+		<string>hulu</string>
+		<string>hbomax</string>
+		<string>paramountplus</string>
+		<string>peacock</string>
+		<string>starz</string>
+		<string>showtime</string>
+		<string>amcplus</string>
+	</array>
 </dict>
 </plist>
