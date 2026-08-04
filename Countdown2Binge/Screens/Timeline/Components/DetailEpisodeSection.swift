@@ -7,38 +7,49 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DetailEpisodeSection: View {
-    let show: ShowData
+    let series: Series
     var selectedSeason: Int? = nil
     @StateObject private var watchProgress = WatchProgressManager.shared
 
     private var seasonNumber: Int {
-        selectedSeason ?? show.numberOfSeasons
+        selectedSeason ?? series.currentSeason?.seasonNumber ?? series.numberOfSeasons
     }
 
-    private var season: SeasonData? {
+    private var season: SeriesSeason? {
         if let selectedSeason = selectedSeason {
             // If viewing the current season, use currentSeason which has full episode data
-            if let current = show.currentSeason, current.seasonNumber == selectedSeason {
+            if let current = series.currentSeason, current.seasonNumber == selectedSeason {
                 return current
             }
-            return show.seasons.first { $0.seasonNumber == selectedSeason }
+            return series.seasons.first { $0.seasonNumber == selectedSeason }
         }
-        return show.currentSeason
+        return series.currentSeason
     }
 
     private var seasonDisplayModel: SeasonDisplayModel? {
-        show.seasonDisplayModel(seasonNumber: seasonNumber, watchProgress: watchProgress)
+        series.toShow().seasonDisplayModel(seasonNumber: seasonNumber, watchProgress: watchProgress)
     }
 
     private var synopsis: String {
-        season?.overview ?? show.overview ?? ""
+        season?.overview ?? series.overview ?? ""
     }
 
     private var isAnticipatedSeason: Bool {
-        guard let selected = selectedSeason else { return false }
-        return show.isAnticipatedSeason(selected)
+        guard let selected = selectedSeason,
+              let season = series.seasons.first(where: { $0.seasonNumber == selected }) else {
+            return false
+        }
+        
+        // Anticipated if season hasn't started (no premiere date or premiere in future) and has no episodes
+        let today = Calendar.current.startOfDay(for: Date())
+        if let premiere = season.premiereDate {
+            let hasStarted = Calendar.current.startOfDay(for: premiere) <= today
+            return !hasStarted && season.episodes.isEmpty
+        }
+        return season.episodes.isEmpty
     }
 
     var body: some View {
@@ -47,13 +58,14 @@ struct DetailEpisodeSection: View {
             anticipatedSeasonPlaceholder
         } else if let displaySeason = seasonDisplayModel {
             // Show episode cards carousel
+            
             EpisodeCarousel(
                 season: displaySeason,
-                showImageURL: show.backdropURL ?? show.posterURL,
+                showImageURL: series.backdropURL ?? series.posterURL,
                 synopsis: synopsis,
                 onToggleWatched: { episode in
                     watchProgress.toggleWatched(
-                        showId: show.id,
+                        showId: series.tmdbId,
                         season: seasonNumber,
                         episode: episode.number
                     )
@@ -64,7 +76,7 @@ struct DetailEpisodeSection: View {
                         .filter { $0.hasAired }
                         .map { $0.episodeNumber }
                     watchProgress.markAiredWatched(
-                        showId: show.id,
+                        showId: series.tmdbId,
                         season: seasonNumber,
                         airedEpisodes: airedEpisodes
                     )
@@ -72,7 +84,7 @@ struct DetailEpisodeSection: View {
                 onClearAll: {
                     guard let season = season else { return }
                     watchProgress.setSeasonWatched(
-                        showId: show.id,
+                        showId: series.tmdbId,
                         season: season.seasonNumber,
                         episodeCount: season.episodeCount,
                         watched: false
@@ -91,7 +103,7 @@ struct DetailEpisodeSection: View {
     private var legacyEpisodeGrid: some View {
         let episodeCount = season?.episodeCount ?? 0
         let watchedCount = watchProgress.seasonWatchedCount(
-            showId: show.id,
+            showId: series.tmdbId,
             season: seasonNumber,
             episodeCount: episodeCount
         )
@@ -104,7 +116,7 @@ struct DetailEpisodeSection: View {
                 HStack(spacing: 3) {
                     ForEach(1...max(episodeCount, 1), id: \.self) { ep in
                         let isWatched = watchProgress.isWatched(
-                            showId: show.id,
+                            showId: series.tmdbId,
                             season: seasonNumber,
                             episode: ep
                         )
@@ -141,13 +153,13 @@ struct DetailEpisodeSection: View {
                         LegacyEpisodeSquare(
                             episodeNumber: episodeNum,
                             isWatched: watchProgress.isWatched(
-                                showId: show.id,
+                                showId: series.tmdbId,
                                 season: seasonNumber,
                                 episode: episodeNum
                             ),
                             onToggle: {
                                 watchProgress.toggleWatched(
-                                    showId: show.id,
+                                    showId: series.tmdbId,
                                     season: seasonNumber,
                                     episode: episodeNum
                                 )
@@ -161,7 +173,7 @@ struct DetailEpisodeSection: View {
                     Button {
                         guard let season = season else { return }
                         watchProgress.setSeasonWatched(
-                            showId: show.id,
+                            showId: series.tmdbId,
                             season: season.seasonNumber,
                             episodeCount: season.episodeCount,
                             watched: false

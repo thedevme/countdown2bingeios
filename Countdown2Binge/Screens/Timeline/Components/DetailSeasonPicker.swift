@@ -4,22 +4,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DetailSeasonPicker: View {
-    let show: ShowData
+    let series: Series
     @Binding var selectedSeason: Int
     @State private var isExpanded = false
 
     private var currentSeasonNumber: Int? {
-        show.currentSeason?.seasonNumber
+        series.currentSeason?.seasonNumber
     }
 
     /// Whether the current season's finale aired more than 24 hours ago
     private var hasCurrentSeasonFinished: Bool {
-        guard let current = show.currentSeason,
+        guard let current = series.currentSeason,
               let finaleDate = current.finaleDate else {
-            // No current season or no finale date - check if season is binge ready
-            return show.timelineCategory == .bingeReady
+            // No current season or no finale date - assume finished
+            return true
         }
         // Finale must have aired more than 24 hours ago
         let now = Date()
@@ -32,23 +33,31 @@ struct DetailSeasonPicker: View {
     private var maxSelectableSeason: Int {
         if hasCurrentSeasonFinished {
             // Finale has passed, can show anticipated seasons
-            return show.numberOfSeasons
+            return series.numberOfSeasons
         } else {
             // Still airing, only show up to current season
-            return currentSeasonNumber ?? show.numberOfSeasons
+            return currentSeasonNumber ?? series.numberOfSeasons
         }
     }
 
     private func episodeCount(for seasonNumber: Int) -> Int {
         // Prefer currentSeason if it matches (has full data)
-        if let current = show.currentSeason, current.seasonNumber == seasonNumber {
+        if let current = series.currentSeason, current.seasonNumber == seasonNumber {
             return current.episodeCount
         }
-        return show.seasons.first { $0.seasonNumber == seasonNumber }?.episodeCount ?? 0
+        return series.seasons.first { $0.seasonNumber == seasonNumber }?.episodeCount ?? 0
     }
 
     private func isAnticipated(_ seasonNumber: Int) -> Bool {
-        show.isAnticipatedSeason(seasonNumber)
+        guard let season = series.seasons.first(where: { $0.seasonNumber == seasonNumber }) else {
+            return false
+        }
+        // Anticipated if season hasn't started (no premiere date or premiere in future)
+        let today = Calendar.current.startOfDay(for: Date())
+        if let premiere = season.premiereDate {
+            return Calendar.current.startOfDay(for: premiere) > today
+        }
+        return season.episodes.isEmpty
     }
 
     private func isCurrent(_ seasonNumber: Int) -> Bool {
@@ -81,8 +90,10 @@ struct DetailSeasonPicker: View {
 
                     Spacer()
 
-                    if !isAnticipated(selectedSeason) {
-                        Text(String(localized: "binge_watched_count \(0) \(episodeCount(for: selectedSeason))"))
+                    // Show episode count if episodes exist
+                    let selectedCount = episodeCount(for: selectedSeason)
+                    if selectedCount > 0 {
+                        Text(String(localized: "binge_watched_count \(0) \(selectedCount)"))
                             .font(.custom(.jetbrains.regular, size: 9.5))
                             .foregroundColor(.c2bMuted)
                             .tracking(1.0)
@@ -137,8 +148,10 @@ struct DetailSeasonPicker: View {
 
                                 Spacer()
 
-                                if !isAnticipated(season) {
-                                    Text("0/\(episodeCount(for: season))")
+                                // Show episode count if episodes exist
+                                let count = episodeCount(for: season)
+                                if count > 0 {
+                                    Text("0/\(count)")
                                         .font(.custom(.jetbrains.regular, size: 11))
                                         .foregroundColor(.c2bMuted)
                                 }

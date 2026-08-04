@@ -6,15 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FollowedShowDetail: View {
-    let show: ShowData
+    @Bindable var series: Series
     let onDismiss: () -> Void
     let onUnfollow: () -> Void
     var onSpinoffTap: (Int) -> Void = { _ in }
 
     @State private var selectedSeason: Int
     @State private var showShareSheet = false
+    @State private var showUnfollowConfirmation = false
     @State private var selectedTab: FollowedDetailTab = .seasonInfo
     @State private var isArchived: Bool = false
 
@@ -26,23 +28,28 @@ struct FollowedShowDetail: View {
     // Archive storage key (shared with MyListViewModel)
     private let archivedShowsKey = "archivedShowIds"
 
+    /// Convert Series to ShowData for child components
+    private var show: ShowData {
+        series.toShow()
+    }
+
     // Spinoff count from stored data (set when show was followed)
     private var spinoffCount: Int {
-        show.spinoffCount ?? 0
+        series.spinoffCount ?? 0
     }
 
     // Franchise data for displaying spinoffs tab content
     private var franchise: Franchise? {
-        FranchiseService.shared.franchise(forShowId: show.id)
+        FranchiseService.shared.franchise(forShowId: series.tmdbId)
     }
 
-    init(show: ShowData, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
-        self.show = show
+    init(series: Series, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
+        self.series = series
         self.onDismiss = onDismiss
         self.onUnfollow = onUnfollow
         self.onSpinoffTap = onSpinoffTap
         // Default to current season (not anticipated), falling back to numberOfSeasons
-        let initialSeason = show.currentSeason?.seasonNumber ?? show.numberOfSeasons
+        let initialSeason = series.currentSeason?.seasonNumber ?? series.numberOfSeasons
         self._selectedSeason = State(initialValue: initialSeason)
     }
 
@@ -51,19 +58,7 @@ struct FollowedShowDetail: View {
             ScrollView {
                 VStack(spacing: 0) {
                     // MARK: - Hero Section
-                    DetailHeroSection(
-                        show: show,
-                        onDismiss: onDismiss,
-                        onShare: { showShareSheet = true },
-                        onUnfollow: {
-                            onUnfollow()
-                            onDismiss()
-                        },
-                        isArchived: isArchived,
-                        onArchive: {
-                            toggleArchive()
-                        }
-                    )
+                    DetailHeroSection(show: show)
 
                     // MARK: - Content Section
                     VStack(spacing: 0) {
@@ -77,7 +72,7 @@ struct FollowedShowDetail: View {
 
                         // Season picker and status block (only on Season Info tab)
                         if selectedTab == .seasonInfo {
-                            DetailSeasonPicker(show: show, selectedSeason: $selectedSeason)
+                            DetailSeasonPicker(series: series, selectedSeason: $selectedSeason)
                                 .padding(.bottom, 16)
 
                             // Status card with countdown + lifecycle + clock
@@ -89,7 +84,7 @@ struct FollowedShowDetail: View {
                         switch selectedTab {
                         case .seasonInfo:
                             SeasonInfoTabContent(
-                                show: show,
+                                series: series,
                                 selectedSeason: selectedSeason
                             )
 
@@ -123,11 +118,81 @@ struct FollowedShowDetail: View {
                     .zIndex(100)
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    // Watch Now
+                    if let network = show.networks.first,
+                       let service = StreamingService.from(networkId: network.id, networkName: network.name) {
+                        Button {
+                            openStreamingApp(service: service)
+                        } label: {
+                            Label(String(localized: "watch_on \(service.displayName)"), systemImage: "play.tv")
+                        }
+                    }
+
+                    // Share
+                    Button {
+                        showShareSheet = true
+                    } label: {
+                        Label(String(localized: "button_share"), systemImage: "square.and.arrow.up")
+                    }
+
+                    // Archive/Unarchive
+                    Button {
+                        toggleArchive()
+                    } label: {
+                        Label(
+                            isArchived ? String(localized: "button_unarchive") : String(localized: "button_archive"),
+                            systemImage: isArchived ? "arrow.uturn.backward" : "archivebox"
+                        )
+                    }
+
+                    // Unfollow
+                    Section {
+                        Button(role: .destructive) {
+                            showUnfollowConfirmation = true
+                        } label: {
+                            Label(String(localized: "button_unfollow"), systemImage: "xmark.circle")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
+        .confirmationDialog(
+            String(localized: "alert_unfollow \(series.name)"),
+            isPresented: $showUnfollowConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "button_unfollow"), role: .destructive) {
+                onUnfollow()
+                onDismiss()
+            }
+            Button(String(localized: "button_cancel"), role: .cancel) {}
+        }
         .task {
             await loadShowInfo()
         }
         .onAppear {
             loadArchiveState()
+        }
+    }
+
+    // MARK: - Streaming App
+
+    @Environment(\.openURL) private var openURL
+
+    private func openStreamingApp(service: StreamingService) {
+        if let deepLink = service.deepLinkURL(for: series.name),
+           UIApplication.shared.canOpenURL(deepLink) {
+            openURL(deepLink)
+        } else if let webURL = service.webURL(for: series.name) {
+            openURL(webURL)
         }
     }
 
@@ -139,8 +204,8 @@ struct FollowedShowDetail: View {
 
         do {
             let tmdbService = TMDBService()
-            async let creditsResult = tmdbService.getShowCredits(id: show.id)
-            async let videosResult = tmdbService.getShowVideos(id: show.id)
+            async let creditsResult = tmdbService.getShowCredits(id: series.tmdbId)
+            async let videosResult = tmdbService.getShowVideos(id: series.tmdbId)
 
             let (credits, fetchedVideos) = try await (creditsResult, videosResult)
             cast = credits.cast
@@ -156,7 +221,7 @@ struct FollowedShowDetail: View {
 
     private func loadArchiveState() {
         if let ids = UserDefaults.standard.array(forKey: archivedShowsKey) as? [Int] {
-            isArchived = ids.contains(show.id)
+            isArchived = ids.contains(series.tmdbId)
         }
     }
 
@@ -165,12 +230,12 @@ struct FollowedShowDetail: View {
 
         if isArchived {
             // Unarchive - stay on page
-            ids.remove(show.id)
+            ids.remove(series.tmdbId)
             UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
             isArchived = false
         } else {
             // Archive - dismiss and go back
-            ids.insert(show.id)
+            ids.insert(series.tmdbId)
             UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
             isArchived = true
             onDismiss()
@@ -181,13 +246,13 @@ struct FollowedShowDetail: View {
 // MARK: - Season Info Tab Content
 
 private struct SeasonInfoTabContent: View {
-    let show: ShowData
+    let series: Series
     let selectedSeason: Int
 
     var body: some View {
         VStack(spacing: 0) {
             // Episode list
-            DetailEpisodeSection(show: show, selectedSeason: selectedSeason)
+            DetailEpisodeSection(series: series, selectedSeason: selectedSeason)
         }
     }
 }
