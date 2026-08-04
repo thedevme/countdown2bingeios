@@ -124,7 +124,9 @@ struct BingeReadyScreen: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
                     .onTapGesture {
-                        navigationPath.append(show)
+                        if let series = viewModel.getSeries(for: show.id) {
+                            navigationPath.append(series)
+                        }
                     }
 
                     // Streaming app deep link
@@ -138,8 +140,10 @@ struct BingeReadyScreen: View {
                     // Action Buttons
                     BingeActionButtons(
                         onRemove: {
-                            Task {
-                                await viewModel.unfollowShow(show)
+                            if let series = viewModel.getSeries(for: show.id) {
+                                Task {
+                                    await viewModel.unfollowShow(series)
+                                }
                             }
                             if heroShowId == show.id {
                                 heroShowId = nil
@@ -240,8 +244,10 @@ struct BingeReadyScreen: View {
                         watchProgress: watchProgress,
                         onSelect: { heroShowId = $0 },
                         onUnfollow: { show in
-                            Task {
-                                await viewModel.unfollowShow(show)
+                            if let series = viewModel.getSeries(for: show.id) {
+                                Task {
+                                    await viewModel.unfollowShow(series)
+                                }
                             }
                             // Reset hero if unfollowed show was selected
                             if heroShowId == show.id {
@@ -278,12 +284,12 @@ struct BingeReadyScreen: View {
                 .presentationDragIndicator(.visible)
             }
         }
-        .navigationDestination(for: ShowData.self) { show in
+        .navigationDestination(for: Series.self) { series in
             FollowedShowDetail(
-                show: show,
+                series: series,
                 onDismiss: { navigationPath.removeLast() },
                 onUnfollow: {
-                    Task { await viewModel.unfollowShow(show) }
+                    Task { await viewModel.unfollowShow(series) }
                 }
             )
         }
@@ -381,20 +387,27 @@ final class BingeReadyViewModel {
     }
 
     /// Unfollow a show
-    func unfollowShow(_ show: ShowData) async {
+    func unfollowShow(_ series: Series) async {
         guard let store else { return }
         do {
-            try store.unfollow(tmdbId: show.id)
+            try store.unfollow(tmdbId: series.tmdbId)
             // Force reload from database to ensure consistency
             followedShows = try await store.getAllFollowedAsShowData()
 
             // Remove from cloud
-            Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
+            Task { await CloudSyncService.shared.removeShow(tmdbId: series.tmdbId) }
         } catch {
             print("Error unfollowing show: \(error)")
             // Fallback to local removal
-            followedShows.removeAll { $0.id == show.id }
+            followedShows.removeAll { $0.id == series.tmdbId }
         }
+    }
+
+    /// Get Series by show ID for navigation
+    func getSeries(for showId: Int) -> Series? {
+        guard let modelContext else { return nil }
+        let seriesStore = SeriesStore(modelContext: modelContext)
+        return seriesStore.fetchSeries(tmdbId: showId)
     }
 }
 

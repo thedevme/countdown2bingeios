@@ -20,6 +20,7 @@ struct WalkthroughSheet: View {
 
     @State private var position = ScrollPosition(edge: .top)
     @State private var showExplanation: Bool = true
+    @State private var dragOffset: CGFloat = 0
 
     private var activeStep: WalkthroughStep? {
         step >= 0 && step < walkthroughSteps.count ? walkthroughSteps[step] : nil
@@ -209,6 +210,27 @@ struct WalkthroughSheet: View {
             .stroke(Color.white.opacity(0.12), lineWidth: 1)
         )
         .shadow(color: Color.black.opacity(0.6), radius: 30, x: 0, y: -20)
+        .offset(y: dragOffset)
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    // Only allow dragging down
+                    if value.translation.height > 0 {
+                        dragOffset = value.translation.height
+                    }
+                }
+                .onEnded { value in
+                    // Dismiss if dragged more than 150 points down
+                    if value.translation.height > 150 {
+                        onClose()
+                    } else {
+                        // Snap back
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            dragOffset = 0
+                        }
+                    }
+                }
+        )
         .onChange(of: isAnimating) { _, newValue in
             if newValue {
                 // Hide immediately when animation starts

@@ -47,12 +47,21 @@ final class FollowedShow {
         !relatedShowIds.isEmpty
     }
 
-    /// Check if show data needs refresh (>24 hours since last refresh)
+    /// Check if show data needs refresh
+    /// - Airing shows: refresh every 6 hours (episode dates change frequently)
+    /// - Other shows: refresh every 24 hours
     var needsRefresh: Bool {
         guard let lastRefreshed = lastRefreshedAt else {
             return true // Never refreshed
         }
+
         let hoursSinceRefresh = Date().timeIntervalSince(lastRefreshed) / 3600
+
+        // Airing shows need more frequent updates
+        if let cached = cachedData, cached.lifecycleStateRaw == "airing" {
+            return hoursSinceRefresh >= 6
+        }
+
         return hoursSinceRefresh >= 24
     }
 }

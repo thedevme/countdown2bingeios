@@ -81,8 +81,7 @@ struct ShowDetailView: View {
                     ShowDetailFollowActionRow(
                         isFollowing: isFollowing,
                         isLoading: isLoadingFollow,
-                        onFollowTap: onFollowTap,
-                        onPlayTap: onPlayTap
+                        onFollowTap: onFollowTap
                     )
 
                     // Follow Confirmation + Timeline Link
@@ -291,7 +290,6 @@ struct ShowDetailFollowActionRow: View {
     let isFollowing: Bool
     let isLoading: Bool
     let onFollowTap: () -> Void
-    let onPlayTap: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -303,28 +301,25 @@ struct ShowDetailFollowActionRow: View {
                             .tint(isFollowing ? .c2bTealBright : Color(hex: "#04201c"))
                             .scaleEffect(0.8)
                     } else {
-                        Image(systemName: "bookmark.fill")
-                            .font(.system(size: 18))
+                        Image(systemName: isFollowing ? "checkmark" : "plus")
+                            .font(.system(size: 16, weight: .bold))
                     }
 
                     Text(isFollowing ? String(localized: "button_following") : String(localized: "button_follow_show"))
-                        .font(.custom(.oswald.bold, size: 19))
+                        .font(.custom(.oswald.bold, size: 17))
                         .tracking(0.4)
                 }
                 .foregroundColor(isFollowing ? .c2bTealBright : Color(hex: "#04201c"))
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 15)
-                .background(isFollowing ? Color.white.opacity(0.07) : .white)
-                .clipShape(Capsule())
+                .padding(.vertical, 14)
+                .background(isFollowing ? Color.c2bTeal.opacity(0.15) : Color.c2bTeal)
+                .cornerRadius(12)
                 .overlay(
-                    Capsule()
-                        .stroke(isFollowing ? Color.white.opacity(0.16) : .clear, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isFollowing ? Color.c2bTeal.opacity(0.5) : .clear, lineWidth: 1)
                 )
             }
             .disabled(isLoading)
-
-            // Play button
-            ShowDetailPlayButton(action: onPlayTap)
         }
     }
 }

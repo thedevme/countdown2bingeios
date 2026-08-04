@@ -103,7 +103,18 @@ final class TimelineViewModel {
 
     // MARK: - Init
 
-    init() {}
+    init() {
+        // Listen for cloud sync completions to refresh data
+        NotificationCenter.default.addObserver(
+            forName: CloudSyncService.didSyncNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                await self?.loadFollowedShows()
+            }
+        }
+    }
 
     // MARK: - Public API
 
@@ -133,19 +144,26 @@ final class TimelineViewModel {
     }
 
     /// Unfollow a show
-    func unfollowShow(_ show: ShowData) async {
+    func unfollowShow(_ series: Series) async {
         guard let store else { return }
 
         do {
-            try store.unfollow(tmdbId: show.id)
+            try store.unfollow(tmdbId: series.tmdbId)
             // Remove from local list
-            followedShows.removeAll { $0.id == show.id }
+            followedShows.removeAll { $0.id == series.tmdbId }
 
             // Remove from cloud
-            Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
+            Task { await CloudSyncService.shared.removeShow(tmdbId: series.tmdbId) }
         } catch {
             print("Error unfollowing show: \(error)")
         }
+    }
+
+    /// Get Series by show ID for navigation
+    func getSeries(for showId: Int) -> Series? {
+        guard let modelContext else { return nil }
+        let seriesStore = SeriesStore(modelContext: modelContext)
+        return seriesStore.fetchSeries(tmdbId: showId)
     }
 
     /// Get anticipated season number for display (numberOfSeasons + 1)

@@ -7,11 +7,6 @@ import SwiftUI
 
 struct DetailHeroSection: View {
     let show: ShowData
-    let onDismiss: () -> Void
-    var onShare: (() -> Void)? = nil
-    var onUnfollow: (() -> Void)? = nil
-    var isArchived: Bool = false
-    var onArchive: (() -> Void)? = nil
 
     private var phaseInfo: (label: String, tone: Color) {
         switch show.timelineCategory {
@@ -46,15 +41,6 @@ struct DetailHeroSection: View {
                     endPoint: .bottom
                 )
                 .allowsHitTesting(false)
-
-                DetailTopBar(
-                    onDismiss: onDismiss,
-                    onShare: onShare,
-                    show: show,
-                    onUnfollow: onUnfollow,
-                    isArchived: isArchived,
-                    onArchive: onArchive
-                )
 
                 DetailTitleArea(
                     show: show,

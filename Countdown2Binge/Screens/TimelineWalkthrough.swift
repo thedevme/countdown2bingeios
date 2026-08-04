@@ -36,7 +36,7 @@ struct TimelineWalkthrough: View {
             tone: Color(hex: "#2dd4bf"),
             hint: String(localized: "walkthrough_airing_hint"),
             note: String(localized: "walkthrough_airing_note"),
-            shows: ["the-last-of-us", "severance", "the-bear"],
+            shows: ["vice coast", "north watch", "iron veil"],
             kind: .stack
         ),
         TimelineBucket(
@@ -45,7 +45,7 @@ struct TimelineWalkthrough: View {
             tone: Color(hex: "#5eead4"),
             hint: String(localized: "walkthrough_premiering_hint"),
             note: String(localized: "walkthrough_premiering_note"),
-            shows: ["shogun", "reacher"],
+            shows: ["forward hold", "echo 7"],
             kind: .premiering
         ),
         TimelineBucket(
@@ -54,7 +54,7 @@ struct TimelineWalkthrough: View {
             tone: Color(hex: "#71717a"),
             hint: String(localized: "walkthrough_anticipated_hint"),
             note: String(localized: "walkthrough_anticipated_note"),
-            shows: ["stranger-things", "fallout"],
+            shows: ["blackwater point", "sentinels"],
             kind: .anticipated
         )
     ]

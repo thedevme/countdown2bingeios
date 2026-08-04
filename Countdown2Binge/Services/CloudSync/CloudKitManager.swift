@@ -15,11 +15,12 @@ final class CloudKitManager {
 
     // MARK: - CloudKit Configuration
 
-    /// CloudKit container - uses default container to avoid crash if custom container not configured
+    /// CloudKit container identifier - must match entitlements
+    private static let containerIdentifier = "iCloud.io.DesignToSwiftUI.Countdown2Binge"
+
+    /// CloudKit container
     private lazy var container: CKContainer = {
-        // Try custom container first, fall back to default
-        // Custom container requires CloudKit capability with matching identifier in entitlements
-        CKContainer.default()
+        CKContainer(identifier: Self.containerIdentifier)
     }()
 
     private var privateDB: CKDatabase { container.privateCloudDatabase }
@@ -49,18 +50,14 @@ final class CloudKitManager {
 
     // MARK: - Account Status
 
-    /// Check if iCloud account is available
+    /// Check if iCloud account is available for CloudKit
     var isAvailable: Bool {
         get async {
-            // Check if CloudKit capability is configured
-            guard FileManager.default.ubiquityIdentityToken != nil else {
-                print("CloudKitManager: iCloud not available (no ubiquity token)")
-                return false
-            }
-
             do {
                 let status = try await container.accountStatus()
-                return status == .available
+                let available = status == .available
+                print("CloudKitManager: Account status = \(status.rawValue), available = \(available)")
+                return available
             } catch {
                 print("CloudKitManager: Failed to check account status - \(error)")
                 return false
@@ -118,13 +115,15 @@ final class CloudKitManager {
     }
 
     /// Fetch all followed shows from CloudKit
-    /// - Returns: Array of CloudKit records
+    /// - Returns: Array of CloudKit records sorted by followedAt (newest first)
     func fetchAllFollowedShows() async throws -> [CKRecord] {
+        // Query using tmdbId field - all valid records have tmdbId > 0
+        // This avoids CloudKit internal recordName index requirements
         let query = CKQuery(
             recordType: Self.followedShowRecordType,
-            predicate: NSPredicate(value: true)
+            predicate: NSPredicate(format: "%K > 0", FieldKey.tmdbId)
         )
-        query.sortDescriptors = [NSSortDescriptor(key: FieldKey.followedAt, ascending: false)]
+        // Note: Sort in-memory to avoid CloudKit index requirements
 
         var allRecords: [CKRecord] = []
         var cursor: CKQueryOperation.Cursor?
@@ -139,6 +138,13 @@ final class CloudKitManager {
             let (moreRecords, nextCursor) = try await privateDB.records(continuingMatchFrom: currentCursor)
             allRecords.append(contentsOf: moreRecords.compactMap { try? $0.1.get() })
             cursor = nextCursor
+        }
+
+        // Sort by followedAt in-memory (newest first)
+        allRecords.sort { record1, record2 in
+            let date1 = record1.followedAt ?? .distantPast
+            let date2 = record2.followedAt ?? .distantPast
+            return date1 > date2
         }
 
         print("CloudKitManager: Fetched \(allRecords.count) shows from CloudKit")
@@ -391,7 +397,7 @@ final class CloudKitManager {
 
         let subscription = CKQuerySubscription(
             recordType: Self.followedShowRecordType,
-            predicate: NSPredicate(value: true),
+            predicate: NSPredicate(format: "%K > 0", FieldKey.tmdbId),
             subscriptionID: subscriptionID,
             options: [.firesOnRecordCreation, .firesOnRecordDeletion, .firesOnRecordUpdate]
         )

@@ -35,7 +35,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabView(selection: $activeTab) {
-                Tab("tab_timeline", systemImage: "list.bullet.rectangle", value: "timeline") {
+                Tab("tab_timeline", image: "tab-timeline", value: "timeline") {
                     TimelineScreen(
                         layout: "expanded",
                         numberStyle: "rotated",
@@ -47,12 +47,12 @@ struct ContentView: View {
                 }
                 .badge(badgeManager.timelineBadge ? 1 : 0)
 
-                Tab("tab_my_list", systemImage: "rectangle.stack", value: "mylist") {
+                Tab("tab_my_list", image: "tab-mylist", value: "mylist") {
                     MyListScreen()
                 }
                 .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
-                Tab("tab_settings", systemImage: "gearshape", value: "settings") {
+                Tab("tab_settings", image: "tab-settings", value: "settings") {
                     SettingsScreen()
                 }
 
@@ -60,7 +60,7 @@ struct ContentView: View {
                     SearchScreen(badgeManager: badgeManager)
                 }
             }
-            .tint(.c2bTeal)
+            .tint(.white)
             .onChange(of: activeTab) { _, newTab in
                 // Clear badge when user visits the tab
                 badgeManager.clearBadge(for: newTab)
@@ -283,9 +283,9 @@ struct ContentView: View {
         ]
 
         // Selected state
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.c2bTeal)
+        appearance.stackedLayoutAppearance.selected.iconColor = .white
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: UIColor(Color.c2bTeal),
+            .foregroundColor: UIColor.white,
             .font: tabBarFont
         ]
 

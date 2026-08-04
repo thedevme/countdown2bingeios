@@ -57,6 +57,16 @@ final class DiscoverViewModel {
     private(set) var genreShows: [Int: [ShowSummary]] = [:]
     private(set) var networkShows: [Int: [ShowSummary]] = [:]
 
+    // Genre pagination state
+    private var genreCurrentPage: [Int: Int] = [:]
+    private var genreTotalPages: [Int: Int] = [:]
+    private(set) var isLoadingMoreGenre = false
+
+    // Trending pagination state
+    private var trendingCurrentPage = 0
+    private var trendingTotalPages = 0
+    private(set) var isLoadingMoreTrending = false
+
     /// Cached discover shows (loaded from SwiftData)
     private(set) var cachedShows: [CachedDiscoverShow] = [] {
         didSet { rebuildCachedShowsByBucket() }
@@ -149,12 +159,38 @@ final class DiscoverViewModel {
         do {
             let response = try await tmdbService.getTrendingShows(page: 1)
             trendingShows = response.results.map { $0.toShowSummary() }
+            trendingCurrentPage = 1
+            trendingTotalPages = response.totalPages
         } catch {
             self.error = String(localized: "error_load_trending")
             print("Error loading trending shows: \(error)")
         }
 
         isLoading = false
+    }
+
+    /// Check if more trending pages are available
+    func canLoadMoreTrending() -> Bool {
+        return trendingCurrentPage < trendingTotalPages && !isLoadingMoreTrending
+    }
+
+    /// Load the next page of trending shows
+    func loadMoreTrendingShows() async {
+        guard canLoadMoreTrending() else { return }
+
+        let nextPage = trendingCurrentPage + 1
+        isLoadingMoreTrending = true
+
+        do {
+            let response = try await tmdbService.getTrendingShows(page: nextPage)
+            let newShows = response.results.map { $0.toShowSummary() }
+            trendingShows.append(contentsOf: newShows)
+            trendingCurrentPage = nextPage
+        } catch {
+            print("Error loading more trending shows: \(error)")
+        }
+
+        isLoadingMoreTrending = false
     }
 
     func search(query: String) async {
@@ -447,12 +483,50 @@ final class DiscoverViewModel {
         do {
             let response = try await tmdbService.getShowsByGenre(genreIds: [genreId], page: 1)
             genreShows[genreId] = response.results.map { $0.toShowSummary() }
+            genreCurrentPage[genreId] = 1
+            genreTotalPages[genreId] = response.totalPages
         } catch {
             print("Error loading shows for genre \(genreId): \(error)")
             genreShows[genreId] = []
         }
 
         isLoadingGenre = false
+    }
+
+    /// Check if more pages are available for a genre
+    func canLoadMoreForGenre(_ genreId: Int) -> Bool {
+        guard let currentPage = genreCurrentPage[genreId],
+              let totalPages = genreTotalPages[genreId] else {
+            return false
+        }
+        return currentPage < totalPages && !isLoadingMoreGenre
+    }
+
+    /// Load the next page of shows for a genre
+    func loadMoreShowsForGenre(_ genreId: Int) async {
+        guard canLoadMoreForGenre(genreId) else { return }
+
+        let nextPage = (genreCurrentPage[genreId] ?? 1) + 1
+        isLoadingMoreGenre = true
+
+        do {
+            let response = try await tmdbService.getShowsByGenre(genreIds: [genreId], page: nextPage)
+            let newShows = response.results.map { $0.toShowSummary() }
+
+            // Append new shows to existing list
+            if var existingShows = genreShows[genreId] {
+                existingShows.append(contentsOf: newShows)
+                genreShows[genreId] = existingShows
+            } else {
+                genreShows[genreId] = newShows
+            }
+
+            genreCurrentPage[genreId] = nextPage
+        } catch {
+            print("Error loading more shows for genre \(genreId): \(error)")
+        }
+
+        isLoadingMoreGenre = false
     }
 
     func loadAllGenres() async {

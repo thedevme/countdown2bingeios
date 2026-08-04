@@ -54,7 +54,9 @@ struct TimelineScreen: View {
                             shows: viewModel.heroShowTuples,
                             currentIndex: $heroCardIndex,
                             onShowTap: { show in
-                                navigationPath.append(show)
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
                             },
                             cardSize: CGSize(width: 280, height: 420)
                         )
@@ -116,12 +118,12 @@ struct TimelineScreen: View {
                     await viewModel.loadFollowedShows()
                 }
             }
-            .navigationDestination(for: ShowData.self) { show in
+            .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(
-                    show: show,
+                    series: series,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
-                        Task { await viewModel.unfollowShow(show) }
+                        Task { await viewModel.unfollowShow(series) }
                     }
                 )
             }
@@ -166,7 +168,11 @@ struct TimelineScreen: View {
                     }
                 } else {
                     ForEach(viewModel.premieringSoonShows, id: \.id) { show in
-                        Button(action: { navigationPath.append(show) }) {
+                        Button(action: {
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }) {
                             if isExpanded {
                                 PremieringCard(showData: show)
                             } else {
@@ -199,7 +205,11 @@ struct TimelineScreen: View {
                     }
                 } else {
                     ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        Button(action: { navigationPath.append(show) }) {
+                        Button(action: {
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }) {
                             if isExpanded {
                                 AnticipatedCard(showData: show)
                             } else {

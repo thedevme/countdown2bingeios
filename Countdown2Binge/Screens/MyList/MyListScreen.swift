@@ -123,21 +123,33 @@ struct MyListScreen: View {
                                     shows: shows,
                                     variant: .active,
                                     watchProgress: watchProgress,
-                                    onTap: { show in navigationPath.append(show) }
+                                    onTap: { show in
+                                        if let series = viewModel.getSeries(for: show.id) {
+                                            navigationPath.append(series)
+                                        }
+                                    }
                                 )
                             case .ended:
                                 MyListPosterGrid(
                                     shows: shows,
                                     variant: .ended,
                                     watchProgress: watchProgress,
-                                    onTap: { show in navigationPath.append(show) }
+                                    onTap: { show in
+                                        if let series = viewModel.getSeries(for: show.id) {
+                                            navigationPath.append(series)
+                                        }
+                                    }
                                 )
                             case .archived:
                                 MyListPosterGrid(
                                     shows: shows,
                                     variant: .archived,
                                     watchProgress: watchProgress,
-                                    onTap: { show in navigationPath.append(show) }
+                                    onTap: { show in
+                                        if let series = viewModel.getSeries(for: show.id) {
+                                            navigationPath.append(series)
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -158,12 +170,12 @@ struct MyListScreen: View {
                 viewModel.reloadArchivedShowIds()
                 Task { await viewModel.loadShows() }
             }
-            .navigationDestination(for: ShowData.self) { show in
+            .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(
-                    show: show,
+                    series: series,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
-                        Task { await viewModel.unfollowShow(show) }
+                        Task { await viewModel.unfollowShow(series) }
                     }
                 )
             }
@@ -220,16 +232,22 @@ final class MyListViewModel {
         }
     }
 
-    func unfollowShow(_ show: ShowData) async {
+    func unfollowShow(_ series: Series) async {
         guard let store else { return }
         do {
-            try store.unfollow(tmdbId: show.id)
+            try store.unfollow(tmdbId: series.tmdbId)
             followedShows = try await store.getAllFollowedAsShowData()
-            Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
+            Task { await CloudSyncService.shared.removeShow(tmdbId: series.tmdbId) }
         } catch {
             print("Error unfollowing show: \(error)")
-            followedShows.removeAll { $0.id == show.id }
+            followedShows.removeAll { $0.id == series.tmdbId }
         }
+    }
+
+    func getSeries(for showId: Int) -> Series? {
+        guard let modelContext else { return nil }
+        let seriesStore = SeriesStore(modelContext: modelContext)
+        return seriesStore.fetchSeries(tmdbId: showId)
     }
 
     // MARK: - Tab Filtering

@@ -9,11 +9,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FullTimelineView: View {
     let viewModel: TimelineViewModel
     @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
 
     // Persisted expand/collapse states for full timeline
     @AppStorage("full_timeline_now_playing_expanded") private var nowPlayingExpanded = true
@@ -42,6 +44,12 @@ struct FullTimelineView: View {
                 Spacer()
                     .frame(height: 100)
             }
+        }
+        .refreshable {
+            // Pull-to-refresh: Force fetch from TMDB API
+            let refreshService = StateRefreshService(modelContainer: modelContext.container)
+            await refreshService.forceRefreshAllShows()
+            await viewModel.refresh()
         }
         .background(Color.c2bBackground)
     }
@@ -105,7 +113,11 @@ struct FullTimelineView: View {
                     }
                 } else {
                     ForEach(viewModel.airingNowShows, id: \.id) { show in
-                        Button(action: { navigationPath.append(show) }) {
+                        Button(action: {
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }) {
                             if nowPlayingExpanded {
                                 NowPlayingCard(showData: show)
                             } else {
@@ -144,7 +156,11 @@ struct FullTimelineView: View {
                     }
                 } else {
                     ForEach(viewModel.premieringSoonShows, id: \.id) { show in
-                        Button(action: { navigationPath.append(show) }) {
+                        Button(action: {
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }) {
                             if premieringExpanded {
                                 PremieringCard(showData: show)
                             } else {
@@ -183,7 +199,11 @@ struct FullTimelineView: View {
                     }
                 } else {
                     ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        Button(action: { navigationPath.append(show) }) {
+                        Button(action: {
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }) {
                             if anticipatedExpanded {
                                 AnticipatedCard(showData: show)
                             } else {

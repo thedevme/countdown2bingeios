@@ -100,18 +100,36 @@ final class FollowedShowsStore {
 
     /// Get all followed shows as ShowData (for timeline)
     /// Decodes JSON in parallel off the main thread to avoid UI blocking
+    /// Uses cached finaleDate/premiereDate from SwiftData for accurate countdowns
     func getAllFollowedAsShowData() async throws -> [ShowData] {
         let followedShows = try getAllFollowed()
 
-        // Extract JSON data on main thread (SwiftData access)
-        let jsonDataArray = followedShows.compactMap { $0.cachedData?.showDataJSON }
+        // Extract JSON data, cached dates, and spinoff count on main thread (SwiftData access)
+        var showDataWithInfo: [(Data, Date?, Date?, Int)] = []
+        for followed in followedShows {
+            if let jsonData = followed.cachedData?.showDataJSON {
+                showDataWithInfo.append((
+                    jsonData,
+                    followed.cachedData?.finaleDate,
+                    followed.cachedData?.premiereDate,
+                    followed.relatedShowIds.count
+                ))
+            }
+        }
 
         // Decode all shows in parallel using TaskGroup
         var shows: [ShowData] = []
         try await withThrowingTaskGroup(of: ShowData?.self) { group in
-            for jsonData in jsonDataArray {
+            for (jsonData, finaleDate, premiereDate, spinoffCount) in showDataWithInfo {
                 group.addTask {
-                    try? JSONDecoder().decode(ShowData.self, from: jsonData)
+                    guard var show = try? JSONDecoder().decode(ShowData.self, from: jsonData) else {
+                        return nil
+                    }
+                    // Override with cached dates and spinoff count from SwiftData
+                    show.cachedFinaleDate = finaleDate
+                    show.cachedPremiereDate = premiereDate
+                    show.spinoffCount = spinoffCount
+                    return show
                 }
             }
 

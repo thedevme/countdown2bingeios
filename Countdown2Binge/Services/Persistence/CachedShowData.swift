@@ -47,6 +47,12 @@ final class CachedShowData {
     /// When this cache was last updated
     var updatedAt: Date
 
+    /// Cached finale date for current season (stored explicitly for reliability)
+    var finaleDate: Date?
+
+    /// Cached premiere date for upcoming season
+    var premiereDate: Date?
+
     /// Inverse relationship to FollowedShow
     @Relationship(inverse: \FollowedShow.cachedData)
     var followedShow: FollowedShow?
@@ -94,6 +100,10 @@ final class CachedShowData {
         self.lifecycleStateRaw = show.lifecycleState.rawValue
         self.updatedAt = Date()
 
+        // Store finale/premiere dates explicitly
+        self.finaleDate = show.currentSeason?.finaleDate
+        self.premiereDate = show.upcomingSeason?.premiereDate ?? show.currentSeason?.premiereDate
+
         // Encode full show data
         let encoder = JSONEncoder()
         self.showDataJSON = try? encoder.encode(show)
@@ -116,5 +126,25 @@ final class CachedShowData {
 
     var status: ShowStatus {
         ShowStatus(rawValue: statusRaw) ?? .planned
+    }
+
+    /// Days until finale (computed from stored finaleDate)
+    var daysUntilFinale: Int? {
+        guard let finaleDate else { return nil }
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfFinaleDate = calendar.startOfDay(for: finaleDate)
+        guard startOfFinaleDate >= startOfToday else { return nil }
+        return calendar.dateComponents([.day], from: startOfToday, to: startOfFinaleDate).day
+    }
+
+    /// Days until premiere (computed from stored premiereDate)
+    var daysUntilPremiere: Int? {
+        guard let premiereDate else { return nil }
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfPremiereDate = calendar.startOfDay(for: premiereDate)
+        guard startOfPremiereDate >= startOfToday else { return nil }
+        return calendar.dateComponents([.day], from: startOfToday, to: startOfPremiereDate).day
     }
 }

@@ -136,10 +136,21 @@ final class SeriesStore {
         let series = Series(
             tmdbId: show.id,
             name: show.name,
+            overview: show.overview,
             posterPath: show.posterPath,
+            backdropPath: show.backdropPath,
+            logoPath: show.logoPath,
+            firstAirDate: show.firstAirDate,
+            statusRaw: show.status.rawValue,
+            inProduction: show.inProduction,
+            voteAverage: show.voteAverage,
             numberOfSeasons: show.numberOfSeasons,
             numberOfEpisodes: show.numberOfEpisodes
         )
+        series.genres = show.genres
+        series.networks = show.networks
+        series.creators = show.createdBy
+        series.spinoffCount = show.spinoffCount
 
         // Add seasons and episodes
         for seasonData in show.seasons where !seasonData.isSpecials {
@@ -147,8 +158,11 @@ final class SeriesStore {
                 tmdbId: seasonData.id,
                 seasonNumber: seasonData.seasonNumber,
                 name: seasonData.name,
+                overview: seasonData.overview,
+                posterPath: seasonData.posterPath,
                 airDate: seasonData.airDate,
-                episodeCount: seasonData.episodeCount
+                episodeCount: seasonData.episodeCount,
+                voteAverage: seasonData.voteAverage
             )
 
             for episodeData in seasonData.episodes {
@@ -157,12 +171,18 @@ final class SeriesStore {
                     episodeNumber: episodeData.episodeNumber,
                     seasonNumber: episodeData.seasonNumber,
                     name: episodeData.name,
+                    overview: episodeData.overview,
                     airDate: episodeData.airDate,
-                    runtime: episodeData.runtime
+                    stillPath: episodeData.stillPath,
+                    runtime: episodeData.runtime,
+                    episodeTypeRaw: episodeData.episodeType.rawValue,
+                    voteAverage: episodeData.voteAverage
                 )
+                modelContext.insert(episode)
                 season.episodes.append(episode)
             }
 
+            modelContext.insert(season)
             series.seasons.append(season)
         }
 
@@ -171,9 +191,20 @@ final class SeriesStore {
 
     private func updateSeries(_ series: Series, from show: ShowData) {
         series.name = show.name
+        series.overview = show.overview
         series.posterPath = show.posterPath
+        series.backdropPath = show.backdropPath
+        series.logoPath = show.logoPath
+        series.firstAirDate = show.firstAirDate
+        series.statusRaw = show.status.rawValue
+        series.inProduction = show.inProduction
+        series.voteAverage = show.voteAverage
         series.numberOfSeasons = show.numberOfSeasons
         series.numberOfEpisodes = show.numberOfEpisodes
+        series.genres = show.genres
+        series.networks = show.networks
+        series.creators = show.createdBy
+        series.spinoffCount = show.spinoffCount
         series.updatedAt = Date()
 
         // Update seasons - preserve watched state
@@ -181,16 +212,23 @@ final class SeriesStore {
             if let existingSeason = series.seasons.first(where: { $0.seasonNumber == seasonData.seasonNumber }) {
                 // Update existing season
                 existingSeason.name = seasonData.name
+                existingSeason.overview = seasonData.overview
+                existingSeason.posterPath = seasonData.posterPath
                 existingSeason.airDate = seasonData.airDate
                 existingSeason.episodeCount = seasonData.episodeCount
+                existingSeason.voteAverage = seasonData.voteAverage
 
                 // Update episodes - preserve watched state
                 for episodeData in seasonData.episodes {
                     if let existingEpisode = existingSeason.episodes.first(where: { $0.episodeNumber == episodeData.episodeNumber }) {
                         // Update existing episode (preserve isWatched)
                         existingEpisode.name = episodeData.name
+                        existingEpisode.overview = episodeData.overview
                         existingEpisode.airDate = episodeData.airDate
+                        existingEpisode.stillPath = episodeData.stillPath
                         existingEpisode.runtime = episodeData.runtime
+                        existingEpisode.episodeTypeRaw = episodeData.episodeType.rawValue
+                        existingEpisode.voteAverage = episodeData.voteAverage
                     } else {
                         // Add new episode
                         let episode = SeriesEpisode(
@@ -198,9 +236,14 @@ final class SeriesStore {
                             episodeNumber: episodeData.episodeNumber,
                             seasonNumber: episodeData.seasonNumber,
                             name: episodeData.name,
+                            overview: episodeData.overview,
                             airDate: episodeData.airDate,
-                            runtime: episodeData.runtime
+                            stillPath: episodeData.stillPath,
+                            runtime: episodeData.runtime,
+                            episodeTypeRaw: episodeData.episodeType.rawValue,
+                            voteAverage: episodeData.voteAverage
                         )
+                        modelContext.insert(episode)
                         existingSeason.episodes.append(episode)
                     }
                 }
@@ -210,8 +253,11 @@ final class SeriesStore {
                     tmdbId: seasonData.id,
                     seasonNumber: seasonData.seasonNumber,
                     name: seasonData.name,
+                    overview: seasonData.overview,
+                    posterPath: seasonData.posterPath,
                     airDate: seasonData.airDate,
-                    episodeCount: seasonData.episodeCount
+                    episodeCount: seasonData.episodeCount,
+                    voteAverage: seasonData.voteAverage
                 )
 
                 for episodeData in seasonData.episodes {
@@ -220,12 +266,18 @@ final class SeriesStore {
                         episodeNumber: episodeData.episodeNumber,
                         seasonNumber: episodeData.seasonNumber,
                         name: episodeData.name,
+                        overview: episodeData.overview,
                         airDate: episodeData.airDate,
-                        runtime: episodeData.runtime
+                        stillPath: episodeData.stillPath,
+                        runtime: episodeData.runtime,
+                        episodeTypeRaw: episodeData.episodeType.rawValue,
+                        voteAverage: episodeData.voteAverage
                     )
+                    modelContext.insert(episode)
                     season.episodes.append(episode)
                 }
 
+                modelContext.insert(season)
                 series.seasons.append(season)
             }
         }

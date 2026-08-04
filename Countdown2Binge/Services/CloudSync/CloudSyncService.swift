@@ -55,6 +55,9 @@ struct SyncResult: Sendable {
 final class CloudSyncService {
     static let shared = CloudSyncService()
 
+    /// Notification posted when sync completes and data may have changed
+    static let didSyncNotification = Notification.Name("CloudSyncServiceDidSync")
+
     // MARK: - State
 
     /// Whether a sync operation is currently in progress
@@ -118,11 +121,35 @@ final class CloudSyncService {
     /// Uses union merge: combines both sets, resolving conflicts by newest timestamp
     func fullSync(modelContext: ModelContext) async -> SyncResult {
         guard !isSyncing else {
+            print("☁️ CloudSync: Sync already in progress")
             return SyncResult(showsRestored: 0, showsBackedUp: 0, showsRemoved: 0, errors: ["Sync already in progress"])
         }
 
+        // Check eligibility with detailed reason
+        let eligibility = await checkSyncEligibility()
+        print("☁️ CloudSync fullSync: Eligibility = \(eligibility)")
+
         guard await canSync else {
-            return SyncResult(showsRestored: 0, showsBackedUp: 0, showsRemoved: 0, errors: ["Sync not available"])
+            let reason: String
+            switch eligibility {
+            case .eligible:
+                reason = "Unknown error"
+            case .notEligible(let notEligibleReason):
+                switch notEligibleReason {
+                case .notPremium:
+                    reason = "Premium required for cloud sync"
+                case .noICloudAccount:
+                    reason = "No iCloud account signed in"
+                case .iCloudRestricted:
+                    reason = "iCloud is restricted on this device"
+                case .temporarilyUnavailable:
+                    reason = "iCloud temporarily unavailable"
+                case .unknown:
+                    reason = "Unknown iCloud error"
+                }
+            }
+            print("☁️ CloudSync: Cannot sync - \(reason)")
+            return SyncResult(showsRestored: 0, showsBackedUp: 0, showsRemoved: 0, errors: [reason])
         }
 
         isSyncing = true
@@ -137,9 +164,17 @@ final class CloudSyncService {
         do {
             // 1. Fetch all cloud records
             let cloudRecords = try await cloudKit.fetchAllFollowedShows()
+            print("☁️ CloudSync DEBUG: Raw cloud records count = \(cloudRecords.count)")
+
+            // Debug: Log each record's fields
+            for record in cloudRecords {
+                print("☁️ CloudSync DEBUG: Record \(record.recordID.recordName) - tmdbId: \(String(describing: record.tmdbId)), followedAt: \(String(describing: record.followedAt))")
+            }
+
             let cloudShows = cloudRecords.compactMap { record -> (tmdbId: Int, followedAt: Date, recordName: String)? in
                 guard let tmdbId = record.tmdbId,
                       let followedAt = record.followedAt else {
+                    print("☁️ CloudSync DEBUG: Skipping record \(record.recordID.recordName) - missing tmdbId or followedAt")
                     return nil
                 }
                 return (tmdbId, followedAt, record.recordID.recordName)
@@ -151,6 +186,10 @@ final class CloudSyncService {
             // Create lookup dictionaries
             let cloudByTmdbId = Dictionary(uniqueKeysWithValues: cloudShows.map { ($0.tmdbId, $0) })
             let localByTmdbId = Dictionary(uniqueKeysWithValues: localShows.map { ($0.tmdbId, $0) })
+
+            // Debug: Log what we found
+            print("☁️ CloudSync DEBUG: Cloud shows = \(cloudShows.map { $0.tmdbId })")
+            print("☁️ CloudSync DEBUG: Local shows = \(localShows.map { $0.tmdbId })")
 
             // 3. Find shows only in cloud (need to restore locally)
             let cloudOnlyIds = Set(cloudByTmdbId.keys).subtracting(Set(localByTmdbId.keys))
@@ -214,6 +253,30 @@ final class CloudSyncService {
                 await MainActor.run {
                     WatchProgressManager.shared.restoreFromCloud(mergedKeys)
                 }
+            }
+
+            // 10. Fetch TMDB data for shows missing cached data
+            let allFollowed = try store.getAllFollowed()
+            let showsMissingData = allFollowed.filter { $0.cachedData == nil || $0.cachedData?.showDataJSON == nil }
+            var dataWasFetched = false
+            if !showsMissingData.isEmpty {
+                print("☁️ CloudSync: Fetching TMDB data for \(showsMissingData.count) shows missing cache")
+                let tmdbService = TMDBService()
+                for show in showsMissingData {
+                    do {
+                        let showData = try await tmdbService.getShowDetails(id: show.tmdbId)
+                        try store.updateCache(for: show.tmdbId, with: showData)
+                        print("☁️ CloudSync: Fetched data for show \(show.tmdbId) - \(showData.name)")
+                        dataWasFetched = true
+                    } catch {
+                        print("☁️ CloudSync: Failed to fetch show \(show.tmdbId): \(error)")
+                    }
+                }
+            }
+
+            // Notify views to refresh if data changed
+            if showsRestored > 0 || dataWasFetched {
+                NotificationCenter.default.post(name: Self.didSyncNotification, object: nil)
             }
 
             lastSyncedAt = Date()
