@@ -12,11 +12,6 @@ import SwiftData
 @MainActor
 @Observable
 final class TimelineViewModel {
-    // MARK: - Debug
-
-    /// Enable to add mock pending shows for testing
-    static let debugAddMockPendingShows = true
-
     // MARK: - State
 
     private(set) var followedShows: [ShowData] = []
@@ -72,7 +67,12 @@ final class TimelineViewModel {
 
     /// Helper: Check if show has a confirmed finale date
     private func hasConfirmedFinale(_ show: ShowData) -> Bool {
-        show.currentSeason?.finaleDate != nil
+        // Check current season first, then anticipated season for pre-premiere shows
+        if let currentSeason = show.currentSeason {
+            return currentSeason.finaleDate != nil
+        }
+        // For shows that haven't premiered, check the anticipated season
+        return show.anticipatedSeason?.finaleDate != nil
     }
 
     /// Helper: Check if show has already premiered
@@ -158,16 +158,23 @@ final class TimelineViewModel {
 
     /// Pending shows as Series (for list views)
     var pendingSeries: [Series] {
-        guard let seriesManager else { return mockPendingSeries }
+        guard let seriesManager else {
+            #if DEBUG
+            return DebugSettings.shared.shouldShowMockPendingData ? mockPendingSeries : []
+            #else
+            return []
+            #endif
+        }
+
         var series = seriesManager.allSeries()
             .filter { $0.showState == .pending }
             .sorted { lhs, rhs in
                 lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
             }
 
-        // Debug: Add mock pending Series if enabled
+        // Debug: Add mock pending Series if enabled (simulator only)
         #if DEBUG
-        if Self.debugAddMockPendingShows {
+        if DebugSettings.shared.shouldShowMockPendingData {
             series.append(contentsOf: mockPendingSeries)
         }
         #endif
@@ -281,9 +288,9 @@ final class TimelineViewModel {
         // Load from SeriesManager (the new engine) and convert to ShowData
         var shows = seriesManager.allSeries().map { $0.toShowData() }
 
-        // Debug: Add mock pending shows for testing
+        // Debug: Add mock pending shows for testing (simulator only)
         #if DEBUG
-        if Self.debugAddMockPendingShows {
+        if DebugSettings.shared.shouldShowMockPendingData {
             shows.append(contentsOf: Self.mockPendingShows)
         }
         #endif

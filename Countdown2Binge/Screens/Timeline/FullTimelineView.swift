@@ -24,6 +24,11 @@ struct FullTimelineView: View {
     @AppStorage("full_timeline_pending_expanded") private var pendingExpanded = true
     @AppStorage("full_timeline_anticipated_expanded") private var anticipatedExpanded = true
 
+    #if DEBUG
+    // Track debug setting to trigger refresh when it changes
+    @State private var debugMockPendingEnabled = DebugSettings.shared.showMockPendingSection
+    #endif
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -59,6 +64,11 @@ struct FullTimelineView: View {
             await viewModel.refresh()
         }
         .background(Color.c2bBackground)
+        #if DEBUG
+        .onChange(of: DebugSettings.shared.showMockPendingSection) { _, _ in
+            Task { await viewModel.refresh() }
+        }
+        #endif
     }
 
     // MARK: - Header

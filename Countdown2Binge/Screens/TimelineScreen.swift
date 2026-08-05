@@ -124,6 +124,11 @@ struct TimelineScreen: View {
                     await viewModel.loadFollowedShows()
                 }
             }
+            #if DEBUG
+            .onChange(of: DebugSettings.shared.showMockPendingSection) { _, _ in
+                Task { await viewModel.loadFollowedShows() }
+            }
+            #endif
             .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(
                     series: series,

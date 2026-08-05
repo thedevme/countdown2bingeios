@@ -149,6 +149,21 @@ struct SettingsScreen: View {
                                 set: { PremiumManager.shared.debugPremiumOverride = $0 }
                             )
                         )
+
+                        // Pending Section Toggle - Only works in Simulator
+                        SettingsRowToggle(
+                            icon: "clock.badge.questionmark",
+                            iconColor: .c2bYellow,
+                            title: "Show Mock Pending",
+                            subtitle: DebugSettings.shared.isRunningInSimulator
+                                ? (DebugSettings.shared.showMockPendingSection ? "Showing mock data" : "Hidden")
+                                : "Simulator only",
+                            isOn: Binding(
+                                get: { DebugSettings.shared.showMockPendingSection },
+                                set: { DebugSettings.shared.showMockPendingSection = $0 }
+                            ),
+                            disabled: !DebugSettings.shared.isRunningInSimulator
+                        )
                         #endif
 
                         SettingsRowAction(
