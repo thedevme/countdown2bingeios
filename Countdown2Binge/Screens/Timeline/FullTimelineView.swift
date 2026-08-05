@@ -21,6 +21,7 @@ struct FullTimelineView: View {
     // Persisted expand/collapse states for full timeline
     @AppStorage("full_timeline_now_playing_expanded") private var nowPlayingExpanded = true
     @AppStorage("full_timeline_premiering_expanded") private var premieringExpanded = true
+    @AppStorage("full_timeline_pending_expanded") private var pendingExpanded = true
     @AppStorage("full_timeline_anticipated_expanded") private var anticipatedExpanded = true
 
     var body: some View {
@@ -38,6 +39,12 @@ struct FullTimelineView: View {
                 // Premiering Soon Section
                 premieringSoonSection
                     .padding(.bottom, 24)
+
+                // Pending Section (only shown when not empty)
+                if !viewModel.pendingShows.isEmpty {
+                    pendingSection
+                        .padding(.bottom, 24)
+                }
 
                 // Anticipated Section
                 anticipatedSection
@@ -112,19 +119,20 @@ struct FullTimelineView: View {
                         MiniEmptySection(dim: false)
                     }
                 } else {
-                    ForEach(viewModel.airingNowShows, id: \.id) { show in
-                        Button(action: {
-                            if let series = viewModel.getSeries(for: show.id) {
-                                navigationPath.append(series)
-                            }
-                        }) {
-                            if nowPlayingExpanded {
+                    if nowPlayingExpanded {
+                        ForEach(viewModel.airingNowShows, id: \.id) { show in
+                            Button(action: {
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
+                            }) {
                                 NowPlayingCard(showData: show)
-                            } else {
-                                MiniNowPlayingCard(showData: show)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: viewModel.airingNowSeries)
                     }
                 }
             }
@@ -155,20 +163,57 @@ struct FullTimelineView: View {
                         MiniEmptySection(dim: false)
                     }
                 } else {
-                    ForEach(viewModel.premieringSoonShows, id: \.id) { show in
+                    if premieringExpanded {
+                        ForEach(viewModel.premieringSoonShows, id: \.id) { show in
+                            Button(action: {
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
+                            }) {
+                                PremieringCard(showData: show)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } else {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: viewModel.premieringSoonSeries)
+                    }
+                }
+            }
+            .padding(.top, 16)
+            .padding(.horizontal, C2BLayout.horizontalPadding)
+        }
+    }
+
+    // MARK: - Pending Section
+
+    private var pendingSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section Header
+            sectionHeader(
+                title: String(localized: "header_pending"),
+                count: viewModel.pendingShows.count,
+                tone: .c2bYellow,
+                subtitle: String(localized: "timeline_finale_tba"),
+                isExpanded: $pendingExpanded
+            )
+
+            // Cards
+            VStack(spacing: pendingExpanded ? 16 : 10) {
+                if pendingExpanded {
+                    ForEach(viewModel.pendingShows, id: \.id) { show in
                         Button(action: {
                             if let series = viewModel.getSeries(for: show.id) {
                                 navigationPath.append(series)
                             }
                         }) {
-                            if premieringExpanded {
-                                PremieringCard(showData: show)
-                            } else {
-                                MiniPremieringCard(showData: show)
-                            }
+                            PendingCard(showData: show)
                         }
                         .buttonStyle(.plain)
                     }
+                } else {
+                    // Collapsed: Unified list view with stacked posters
+                    TimelineSectionListView(seriesList: viewModel.pendingSeries)
                 }
             }
             .padding(.top, 16)
@@ -198,19 +243,20 @@ struct FullTimelineView: View {
                         MiniEmptySection(dim: true)
                     }
                 } else {
-                    ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        Button(action: {
-                            if let series = viewModel.getSeries(for: show.id) {
-                                navigationPath.append(series)
-                            }
-                        }) {
-                            if anticipatedExpanded {
+                    if anticipatedExpanded {
+                        ForEach(viewModel.anticipatedShows, id: \.id) { show in
+                            Button(action: {
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
+                            }) {
                                 AnticipatedCard(showData: show)
-                            } else {
-                                MiniAnticipatedCard(showData: show)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: viewModel.anticipatedSeries)
                     }
                 }
             }

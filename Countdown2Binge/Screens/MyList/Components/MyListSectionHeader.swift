@@ -8,24 +8,23 @@
 import SwiftUI
 
 struct MyListSectionHeader: View {
-    let icon: String
-    let iconColor: Color
-    let tint: Color
+    let iconAsset: String
     let title: String
     let subtitle: String
+    var tint: Color = .c2bTeal
 
     var body: some View {
         HStack(spacing: 11) {
-            // Icon badge
+            // Icon badge with rounded rect background
             ZStack {
                 RoundedRectangle(cornerRadius: 9)
                     .fill(tint)
                     .frame(width: 30, height: 30)
-                    .shadow(color: tint.opacity(0.35), radius: 12, y: 3)
 
-                Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(iconColor)
+                Image(iconAsset)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 16, height: 16)
             }
 
             VStack(alignment: .leading, spacing: 3) {

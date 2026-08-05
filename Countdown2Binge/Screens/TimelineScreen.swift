@@ -173,19 +173,21 @@ struct TimelineScreen: View {
                         MiniEmptySection(dim: false)
                     }
                 } else {
-                    ForEach(viewModel.premieringSoonShows, id: \.id) { show in
-                        Button(action: {
-                            if let series = viewModel.getSeries(for: show.id) {
-                                navigationPath.append(series)
-                            }
-                        }) {
-                            if isExpanded {
+                    if isExpanded {
+                        // Expanded: Individual cards for each show
+                        ForEach(viewModel.premieringSoonShows, id: \.id) { show in
+                            Button(action: {
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
+                            }) {
                                 PremieringCard(showData: show)
-                            } else {
-                                MiniPremieringCard(showData: show)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: viewModel.premieringSoonSeries)
                     }
                 }
             }
@@ -198,6 +200,7 @@ struct TimelineScreen: View {
     private var pendingSection: some View {
         PendingCardView(
             shows: viewModel.pendingShows,
+            seriesList: viewModel.pendingSeries,
             onShowTap: { show in
                 if let series = viewModel.getSeries(for: show.id) {
                     navigationPath.append(series)
@@ -222,19 +225,21 @@ struct TimelineScreen: View {
                         MiniEmptySection(dim: true)
                     }
                 } else {
-                    ForEach(viewModel.anticipatedShows, id: \.id) { show in
-                        Button(action: {
-                            if let series = viewModel.getSeries(for: show.id) {
-                                navigationPath.append(series)
-                            }
-                        }) {
-                            if isExpanded {
+                    if isExpanded {
+                        // Expanded: Individual cards for each show
+                        ForEach(viewModel.anticipatedShows, id: \.id) { show in
+                            Button(action: {
+                                if let series = viewModel.getSeries(for: show.id) {
+                                    navigationPath.append(series)
+                                }
+                            }) {
                                 AnticipatedCard(showData: show)
-                            } else {
-                                MiniAnticipatedCard(showData: show)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: viewModel.anticipatedSeries)
                     }
                 }
             }

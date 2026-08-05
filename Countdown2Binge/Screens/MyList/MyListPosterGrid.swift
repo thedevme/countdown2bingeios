@@ -17,12 +17,22 @@ enum MyListPosterVariant {
     case archived    // Grayscale + stripe pattern + archive icon
 }
 
+// MARK: - Binge Ready Info
+
+/// Info about a show's binge-ready season (the unwatched complete season)
+struct BingeReadyInfo {
+    let seasonNumber: Int
+    let finaleDate: Date?
+}
+
 // MARK: - Poster Grid
 
 struct MyListPosterGrid: View {
     let shows: [ShowData]
     let variant: MyListPosterVariant
     let onTap: (ShowData) -> Void
+    /// Optional lookup for binge-ready season info (used when variant is .justDone)
+    var bingeReadyInfoLookup: ((Int) -> BingeReadyInfo?)? = nil
 
     private let columns = [
         GridItem(.flexible(), spacing: 13),
@@ -36,6 +46,7 @@ struct MyListPosterGrid: View {
                 MyListPosterTile(
                     show: show,
                     variant: variant,
+                    bingeReadyInfo: bingeReadyInfoLookup?(show.id),
                     onTap: { onTap(show) }
                 )
             }
@@ -48,10 +59,16 @@ struct MyListPosterGrid: View {
 struct MyListPosterTile: View {
     let show: ShowData
     let variant: MyListPosterVariant
+    var bingeReadyInfo: BingeReadyInfo? = nil
     let onTap: () -> Void
 
-    /// The season number to display - uses actual current season, NOT anticipated
+    /// The season number to display
     private var seasonNumber: Int {
+        // For binge-ready shows, use the binge-ready season (the unwatched complete season)
+        if variant == .justDone, let info = bingeReadyInfo {
+            return info.seasonNumber
+        }
+
         // Use currentSeason which excludes anticipated seasons
         if let current = show.currentSeason {
             return current.seasonNumber
@@ -74,19 +91,24 @@ struct MyListPosterTile: View {
     private var noteText: String {
         switch variant {
         case .justDone:
-            // Show days since the current season's finale aired
-            if let currentSeason = show.currentSeason,
-               let finaleDate = currentSeason.finaleDate {
+            // Show when the binge-ready season's finale aired
+            let finaleDate = bingeReadyInfo?.finaleDate ?? show.currentSeason?.finaleDate
+            if let finaleDate {
                 let days = Calendar.current.dateComponents([.day], from: finaleDate, to: Date()).day ?? 0
                 if days == 0 {
-                    return String(localized: "mylist_note_finale_today")
+                    return "FINALE AIRED TODAY"
                 } else if days == 1 {
-                    return String(localized: "mylist_note_finale_yesterday")
-                } else if days > 0 {
-                    return String(localized: "mylist_note_finale_days \(days)")
+                    return "FINALE AIRED YESTERDAY"
+                } else if days <= 7 {
+                    return "FINALE AIRED \(days) DAYS AGO"
+                } else {
+                    // More than 7 days ago - show date
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "MMM d, yyyy"
+                    return "FINALE AIRED \(formatter.string(from: finaleDate))"
                 }
             }
-            return String(localized: "mylist_note_ready")
+            return "BINGE READY"
 
         case .active:
             // Show days until finale or premiere based on current season state

@@ -13,6 +13,7 @@ import SwiftUI
 
 struct PendingCardView: View {
     let shows: [ShowData]
+    let seriesList: [Series]
     let onShowTap: (ShowData) -> Void
 
     @AppStorage("timeline_pending_expanded") private var isExpanded: Bool = true
@@ -54,15 +55,20 @@ struct PendingCardView: View {
 
                 // Content
                 VStack(spacing: isExpanded ? 16 : 10) {
-                    ForEach(shows, id: \.id) { show in
-                        Button(action: { onShowTap(show) }) {
-                            if isExpanded {
+                    if isExpanded {
+                        // Expanded: Individual cards for each show
+                        ForEach(shows, id: \.id) { show in
+                            Button(action: { onShowTap(show) }) {
                                 PendingCard(showData: show)
-                            } else {
-                                MiniPendingCard(showData: show)
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } else if !seriesList.isEmpty {
+                        // Collapsed: Unified list view with stacked posters
+                        TimelineSectionListView(seriesList: seriesList)
+                    } else {
+                        // Collapsed with no real Series data: show mini empty
+                        MiniEmptySection(dim: false)
                     }
                 }
                 .padding(.top, 20)
@@ -75,47 +81,14 @@ struct PendingCardView: View {
 
 #Preview {
     ScrollView {
-        PendingCardView(
-            shows: [
-                ShowData(
-                    id: 1,
-                    name: "Cold Harvest",
-                    overview: "A show",
-                    posterPath: nil,
-                    backdropPath: nil,
-                    logoPath: nil,
-                    firstAirDate: Date().addingTimeInterval(-86400 * 30),
-                    status: .returning,
-                    genres: [],
-                    networks: [NetworkData(id: 1, name: "Apple TV+", logoPath: nil)],
-                    createdBy: nil,
-                    seasons: [],
-                    numberOfSeasons: 2,
-                    numberOfEpisodes: 10,
-                    inProduction: true,
-                    voteAverage: nil
-                ),
-                ShowData(
-                    id: 2,
-                    name: "The Lantern Route",
-                    overview: "Another show",
-                    posterPath: nil,
-                    backdropPath: nil,
-                    logoPath: nil,
-                    firstAirDate: Date().addingTimeInterval(86400 * 26),
-                    status: .returning,
-                    genres: [],
-                    networks: [NetworkData(id: 2, name: "MAX", logoPath: nil)],
-                    createdBy: nil,
-                    seasons: [],
-                    numberOfSeasons: 3,
-                    numberOfEpisodes: 8,
-                    inProduction: true,
-                    voteAverage: nil
-                )
-            ],
-            onShowTap: { _ in }
-        )
+        VStack(spacing: 20) {
+            Text("PendingCardView Preview")
+                .foregroundColor(.white)
+            Text("Requires ShowData and Series instances")
+                .foregroundColor(.c2bMuted)
+                .font(.caption)
+        }
+        .padding()
     }
     .background(Color.c2bBackground)
 }

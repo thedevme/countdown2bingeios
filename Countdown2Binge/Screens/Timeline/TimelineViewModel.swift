@@ -116,6 +116,114 @@ final class TimelineViewModel {
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
+    // MARK: - Series Arrays (for list views that need SwiftData models)
+
+    /// Airing now shows as Series (for list views)
+    var airingNowSeries: [Series] {
+        guard let seriesManager else { return [] }
+        return seriesManager.allSeries()
+            .filter { $0.showState == .airing }
+            .sorted { lhs, rhs in
+                switch (lhs.daysUntilFinale, rhs.daysUntilFinale) {
+                case let (l?, r?):
+                    return l < r
+                case (_?, nil):
+                    return true
+                case (nil, _?):
+                    return false
+                case (nil, nil):
+                    return lhs.name < rhs.name
+                }
+            }
+    }
+
+    /// Premiering soon shows as Series (for list views)
+    var premieringSoonSeries: [Series] {
+        guard let seriesManager else { return [] }
+        return seriesManager.allSeries()
+            .filter { $0.showState == .premieringSoon }
+            .sorted { lhs, rhs in
+                switch (lhs.daysUntilPremiere, rhs.daysUntilPremiere) {
+                case let (l?, r?):
+                    return l < r
+                case (_?, nil):
+                    return true
+                case (nil, _?):
+                    return false
+                case (nil, nil):
+                    return lhs.name < rhs.name
+                }
+            }
+    }
+
+    /// Pending shows as Series (for list views)
+    var pendingSeries: [Series] {
+        guard let seriesManager else { return mockPendingSeries }
+        var series = seriesManager.allSeries()
+            .filter { $0.showState == .pending }
+            .sorted { lhs, rhs in
+                lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+
+        // Debug: Add mock pending Series if enabled
+        #if DEBUG
+        if Self.debugAddMockPendingShows {
+            series.append(contentsOf: mockPendingSeries)
+        }
+        #endif
+
+        return series
+    }
+
+    /// Mock pending Series for debug (mirrors mockPendingShows)
+    private var mockPendingSeries: [Series] {
+        #if DEBUG
+        return Self.mockPendingShows.map { showData in
+            let series = Series(id: showData.id, name: showData.name)
+            series.posterPath = showData.posterPath
+            series.numberOfSeasons = showData.numberOfSeasons
+            series.statusRaw = showData.status.rawValue
+            series.inProduction = showData.inProduction
+            series.networks = showData.networks
+
+            // Create a season with pending-like dates (premiere set, no finale)
+            let seasonNum = showData.numberOfSeasons
+            let season = Season(id: showData.id * 100, seasonNumber: seasonNum, name: "Season \(seasonNum)")
+
+            // Add episodes with premiere date but no finale info
+            if let seasonData = showData.seasons.first {
+                for epData in seasonData.episodes {
+                    let episode = Episode(
+                        id: epData.id,
+                        episodeNumber: epData.episodeNumber,
+                        seasonNumber: seasonData.seasonNumber,
+                        name: epData.name
+                    )
+                    episode.airDate = epData.airDate
+                    episode.episodeTypeRaw = epData.episodeType.rawValue
+                    season.episodes.append(episode)
+                }
+                season.airDate = seasonData.airDate
+            }
+
+            series.seasons.append(season)
+            return series
+        }
+        #else
+        return []
+        #endif
+    }
+
+    /// Anticipated shows as Series (for list views)
+    var anticipatedSeries: [Series] {
+        guard let seriesManager else { return [] }
+        return seriesManager.allSeries()
+            .filter { $0.showState == .anticipated }
+            .sorted { lhs, rhs in
+                lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+    }
+
     /// Hero shows for the card stack (airing now, sorted by finale)
     var heroShows: [ShowData] {
         Array(airingNowShows.prefix(5))

@@ -119,15 +119,7 @@ struct MyListScreen: View {
                         VStack(spacing: 0) {
                             switch selectedTab {
                             case .active:
-                                MyListPosterGrid(
-                                    shows: shows,
-                                    variant: .active,
-                                    onTap: { show in
-                                        if let series = viewModel.getSeries(for: show.id) {
-                                            navigationPath.append(series)
-                                        }
-                                    }
-                                )
+                                activeTabContent
                             case .ended:
                                 MyListPosterGrid(
                                     shows: shows,
@@ -179,6 +171,81 @@ struct MyListScreen: View {
         }
     }
 
+    // MARK: - Active Tab Content
+
+    @ViewBuilder
+    private var activeTabContent: some View {
+        VStack(spacing: 24) {
+            // Ready to Binge Section
+            if !viewModel.bingeReadyShows.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    MyListSectionHeader(
+                        iconAsset: "ml-ready",
+                        title: "BINGE READY",
+                        subtitle: "\(viewModel.bingeReadyShows.count) SEASONS READY TO WATCH",
+                        tint: .c2bTeal
+                    )
+
+                    MyListPosterGrid(
+                        shows: viewModel.bingeReadyShows,
+                        variant: .justDone,
+                        onTap: { show in
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        },
+                        bingeReadyInfoLookup: { showId in
+                            viewModel.getBingeReadyInfo(for: showId)
+                        }
+                    )
+                }
+            }
+
+            // Still Counting Down Section
+            if !viewModel.countingDownShows.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    MyListSectionHeader(
+                        iconAsset: "ml-counting",
+                        title: "STILL COUNTING DOWN",
+                        subtitle: "\(viewModel.countingDownShows.count) SEASONS IN PROGRESS",
+                        tint: .c2bMuted
+                    )
+
+                    MyListPosterGrid(
+                        shows: viewModel.countingDownShows,
+                        variant: .active,
+                        onTap: { show in
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }
+                    )
+                }
+            }
+
+            // No Date Yet Section
+            if !viewModel.noDateShows.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    MyListSectionHeader(
+                        iconAsset: "ml-nodate",
+                        title: "NO DATE YET",
+                        subtitle: "\(viewModel.noDateShows.count) SEASONS AWAITING A RELEASE DATE",
+                        tint: .c2bMuted
+                    )
+
+                    MyListPosterGrid(
+                        shows: viewModel.noDateShows,
+                        variant: .active,
+                        onTap: { show in
+                            if let series = viewModel.getSeries(for: show.id) {
+                                navigationPath.append(series)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 // MARK: - View Model
@@ -239,6 +306,13 @@ final class MyListViewModel {
         seriesManager?.series(id: showId)
     }
 
+    /// Get binge-ready season info for a show (the unwatched complete season)
+    func getBingeReadyInfo(for showId: Int) -> BingeReadyInfo? {
+        guard let series = seriesManager?.series(id: showId),
+              let season = series.bingeReadySeason else { return nil }
+        return BingeReadyInfo(seasonNumber: season.seasonNumber, finaleDate: season.finaleDate)
+    }
+
     // MARK: - Tab Filtering
 
     func shows(for tab: ListTabScreen) -> [ShowData] {
@@ -258,51 +332,43 @@ final class MyListViewModel {
         }
     }
 
-    /// Binge Ready - shows where the season has completed and is ready to watch
-    /// Excludes shows that qualify for No Date Yet (user finished watching + no next date)
+    /// Binge Ready - shows that have ANY unwatched complete season
+    /// A show can be airing Season 3 but still appear here if Season 2 is unwatched
     var bingeReadyShows: [ShowData] {
-        let noDateIds = Set(noDateShows.map { $0.id })
         return shows(for: .active).filter { show in
-            show.timelineCategory == .bingeReady && !noDateIds.contains(show.id)
+            // Check via Series model if there's an unwatched binge-ready season
+            guard let series = seriesManager?.series(id: show.id) else {
+                // Fallback to ShowData's timelineCategory for shows not in SwiftData
+                return show.timelineCategory == .bingeReady
+            }
+            // Has any unwatched complete season?
+            return series.bingeReadySeason != nil
         }
     }
 
     /// Still Counting Down - shows that are airing or premiering soon
+    /// AND don't have an unwatched complete season (those go to Binge Ready)
     var countingDownShows: [ShowData] {
+        let bingeReadyIds = Set(bingeReadyShows.map { $0.id })
         return shows(for: .active).filter { show in
-            show.timelineCategory == .airingNow || show.timelineCategory == .premieringSoon
+            // Must be airing or premiering
+            let isCountingDown = show.timelineCategory == .airingNow || show.timelineCategory == .premieringSoon
+            // But NOT if they have unwatched seasons (those are in Binge Ready)
+            return isCountingDown && !bingeReadyIds.contains(show.id)
         }
     }
 
     /// No Date Yet - shows in anticipated state with no premiere date
-    /// Either: (1) followed while already in TBD state, or (2) user watched all episodes of current season
+    /// AND don't have an unwatched complete season (those go to Binge Ready)
     var noDateShows: [ShowData] {
+        let bingeReadyIds = Set(bingeReadyShows.map { $0.id })
         return shows(for: .active).filter { show in
-            // Must have an anticipated season with no premiere date
-            guard let anticipated = show.anticipatedSeason,
-                  anticipated.premiereDate == nil else {
+            // Must be anticipated
+            guard show.timelineCategory == .anticipated else {
                 return false
             }
-
-            // If show is already in anticipated state (followed after season ended),
-            // it goes directly to No Date Yet without requiring watch progress
-            if show.timelineCategory == .anticipated {
-                return true
-            }
-
-            // Otherwise, user must have watched all episodes of the current season
-            // to "graduate" from Binge Ready to No Date Yet
-            // Check via the SwiftData Series model (single source of truth for watch state)
-            guard let series = seriesManager?.series(id: show.id),
-                  let currentSeason = series.currentSeason else {
-                return false
-            }
-
-            // Season is fully watched if all episodes are marked watched
-            let watchedCount = currentSeason.watchedEpisodeCount
-            let episodeCount = currentSeason.episodes.count
-
-            return watchedCount == episodeCount && episodeCount > 0
+            // But NOT if they have unwatched seasons (those are in Binge Ready)
+            return !bingeReadyIds.contains(show.id)
         }
     }
 
