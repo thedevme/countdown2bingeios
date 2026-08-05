@@ -164,23 +164,28 @@ struct EpisodesSection: View {
 
 // MARK: - Preview
 
-#Preview("Airing Show - Schedule Mode") {
-    let episodes = (1...8).map { num in
-        EpisodeDisplayModel(
+private func makePreviewEpisodes() -> [EpisodeDisplayModel] {
+    (1...8).map { num in
+        let title = num <= 4 ? "Episode \(num) Title" : "Episode \(num)"
+        let desc = num <= 4 ? "Description for episode \(num) with some details." : ""
+        let airDate = Date().addingTimeInterval(Double((num - 5) * 7 * 86400))
+        return EpisodeDisplayModel(
             id: "\(num)",
             number: num,
             seasonNumber: 2,
-            title: num <= 4 ? "Episode \(num) Title" : "Episode \(num)",
-            description: num <= 4 ? "Description for episode \(num) with some details about what happens." : "",
+            title: title,
+            description: desc,
             runtime: 45 + (num * 2),
-            airDate: Date().addingTimeInterval(Double((num - 5) * 7 * 86400)),
+            airDate: airDate,
             isWatched: num <= 2,
             hasAired: num <= 4,
             isFinale: num == 8
         )
     }
+}
 
-    let s1Episodes = (1...9).map { num in
+private func makeS1PreviewEpisodes() -> [EpisodeDisplayModel] {
+    (1...9).map { num in
         EpisodeDisplayModel(
             id: "s1-\(num)",
             number: num,
@@ -194,6 +199,11 @@ struct EpisodesSection: View {
             isFinale: num == 9
         )
     }
+}
+
+#Preview("Airing Show - Schedule Mode") {
+    let episodes = makePreviewEpisodes()
+    let s1Episodes = makeS1PreviewEpisodes()
 
     let season = SeasonDisplayModel(
         id: "s2",
@@ -213,7 +223,7 @@ struct EpisodesSection: View {
         airDate: nil
     )
 
-    return ScrollView {
+    ScrollView {
         EpisodesSection(
             season: season,
             allSeasons: [season1, season],
@@ -229,21 +239,26 @@ struct EpisodesSection: View {
     .background(Color.c2bBackground)
 }
 
-#Preview("Complete Season - Watched Mode") {
-    let episodes = (1...10).map { num in
-        EpisodeDisplayModel(
+private func makeCompleteSeasonEpisodes() -> [EpisodeDisplayModel] {
+    (1...10).map { num in
+        let airDate = Date().addingTimeInterval(Double(-num * 7 * 86400))
+        return EpisodeDisplayModel(
             id: "\(num)",
             number: num,
             seasonNumber: 1,
             title: "Episode \(num) - Full Title Here",
-            description: "A detailed description of what happens in this episode of the show.",
+            description: "A detailed description of what happens in this episode.",
             runtime: 45 + (num % 3) * 5,
-            airDate: Date().addingTimeInterval(Double(-num * 7 * 86400)),
+            airDate: airDate,
             isWatched: num <= 7,
             hasAired: true,
             isFinale: num == 10
         )
     }
+}
+
+#Preview("Complete Season - Watched Mode") {
+    let episodes = makeCompleteSeasonEpisodes()
 
     let season = SeasonDisplayModel(
         id: "s1",
@@ -254,7 +269,7 @@ struct EpisodesSection: View {
         airDate: nil
     )
 
-    return ScrollView {
+    ScrollView {
         EpisodesSection(
             season: season,
             allSeasons: [season],

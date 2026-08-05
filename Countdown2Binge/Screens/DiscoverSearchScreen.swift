@@ -5,6 +5,7 @@ import RevenueCat
 // MARK: - Search Screen
 struct SearchScreen: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
     @State private var viewModel = DiscoverViewModel()
     @State private var navigationPath = NavigationPath()
     @State private var showPaywall: Bool = false
@@ -192,21 +193,23 @@ struct SearchScreen: View {
         }
         }
         .task {
-            viewModel.configure(with: modelContext)
+            viewModel.configure(with: modelContext, seriesManager: seriesManager)
             await viewModel.loadTrendingShows()
         }
         .sheet(item: Binding(
             get: { viewModel.pendingFollowShow },
             set: { _ in viewModel.clearPendingFollow() }
         )) { pendingShow in
-            FollowConfirmationSheet(
+            AddShowModal(
                 show: pendingShow,
-                onSave: {
+                addTimePrompt: pendingShow.addTimePrompt,
+                onDone: { answer in
                     // Trigger badge based on show state
                     badgeManager?.showFollowed(pendingShow)
 
+                    // Handle the watch answer and clear state
                     Task {
-                        await viewModel.confirmPendingFollow()
+                        await viewModel.handleAddShowDone(answer: answer)
                     }
 
                     // Show notification onboarding if this is the first follow

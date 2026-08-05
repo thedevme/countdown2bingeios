@@ -53,10 +53,10 @@ final class FranchiseService {
         return showToFranchise[tmdbId]
     }
 
-    /// Get related show IDs for a show (excluding itself)
+    /// Get related show IDs for a show (excluding itself) - sync version.
     /// - Parameter tmdbId: The TMDB ID of the show
     /// - Returns: Array of related TMDB IDs, or empty if not part of a franchise
-    func relatedShowIds(forShowId tmdbId: Int) -> [Int] {
+    func getRelatedShowIds(forShowId tmdbId: Int) -> [Int] {
         guard let franchise = franchise(forShowId: tmdbId) else {
             return []
         }
@@ -241,4 +241,15 @@ final class FranchiseService {
 
 private struct FranchiseContainer: Codable {
     let franchises: [Franchise]
+}
+
+// MARK: - FranchiseResolving Conformance
+
+extension FranchiseService: FranchiseResolving {
+    /// Async wrapper for relatedShowIds to conform to FranchiseResolving protocol.
+    func relatedShowIds(forShowId showId: Int) async -> [Int] {
+        // Ensure franchises are loaded
+        await fetchFranchises()
+        return getRelatedShowIds(forShowId: showId)
+    }
 }

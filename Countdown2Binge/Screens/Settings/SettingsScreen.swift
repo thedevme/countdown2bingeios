@@ -9,6 +9,21 @@ import SwiftUI
 import SwiftData
 import RevenueCat
 
+/// Sync eligibility state for iCloud sync
+enum SyncEligibility {
+    case eligible
+    case notEligible(SyncIneligibilityReason)
+}
+
+/// Reasons why sync may be unavailable
+enum SyncIneligibilityReason {
+    case noICloudAccount
+    case iCloudRestricted
+    case temporarilyUnavailable
+    case notPremium
+    case unknown
+}
+
 struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
@@ -25,7 +40,6 @@ struct SettingsScreen: View {
     private var profile: UserProfile { ProfileManager.shared.profile }
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
-    private var cloudSyncService: CloudSyncService { CloudSyncService.shared }
 
     // Cloud-synced onboarding flags
     private var cloudSettings: CloudSettingsStore { CloudSettingsStore.shared }
@@ -283,24 +297,16 @@ struct SettingsScreen: View {
             return syncStatus
         }
 
-        if let lastSynced = cloudSyncService.lastSyncedAt {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.unitsStyle = .abbreviated
-            return String(localized: "sync_last_synced \(formatter.localizedString(for: lastSynced, relativeTo: Date()))")
-        }
-
+        // CloudKit sync is automatic via SwiftData
         return String(localized: "settings_cloud_sync_on")
     }
 
     @MainActor
     private func checkiCloudStatus() async {
-        syncEligibility = await cloudSyncService.checkSyncEligibility()
-        switch syncEligibility {
-        case .eligible:
-            iCloudAvailable = true
-        case .notEligible:
-            iCloudAvailable = false
-        }
+        // CloudKit sync is automatic via SwiftData
+        // Check if iCloud is available via FileManager
+        iCloudAvailable = FileManager.default.ubiquityIdentityToken != nil
+        syncEligibility = iCloudAvailable ? .eligible : .notEligible(.noICloudAccount)
     }
 
     @MainActor
@@ -310,10 +316,10 @@ struct SettingsScreen: View {
         isSyncing = true
         syncStatus = ""
 
-        let result = await cloudSyncService.fullSync(modelContext: modelContext)
+        // CloudKit sync is automatic via SwiftData - nothing to do manually
+        syncStatus = String(localized: "sync_success")
 
         isSyncing = false
-        syncStatus = result.message
 
         // Clear status after a few seconds
         try? await Task.sleep(for: .seconds(3))

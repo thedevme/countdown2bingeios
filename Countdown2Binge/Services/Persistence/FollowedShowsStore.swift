@@ -190,8 +190,8 @@ final class FollowedShowsStore {
         // Ensure franchise data is loaded
         await FranchiseService.shared.fetchFranchises()
 
-        // Get related show IDs
-        let relatedIds = FranchiseService.shared.relatedShowIds(forShowId: tmdbId)
+        // Get related show IDs (use sync version since we've already awaited fetchFranchises)
+        let relatedIds = FranchiseService.shared.getRelatedShowIds(forShowId: tmdbId)
 
         guard !relatedIds.isEmpty else { return }
 

@@ -282,4 +282,25 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
     var isBingeReady: Bool {
         timelineCategory == .bingeReady
     }
+
+    /// Add-time prompt - always shown when there's a completed season to ask about.
+    /// For airing shows, asks about the PREVIOUS season (not the current airing one).
+    /// Determines if show goes to Timeline (caught up) or My List Binge Ready (needs to watch).
+    var addTimePrompt: AddTimeWatchedPrompt? {
+        let regularSeasons = seasons.filter { !$0.isSpecials }
+        guard !regularSeasons.isEmpty else { return nil }
+
+        // Find the most recent COMPLETED season (not currently airing)
+        let completedSeasons = regularSeasons.filter { $0.isComplete }
+        guard let latestCompleted = completedSeasons.max(by: { $0.seasonNumber < $1.seasonNumber }) else {
+            // No completed seasons yet (e.g., first season still airing)
+            return nil
+        }
+
+        return AddTimeWatchedPrompt(
+            seriesId: id,
+            seasonNumber: latestCompleted.seasonNumber,
+            seasonName: latestCompleted.name
+        )
+    }
 }

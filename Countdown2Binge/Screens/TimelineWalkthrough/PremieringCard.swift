@@ -95,36 +95,11 @@ struct PremieringCard: View {
     var body: some View {
         HStack(spacing: 0) {
             // Left: Countdown section
-            HStack {
-                VStack(spacing: 0) {
-                    Spacer()
-
-                    VStack(spacing: 0) {
-                        Text("\(daysUntilPremiere)")
-                            .font(.custom(.oswald.bold, size: CustomFont.size.xl7))
-                            .foregroundColor(.white)
-                            .tracking(-5)
-                            .rotationEffect(.degrees(-90))
-                            .padding(-30)
-
-                        Text("time_days")
-                            .font(.custom(.oswald.bold, size: CustomFont.size.xl2))
-                            .foregroundColor(Color.c2bTealBright)
-                            .textCase(.uppercase)
-                            .tracking(1.6)
-                            .padding(-5)
-
-                        Text("timeline_to_premiere")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
-                            .foregroundColor(Color(hex: "#52525b"))
-                            .textCase(.uppercase)
-                            .tracking(1.2)
-                    }
-                }
-                .padding(-7)
-                .frame(width: 110, height: 140)
-            }
-            .padding(-20)
+            CountdownLabelView(
+                number: daysUntilPremiere,
+                accentColor: .c2bTealBright,
+                bottomLabel: "timeline_to_premiere"
+            )
 
             // Right: Poster (flexible)
             ZStack(alignment: .topTrailing) {

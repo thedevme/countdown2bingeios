@@ -244,21 +244,26 @@ struct EpisodeCalendar: View {
 
 // MARK: - Preview
 
-#Preview {
-    let episodes = (1...8).map { num in
-        EpisodeDisplayModel(
+private func makeCalendarPreviewEpisodes() -> [EpisodeDisplayModel] {
+    (1...8).map { num in
+        let airDate = Date().addingTimeInterval(Double((num - 4) * 7 * 86400))
+        return EpisodeDisplayModel(
             id: "\(num)",
             number: num,
             seasonNumber: 2,
             title: "Episode \(num)",
             description: "Description for episode \(num)",
             runtime: 45 + (num * 2),
-            airDate: Date().addingTimeInterval(Double((num - 4) * 7 * 86400)),
+            airDate: airDate,
             isWatched: num < 3,
             hasAired: num <= 4,
             isFinale: num == 8
         )
     }
+}
+
+#Preview {
+    let episodes = makeCalendarPreviewEpisodes()
 
     let season = SeasonDisplayModel(
         id: "s2",
@@ -269,10 +274,10 @@ struct EpisodeCalendar: View {
         airDate: Date().addingTimeInterval(-21 * 86400)
     )
 
-    return ScrollView {
+    ScrollView {
         EpisodeCalendar(
             season: season,
-            startDate: Date().addingTimeInterval(86400 * 3), // Start in 3 days
+            startDate: Date().addingTimeInterval(86400 * 3),
             monthOffset: .constant(0),
             selectedEpisode: .constant(nil),
             showStartSelected: .constant(false)

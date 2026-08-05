@@ -11,11 +11,12 @@ import SwiftData
 struct ProfileScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(SeriesManager.self) private var seriesManager
 
     let isPremium: Bool
 
     private var profile: UserProfile { ProfileManager.shared.profile }
-    @State private var followedShows: [FollowedShow] = []
+    private var followedShows: [Series] { seriesManager.allSeries() }
     @State private var showEditProfile = false
     @State private var showShareSheet = false
     @State private var navigationPath = NavigationPath()
@@ -80,18 +81,18 @@ struct ProfileScreen: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 24)
 
-                    // Sync status
+                    // Sync status (CloudKit sync built into SwiftData)
                     ProfileSyncStatus(
                         isPremium: isPremium,
                         showCount: followedShows.count,
-                        lastSyncedAt: CloudSyncService.shared.lastSyncedAt
+                        lastSyncedAt: nil // CloudKit sync is automatic
                     )
                     .padding(.horizontal, 20)
                     .padding(.bottom, 14)
 
                     // Shows list
                     VStack(spacing: 0) {
-                        ForEach(followedShows, id: \.tmdbId) { show in
+                        ForEach(followedShows, id: \.id) { show in
                             ProfileShowRow(
                                 show: show,
                                 isSynced: isPremium,
@@ -100,7 +101,7 @@ struct ProfileScreen: View {
                                 }
                             )
 
-                            if show.tmdbId != followedShows.last?.tmdbId {
+                            if show.id != followedShows.last?.id {
                                 Divider()
                                     .background(Color.white.opacity(0.06))
                             }
@@ -108,11 +109,11 @@ struct ProfileScreen: View {
                     }
                     .padding(.horizontal, 20)
 
-                    // Sync footer
+                    // Sync footer (CloudKit sync built into SwiftData)
                     ProfileSyncFooter(
                         isPremium: isPremium,
                         showCount: followedShows.count,
-                        lastSyncedAt: CloudSyncService.shared.lastSyncedAt
+                        lastSyncedAt: nil // CloudKit sync is automatic
                     )
                     .padding(.horizontal, 20)
                     .padding(.top, 14)
@@ -147,9 +148,6 @@ struct ProfileScreen: View {
             }
             .background(Color.c2bBackground)
             .navigationBarHidden(true)
-            .onAppear {
-                loadData()
-            }
             .sheet(isPresented: $showEditProfile) {
                 EditProfileScreen(isPremium: isPremium)
             }
@@ -164,11 +162,6 @@ struct ProfileScreen: View {
                 }
             }
         }
-    }
-
-    private func loadData() {
-        let store = FollowedShowsStore(modelContext: modelContext)
-        followedShows = (try? store.getAllFollowed()) ?? []
     }
 }
 

@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ProfileTrackedStats: View {
-    let shows: [FollowedShow]
+    let shows: [Series]
 
     private var episodeCount: Int {
-        shows.reduce(0) { $0 + ($1.cachedData?.numberOfEpisodes ?? 0) }
+        shows.reduce(0) { $0 + $1.numberOfEpisodes }
     }
 
     private var seasonCount: Int {
-        shows.reduce(0) { $0 + ($1.cachedData?.numberOfSeasons ?? 0) }
+        shows.reduce(0) { $0 + $1.numberOfSeasons }
     }
 
     private var showCount: Int {
@@ -27,7 +27,7 @@ struct ProfileTrackedStats: View {
         // Calculate total minutes from episodes × average runtime (45 min default)
         let avgRuntimeMinutes = 45
         let totalMinutes = shows.reduce(0) { total, show in
-            let episodes = show.cachedData?.numberOfEpisodes ?? 0
+            let episodes = show.numberOfEpisodes
             return total + (episodes * avgRuntimeMinutes)
         }
 

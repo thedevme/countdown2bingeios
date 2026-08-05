@@ -9,32 +9,29 @@ import SwiftUI
 
 struct LineupShareSheet: View {
     let profile: UserProfile
-    let shows: [FollowedShow]
+    let shows: [Series]
     let isPremium: Bool
     var onClose: () -> Void = {}
 
     @State private var isPresented = false
 
-    private var topShows: [FollowedShow] {
+    private var topShows: [Series] {
         Array(shows.prefix(6))
     }
 
-    private var nextBingeShow: FollowedShow? {
+    private var nextBingeShow: Series? {
         // Find the next show that's anticipated or airing
         shows.first { show in
-            let state = show.cachedData?.lifecycleState
+            let state = show.showState
             return state == .anticipated || state == .airing
         }
     }
 
     private var daysToNextBinge: Int? {
-        guard let nextShow = nextBingeShow,
-              let showData = nextShow.cachedData?.toShow() else {
-            return nil
-        }
+        guard let nextShow = nextBingeShow else { return nil }
         // For airing shows, use days until finale (binge ready)
         // For anticipated shows, use days until premiere
-        return showData.daysUntilFinale ?? showData.daysUntilPremiere
+        return nextShow.daysUntilFinale ?? nextShow.daysUntilPremiere
     }
 
     var body: some View {
@@ -163,7 +160,7 @@ struct LineupShareSheet: View {
 
             // Poster grid
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 5), count: 6), spacing: 5) {
-                ForEach(topShows, id: \.tmdbId) { show in
+                ForEach(topShows, id: \.id) { show in
                     posterImage(for: show)
                 }
 
@@ -192,7 +189,7 @@ struct LineupShareSheet: View {
                             .textCase(.uppercase)
                             .foregroundColor(.c2bTeal)
 
-                        Text(nextShow.cachedData?.name ?? "")
+                        Text(nextShow.name)
                             .font(.system(size: 12))
                             .foregroundColor(.c2bDim)
                     }
@@ -219,13 +216,8 @@ struct LineupShareSheet: View {
         .shadow(color: .black.opacity(0.6), radius: 22, y: 16)
     }
 
-    private func posterImage(for show: FollowedShow) -> some View {
-        let url: URL? = {
-            guard let path = show.cachedData?.posterPath else { return nil }
-            return URL(string: "https://image.tmdb.org/t/p/w154\(path)")
-        }()
-
-        return AsyncImage(url: url) { phase in
+    private func posterImage(for show: Series) -> some View {
+        return AsyncImage(url: show.posterURL) { phase in
             switch phase {
             case .success(let image):
                 image

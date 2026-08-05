@@ -96,6 +96,53 @@ struct SeasonDisplayModel: Identifiable {
 
     /// True if show is in "schedule" mode (still counting down to binge-ready)
     var needsScheduleMode: Bool { releasedCount < totalEpisodes }
+
+    /// Initialize from SwiftData Season model.
+    /// Reads watch state directly from Episode.hasWatched (single source of truth).
+    /// Uses conservative finale rule: only episodes explicitly typed as finale.
+    init(from season: Season, isCurrent: Bool) {
+        self.id = "\(season.id)"
+        self.number = season.seasonNumber
+        self.name = season.name
+        self.isCurrent = isCurrent
+        self.airDate = season.airDate
+
+        let sortedEps = season.sortedEpisodes
+        // Conservative finale: only use explicitly typed finale episodes
+        let finaleEpisodeNumber = sortedEps.first { $0.episodeType == .finale }?.episodeNumber
+
+        self.episodes = sortedEps.map { episode in
+            EpisodeDisplayModel(
+                id: "\(episode.id)",
+                number: episode.episodeNumber,
+                seasonNumber: episode.seasonNumber,
+                title: episode.name,
+                description: episode.overview,
+                runtime: episode.runtime,
+                airDate: episode.airDate,
+                isWatched: episode.hasWatched,
+                hasAired: episode.hasAired,
+                isFinale: finaleEpisodeNumber != nil && episode.episodeNumber == finaleEpisodeNumber
+            )
+        }
+    }
+
+    /// Memberwise initializer for previews and tests.
+    init(
+        id: String,
+        number: Int,
+        name: String,
+        episodes: [EpisodeDisplayModel],
+        isCurrent: Bool,
+        airDate: Date? = nil
+    ) {
+        self.id = id
+        self.number = number
+        self.name = name
+        self.episodes = episodes
+        self.isCurrent = isCurrent
+        self.airDate = airDate
+    }
 }
 
 
@@ -177,52 +224,6 @@ extension SeasonData {
     }
 }
 
-extension ShowData {
-    /// Convert all seasons to display models
-    /// - Parameter watchProgress: The watch progress manager to check watched state
-    func toSeasonDisplayModels(watchProgress: WatchProgressManager) -> [SeasonDisplayModel] {
-        seasons
-            .filter { !$0.isSpecials }
-            .sorted { $0.seasonNumber < $1.seasonNumber }
-            .map { season in
-                let watchedSet = watchProgress.watchedEpisodeNumbers(
-                    showId: id,
-                    season: season.seasonNumber,
-                    episodeCount: season.episodeCount
-                )
-                return season.toDisplayModel(
-                    isCurrent: season.id == currentSeason?.id,
-                    watchedEpisodes: watchedSet
-                )
-            }
-    }
-
-    /// Get a specific season as display model
-    func seasonDisplayModel(
-        seasonNumber: Int,
-        watchProgress: WatchProgressManager
-    ) -> SeasonDisplayModel? {
-        // Prefer currentSeason if it matches the requested season (has full episode data)
-        let season: SeasonData?
-        if let current = currentSeason, current.seasonNumber == seasonNumber {
-            season = current
-        } else {
-            season = seasons.first(where: { $0.seasonNumber == seasonNumber })
-        }
-
-        guard let season = season else {
-            return nil
-        }
-
-        let watchedSet = watchProgress.watchedEpisodeNumbers(
-            showId: id,
-            season: season.seasonNumber,
-            episodeCount: season.episodeCount
-        )
-
-        return season.toDisplayModel(
-            isCurrent: season.id == currentSeason?.id,
-            watchedEpisodes: watchedSet
-        )
-    }
-}
+// MARK: - ShowData Extensions (deprecated - use SeasonDisplayModel(from: Season) instead)
+// These extensions are kept for backwards compatibility but should not be used.
+// Watch state is now read from Episode.hasWatched on the SwiftData model.

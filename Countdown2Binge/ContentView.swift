@@ -10,6 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
 
     // Cloud-synced onboarding flags (persists across devices via iCloud)
     private var cloudSettings: CloudSettingsStore { CloudSettingsStore.shared }
@@ -225,42 +226,17 @@ struct ContentView: View {
 
     @MainActor
     private func saveFollowedShows(_ shows: [ShowSummary]) async {
-        let store = FollowedShowsStore(modelContext: modelContext)
-        let seriesStore = SeriesStore(modelContext: modelContext)
-        let tmdbService = TMDBService()
-
-        // Step 1: Save minimal data immediately for quick UI update
+        // Follow each show through SeriesManager (the single write funnel)
         for show in shows {
             do {
-                try store.follow(summary: show)
-
-                // Push to cloud (fire-and-forget, will retry on next sync if fails)
-                Task {
-                    await CloudSyncService.shared.pushShow(
-                        tmdbId: show.id,
-                        followedAt: Date(),
-                        modelContext: modelContext
-                    )
-                }
+                _ = try await seriesManager.follow(id: show.id)
+                print("DEBUG: Followed show \(show.name)")
             } catch {
-                print("Error saving show \(show.name): \(error)")
+                print("Error following show \(show.name): \(error)")
             }
         }
 
-        // Step 2: Fetch full details for all shows in parallel
-        let ids = shows.map { $0.id }
-        do {
-            let fullShows = try await tmdbService.getMultipleShowDetails(ids: ids)
-            for fullShowData in fullShows {
-                try? store.updateCache(for: fullShowData.id, with: fullShowData)
-                try? seriesStore.save(from: fullShowData)
-                print("DEBUG: Fetched full details for \(fullShowData.name)")
-            }
-        } catch {
-            print("Error fetching show details: \(error)")
-        }
-
-        // Step 3: Trigger timeline refresh
+        // Trigger timeline refresh
         timelineRefreshTrigger = UUID()
         print("DEBUG: Triggered timeline refresh after saving \(shows.count) shows")
     }

@@ -11,6 +11,7 @@ import RevenueCat
 
 struct DiscoverScreen: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
     @State private var viewModel = DiscoverViewModel()
     @State private var selectedTab: DiscoverTab = .soonerLater
     @State private var selectedNetwork: String = "all"
@@ -150,7 +151,7 @@ struct DiscoverScreen: View {
             }
         }
         .task {
-            viewModel.configure(with: modelContext)
+            viewModel.configure(with: modelContext, seriesManager: seriesManager)
             // Fire off both loads - they update UI as data arrives
             async let cacheTask: () = viewModel.loadDiscoverFromCache()
             async let networkTask: () = viewModel.loadAllNetworks()
@@ -160,14 +161,16 @@ struct DiscoverScreen: View {
             get: { viewModel.pendingFollowShow },
             set: { _ in viewModel.clearPendingFollow() }
         )) { pendingShow in
-            FollowConfirmationSheet(
+            AddShowModal(
                 show: pendingShow,
-                onSave: {
+                addTimePrompt: pendingShow.addTimePrompt,
+                onDone: { answer in
                     // Trigger badge based on show state
                     badgeManager?.showFollowed(pendingShow)
 
+                    // Handle the watch answer and clear state
                     Task {
-                        await viewModel.confirmPendingFollow()
+                        await viewModel.handleAddShowDone(answer: answer)
                     }
 
                     // Show notification onboarding if this is the first follow

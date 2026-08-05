@@ -737,6 +737,7 @@
 "timeline_to_premiere" = "TO PREMIERE";
 "timeline_tbd" = "TBD";
 "timeline_expected" = "EXPECTED";
+"timeline_exp" = "EXP";
 "timeline_release" = "RELEASE";
 "timeline_season %lld" = "Season %lld";
 "timeline_tba" = "TBA";
@@ -1033,3 +1034,40 @@
 "walkthrough_label_date_set" = "A DATE IS SET";
 "walkthrough_label_premieres" = "IT PREMIERES";
 "walkthrough_label_finale" = "THE FINALE AIRS";
+
+// =============================================================================
+// MARK: - Add Show Modal
+// =============================================================================
+
+// Section title
+"add_show_timeline_section_title" = "ADDED TO YOUR TIMELINE IN";
+
+// Badge
+"add_show_badge" = "ADDED TO TIMELINE";
+
+// Timeline stepper labels
+"stepper_series_complete" = "SERIES COMPLETE";
+"stepper_now_airing" = "NOW AIRING";
+"stepper_premiering" = "PREMIERING";
+"stepper_anticipated" = "ANTICIPATED";
+
+// Watch question
+"watch_question_title %lld" = "DID YOU WATCH ALL OF SEASON %lld?";
+"watch_option_finished %lld" = "Yes — finished Season %lld";
+"watch_option_finished_subtitle %lld" = "You're ready for Season %lld";
+"watch_option_started %lld" = "Started Season %lld, didn't finish";
+"watch_option_started_subtitle %lld" = "We'll pick up where you left off in Season %lld";
+"watch_option_not_watched %lld" = "No — haven't watched Season %lld";
+"watch_option_not_watched_subtitle %lld" = "We'll plan a rewatch before Season %lld drops";
+
+// =============================================================================
+// MARK: - Pending Section
+// =============================================================================
+
+// Section header
+"header_pending" = "PENDING";
+
+// Card labels
+"pending_tba" = "TBA";
+"pending_finale_date_label" = "FINALE DATE";
+"pending_finale_tba_badge" = "FINALE DATE TBA";

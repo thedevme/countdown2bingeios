@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct MyListSegmentedControl: View {
-    @Binding var selectedTab: MyListTab
+    @Binding var selectedTab: ListTabScreen
     let activeCount: Int
     let endedCount: Int
     let archivedCount: Int
 
-    private func count(for tab: MyListTab) -> Int {
+    private func count(for tab: ListTabScreen) -> Int {
         switch tab {
         case .active: return activeCount
         case .ended: return endedCount
@@ -23,7 +23,7 @@ struct MyListSegmentedControl: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(MyListTab.allCases, id: \.self) { tab in
+            ForEach(ListTabScreen.allCases, id: \.self) { tab in
                 let isSelected = selectedTab == tab
                 let tabCount = count(for: tab)
 

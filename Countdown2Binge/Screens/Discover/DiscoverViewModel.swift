@@ -87,7 +87,7 @@ final class DiscoverViewModel {
     private(set) var isLoadingShowDetail = false
     private(set) var loadingFollowId: Int?
 
-    /// Show pending follow confirmation - triggers confirmation sheet
+    /// Show pending follow confirmation - triggers AddShowModal
     private(set) var pendingFollowShow: ShowData?
 
     /// Set to true when user hits free tier limit - triggers paywall
@@ -124,8 +124,7 @@ final class DiscoverViewModel {
 
     private let tmdbService: TMDBServiceProtocol
     private var modelContext: ModelContext?
-    private var store: FollowedShowsStore?
-    private var seriesStore: SeriesStore?
+    private var seriesManager: SeriesManager?
     private var cacheService: DiscoverCacheService?
     private var searchTask: Task<Void, Never>?
     private var followedShowIds: Set<Int> = []
@@ -138,10 +137,9 @@ final class DiscoverViewModel {
 
     // MARK: - Configuration
 
-    func configure(with modelContext: ModelContext) {
+    func configure(with modelContext: ModelContext, seriesManager: SeriesManager) {
         self.modelContext = modelContext
-        self.store = FollowedShowsStore(modelContext: modelContext)
-        self.seriesStore = SeriesStore(modelContext: modelContext)
+        self.seriesManager = seriesManager
         self.cacheService = DiscoverCacheService(modelContext: modelContext, tmdbService: tmdbService)
         Task {
             await loadFollowedShowIds()
@@ -218,17 +216,13 @@ final class DiscoverViewModel {
     }
 
     func toggleFollow(_ show: ShowSummary) async {
-        guard let store, let seriesStore else { return }
+        guard let seriesManager else { return }
 
         if isFollowing(show) {
             // Unfollow
             do {
-                try store.unfollow(tmdbId: show.id)
-                try seriesStore.delete(tmdbId: show.id)
+                try seriesManager.unfollow(id: show.id)
                 followedShowIds.remove(show.id)
-
-                // Remove from cloud
-                Task { await CloudSyncService.shared.removeShow(tmdbId: show.id) }
             } catch {
                 print("Error unfollowing show: \(error)")
             }
@@ -245,7 +239,7 @@ final class DiscoverViewModel {
                 return
             }
 
-            // Show confirmation sheet first - don't follow yet
+            // Fetch show details and show confirmation modal
             do {
                 let fullShowData = try await tmdbService.getShowDetails(id: show.id)
                 pendingFollowShow = fullShowData
@@ -255,46 +249,44 @@ final class DiscoverViewModel {
         }
     }
 
-    /// Actually follow the pending show (called when user taps SAVE)
-    func confirmPendingFollow() async {
-        guard let show = pendingFollowShow, let store, let seriesStore, let modelContext else { return }
+    /// Actually follow the show and handle the WatchAnswer from AddShowModal
+    func handleAddShowDone(answer: WatchAnswer?) async {
+        guard let show = pendingFollowShow, let seriesManager else {
+            clearPendingFollow()
+            return
+        }
 
         do {
-            let summary = ShowSummary(
-                id: show.id,
-                name: show.name,
-                overview: show.overview,
-                posterPath: show.posterPath,
-                backdropPath: show.backdropPath,
-                firstAirDate: nil,
-                voteAverage: show.voteAverage,
-                genreIds: show.genres.map { $0.id }
-            )
-            try store.follow(summary: summary)
+            // Actually follow the show now
+            let result = try seriesManager.follow(showData: show)
             followedShowIds.insert(show.id)
-            try store.updateCache(for: show.id, with: show)
-            try seriesStore.save(from: show)
-            print("DEBUG: Saved \(show.name) - \(show.numberOfSeasons) seasons, inProduction: \(show.inProduction)")
 
-            // Save franchise/spinoff data for this show
-            await store.saveFranchiseData(for: show.id)
-
-            // Push to cloud
-            Task {
-                await CloudSyncService.shared.pushShow(
-                    tmdbId: show.id,
-                    followedAt: Date(),
-                    modelContext: modelContext
-                )
+            // Handle the watch answer if there was a prompt
+            if case let .followed(_, prompt?) = result, let answer {
+                switch answer {
+                case .finished:
+                    // User finished the season - mark it watched
+                    try seriesManager.answerAddTimeWatched(
+                        seriesId: prompt.seriesId,
+                        seasonNumber: prompt.seasonNumber,
+                        watched: true
+                    )
+                case .started:
+                    // User started but didn't finish - leave unwatched for now
+                    break
+                case .notWatched:
+                    // User hasn't watched - leave in Binge Ready
+                    break
+                }
             }
         } catch {
             print("Error following show: \(error)")
         }
 
-        pendingFollowShow = nil
+        clearPendingFollow()
     }
 
-    /// Clear the pending follow (call when dismissing without saving)
+    /// Clear the pending follow state
     func clearPendingFollow() {
         pendingFollowShow = nil
     }
@@ -413,7 +405,7 @@ final class DiscoverViewModel {
                 return
             }
 
-            // Show confirmation sheet - we already have full ShowData
+            // Show confirmation modal - we already have full ShowData
             pendingFollowShow = show
         } else {
             // Unfollow directly
@@ -569,14 +561,8 @@ final class DiscoverViewModel {
     // MARK: - Private
 
     private func loadFollowedShowIds() async {
-        guard let store else { return }
-
-        do {
-            let followedShows = try store.getAllFollowed()
-            followedShowIds = Set(followedShows.map { $0.tmdbId })
-        } catch {
-            print("Error loading followed show IDs: \(error)")
-        }
+        guard let seriesManager else { return }
+        followedShowIds = Set(seriesManager.allSeries().map { $0.id })
     }
 
     /// Pre-compute bucket groupings once when data changes

@@ -102,37 +102,12 @@ struct AnticipatedCard: View {
     var body: some View {
         HStack(spacing: 0) {
             // Left: Countdown section
-            HStack {
-                VStack(spacing: 0) {
-                    Spacer()
-
-                    VStack(spacing: 0) {
-
-                        Text(expectedYearDisplay)
-                            .font(.custom(.oswald.bold, size: CustomFont.size.xl7))
-                            .foregroundColor(.white)
-                            .tracking(-5)
-                            .rotationEffect(.degrees(-90))
-
-                        Text("timeline_expected")
-                            .font(.custom(.oswald.bold, size: 16))
-                            .foregroundColor(Color.c2bTealBright)
-                            .textCase(.uppercase)
-                            .tracking(1.6)
-                            .padding(-5)
-
-                        Text("timeline_release")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.xs))
-                            .foregroundColor(Color(hex: "#52525b"))
-                            .textCase(.uppercase)
-                            .tracking(1.2)
-                    }
-                }
-                .padding(-7)
-                .frame(width: 110, height: 140)
-            }
-            .padding(-20)
-
+            CountdownLabelView(
+                text: expectedYearDisplay,
+                middleLabel: "timeline_exp",
+                accentColor: .c2bTealBright,
+                bottomLabel: "timeline_release"
+            )
 
             // Right: Poster (flexible)
             ZStack(alignment: .topTrailing) {

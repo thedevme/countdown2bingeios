@@ -30,17 +30,17 @@ struct FollowedShowDetail: View {
 
     /// Convert Series to ShowData for child components
     private var show: ShowData {
-        series.toShow()
+        series.toShowData()
     }
 
     // Spinoff count from stored data (set when show was followed)
     private var spinoffCount: Int {
-        series.spinoffCount ?? 0
+        series.spinoffCount
     }
 
     // Franchise data for displaying spinoffs tab content
     private var franchise: Franchise? {
-        FranchiseService.shared.franchise(forShowId: series.tmdbId)
+        FranchiseService.shared.franchise(forShowId: series.id)
     }
 
     init(series: Series, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
@@ -204,8 +204,8 @@ struct FollowedShowDetail: View {
 
         do {
             let tmdbService = TMDBService()
-            async let creditsResult = tmdbService.getShowCredits(id: series.tmdbId)
-            async let videosResult = tmdbService.getShowVideos(id: series.tmdbId)
+            async let creditsResult = tmdbService.getShowCredits(id: series.id)
+            async let videosResult = tmdbService.getShowVideos(id: series.id)
 
             let (credits, fetchedVideos) = try await (creditsResult, videosResult)
             cast = credits.cast
@@ -221,7 +221,7 @@ struct FollowedShowDetail: View {
 
     private func loadArchiveState() {
         if let ids = UserDefaults.standard.array(forKey: archivedShowsKey) as? [Int] {
-            isArchived = ids.contains(series.tmdbId)
+            isArchived = ids.contains(series.id)
         }
     }
 
@@ -230,12 +230,12 @@ struct FollowedShowDetail: View {
 
         if isArchived {
             // Unarchive - stay on page
-            ids.remove(series.tmdbId)
+            ids.remove(series.id)
             UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
             isArchived = false
         } else {
             // Archive - dismiss and go back
-            ids.insert(series.tmdbId)
+            ids.insert(series.id)
             UserDefaults.standard.set(Array(ids), forKey: archivedShowsKey)
             isArchived = true
             onDismiss()

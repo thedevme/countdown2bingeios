@@ -16,6 +16,7 @@ struct FullTimelineView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
 
     // Persisted expand/collapse states for full timeline
     @AppStorage("full_timeline_now_playing_expanded") private var nowPlayingExpanded = true
@@ -47,8 +48,7 @@ struct FullTimelineView: View {
         }
         .refreshable {
             // Pull-to-refresh: Force fetch from TMDB API
-            let refreshService = StateRefreshService(modelContainer: modelContext.container)
-            await refreshService.forceRefreshAllShows()
+            await seriesManager.refreshAll(force: true)
             await viewModel.refresh()
         }
         .background(Color.c2bBackground)

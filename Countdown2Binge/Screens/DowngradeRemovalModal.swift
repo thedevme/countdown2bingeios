@@ -11,9 +11,9 @@ import SwiftData
 
 struct DowngradeRemovalModal: View {
     @Binding var isPresented: Bool
-    @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
 
-    @State private var followedShows: [FollowedShow] = []
+    @State private var followedShows: [Series] = []
     @State private var markedForRemoval: Set<Int> = [] // tmdbIds
     @State private var showOverlay: Bool = false
     @State private var showSheet: Bool = false
@@ -77,21 +77,13 @@ struct DowngradeRemovalModal: View {
     }
 
     private func loadFollowedShows() {
-        let store = FollowedShowsStore(modelContext: modelContext)
-        followedShows = (try? store.getAllFollowed()) ?? []
+        followedShows = seriesManager.allSeries()
     }
 
     private func commitRemoval() {
-        let store = FollowedShowsStore(modelContext: modelContext)
-        let seriesStore = SeriesStore(modelContext: modelContext)
-
         for tmdbId in markedForRemoval {
             do {
-                try store.unfollow(tmdbId: tmdbId)
-                try seriesStore.delete(tmdbId: tmdbId)
-
-                // Remove from cloud (will be skipped if not premium)
-                Task { await CloudSyncService.shared.removeShow(tmdbId: tmdbId) }
+                try seriesManager.unfollow(id: tmdbId)
             } catch {
                 print("Error removing show \(tmdbId): \(error)")
             }
@@ -133,7 +125,7 @@ struct DowngradeRemovalModal: View {
 
 // MARK: - Sheet Content
 private struct DowngradeRemovalSheet: View {
-    let followedShows: [FollowedShow]
+    let followedShows: [Series]
     @Binding var markedForRemoval: Set<Int>
     let freeLimit: Int
     let overCount: Int
@@ -210,15 +202,15 @@ private struct DowngradeRemovalSheet: View {
             // Shows list
             ScrollView {
                 VStack(spacing: 10) {
-                    ForEach(followedShows, id: \.tmdbId) { show in
+                    ForEach(followedShows, id: \.id) { series in
                         DowngradeShowCard(
-                            show: show,
-                            isMarked: markedForRemoval.contains(show.tmdbId),
+                            series: series,
+                            isMarked: markedForRemoval.contains(series.id),
                             onToggle: {
-                                if markedForRemoval.contains(show.tmdbId) {
-                                    markedForRemoval.remove(show.tmdbId)
+                                if markedForRemoval.contains(series.id) {
+                                    markedForRemoval.remove(series.id)
                                 } else {
-                                    markedForRemoval.insert(show.tmdbId)
+                                    markedForRemoval.insert(series.id)
                                 }
                             }
                         )
@@ -295,16 +287,16 @@ private struct DowngradeRemovalSheet: View {
 
 // MARK: - Show Card
 private struct DowngradeShowCard: View {
-    let show: FollowedShow
+    let series: Series
     let isMarked: Bool
     let onToggle: () -> Void
 
     private var showName: String {
-        show.cachedData?.name ?? "Show \(show.tmdbId)"
+        series.name
     }
 
     private var posterURL: URL? {
-        guard let path = show.cachedData?.posterPath else { return nil }
+        guard let path = series.posterPath else { return nil }
         return URL(string: "https://image.tmdb.org/t/p/w154\(path)")
     }
 
@@ -388,6 +380,6 @@ private struct DowngradeShowCard: View {
     }
 
     private var formattedDate: String {
-        show.followedAt.localizedShortDate
+        series.dateAdded.localizedShortDate
     }
 }

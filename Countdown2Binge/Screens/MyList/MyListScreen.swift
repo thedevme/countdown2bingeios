@@ -11,7 +11,7 @@ import SwiftData
 
 // MARK: - My List Tab
 
-enum MyListTab: String, CaseIterable {
+enum ListTabScreen: String, CaseIterable {
     case active
     case ended
     case archived
@@ -37,10 +37,10 @@ enum MyListTab: String, CaseIterable {
 
 struct MyListScreen: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
     @State private var viewModel = MyListViewModel()
-    @StateObject private var watchProgress = WatchProgressManager.shared
 
-    @State private var selectedTab: MyListTab = .active
+    @State private var selectedTab: ListTabScreen = .active
     @State private var navigationPath = NavigationPath()
 
     private var shows: [ShowData] {
@@ -122,7 +122,6 @@ struct MyListScreen: View {
                                 MyListPosterGrid(
                                     shows: shows,
                                     variant: .active,
-                                    watchProgress: watchProgress,
                                     onTap: { show in
                                         if let series = viewModel.getSeries(for: show.id) {
                                             navigationPath.append(series)
@@ -133,7 +132,6 @@ struct MyListScreen: View {
                                 MyListPosterGrid(
                                     shows: shows,
                                     variant: .ended,
-                                    watchProgress: watchProgress,
                                     onTap: { show in
                                         if let series = viewModel.getSeries(for: show.id) {
                                             navigationPath.append(series)
@@ -144,7 +142,6 @@ struct MyListScreen: View {
                                 MyListPosterGrid(
                                     shows: shows,
                                     variant: .archived,
-                                    watchProgress: watchProgress,
                                     onTap: { show in
                                         if let series = viewModel.getSeries(for: show.id) {
                                             navigationPath.append(series)
@@ -166,7 +163,7 @@ struct MyListScreen: View {
                 await viewModel.refreshShows()
             }
             .onAppear {
-                viewModel.configure(with: modelContext, container: modelContext.container)
+                viewModel.configure(with: modelContext, container: modelContext.container, seriesManager: seriesManager)
                 viewModel.reloadArchivedShowIds()
                 Task { await viewModel.loadShows() }
             }
@@ -196,6 +193,7 @@ final class MyListViewModel {
     private var modelContext: ModelContext?
     private var modelContainer: ModelContainer?
     private var store: FollowedShowsStore?
+    private var seriesManager: SeriesManager?
 
     private let archivedShowsKey = "archivedShowIds"
 
@@ -203,56 +201,47 @@ final class MyListViewModel {
         reloadArchivedShowIds()
     }
 
-    func configure(with modelContext: ModelContext, container: ModelContainer? = nil) {
+    func configure(with modelContext: ModelContext, container: ModelContainer? = nil, seriesManager: SeriesManager? = nil) {
         self.modelContext = modelContext
         self.modelContainer = container
         self.store = FollowedShowsStore(modelContext: modelContext)
+        self.seriesManager = seriesManager
     }
 
     func loadShows() async {
-        guard let store else { return }
+        guard let seriesManager else { return }
         isLoading = true
-        do {
-            followedShows = try await store.getAllFollowedAsShowData()
-        } catch {
-            print("Error loading followed shows: \(error)")
-            followedShows = []
-        }
+        // Clean up any duplicate Series entries first
+        try? seriesManager.cleanupDuplicates()
+        // Load from SeriesManager (the new engine) and convert to ShowData
+        followedShows = seriesManager.allSeries().map { $0.toShowData() }
         isLoading = false
     }
 
     func refreshShows() async {
-        guard let modelContainer, let store else { return }
-        let refreshService = StateRefreshService(modelContainer: modelContainer)
-        await refreshService.forceRefreshAllShows()
-        do {
-            followedShows = try await store.getAllFollowedAsShowData()
-        } catch {
-            print("Error reloading shows: \(error)")
-        }
+        guard let seriesManager else { return }
+        await seriesManager.refreshAll(force: true)
+        // Reload from SeriesManager after refresh
+        followedShows = seriesManager.allSeries().map { $0.toShowData() }
     }
 
     func unfollowShow(_ series: Series) async {
-        guard let store else { return }
+        guard let seriesManager else { return }
         do {
-            try store.unfollow(tmdbId: series.tmdbId)
-            followedShows = try await store.getAllFollowedAsShowData()
-            Task { await CloudSyncService.shared.removeShow(tmdbId: series.tmdbId) }
+            try seriesManager.unfollow(id: series.id)
+            followedShows.removeAll { $0.id == series.id }
         } catch {
             print("Error unfollowing show: \(error)")
-            followedShows.removeAll { $0.id == series.tmdbId }
         }
     }
 
     func getSeries(for showId: Int) -> Series? {
-        guard let modelContext else { return nil }
-        let seriesStore = SeriesStore(modelContext: modelContext)
-        return seriesStore.fetchSeries(tmdbId: showId)
+        seriesManager?.series(id: showId)
     }
 
     // MARK: - Tab Filtering
 
-    func shows(for tab: MyListTab) -> [ShowData] {
+    func shows(for tab: ListTabScreen) -> [ShowData] {
         switch tab {
         case .active:
             return followedShows.filter { show in
@@ -288,7 +277,6 @@ final class MyListViewModel {
     /// No Date Yet - shows in anticipated state with no premiere date
     /// Either: (1) followed while already in TBD state, or (2) user watched all episodes of current season
     var noDateShows: [ShowData] {
-        let watchProgress = WatchProgressManager.shared
         return shows(for: .active).filter { show in
             // Must have an anticipated season with no premiere date
             guard let anticipated = show.anticipatedSeason,
@@ -304,17 +292,17 @@ final class MyListViewModel {
 
             // Otherwise, user must have watched all episodes of the current season
             // to "graduate" from Binge Ready to No Date Yet
-            guard let currentSeason = show.currentSeason else {
+            // Check via the SwiftData Series model (single source of truth for watch state)
+            guard let series = seriesManager?.series(id: show.id),
+                  let currentSeason = series.currentSeason else {
                 return false
             }
 
-            let watchedCount = watchProgress.seasonWatchedCount(
-                showId: show.id,
-                season: currentSeason.seasonNumber,
-                episodeCount: currentSeason.episodeCount
-            )
+            // Season is fully watched if all episodes are marked watched
+            let watchedCount = currentSeason.watchedEpisodeCount
+            let episodeCount = currentSeason.episodes.count
 
-            return watchedCount == currentSeason.episodeCount && currentSeason.episodeCount > 0
+            return watchedCount == episodeCount && episodeCount > 0
         }
     }
 

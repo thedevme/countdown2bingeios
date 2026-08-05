@@ -8,25 +8,24 @@
 import SwiftUI
 
 struct ProfileShowRow: View {
-    let show: FollowedShow
+    let show: Series
     let isSynced: Bool
     let onTap: () -> Void
 
     private var showName: String {
-        show.cachedData?.name ?? "Show \(show.tmdbId)"
+        show.name.isEmpty ? "Show \(show.id)" : show.name
     }
 
     private var posterURL: URL? {
-        guard let path = show.cachedData?.posterPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w154\(path)")
+        show.posterURL
     }
 
     private var seasonCount: Int {
-        show.cachedData?.numberOfSeasons ?? 1
+        max(show.numberOfSeasons, 1)
     }
 
     private var episodeCount: Int {
-        show.cachedData?.numberOfEpisodes ?? 0
+        show.numberOfEpisodes
     }
 
     var body: some View {
@@ -104,9 +103,17 @@ struct ProfileShowRow: View {
 }
 
 #Preview {
-    VStack(spacing: 0) {
+    let series1 = Series(id: 1234, name: "Breaking Bad")
+    series1.numberOfSeasons = 5
+    series1.numberOfEpisodes = 62
+
+    let series2 = Series(id: 5678, name: "Better Call Saul")
+    series2.numberOfSeasons = 6
+    series2.numberOfEpisodes = 63
+
+    return VStack(spacing: 0) {
         ProfileShowRow(
-            show: FollowedShow(tmdbId: 1234),
+            show: series1,
             isSynced: true,
             onTap: {}
         )
@@ -115,7 +122,7 @@ struct ProfileShowRow: View {
             .background(Color.white.opacity(0.06))
 
         ProfileShowRow(
-            show: FollowedShow(tmdbId: 5678),
+            show: series2,
             isSynced: false,
             onTap: {}
         )

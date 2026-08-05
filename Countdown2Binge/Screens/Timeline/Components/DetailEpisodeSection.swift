@@ -12,13 +12,13 @@ import SwiftData
 struct DetailEpisodeSection: View {
     let series: Series
     var selectedSeason: Int? = nil
-    @StateObject private var watchProgress = WatchProgressManager.shared
+    @Environment(SeriesManager.self) private var seriesManager
 
     private var seasonNumber: Int {
         selectedSeason ?? series.currentSeason?.seasonNumber ?? series.numberOfSeasons
     }
 
-    private var season: SeriesSeason? {
+    private var season: Season? {
         if let selectedSeason = selectedSeason {
             // If viewing the current season, use currentSeason which has full episode data
             if let current = series.currentSeason, current.seasonNumber == selectedSeason {
@@ -30,7 +30,8 @@ struct DetailEpisodeSection: View {
     }
 
     private var seasonDisplayModel: SeasonDisplayModel? {
-        series.toShow().seasonDisplayModel(seasonNumber: seasonNumber, watchProgress: watchProgress)
+        guard let season = season else { return nil }
+        return SeasonDisplayModel(from: season, isCurrent: season.seasonNumber == series.currentSeason?.seasonNumber)
     }
 
     private var synopsis: String {
@@ -64,29 +65,22 @@ struct DetailEpisodeSection: View {
                 showImageURL: series.backdropURL ?? series.posterURL,
                 synopsis: synopsis,
                 onToggleWatched: { episode in
-                    watchProgress.toggleWatched(
-                        showId: series.tmdbId,
-                        season: seasonNumber,
-                        episode: episode.number
+                    try? seriesManager.toggleEpisodeWatched(
+                        seriesId: series.id,
+                        seasonNumber: seasonNumber,
+                        episodeNumber: episode.number
                     )
                 },
                 onMarkAllAired: {
-                    guard let season = season else { return }
-                    let airedEpisodes = season.episodes
-                        .filter { $0.hasAired }
-                        .map { $0.episodeNumber }
-                    watchProgress.markAiredWatched(
-                        showId: series.tmdbId,
-                        season: seasonNumber,
-                        airedEpisodes: airedEpisodes
+                    try? seriesManager.markAiredEpisodesWatched(
+                        seriesId: series.id,
+                        seasonNumber: seasonNumber
                     )
                 },
                 onClearAll: {
-                    guard let season = season else { return }
-                    watchProgress.setSeasonWatched(
-                        showId: series.tmdbId,
-                        season: season.seasonNumber,
-                        episodeCount: season.episodeCount,
+                    try? seriesManager.markSeasonWatched(
+                        seriesId: series.id,
+                        seasonNumber: seasonNumber,
                         watched: false
                     )
                 }
@@ -101,12 +95,9 @@ struct DetailEpisodeSection: View {
 
     /// Fallback grid view when episode details aren't available
     private var legacyEpisodeGrid: some View {
-        let episodeCount = season?.episodeCount ?? 0
-        let watchedCount = watchProgress.seasonWatchedCount(
-            showId: series.tmdbId,
-            season: seasonNumber,
-            episodeCount: episodeCount
-        )
+        let episodes = season?.sortedEpisodes ?? []
+        let watchedCount = season?.watchedEpisodeCount ?? 0
+        let episodeCount = episodes.count
         let isAllWatched = episodeCount > 0 && watchedCount == episodeCount
 
         return VStack(alignment: .leading, spacing: 16) {
@@ -114,14 +105,9 @@ struct DetailEpisodeSection: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Progress bar (dashed segments)
                 HStack(spacing: 3) {
-                    ForEach(1...max(episodeCount, 1), id: \.self) { ep in
-                        let isWatched = watchProgress.isWatched(
-                            showId: series.tmdbId,
-                            season: seasonNumber,
-                            episode: ep
-                        )
+                    ForEach(episodes, id: \.id) { episode in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(isWatched ? Color.c2bTeal : Color.white.opacity(0.15))
+                            .fill(episode.hasWatched ? Color.c2bTeal : Color.white.opacity(0.15))
                             .frame(height: 4)
                     }
                 }
@@ -147,21 +133,17 @@ struct DetailEpisodeSection: View {
             }
 
             // Episode grid
-            if episodeCount > 0 {
+            if !episodes.isEmpty {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 5), spacing: 10) {
-                    ForEach(1...episodeCount, id: \.self) { episodeNum in
+                    ForEach(episodes, id: \.id) { episode in
                         LegacyEpisodeSquare(
-                            episodeNumber: episodeNum,
-                            isWatched: watchProgress.isWatched(
-                                showId: series.tmdbId,
-                                season: seasonNumber,
-                                episode: episodeNum
-                            ),
+                            episodeNumber: episode.episodeNumber,
+                            isWatched: episode.hasWatched,
                             onToggle: {
-                                watchProgress.toggleWatched(
-                                    showId: series.tmdbId,
-                                    season: seasonNumber,
-                                    episode: episodeNum
+                                try? seriesManager.toggleEpisodeWatched(
+                                    seriesId: series.id,
+                                    seasonNumber: seasonNumber,
+                                    episodeNumber: episode.episodeNumber
                                 )
                             }
                         )
@@ -171,11 +153,9 @@ struct DetailEpisodeSection: View {
                 // Clear season button
                 if watchedCount > 0 {
                     Button {
-                        guard let season = season else { return }
-                        watchProgress.setSeasonWatched(
-                            showId: series.tmdbId,
-                            season: season.seasonNumber,
-                            episodeCount: season.episodeCount,
+                        try? seriesManager.markSeasonWatched(
+                            seriesId: series.id,
+                            seasonNumber: seasonNumber,
                             watched: false
                         )
                     } label: {

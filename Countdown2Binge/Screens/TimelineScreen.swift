@@ -9,6 +9,7 @@ struct TimelineScreen: View {
     var onInfoTap: (() -> Void)? = nil
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(SeriesManager.self) private var seriesManager
     @State private var viewModel: TimelineViewModel = TimelineViewModel()
     @State private var heroCardIndex: Int = 0
     @State private var showNotificationSettings = false
@@ -89,6 +90,12 @@ struct TimelineScreen: View {
                     // Premiering Soon Section
                     premieringSoonSection
 
+                    // Pending Section (only shown when not empty)
+                    if !viewModel.pendingShows.isEmpty {
+                        pendingSection
+                            .padding(.top, 20)
+                    }
+
                     // Anticipated Section
                     anticipatedSection
                         .padding(.top, 20)
@@ -103,12 +110,11 @@ struct TimelineScreen: View {
             }
             .refreshable {
                 // Pull-to-refresh: Force fetch from TMDB API
-                let refreshService = StateRefreshService(modelContainer: modelContext.container)
-                await refreshService.forceRefreshAllShows()
+                await seriesManager.refreshAll(force: true)
                 await viewModel.loadFollowedShows()
             }
             .onAppear {
-                viewModel.configure(with: modelContext)
+                viewModel.configure(with: modelContext, seriesManager: seriesManager)
                 Task {
                     await viewModel.loadFollowedShows()
                 }
@@ -186,6 +192,18 @@ struct TimelineScreen: View {
             .padding(.top, 20)
             .padding(.horizontal, C2BLayout.horizontalPadding)
         }
+    }
+
+    @ViewBuilder
+    private var pendingSection: some View {
+        PendingCardView(
+            shows: viewModel.pendingShows,
+            onShowTap: { show in
+                if let series = viewModel.getSeries(for: show.id) {
+                    navigationPath.append(series)
+                }
+            }
+        )
     }
 
     @ViewBuilder

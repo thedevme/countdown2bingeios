@@ -40,6 +40,11 @@ extension Color {
     static let c2bTeal = Color(hex: "#2dd4bf")
     static let c2bTealBright = Color(hex: "#5eead4")
     static let c2bTealLine = Color(hex: "#2dd4bf").opacity(0.40)
+
+    // Pending/Warning colors (yellow/amber)
+    static let c2bYellow = Color(hex: "#eab308")
+    static let c2bYellowBright = Color(hex: "#facc15")
+    static let c2bYellowLine = Color(hex: "#eab308").opacity(0.40)
 }
 
 // MARK: - Typography

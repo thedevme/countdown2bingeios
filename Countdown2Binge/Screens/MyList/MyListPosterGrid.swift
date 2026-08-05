@@ -22,7 +22,6 @@ enum MyListPosterVariant {
 struct MyListPosterGrid: View {
     let shows: [ShowData]
     let variant: MyListPosterVariant
-    @ObservedObject var watchProgress: WatchProgressManager
     let onTap: (ShowData) -> Void
 
     private let columns = [
@@ -37,7 +36,6 @@ struct MyListPosterGrid: View {
                 MyListPosterTile(
                     show: show,
                     variant: variant,
-                    watchProgress: watchProgress,
                     onTap: { onTap(show) }
                 )
             }
@@ -50,7 +48,6 @@ struct MyListPosterGrid: View {
 struct MyListPosterTile: View {
     let show: ShowData
     let variant: MyListPosterVariant
-    @ObservedObject var watchProgress: WatchProgressManager
     let onTap: () -> Void
 
     /// The season number to display - uses actual current season, NOT anticipated

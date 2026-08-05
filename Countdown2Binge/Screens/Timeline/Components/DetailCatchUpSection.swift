@@ -9,8 +9,7 @@
 import SwiftUI
 
 struct DetailCatchUpSection: View {
-    let show: ShowData
-    @StateObject private var watchProgress = WatchProgressManager.shared
+    let series: Series
     @State private var selectedPlanIndex: Int = 0
     @State private var selectedPace: Int = 1
     @State private var monthOffset: Int = 0
@@ -18,25 +17,26 @@ struct DetailCatchUpSection: View {
     @State private var showStartSelected: Bool = false
 
     /// Current season data
-    private var currentSeason: SeasonData? {
-        show.currentSeason
+    private var currentSeason: Season? {
+        series.currentSeason
     }
 
     /// Current season as display model
     private var seasonDisplayModel: SeasonDisplayModel? {
         guard let season = currentSeason else { return nil }
-        return show.seasonDisplayModel(seasonNumber: season.seasonNumber, watchProgress: watchProgress)
+        return SeasonDisplayModel(from: season, isCurrent: true)
     }
 
     /// Prior seasons for catch-up planning
     private var priorSeasons: [SeasonDisplayModel] {
-        show.toSeasonDisplayModels(watchProgress: watchProgress)
-            .filter { !$0.isCurrent && $0.number < (currentSeason?.seasonNumber ?? 1) }
+        series.regularSeasons
+            .filter { $0.seasonNumber < (currentSeason?.seasonNumber ?? 1) }
+            .map { SeasonDisplayModel(from: $0, isCurrent: false) }
     }
 
     /// Days remaining until finale
     private var daysUntilReady: Int? {
-        show.daysUntilFinale
+        series.daysUntilFinale
     }
 
     /// Weeks remaining until finale
@@ -112,7 +112,7 @@ struct DetailCatchUpSection: View {
                 if let episode = selectedEpisode {
                     EpisodeDetailPanel(
                         episode: episode,
-                        showImageURL: show.backdropURL ?? show.posterURL,
+                        showImageURL: series.backdropURL ?? series.posterURL,
                         isStartPlanSelected: false,
                         availablePlans: [],
                         finaleDate: finaleDate,

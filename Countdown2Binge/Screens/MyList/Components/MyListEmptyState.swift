@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyListEmptyState: View {
-    let tab: MyListTab
+    let tab: ListTabScreen
 
     private var icon: String {
         switch tab {
