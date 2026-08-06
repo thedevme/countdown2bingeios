@@ -12,11 +12,43 @@ import SwiftUI
 import SwiftData
 
 struct FullTimelineView: View {
-    let viewModel: TimelineViewModel
+    @Query(sort: \Series.dateAdded, order: .reverse) private var allSeries: [Series]
     @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(SeriesManager.self) private var seriesManager
+
+    // MARK: - Computed Series Arrays (filtered by BingeEngine state)
+
+    /// Shows currently airing WITH a known finale date (sorted by finale, soonest first)
+    private var airingNowSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .airing && $0.daysUntilFinale != nil }
+            .sorted { ($0.daysUntilFinale ?? .max) < ($1.daysUntilFinale ?? .max) }
+    }
+
+    /// Shows premiering soon WITH a confirmed finale (sorted by premiere, soonest first)
+    private var premieringSoonSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .premieringSoon && $0.currentSeason?.hasConfirmedFinale == true }
+            .sorted { ($0.daysUntilPremiere ?? .max) < ($1.daysUntilPremiere ?? .max) }
+    }
+
+    /// Shows in pending state (airing or premiering but NO confirmed finale)
+    private var pendingSeries: [Series] {
+        let airingNoFinale = allSeries.filter { $0.showState == .airing && $0.daysUntilFinale == nil }
+        let premieringNoFinale = allSeries.filter { $0.showState == .premieringSoon && $0.currentSeason?.hasConfirmedFinale != true }
+        return (airingNoFinale + premieringNoFinale).sorted { $0.name < $1.name }
+    }
+
+    /// Shows anticipated (no date yet, sorted alphabetically)
+    private var anticipatedSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .anticipated }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    private var trackedCount: Int { allSeries.count }
 
     // Persisted expand/collapse states for full timeline
     @AppStorage("full_timeline_now_playing_expanded") private var nowPlayingExpanded = true
@@ -46,7 +78,7 @@ struct FullTimelineView: View {
                     .padding(.bottom, 24)
 
                 // Pending Section (only shown when not empty)
-                if !viewModel.pendingShows.isEmpty {
+                if !pendingSeries.isEmpty {
                     pendingSection
                         .padding(.bottom, 24)
                 }
@@ -61,14 +93,8 @@ struct FullTimelineView: View {
         .refreshable {
             // Pull-to-refresh: Force fetch from TMDB API
             await seriesManager.refreshAll(force: true)
-            await viewModel.refresh()
         }
         .background(Color.c2bBackground)
-        #if DEBUG
-        .onChange(of: DebugSettings.shared.showMockPendingSection) { _, _ in
-            Task { await viewModel.refresh() }
-        }
-        #endif
     }
 
     // MARK: - Header
@@ -92,7 +118,7 @@ struct FullTimelineView: View {
                     .foregroundColor(.white)
                     .tracking(1.2)
 
-                Text(String(localized: "timeline_shows_tracked \(viewModel.trackedCount)"))
+                Text(String(localized: "timeline_shows_tracked \(trackedCount)"))
                     .font(.custom(.jetbrains.regular, size: 9))
                     .foregroundColor(.c2bMuted)
                     .tracking(0.8)
@@ -114,7 +140,7 @@ struct FullTimelineView: View {
             // Section Header
             sectionHeader(
                 title: String(localized: "timeline_now_playing"),
-                count: viewModel.airingNowShows.count,
+                count: airingNowSeries.count,
                 tone: .c2bTeal,
                 subtitle: String(localized: "timeline_finale_countdown"),
                 isExpanded: $nowPlayingExpanded
@@ -122,7 +148,7 @@ struct FullTimelineView: View {
 
             // Cards
             VStack(spacing: nowPlayingExpanded ? 16 : 10) {
-                if viewModel.airingNowShows.isEmpty {
+                if airingNowSeries.isEmpty {
                     if nowPlayingExpanded {
                         TimelineEmptySection()
                     } else {
@@ -130,19 +156,17 @@ struct FullTimelineView: View {
                     }
                 } else {
                     if nowPlayingExpanded {
-                        ForEach(viewModel.airingNowShows, id: \.id) { show in
+                        ForEach(airingNowSeries, id: \.id) { series in
                             Button(action: {
-                                if let series = viewModel.getSeries(for: show.id) {
-                                    navigationPath.append(series)
-                                }
+                                navigationPath.append(series)
                             }) {
-                                NowPlayingCard(showData: show)
+                                NowPlayingCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
                     } else {
                         // Collapsed: Unified list view with stacked posters
-                        TimelineSectionListView(seriesList: viewModel.airingNowSeries)
+                        TimelineSectionListView(seriesList: airingNowSeries)
                     }
                 }
             }
@@ -158,7 +182,7 @@ struct FullTimelineView: View {
             // Section Header
             sectionHeader(
                 title: String(localized: "header_premiering_soon"),
-                count: viewModel.premieringSoonShows.count,
+                count: premieringSoonSeries.count,
                 tone: .c2bTeal,
                 subtitle: String(localized: "timeline_upcoming_seasons"),
                 isExpanded: $premieringExpanded
@@ -166,7 +190,7 @@ struct FullTimelineView: View {
 
             // Cards
             VStack(spacing: premieringExpanded ? 16 : 10) {
-                if viewModel.premieringSoonShows.isEmpty {
+                if premieringSoonSeries.isEmpty {
                     if premieringExpanded {
                         TimelineEmptySection()
                     } else {
@@ -174,19 +198,17 @@ struct FullTimelineView: View {
                     }
                 } else {
                     if premieringExpanded {
-                        ForEach(viewModel.premieringSoonShows, id: \.id) { show in
+                        ForEach(premieringSoonSeries, id: \.id) { series in
                             Button(action: {
-                                if let series = viewModel.getSeries(for: show.id) {
-                                    navigationPath.append(series)
-                                }
+                                navigationPath.append(series)
                             }) {
-                                PremieringCard(showData: show)
+                                PremieringCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
                     } else {
                         // Collapsed: Unified list view with stacked posters
-                        TimelineSectionListView(seriesList: viewModel.premieringSoonSeries)
+                        TimelineSectionListView(seriesList: premieringSoonSeries)
                     }
                 }
             }
@@ -202,7 +224,7 @@ struct FullTimelineView: View {
             // Section Header
             sectionHeader(
                 title: String(localized: "header_pending"),
-                count: viewModel.pendingShows.count,
+                count: pendingSeries.count,
                 tone: .c2bYellow,
                 subtitle: String(localized: "timeline_finale_tba"),
                 isExpanded: $pendingExpanded
@@ -211,19 +233,17 @@ struct FullTimelineView: View {
             // Cards
             VStack(spacing: pendingExpanded ? 16 : 10) {
                 if pendingExpanded {
-                    ForEach(viewModel.pendingShows, id: \.id) { show in
+                    ForEach(pendingSeries, id: \.id) { series in
                         Button(action: {
-                            if let series = viewModel.getSeries(for: show.id) {
-                                navigationPath.append(series)
-                            }
+                            navigationPath.append(series)
                         }) {
-                            PendingCard(showData: show)
+                            PendingCard(series: series)
                         }
                         .buttonStyle(.plain)
                     }
                 } else {
                     // Collapsed: Unified list view with stacked posters
-                    TimelineSectionListView(seriesList: viewModel.pendingSeries)
+                    TimelineSectionListView(seriesList: pendingSeries)
                 }
             }
             .padding(.top, 16)
@@ -238,7 +258,7 @@ struct FullTimelineView: View {
             // Section Header
             sectionHeader(
                 title: String(localized: "header_anticipated"),
-                count: viewModel.anticipatedShows.count,
+                count: anticipatedSeries.count,
                 tone: .c2bMuted,
                 subtitle: String(localized: "timeline_waiting_dates"),
                 isExpanded: $anticipatedExpanded
@@ -246,7 +266,7 @@ struct FullTimelineView: View {
 
             // Cards
             VStack(spacing: anticipatedExpanded ? 16 : 10) {
-                if viewModel.anticipatedShows.isEmpty {
+                if anticipatedSeries.isEmpty {
                     if anticipatedExpanded {
                         TimelineEmptySection()
                     } else {
@@ -254,19 +274,17 @@ struct FullTimelineView: View {
                     }
                 } else {
                     if anticipatedExpanded {
-                        ForEach(viewModel.anticipatedShows, id: \.id) { show in
+                        ForEach(anticipatedSeries, id: \.id) { series in
                             Button(action: {
-                                if let series = viewModel.getSeries(for: show.id) {
-                                    navigationPath.append(series)
-                                }
+                                navigationPath.append(series)
                             }) {
-                                AnticipatedCard(showData: show)
+                                AnticipatedCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
                     } else {
                         // Collapsed: Unified list view with stacked posters
-                        TimelineSectionListView(seriesList: viewModel.anticipatedSeries)
+                        TimelineSectionListView(seriesList: anticipatedSeries)
                     }
                 }
             }
@@ -329,26 +347,26 @@ struct FullTimelineView: View {
 // MARK: - Now Playing Card (similar to PremieringCard but shows days to finale)
 
 struct NowPlayingCard: View {
-    let showData: ShowData
+    let series: Series
 
     private var daysUntilFinale: Int? {
-        showData.daysUntilFinale
+        series.daysUntilFinale
     }
 
     private var displayName: String {
-        showData.name
+        series.name
     }
 
     private var posterURL: URL? {
-        showData.posterURL
+        series.posterURL
     }
 
     private var seasonNumber: String {
-        String(showData.numberOfSeasons)
+        String(series.numberOfSeasons)
     }
 
     private var platformString: String {
-        showData.networks.first?.name ?? ""
+        series.networks.first?.name ?? ""
     }
 
     var body: some View {

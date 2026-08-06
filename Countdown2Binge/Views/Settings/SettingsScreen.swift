@@ -37,6 +37,7 @@ struct SettingsScreen: View {
     @State private var syncStatus: String = ""
     @State private var iCloudAvailable: Bool = true
     @State private var syncEligibility: SyncEligibility = .eligible
+    @State private var showCloudSync = false
     private var profile: UserProfile { ProfileManager.shared.profile }
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
@@ -99,25 +100,21 @@ struct SettingsScreen: View {
                         )
                     }
 
-                    // Cloud Sync Group (Premium only)
-                    if isPremium {
-                        SettingsGroup(label: String(localized: "settings_cloud_sync")) {
-                            SettingsRowAction(
-                                icon: iCloudAvailable ? "icloud.fill" : "icloud.slash.fill",
-                                iconColor: iCloudAvailable ? .c2bTeal : .c2bMuted,
-                                title: iCloudAvailable ? String(localized: "settings_sync_now") : String(localized: "settings_icloud_unavailable"),
-                                subtitle: cloudSyncSubtitle,
-                                isLast: true,
-                                action: {
-                                    if iCloudAvailable {
-                                        Task { await performSync() }
-                                    }
-                                }
-                            )
-                        }
-                        .task {
-                            await checkiCloudStatus()
-                        }
+                    // Cloud Sync Group (all users)
+                    SettingsGroup(label: String(localized: "settings_cloud_sync")) {
+                        SettingsRowChevron(
+                            icon: iCloudAvailable && isPremium ? "icloud.fill" : "icloud",
+                            iconColor: iCloudAvailable && isPremium ? .c2bTeal : .c2bMuted,
+                            title: iCloudAvailable && isPremium
+                                ? String(localized: "settings_sync_now")
+                                : String(localized: "settings_icloud_unavailable"),
+                            subtitle: cloudSyncSubtitle,
+                            isLast: true,
+                            action: { showCloudSync = true }
+                        )
+                    }
+                    .task {
+                        await checkiCloudStatus()
                     }
 
                     // Account Group
@@ -251,6 +248,9 @@ struct SettingsScreen: View {
             .navigationDestination(isPresented: $showProfile) {
                 ProfileScreen(isPremium: isPremium)
             }
+            .navigationDestination(isPresented: $showCloudSync) {
+                CloudSyncView()
+            }
             .sheet(isPresented: $showPaywall) {
                 DiscoverPaywallSheet(
                     selectedPlan: $selectedPlan,
@@ -283,7 +283,12 @@ struct SettingsScreen: View {
     // MARK: - Cloud Sync
 
     private var cloudSyncSubtitle: String {
-        // Show iCloud unavailable reason first
+        // Not premium - show upsell hint
+        if !isPremium {
+            return String(localized: "settings_premium_required")
+        }
+
+        // Show iCloud unavailable reason
         if !iCloudAvailable {
             switch syncEligibility {
             case .eligible:
@@ -304,15 +309,7 @@ struct SettingsScreen: View {
             }
         }
 
-        if isSyncing {
-            return String(localized: "sync_in_progress")
-        }
-
-        if !syncStatus.isEmpty {
-            return syncStatus
-        }
-
-        // CloudKit sync is automatic via SwiftData
+        // Premium + iCloud available
         return String(localized: "settings_cloud_sync_on")
     }
 

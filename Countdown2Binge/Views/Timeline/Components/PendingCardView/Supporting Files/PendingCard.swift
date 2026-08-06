@@ -7,39 +7,69 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PendingCard: View {
-    let showData: ShowData
+    // For timeline (real data) - prefer Series
+    let series: Series?
+    let showData: ShowData?
+
+    // Timeline initializer (Series - primary, reads state from BingeEngine)
+    init(series: Series) {
+        self.series = series
+        self.showData = nil
+    }
+
+    // Timeline initializer (ShowData - for discover/search)
+    init(showData: ShowData) {
+        self.showData = showData
+        self.series = nil
+    }
 
     /// Whether the show has already premiered (premiere date in the past)
     private var hasPremiered: Bool {
-        // Check currentSeason first (for airing shows)
-        if let premiereDate = showData.currentSeason?.premiereDate {
-            return premiereDate <= Date()
+        // Primary: read from Series
+        if let series = series {
+            return series.currentSeason?.hasStarted ?? true
         }
-        // Check anticipatedSeason (for shows that haven't started)
-        if let premiereDate = showData.anticipatedSeason?.premiereDate {
-            return premiereDate <= Date()
+        // Fallback: ShowData
+        if let showData = showData {
+            if let premiereDate = showData.currentSeason?.premiereDate {
+                return premiereDate <= Date()
+            }
+            if let premiereDate = showData.anticipatedSeason?.premiereDate {
+                return premiereDate <= Date()
+            }
+            if let firstSeason = showData.seasons.first(where: { !$0.isSpecials }),
+               let premiereDate = firstSeason.premiereDate {
+                return premiereDate <= Date()
+            }
         }
-        // Fallback: check first regular season
-        if let firstSeason = showData.seasons.first(where: { !$0.isSpecials }),
-           let premiereDate = firstSeason.premiereDate {
-            return premiereDate <= Date()
-        }
-        // No premiere date found - assume premiered
         return true
     }
 
     private var daysUntilPremiere: Int {
-        showData.daysUntilPremiere ?? 0
+        series?.daysUntilPremiere ?? showData?.daysUntilPremiere ?? 0
     }
 
     private var seasonNumber: String {
-        String(showData.numberOfSeasons)
+        String(series?.numberOfSeasons ?? showData?.numberOfSeasons ?? 1)
     }
 
     private var platformString: String {
-        showData.networks.first?.name ?? ""
+        series?.networks.first?.name ?? showData?.networks.first?.name ?? ""
+    }
+
+    private var showName: String {
+        series?.name ?? showData?.name ?? ""
+    }
+
+    private var posterURL: URL? {
+        series?.posterURL ?? showData?.posterURL
+    }
+
+    private var showId: Int {
+        series?.id ?? showData?.id ?? 0
     }
 
     var body: some View {
@@ -72,7 +102,7 @@ struct PendingCard: View {
 
     /// Mock asset name mapping for debug shows
     private var mockAssetName: String? {
-        switch showData.id {
+        switch showId {
         case 999001: return "north watch"    // Cold Harvest
         case 999002: return "iron veil"      // The Lantern Route
         default: return nil
@@ -99,7 +129,7 @@ struct PendingCard: View {
                             .frame(width: 2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     )
-            } else if let url = showData.posterURL {
+            } else if let url = posterURL {
                 CachedAsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -179,7 +209,7 @@ struct PendingCard: View {
                     }
                     .shadow(color: .black.opacity(0.7), radius: 4, x: 0, y: 2)
 
-                    Text(showData.name.uppercased())
+                    Text(showName.uppercased())
                         .font(.custom(.oswald.bold, size: 19))
                         .foregroundColor(.white)
                         .lineLimit(1)

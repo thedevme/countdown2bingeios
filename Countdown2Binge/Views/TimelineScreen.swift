@@ -140,11 +140,8 @@ struct TimelineScreen: View {
             }
             .navigationDestination(for: String.self) { route in
                 if route == "fullTimeline" {
-                    FullTimelineView(
-                        viewModel: viewModel,
-                        navigationPath: $navigationPath
-                    )
-                    .navigationBarHidden(true)
+                    FullTimelineView(navigationPath: $navigationPath)
+                        .navigationBarHidden(true)
                 }
             }
         }

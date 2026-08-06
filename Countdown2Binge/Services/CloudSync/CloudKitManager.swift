@@ -72,7 +72,7 @@ final class CloudKitManager {
 
     // MARK: - CRUD Operations
 
-    /// Save a followed show to CloudKit
+    /// Save a followed show to CloudKit (upsert - creates or updates)
     /// - Parameters:
     ///   - tmdbId: The TMDB ID of the show
     ///   - followedAt: When the show was followed
@@ -93,9 +93,33 @@ final class CloudKitManager {
         record[FieldKey.followedAt] = followedAt as CKRecordValue
         record[FieldKey.lastModified] = Date() as CKRecordValue
 
-        let savedRecord = try await privateDB.save(record)
-        print("CloudKitManager: Saved show \(tmdbId) with recordName: \(savedRecord.recordID.recordName)")
-        return savedRecord.recordID.recordName
+        // Use CKModifyRecordsOperation with .allKeys to upsert (handles existing records)
+        let operation = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+        operation.savePolicy = .allKeys
+
+        return try await withCheckedThrowingContinuation { continuation in
+            var savedRecordName: String?
+
+            operation.perRecordSaveBlock = { recordID, result in
+                if case .success = result {
+                    savedRecordName = recordID.recordName
+                }
+            }
+
+            operation.modifyRecordsResultBlock = { result in
+                switch result {
+                case .success:
+                    let name = savedRecordName ?? recordID.recordName
+                    print("CloudKitManager: Saved show \(tmdbId) with recordName: \(name)")
+                    continuation.resume(returning: name)
+                case .failure(let error):
+                    print("CloudKitManager: Failed to save show \(tmdbId) - \(error)")
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            privateDB.add(operation)
+        }
     }
 
     /// Delete a followed show from CloudKit
@@ -234,7 +258,7 @@ final class CloudKitManager {
 
     // MARK: - Watch Progress Operations
 
-    /// Save all watch progress to CloudKit (single record with all watched episode keys)
+    /// Save all watch progress to CloudKit (upsert - creates or updates)
     /// - Parameter watchedEpisodeKeys: Set of episode keys in format "showId-season-episode"
     @discardableResult
     func saveAllWatchProgress(watchedEpisodeKeys: Set<String>) async throws -> String {
@@ -250,9 +274,24 @@ final class CloudKitManager {
             record[FieldKey.watchedEpisodes] = jsonString as CKRecordValue
         }
 
-        let savedRecord = try await privateDB.save(record)
-        print("CloudKitManager: Saved watch progress with \(watchedEpisodeKeys.count) episodes")
-        return savedRecord.recordID.recordName
+        // Use CKModifyRecordsOperation with .allKeys to upsert (handles existing records)
+        let operation = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+        operation.savePolicy = .allKeys
+
+        return try await withCheckedThrowingContinuation { continuation in
+            operation.modifyRecordsResultBlock = { result in
+                switch result {
+                case .success:
+                    print("CloudKitManager: Saved watch progress with \(watchedEpisodeKeys.count) episodes")
+                    continuation.resume(returning: recordID.recordName)
+                case .failure(let error):
+                    print("CloudKitManager: Failed to save watch progress - \(error)")
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            privateDB.add(operation)
+        }
     }
 
     /// Fetch all watch progress from CloudKit
@@ -319,7 +358,7 @@ final class CloudKitManager {
 
     // MARK: - User Settings / Grace Period Operations
 
-    /// Save user settings including grace period data
+    /// Save user settings including grace period data (upsert - creates or updates)
     /// - Parameters:
     ///   - gracePeriodExpiry: When the grace period expires (nil to clear)
     ///   - gracePeriodStartedAt: When the grace period started
@@ -343,8 +382,24 @@ final class CloudKitManager {
         }
         record[FieldKey.lastModified] = Date() as CKRecordValue
 
-        try await privateDB.save(record)
-        print("CloudKitManager: Saved user settings (grace period expiry: \(String(describing: gracePeriodExpiry)))")
+        // Use CKModifyRecordsOperation with .allKeys to upsert (handles existing records)
+        let operation = CKModifyRecordsOperation(recordsToSave: [record], recordIDsToDelete: nil)
+        operation.savePolicy = .allKeys
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            operation.modifyRecordsResultBlock = { result in
+                switch result {
+                case .success:
+                    print("CloudKitManager: Saved user settings (grace period expiry: \(String(describing: gracePeriodExpiry)))")
+                    continuation.resume()
+                case .failure(let error):
+                    print("CloudKitManager: Failed to save user settings - \(error)")
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            privateDB.add(operation)
+        }
     }
 
     /// Fetch user settings from CloudKit

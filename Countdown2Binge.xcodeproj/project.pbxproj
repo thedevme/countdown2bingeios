@@ -12,6 +12,7 @@
 		4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CABA30114363001185C9 /* RevenueCatUI */; };
 		4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAC830114F62001185C9 /* FirebaseDatabase */; };
 		4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAF33014EB59001185C9 /* YouTubePlayerKit */; };
+		4602DC9130245AF3001185C9 /* UserSpec in Frameworks */ = {isa = PBXBuildFile; productRef = 4602DC9030245AF3001185C9 /* UserSpec */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4602DC9130245AF3001185C9 /* UserSpec in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +168,7 @@
 			);
 			name = Countdown2BingeTests;
 			packageProductDependencies = (
+				4602DC9030245AF3001185C9 /* UserSpec */,
 			);
 			productName = Countdown2BingeTests;
 			productReference = 46AEA12A300005C500F05C7B /* Countdown2BingeTests.xctest */;
@@ -244,6 +247,7 @@
 				4602CAB530114363001185C9 /* XCRemoteSwiftPackageReference "purchases-ios" */,
 				4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
+				4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -658,6 +662,14 @@
 				minimumVersion = 2.0.5;
 			};
 		};
+		4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/thedevme/UserSpec.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -685,6 +697,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
 			productName = YouTubePlayerKit;
+		};
+		4602DC9030245AF3001185C9 /* UserSpec */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */;
+			productName = UserSpec;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

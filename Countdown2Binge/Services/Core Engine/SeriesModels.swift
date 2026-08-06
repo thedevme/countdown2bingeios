@@ -54,6 +54,10 @@ final class Series {
     /// still returns the show to the timeline (see BingeEngine.myListTab).
     var isArchived: Bool = false
 
+    /// Whether this show is synced to iCloud. Premium-only feature.
+    /// Set to true when synced, false when removed from cloud or user loses premium.
+    var isSynced: Bool = false
+
     // MARK: Spinoffs (resolved once at follow-time, stored, never re-fetched)
 
     /// Related franchise/spinoff TMDB ids. Rendered from here — no live lookup.

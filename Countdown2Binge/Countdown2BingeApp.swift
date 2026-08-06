@@ -54,6 +54,12 @@ struct Countdown2BingeApp: App {
                             await PremiumManager.shared.loadGracePeriodState()
                             await FranchiseService.shared.fetchFranchises()
                             await seriesManager.refreshAll()
+                            // 1. Restore shows from iCloud (for reinstalls)
+                            await seriesManager.restoreShowsFromCloud()
+                            // 2. Restore and merge watch progress from iCloud
+                            await seriesManager.mergeWatchProgressWithCloud()
+                            // 3. Sync all followed shows to iCloud (marks them as synced)
+                            await seriesManager.syncAllShowsToCloud()
                         }
                     }
                 }

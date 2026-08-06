@@ -1,9 +1,8 @@
 import SwiftUI
+import SwiftData
 
-// MARK: - Premiering Card (Wide horizontal card with countdown)
-// Reusable in both walkthrough (with showId) and timeline (with ShowSummary)
-
-struct PremieringCard: View {
+// MARK: - Anticipated Card (Wide horizontal card with countdown)
+struct AnticipatedCard: View {
     // For walkthrough (static images)
     let showId: String?
     let bucketKey: String?
@@ -12,6 +11,7 @@ struct PremieringCard: View {
     // For timeline (real data)
     let show: ShowSummary?
     let showData: ShowData?
+    let series: Series?
 
     // Walkthrough initializer
     init(showId: String, bucketKey: String, namespace: Namespace.ID) {
@@ -20,20 +20,33 @@ struct PremieringCard: View {
         self.namespace = namespace
         self.show = nil
         self.showData = nil
+        self.series = nil
     }
 
     // Timeline initializer (ShowSummary - legacy)
     init(show: ShowSummary) {
         self.show = show
         self.showData = nil
+        self.series = nil
         self.showId = nil
         self.bucketKey = nil
         self.namespace = nil
     }
 
-    // Timeline initializer (ShowData - with lifecycle)
+    // Timeline initializer (ShowData - for discover/search)
     init(showData: ShowData) {
         self.showData = showData
+        self.show = nil
+        self.series = nil
+        self.showId = nil
+        self.bucketKey = nil
+        self.namespace = nil
+    }
+
+    // Timeline initializer (Series - primary, reads state from BingeEngine)
+    init(series: Series) {
+        self.series = series
+        self.showData = nil
         self.show = nil
         self.showId = nil
         self.bucketKey = nil
@@ -42,23 +55,25 @@ struct PremieringCard: View {
 
     private var mockData: (days: Int, season: String, platform: String, hasNew: Bool) {
         switch showId {
-        case "shogun":
-            return (10, "2", "FX", false)
         case "reacher":
-            return (88, "3", "PRIME", true)
-        case "stranger-things":
-            return (99, "5", "NETFLIX", true)
+            return (88, "2", "NETFLIX", true)
+        case "shogun":
+            return (10, "5", "NETFLIX", false)
         default:
-            return (45, "2", "PRIME", false)
+            return (12, "2", "PRIME", false)
         }
     }
 
     private var daysUntilPremiere: Int {
-        // Use ShowData lifecycle if available
+        // Primary: read from Series
+        if let series = series {
+            return series.daysUntilPremiere ?? 0
+        }
+        // Fallback: ShowData (for discover/search)
         if let showData = showData {
             return showData.daysUntilPremiere ?? 0
         }
-        // Fallback to ShowSummary
+        // Legacy: ShowSummary
         if let show = show, let dateString = show.firstAirDate {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
@@ -71,21 +86,39 @@ struct PremieringCard: View {
     }
 
     private var displayName: String {
-        showData?.name ?? show?.name ?? showId ?? ""
+        series?.name ?? showData?.name ?? show?.name ?? showId ?? ""
     }
 
     private var posterURL: URL? {
-        showData?.posterURL ?? show?.posterURL
+        series?.posterURL ?? showData?.posterURL ?? show?.posterURL
     }
 
-    private var seasonNumber: String {
-        if let showData = showData {
-            return String(showData.numberOfSeasons)
+    // For Anticipated shows, we show the next expected season
+    private var anticipatedSeasonNumber: Int {
+        if let series = series {
+            return series.numberOfSeasons + 1
         }
-        return mockData.season
+        if let showData = showData {
+            return showData.numberOfSeasons + 1
+        }
+        return 2 // Default for mock
+    }
+
+    // Expected release year (next year, formatted as '26)
+    private var expectedYearDisplay: String {
+        let nextYear = Calendar.current.component(.year, from: Date()) + 1
+        let shortYear = nextYear % 100
+        return "'\(shortYear)"
+    }
+
+    private var seasonString: String {
+        return String(localized: "timeline_season \(anticipatedSeasonNumber)")
     }
 
     private var platformString: String {
+        if let series = series, let network = series.networks.first {
+            return network.name
+        }
         if let showData = showData, let network = showData.networks.first {
             return network.name
         }
@@ -96,9 +129,10 @@ struct PremieringCard: View {
         HStack(spacing: 0) {
             // Left: Countdown section
             CountdownLabelView(
-                number: daysUntilPremiere,
+                text: expectedYearDisplay,
+                middleLabel: "timeline_exp",
                 accentColor: .c2bTealBright,
-                bottomLabel: "timeline_to_premiere"
+                bottomLabel: "timeline_release"
             )
 
             // Right: Poster (flexible)
@@ -109,6 +143,7 @@ struct PremieringCard: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
+                            .grayscale(1.0)
                     } placeholder: {
                         Rectangle()
                             .fill(Color(hex: "#1a1a1c"))
@@ -127,6 +162,7 @@ struct PremieringCard: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 140)
+                        .grayscale(1.0)
                         .clipped()
                         .overlay(Color.black.opacity(0.3))
                         .overlay(
@@ -137,7 +173,7 @@ struct PremieringCard: View {
                         )
                 }
 
-                // Overlay content
+                // Badges overlay
                 VStack(alignment: .leading, spacing: 0) {
                     // Top badges
                     HStack(spacing: 6) {
@@ -174,12 +210,12 @@ struct PremieringCard: View {
 
                     // Bottom: Season + Show name
                     HStack(alignment: .bottom, spacing: 8) {
-                        // Season badge (S2 style)
+                        // Season badge (S5 style)
                         HStack(spacing: 0) {
                             Text("season_abbrev")
                                 .font(.custom(.oswald.bold, size: 28))
                                 .foregroundColor(.white)
-                            Text(seasonNumber)
+                            Text(String(anticipatedSeasonNumber))
                                 .font(.custom(.oswald.light, size: 28))
                                 .foregroundColor(.white)
                         }
@@ -202,16 +238,12 @@ struct PremieringCard: View {
     }
 }
 
-// Helper modifier for optional matched geometry effect
-struct OptionalMatchedGeometry: ViewModifier {
-    let id: String?
-    let namespace: Namespace.ID?
-
-    func body(content: Content) -> some View {
-        if let id = id, let namespace = namespace {
-            content.matchedGeometryEffect(id: id, in: namespace)
-        } else {
-            content
-        }
-    }
-}
+// Preview disabled - requires namespace parameter
+// #Preview {
+//     VStack(spacing: 20) {
+//         AnticipatedCard(showId: "stranger-things")
+//         AnticipatedCard(showId: "fallout")
+//     }
+//     .padding()
+//     .background(Color.c2bBackground)
+// }
