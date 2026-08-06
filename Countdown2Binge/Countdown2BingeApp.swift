@@ -35,7 +35,7 @@ struct Countdown2BingeApp: App {
         do {
             let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
             self.modelContainer = container
-            _seriesManager = State(initialValue: SeriesManager(context: container.mainContext))
+            _seriesManager = State(initialValue: SeriesManager(container: container))
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }

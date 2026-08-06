@@ -30,24 +30,62 @@ import SwiftData
 @Observable
 final class SeriesManager {
 
-    private let context: ModelContext
+    /// The container, kept alive for background Tasks that need their own context.
+    private let container: ModelContainer
+
+    /// Main context for synchronous operations. Background Tasks should create
+    /// their own context via `ModelContext(container)` to avoid lifecycle issues.
+    private var context: ModelContext { container.mainContext }
+
     private let tmdb: TMDBServiceProtocol
     private let franchise: FranchiseResolving
-    private let cloudKit: CloudKitManager
+    private let cloudKit: CloudSyncing
 
     /// Shows refreshed from TMDB are considered fresh for this long.
     private let refreshInterval: TimeInterval = 60 * 60 * 24  // 24h
 
+    #if DEBUG
+    /// Pending background tasks — tracked only in DEBUG for test awaiting.
+    /// Each task removes itself on completion to avoid unbounded growth.
+    private var pendingTasks: [UUID: Task<Void, Never>] = [:]
+    #endif
+
     init(
-        context: ModelContext,
+        container: ModelContainer,
         tmdb: TMDBServiceProtocol = TMDBService(),
         franchise: FranchiseResolving = FranchiseService.shared,
-        cloudKit: CloudKitManager = .shared
+        cloudKit: CloudSyncing = CloudKitManager.shared
     ) {
-        self.context = context
+        self.container = container
         self.tmdb = tmdb
         self.franchise = franchise
         self.cloudKit = cloudKit
+    }
+
+    #if DEBUG
+    /// Await all pending background work. For tests only.
+    func awaitPendingBackgroundWork() async {
+        let tasks = pendingTasks.values
+        for task in tasks {
+            await task.value
+        }
+    }
+    #endif
+
+    /// Launch a background task that self-cleans from pendingTasks on completion.
+    /// In DEBUG: tracked for test awaiting. In RELEASE: fire-and-forget.
+    private func launchBackgroundTask(_ operation: @escaping @Sendable () async -> Void) {
+        #if DEBUG
+        let taskId = UUID()
+        let task = Task {
+            await operation()
+            // Self-remove on completion to avoid unbounded growth
+            await MainActor.run { self.pendingTasks.removeValue(forKey: taskId) }
+        }
+        pendingTasks[taskId] = task
+        #else
+        Task { await operation() }
+        #endif
     }
 
     // MARK: - Queries
@@ -90,11 +128,26 @@ final class SeriesManager {
         newSeries.lastRefreshedAt = .now
         try context.save()
 
+        // Capture ID for background tasks (avoid capturing model object)
+        let seriesId = newSeries.id
+
         // Resolve spinoffs once, in the background (non-blocking).
-        Task { await self.resolveSpinoffs(for: newSeries.id) }
+        // Uses its own context to avoid lifecycle issues if caller's context deallocates.
+        launchBackgroundTask { [container, franchise] in
+            let bgContext = ModelContext(container)
+            let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+            guard let s = try? bgContext.fetch(descriptor).first, !s.spinoffsResolved else { return }
+
+            let relatedIds = await franchise.relatedShowIds(forShowId: seriesId)
+            s.relatedShowIds = relatedIds
+            s.spinoffsResolved = true
+            try? bgContext.save()
+        }
 
         // Sync to iCloud if premium (non-blocking)
-        Task { await self.syncShowToCloudIfPremium(seriesId: newSeries.id) }
+        launchBackgroundTask {
+            await self.syncShowToCloudIfPremium(seriesId: seriesId)
+        }
 
         // Decide whether to prompt the add-time watched question.
         let prompt = addTimeWatchedPrompt(for: newSeries)
@@ -274,6 +327,27 @@ final class SeriesManager {
             let show = try await tmdb.getShowDetails(id: id)
             SeriesMapper.update(s, from: show, in: context)
             s.lastRefreshedAt = .now
+
+            // Fix hasWatched if new episodes were added to a "watched" season.
+            // This is the single write funnel for this correction (R3).
+            // Only un-mark if the season is STILL AIRING (finale hasn't aired).
+            // Finished seasons with data corrections stay marked watched.
+            let now = Date()
+            for season in s.seasons where season.hasWatched {
+                let allWatched = season.episodes.allSatisfy { $0.hasWatched }
+                if !allWatched {
+                    // Check if finale has aired (conservative rule via episodeFacts)
+                    let finaleEp = BingeEngine.finaleEpisode(from: season.episodeFacts)
+                    let finaleAired = finaleEp?.airDate.map { $0 <= now } ?? false
+
+                    // Only un-mark if finale HASN'T aired (still-airing = real new episode)
+                    // If finale already aired, treat unwatched episodes as data correction
+                    if !finaleAired {
+                        season.hasWatched = false
+                    }
+                }
+            }
+
             try context.save()
         } catch {
             // Silent: keep existing data on failure.
@@ -316,27 +390,45 @@ final class SeriesManager {
     }
 
     /// Sync watch progress to iCloud (called after any watch state change)
+    /// Uses its own context to avoid lifecycle issues.
     private func syncWatchProgressToCloud() {
-        Task {
+        launchBackgroundTask { [container, cloudKit] in
             guard await cloudKit.isAvailable else {
                 print("☁️ iCloud: Not available, skipping sync")
                 return
             }
-            let keys = allWatchedEpisodeKeys()
 
-            // Debug: Log detailed watch progress by show
-            print("☁️ ═══════════════════════════════════════════")
-            print("☁️ iCloud SYNC - Saving Watch Progress")
-            print("☁️ ═══════════════════════════════════════════")
+            // Create background context and fetch all series
+            let bgContext = ModelContext(container)
+            let descriptor = FetchDescriptor<Series>()
+            let allSeriesList = (try? bgContext.fetch(descriptor)) ?? []
 
+            // Collect watch keys from bgContext objects
+            var keys = Set<String>()
             var showSummary: [String: (watched: Int, total: Int)] = [:]
-            for series in allSeries() {
-                let watchedCount = series.seasons.flatMap { $0.episodes }.filter { $0.hasWatched }.count
-                let totalCount = series.seasons.flatMap { $0.episodes }.count
+
+            for series in allSeriesList {
+                var watchedCount = 0
+                var totalCount = 0
+                for season in series.seasons {
+                    for episode in season.episodes {
+                        totalCount += 1
+                        if episode.hasWatched {
+                            watchedCount += 1
+                            let key = "\(series.id)-\(season.seasonNumber)-\(episode.episodeNumber)"
+                            keys.insert(key)
+                        }
+                    }
+                }
                 if watchedCount > 0 {
                     showSummary[series.name] = (watchedCount, totalCount)
                 }
             }
+
+            // Debug logging
+            print("☁️ ═══════════════════════════════════════════")
+            print("☁️ iCloud SYNC - Saving Watch Progress")
+            print("☁️ ═══════════════════════════════════════════")
 
             if showSummary.isEmpty {
                 print("☁️ No watched episodes to sync")
@@ -457,33 +549,58 @@ final class SeriesManager {
         await syncShowToCloud(seriesId: seriesId)
     }
 
-    /// Sync a single show to iCloud
+    /// Sync a single show to iCloud.
+    /// Uses bgContext to fetch data for network call, writes isSynced to mainContext for UI.
     func syncShowToCloud(seriesId: Int) async {
         guard await cloudKit.isAvailable else { return }
-        guard let s = series(id: seriesId) else { return }
+
+        // Fetch show data on bgContext (independent of caller's lifecycle)
+        let bgContext = ModelContext(container)
+        let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+        guard let bgSeries = try? bgContext.fetch(descriptor).first else { return }
+
+        let tmdbId = bgSeries.id
+        let followedAt = bgSeries.dateAdded
+        let name = bgSeries.name
 
         do {
-            try await cloudKit.saveFollowedShow(tmdbId: s.id, followedAt: s.dateAdded)
-            s.isSynced = true
-            try context.save()
-            print("☁️ ✓ Synced show: \(s.name)")
+            try await cloudKit.saveFollowedShow(tmdbId: tmdbId, followedAt: followedAt)
+
+            // Write isSynced on mainContext for immediate @Query visibility
+            if let mainSeries = self.series(id: seriesId) {
+                mainSeries.isSynced = true
+                try? self.context.save()
+            }
+            print("☁️ ✓ Synced show: \(name)")
         } catch {
-            print("☁️ ❌ Failed to sync show \(s.name): \(error)")
+            print("☁️ ❌ Failed to sync show \(name): \(error)")
         }
     }
 
-    /// Remove a single show from iCloud sync
+    /// Remove a single show from iCloud sync.
+    /// Uses bgContext to fetch data for network call, writes isSynced to mainContext for UI.
     func unsyncShowFromCloud(seriesId: Int) async {
         guard await cloudKit.isAvailable else { return }
-        guard let s = series(id: seriesId) else { return }
+
+        // Fetch show data on bgContext
+        let bgContext = ModelContext(container)
+        let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+        guard let bgSeries = try? bgContext.fetch(descriptor).first else { return }
+
+        let tmdbId = bgSeries.id
+        let name = bgSeries.name
 
         do {
-            try await cloudKit.deleteFollowedShow(tmdbId: s.id)
-            s.isSynced = false
-            try context.save()
-            print("☁️ ✓ Removed from cloud: \(s.name)")
+            try await cloudKit.deleteFollowedShow(tmdbId: tmdbId)
+
+            // Write isSynced on mainContext for immediate @Query visibility
+            if let mainSeries = self.series(id: seriesId) {
+                mainSeries.isSynced = false
+                try? self.context.save()
+            }
+            print("☁️ ✓ Removed from cloud: \(name)")
         } catch {
-            print("☁️ ❌ Failed to unsync show \(s.name): \(error)")
+            print("☁️ ❌ Failed to unsync show \(name): \(error)")
         }
     }
 

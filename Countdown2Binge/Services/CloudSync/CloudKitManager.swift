@@ -10,7 +10,7 @@ import CloudKit
 
 /// Manages CloudKit container and database operations
 @MainActor
-final class CloudKitManager {
+final class CloudKitManager: CloudSyncing {
     static let shared = CloudKitManager()
 
     // MARK: - CloudKit Configuration
