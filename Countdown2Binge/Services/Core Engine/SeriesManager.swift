@@ -44,9 +44,6 @@ final class SeriesManager {
     /// Notification scheduler (actor for thread safety)
     private let notificationScheduler = NotificationScheduler()
 
-    /// Shows refreshed from TMDB are considered fresh for this long.
-    private let refreshInterval: TimeInterval = 60 * 60 * 24  // 24h
-
     #if DEBUG
     /// Pending background tasks — tracked only in DEBUG for test awaiting.
     /// Each task removes itself on completion to avoid unbounded growth.
@@ -74,6 +71,50 @@ final class SeriesManager {
         }
     }
     #endif
+
+    // MARK: - Refresh Cadence (State-Based Throttle)
+
+    /// Cadence intervals per ShowState. Replaces the old flat 24h throttle.
+    /// State-based: airing shows refresh weekly, anticipated shows every 3 days,
+    /// premieringSoon daily, etc. One source of truth for "is this show due."
+    enum RefreshCadence {
+        static let anticipated: TimeInterval = 3 * 24 * 60 * 60      // 3 days
+        static let premieringSoon: TimeInterval = 1 * 24 * 60 * 60   // 1 day
+        static let airing: TimeInterval = 7 * 24 * 60 * 60           // 7 days
+        static let airingNearFinale: TimeInterval = 1 * 24 * 60 * 60 // 1 day (≤2 days to finale)
+        static let pending: TimeInterval = 2 * 24 * 60 * 60          // 2 days
+        static let bingeReady: TimeInterval = 7 * 24 * 60 * 60       // 7 days (renewal discovery)
+    }
+
+    /// When this show should next be refreshed based on its lifecycle state.
+    /// Uses injected `now` for deterministic tests.
+    func nextRefreshDue(for series: Series, now: Date) -> Date {
+        let seasonFacts = series.seasonFacts
+        let state = BingeEngine.showState(seasons: seasonFacts, now: now)
+        let lastRefresh = series.lastRefreshedAt ?? .distantPast
+
+        let interval: TimeInterval
+        switch state {
+        case .anticipated:
+            interval = RefreshCadence.anticipated
+        case .premieringSoon:
+            interval = RefreshCadence.premieringSoon
+        case .airing:
+            // Near-finale shows get faster refresh (≤2 days to finale → daily)
+            let daysUntilFinale = BingeEngine.daysUntilFinale(seasons: seasonFacts, now: now)
+            if let days = daysUntilFinale, days <= 2 {
+                interval = RefreshCadence.airingNearFinale
+            } else {
+                interval = RefreshCadence.airing
+            }
+        case .pending:
+            interval = RefreshCadence.pending
+        case .bingeReady:
+            interval = RefreshCadence.bingeReady
+        }
+
+        return lastRefresh.addingTimeInterval(interval)
+    }
 
     /// Launch a background task that self-cleans from pendingTasks on completion.
     /// In DEBUG: tracked for test awaiting. In RELEASE: fire-and-forget.
@@ -335,12 +376,16 @@ final class SeriesManager {
     // MARK: - Refresh (the ONLY TMDB→Series write path)
 
     /// Refresh a single show from TMDB (metadata + new seasons/episodes),
-    /// preserving watch state. `force` ignores the refresh interval.
+    /// preserving watch state. `force` bypasses the state-based cadence.
     /// `now` parameter for testability (defaults to current date).
+    ///
+    /// Cadence is state-based: anticipated (3d), premieringSoon (1d), airing (7d),
+    /// airing near finale (1d), pending (2d), bingeReady (7d). See RefreshCadence.
     func refresh(id: Int, force: Bool = false, now: Date = Date()) async {
         guard let s = series(id: id) else { return }
-        if !force, let last = s.lastRefreshedAt,
-           now.timeIntervalSince(last) < refreshInterval {
+
+        // State-based throttle: skip if not due (unless forced)
+        if !force, now < nextRefreshDue(for: s, now: now) {
             return
         }
 

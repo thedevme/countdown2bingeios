@@ -38,11 +38,20 @@ private func date(daysFromNow offset: Int) -> Date {
 final class MockTMDBService: TMDBServiceProtocol, @unchecked Sendable {
     var showsToReturn: [Int: ShowData] = [:]
 
+    /// Track which show IDs were fetched (for verifying refresh behavior)
+    var fetchedIds: [Int] = []
+
     func setShow(_ show: ShowData) {
         showsToReturn[show.id] = show
     }
 
+    /// Clear the fetched IDs list (call before testing refresh behavior)
+    func clearFetchedIds() {
+        fetchedIds = []
+    }
+
     func getShowDetails(id: Int) async throws -> ShowData {
+        fetchedIds.append(id)
         if let show = showsToReturn[id] {
             return show
         }
@@ -1565,6 +1574,486 @@ struct SeriesManagerIntegrationTests {
 
         #expect(series.relatedShowIds == [])
         #expect(series.spinoffsResolved == true)
+    }
+}
+
+    // MARK: - Group 11: Refresh Cadence (State-Based Throttle)
+
+    @Suite("Group 11 — Refresh Cadence")
+    struct RefreshCadenceTests {
+
+    /// 11.1 nextRefreshDue returns correct interval per state
+    @Test("11.1 nextRefreshDue returns correct interval per ShowState")
+    @MainActor
+    func nextRefreshDuePerState() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        // Fixed "now" for deterministic tests
+        let now = testNow  // Aug 15, 2026
+
+        // Helper to create dates relative to now
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // ANTICIPATED (no dates) → 3 days
+        // ═══════════════════════════════════════════════════════════════════
+        let anticipatedShow = buildShowData(
+            id: 11001,
+            name: "Anticipated Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: nil, isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: nil, isTypedFinale: false, isTyped: false)
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: anticipatedShow)
+        await manager.awaitPendingBackgroundWork()
+        var series = manager.series(id: 11001)!
+        series.lastRefreshedAt = now
+
+        var nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(3), "Anticipated should refresh in 3 days")
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PREMIERING SOON (dated, not started) → 1 day
+        // ═══════════════════════════════════════════════════════════════════
+        let premieringSoonShow = buildShowData(
+            id: 11002,
+            name: "Premiering Soon Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(10), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(17), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(24), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: premieringSoonShow)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11002)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(1), "PremieringSoon should refresh in 1 day")
+
+        // ═══════════════════════════════════════════════════════════════════
+        // AIRING (started, finale confirmed, not near finale) → 7 days
+        // ═══════════════════════════════════════════════════════════════════
+        let airingShow = buildShowData(
+            id: 11003,
+            name: "Airing Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-14), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-7), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(21), isTypedFinale: true, isTyped: true)  // finale in 21 days
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: airingShow)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11003)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(7), "Airing (not near finale) should refresh in 7 days")
+
+        // ═══════════════════════════════════════════════════════════════════
+        // AIRING NEAR FINALE (≤2 days to finale) → 1 day
+        // ═══════════════════════════════════════════════════════════════════
+        let airingNearFinaleShow = buildShowData(
+            id: 11004,
+            name: "Airing Near Finale Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-14), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-7), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(2), isTypedFinale: true, isTyped: true)  // finale in 2 days
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: airingNearFinaleShow)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11004)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(1), "Airing near finale (≤2 days) should refresh in 1 day")
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PENDING (started, no confirmed finale) → 2 days
+        // ═══════════════════════════════════════════════════════════════════
+        let pendingShow = buildShowData(
+            id: 11005,
+            name: "Pending Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-14), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-7), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(7), isTypedFinale: false, isTyped: true)  // NOT typed as finale
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: pendingShow)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11005)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(2), "Pending should refresh in 2 days")
+
+        // ═══════════════════════════════════════════════════════════════════
+        // BINGE READY (complete, past grace) → 7 days
+        // ═══════════════════════════════════════════════════════════════════
+        let bingeReadyShow = buildShowData(
+            id: 11006,
+            name: "Binge Ready Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)  // finale 16 days ago, past grace
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: bingeReadyShow)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11006)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(7), "BingeReady should refresh in 7 days")
+    }
+
+    /// 11.2 refresh(force:false) SKIPS a show refreshed within its state's interval
+    @Test("11.2 refresh(force:false) skips show refreshed within cadence")
+    @MainActor
+    func refreshSkipsWithinCadence() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // Create a bingeReady show (7-day cadence)
+        let show = buildShowData(
+            id: 11101,
+            name: "Skip Test Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+
+        await mockTMDB.setShow(show)
+        _ = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+
+        // Set lastRefreshedAt to 3 days ago (within 7-day cadence)
+        let series = manager.series(id: 11101)!
+        series.lastRefreshedAt = d(-3)
+
+        // Clear tracking
+        mockTMDB.clearFetchedIds()
+
+        // When: refresh(force: false) with now
+        await manager.refresh(id: 11101, force: false, now: now)
+
+        // Then: TMDB was NOT called (show was skipped)
+        #expect(mockTMDB.fetchedIds.isEmpty, "Should skip refresh within cadence")
+    }
+
+    /// 11.3 refresh(force:false) PROCEEDS for a show past its interval
+    @Test("11.3 refresh(force:false) proceeds for show past cadence")
+    @MainActor
+    func refreshProceedsPastCadence() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // Create a bingeReady show (7-day cadence)
+        let show = buildShowData(
+            id: 11102,
+            name: "Proceed Test Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+
+        await mockTMDB.setShow(show)
+        _ = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+
+        // Set lastRefreshedAt to 8 days ago (past 7-day cadence)
+        let series = manager.series(id: 11102)!
+        series.lastRefreshedAt = d(-8)
+
+        // Clear tracking
+        mockTMDB.clearFetchedIds()
+
+        // When: refresh(force: false) with now
+        await manager.refresh(id: 11102, force: false, now: now)
+
+        // Then: TMDB WAS called (show was refreshed)
+        #expect(mockTMDB.fetchedIds.contains(11102), "Should refresh show past cadence")
+    }
+
+    /// 11.4 refresh(force:true) always proceeds (pull-to-refresh bypasses cadence)
+    @Test("11.4 refresh(force:true) always proceeds")
+    @MainActor
+    func refreshForceAlwaysProceeds() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // Create a bingeReady show (7-day cadence)
+        let show = buildShowData(
+            id: 11103,
+            name: "Force Test Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+
+        await mockTMDB.setShow(show)
+        _ = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+
+        // Set lastRefreshedAt to just 1 hour ago (way within 7-day cadence)
+        let series = manager.series(id: 11103)!
+        series.lastRefreshedAt = now.addingTimeInterval(-3600)
+
+        // Clear tracking
+        mockTMDB.clearFetchedIds()
+
+        // When: refresh(force: true)
+        await manager.refresh(id: 11103, force: true, now: now)
+
+        // Then: TMDB WAS called (force bypasses cadence)
+        #expect(mockTMDB.fetchedIds.contains(11103), "force:true should bypass cadence")
+    }
+
+    /// 11.5 Near-finale boundary: daysUntilFinale==2 uses 1-day, ==3 uses 7-day
+    @Test("11.5 Near-finale boundary at 2 days")
+    @MainActor
+    func nearFinaleBoundary() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Show with finale in EXACTLY 2 days → should use 1-day cadence
+        // ═══════════════════════════════════════════════════════════════════
+        let show2Days = buildShowData(
+            id: 11201,
+            name: "Finale 2 Days",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-14), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-7), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(2), isTypedFinale: true, isTyped: true)  // finale in 2 days
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: show2Days)
+        await manager.awaitPendingBackgroundWork()
+        var series = manager.series(id: 11201)!
+        series.lastRefreshedAt = now
+
+        var nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(1), "Finale in 2 days should use 1-day cadence")
+
+        // Verify the show state is airing
+        #expect(BingeEngine.showState(seasons: series.seasonFacts, now: now) == .airing)
+        #expect(BingeEngine.daysUntilFinale(seasons: series.seasonFacts, now: now) == 2)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // Show with finale in EXACTLY 3 days → should use 7-day cadence
+        // ═══════════════════════════════════════════════════════════════════
+        let show3Days = buildShowData(
+            id: 11202,
+            name: "Finale 3 Days",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-14), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-7), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(3), isTypedFinale: true, isTyped: true)  // finale in 3 days
+                ]
+            )]
+        )
+        _ = try manager.follow(showData: show3Days)
+        await manager.awaitPendingBackgroundWork()
+        series = manager.series(id: 11202)!
+        series.lastRefreshedAt = now
+
+        nextDue = manager.nextRefreshDue(for: series, now: now)
+        #expect(nextDue == d(7), "Finale in 3 days should use 7-day cadence")
+
+        // Verify the show state is airing
+        #expect(BingeEngine.showState(seasons: series.seasonFacts, now: now) == .airing)
+        #expect(BingeEngine.daysUntilFinale(seasons: series.seasonFacts, now: now) == 3)
+    }
+
+    /// 11.6 refreshAll with mixed states respects per-show cadence
+    @Test("11.6 refreshAll respects per-show cadence")
+    @MainActor
+    func refreshAllPerShowCadence() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // Create 3 shows with different states and lastRefreshedAt:
+        // 1. BingeReady, refreshed 3 days ago (within 7-day) → should SKIP
+        // 2. BingeReady, refreshed 8 days ago (past 7-day) → should REFRESH
+        // 3. PremieringSoon, refreshed 2 days ago (past 1-day) → should REFRESH
+
+        let bingeReadyRecent = buildShowData(
+            id: 11301,
+            name: "Binge Recent",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+        await mockTMDB.setShow(bingeReadyRecent)
+        _ = try manager.follow(showData: bingeReadyRecent)
+
+        let bingeReadyStale = buildShowData(
+            id: 11302,
+            name: "Binge Stale",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+        await mockTMDB.setShow(bingeReadyStale)
+        _ = try manager.follow(showData: bingeReadyStale)
+
+        let premieringSoonStale = buildShowData(
+            id: 11303,
+            name: "Premiering Stale",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: d(10), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: d(17), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: d(24), isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+        await mockTMDB.setShow(premieringSoonStale)
+        _ = try manager.follow(showData: premieringSoonStale)
+
+        await manager.awaitPendingBackgroundWork()
+
+        // Set lastRefreshedAt
+        manager.series(id: 11301)!.lastRefreshedAt = d(-3)  // 3 days ago, within 7-day cadence
+        manager.series(id: 11302)!.lastRefreshedAt = d(-8)  // 8 days ago, past 7-day cadence
+        manager.series(id: 11303)!.lastRefreshedAt = d(-2)  // 2 days ago, past 1-day cadence
+
+        // Clear tracking
+        mockTMDB.clearFetchedIds()
+
+        // When: refreshAll(force: false)
+        await manager.refreshAll(force: false, now: now)
+
+        // Then: 11301 skipped, 11302 and 11303 refreshed
+        #expect(!mockTMDB.fetchedIds.contains(11301), "11301 should be skipped (within cadence)")
+        #expect(mockTMDB.fetchedIds.contains(11302), "11302 should be refreshed (past cadence)")
+        #expect(mockTMDB.fetchedIds.contains(11303), "11303 should be refreshed (past cadence)")
     }
 }
 

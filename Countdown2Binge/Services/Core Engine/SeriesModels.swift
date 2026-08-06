@@ -131,7 +131,8 @@ final class Series {
     // MARK: - Lifecycle (delegates to BingeEngine — Axis 1)
 
     /// Bridge: build BingeEngine season facts from the SwiftData graph.
-    private var seasonFacts: [BingeEngine.SeasonFact] {
+    /// Internal so SeriesManager can use it for nextRefreshDue with injected `now`.
+    var seasonFacts: [BingeEngine.SeasonFact] {
         regularSeasons.map { season in
             BingeEngine.SeasonFact(
                 seasonNumber: season.seasonNumber,
