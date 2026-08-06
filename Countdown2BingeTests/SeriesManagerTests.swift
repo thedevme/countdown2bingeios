@@ -1968,8 +1968,72 @@ struct SeriesManagerIntegrationTests {
         #expect(BingeEngine.daysUntilFinale(seasons: series.seasonFacts, now: now) == 3)
     }
 
-    /// 11.6 refreshAll with mixed states respects per-show cadence
-    @Test("11.6 refreshAll respects per-show cadence")
+    /// 11.6 refreshAll stops early when Task.isCancelled
+    @Test("11.6 refreshAll stops when cancelled")
+    @MainActor
+    func refreshAllStopsWhenCancelled() async throws {
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        let now = testNow
+
+        func d(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: now)!
+        }
+
+        // Create 3 shows, all past their cadence (will be refreshed if not cancelled)
+        for i in 1...3 {
+            let show = buildShowData(
+                id: 11400 + i,
+                name: "Cancel Test \(i)",
+                seasons: [(
+                    number: 1,
+                    episodes: [
+                        (number: 1, airDate: d(-30), isTypedFinale: false, isTyped: true),
+                        (number: 2, airDate: d(-23), isTypedFinale: false, isTyped: true),
+                        (number: 3, airDate: d(-16), isTypedFinale: true, isTyped: true)
+                    ]
+                )]
+            )
+            await mockTMDB.setShow(show)
+            _ = try manager.follow(showData: show)
+        }
+        await manager.awaitPendingBackgroundWork()
+
+        // Set all shows past their cadence (8 days ago, past 7-day bingeReady cadence)
+        for i in 1...3 {
+            manager.series(id: 11400 + i)!.lastRefreshedAt = d(-8)
+        }
+
+        // Clear tracking
+        mockTMDB.clearFetchedIds()
+
+        // Run refreshAll in a task that we cancel after a short delay
+        let refreshTask = Task {
+            await manager.refreshAll(force: false, now: now)
+        }
+
+        // Cancel immediately — the first show may or may not have started,
+        // but subsequent shows should be skipped
+        refreshTask.cancel()
+
+        // Wait for the task to complete (it should exit early)
+        await refreshTask.value
+
+        // Then: NOT all 3 shows were refreshed (cancellation stopped the loop)
+        // Note: The first show might have been fetched before cancellation was checked,
+        // but we should NOT have all 3
+        #expect(mockTMDB.fetchedIds.count < 3, "Cancellation should stop before all 3 shows")
+    }
+
+    /// 11.7 refreshAll with mixed states respects per-show cadence
+    @Test("11.7 refreshAll respects per-show cadence")
     @MainActor
     func refreshAllPerShowCadence() async throws {
         let container = try makeTestContainer()

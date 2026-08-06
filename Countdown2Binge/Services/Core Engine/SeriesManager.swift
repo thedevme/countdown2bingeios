@@ -439,9 +439,15 @@ final class SeriesManager {
     }
 
     /// Refresh every followed show. Call on launch / background refresh.
+    /// Checks Task.isCancelled between shows for graceful background-task expiration.
     /// `now` parameter for testability (defaults to current date).
     func refreshAll(force: Bool = false, now: Date = Date()) async {
         for s in allSeries() {
+            // Check cancellation before each show (supports background task expiration)
+            guard !Task.isCancelled else {
+                print("🛑 Refresh cancelled by system")
+                return
+            }
             await refresh(id: s.id, force: force, now: now)
         }
     }
