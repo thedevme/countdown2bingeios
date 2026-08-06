@@ -37,16 +37,17 @@ struct ShareSheet: View {
         if let days = daysUntilBinge {
             return "\(days)"
         }
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady: return "NOW"
         case .anticipated: return "TBD"
-        default: return "—"
+        case .airing, .pending, .premieringSoon: return "—"
         }
     }
 
     private var statLabel: String {
-        switch show.timelineCategory {
-        case .airingNow: return String(localized: "status_until_binge_ready")
+        switch show.showState {
+        case .airing: return String(localized: "status_until_binge_ready")
+        case .pending: return String(localized: "status_until_binge_ready")
         case .premieringSoon: return String(localized: "share_until_premiere")
         case .anticipated: return String(localized: "share_release_pending")
         case .bingeReady: return String(localized: "status_ready_to_binge")

@@ -24,7 +24,7 @@ final class TimelineViewModel {
     /// (sorted by finale date, soonest first)
     var airingNowShows: [ShowData] {
         followedShows
-            .filter { $0.timelineCategory == .airingNow && $0.daysUntilFinale != nil }
+            .filter { $0.showState == .airing }
             .sorted { lhs, rhs in
                 guard let l = lhs.daysUntilFinale, let r = rhs.daysUntilFinale else {
                     return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
@@ -33,17 +33,12 @@ final class TimelineViewModel {
             }
     }
 
-    /// Shows that are airing or premiering soon but have NO confirmed finale date
+    /// Shows that are airing but have NO confirmed finale date
     /// Sorted: pre-premiere shows by days until premiere, then already-airing shows alphabetically
     var pendingShows: [ShowData] {
-        let airingNoFinale = followedShows.filter {
-            $0.timelineCategory == .airingNow && $0.daysUntilFinale == nil
-        }
-        let premieringNoFinale = followedShows.filter {
-            $0.timelineCategory == .premieringSoon && !hasConfirmedFinale($0)
-        }
+        let pendingList = followedShows.filter { $0.showState == .pending }
 
-        return (airingNoFinale + premieringNoFinale).sorted { lhs, rhs in
+        return pendingList.sorted { lhs, rhs in
             // Pre-premiere shows come after, sorted by days to premiere
             let lhsPremiered = hasPremiered(lhs)
             let rhsPremiered = hasPremiered(rhs)
@@ -83,11 +78,10 @@ final class TimelineViewModel {
         return premiereDate <= Date()
     }
 
-    /// Shows with known premiere date AND a confirmed finale date
-    /// (sorted by premiere date, soonest first)
+    /// Shows with known premiere date (sorted by premiere date, soonest first)
     var premieringSoonShows: [ShowData] {
         followedShows
-            .filter { $0.timelineCategory == .premieringSoon && hasConfirmedFinale($0) }
+            .filter { $0.showState == .premieringSoon }
             .sorted { lhs, rhs in
                 switch (lhs.daysUntilPremiere, rhs.daysUntilPremiere) {
                 case let (l?, r?):
@@ -105,14 +99,14 @@ final class TimelineViewModel {
     /// Shows with no date announced - TBD (sorted alphabetically)
     var anticipatedShows: [ShowData] {
         followedShows
-            .filter { $0.timelineCategory == .anticipated }
+            .filter { $0.showState == .anticipated }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     /// Completed or cancelled shows - ready to binge (sorted alphabetically)
     var bingeReadyShows: [ShowData] {
         followedShows
-            .filter { $0.timelineCategory == .bingeReady }
+            .filter { $0.showState == .bingeReady }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
@@ -260,7 +254,6 @@ final class TimelineViewModel {
     // MARK: - Dependencies
 
     private var modelContext: ModelContext?
-    private var store: FollowedShowsStore?
     private var seriesManager: SeriesManager?
 
     // MARK: - Init
@@ -273,7 +266,6 @@ final class TimelineViewModel {
 
     func configure(with modelContext: ModelContext, seriesManager: SeriesManager? = nil) {
         self.modelContext = modelContext
-        self.store = FollowedShowsStore(modelContext: modelContext)
         self.seriesManager = seriesManager
     }
 

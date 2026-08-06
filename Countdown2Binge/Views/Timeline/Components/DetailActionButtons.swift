@@ -12,7 +12,7 @@ struct DetailActionButtons: View {
     @State private var showUnfollowConfirmation = false
 
     private var isReady: Bool {
-        show.timelineCategory == .bingeReady
+        show.showState == .bingeReady
     }
 
     var body: some View {

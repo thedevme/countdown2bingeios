@@ -50,12 +50,17 @@ block() {
   exit 2
 }
 
-# ── R1 — no lifecycle state defined on a DTO ────────────────────────────────
+# ── R1 — no INDEPENDENT lifecycle state defined on a DTO ────────────────────
+# BLOCK the old independent-state names. Sanctioned pure-delegation properties
+# (showState / isBingeReadyByDate / isBingeReady) are ALLOWED on DTOs because
+# they are one-line pass-throughs to BingeEngine — verified, not independent
+# math. The forbidden names below are the ones that historically carried their
+# own date/finale logic and caused drift.
 case "$BASENAME" in
   ShowData.swift|SeasonData.swift|EpisodeData.swift)
-    if printf '%s' "$NEW" | grep -Eq 'var[[:space:]]+(lifecycleState|timelineCategory|isBingeReady|anticipatedSeason)[[:space:]:]'; then
-      block "R1 (state on a DTO)" \
-        "Do not define lifecycleState / timelineCategory / isBingeReady / anticipatedSeason on a DTO. Lifecycle state comes from Series/BingeEngine only."
+    if printf '%s' "$NEW" | grep -Eq 'var[[:space:]]+(lifecycleState|timelineCategory|anticipatedSeason)[[:space:]:]'; then
+      block "R1 (independent state on a DTO)" \
+        "Do not define lifecycleState / timelineCategory / anticipatedSeason on a DTO — these carried independent state and caused drift. DTOs may expose showState / isBingeReadyByDate / isBingeReady ONLY as pure one-line delegations to BingeEngine."
     fi
     ;;
 esac

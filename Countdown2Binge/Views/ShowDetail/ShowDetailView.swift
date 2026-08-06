@@ -122,8 +122,8 @@ struct ShowDetailView: View {
                         eyebrow: statusCardEyebrow,
                         dateLine: statusCardDateLine,
                         pillText: statusCardPillText,
-                        isReady: show.timelineCategory == .bingeReady,
-                        isTBD: show.timelineCategory == .anticipated,
+                        isReady: show.showState == .bingeReady,
+                        isTBD: show.showState == .anticipated,
                         lifecycleIndex: lifecycleIndex
                     )
                     .padding(.top, 12)
@@ -189,8 +189,8 @@ struct ShowDetailView: View {
     // MARK: - Computed Properties
 
     private var seasonStatus: ShowDetailSeasonStatus? {
-        switch show.timelineCategory {
-        case .airingNow: return .airing
+        switch show.showState {
+        case .airing, .pending: return .airing
         case .premieringSoon: return .new
         case .bingeReady: return .ready
         case .anticipated: return nil
@@ -199,23 +199,31 @@ struct ShowDetailView: View {
 
     private var seasonEpisodeInfo: String {
         guard let season = show.currentSeason else { return "TBA" }
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady:
             return String(localized: "season_all_out \(season.episodeCount)")
-        case .airingNow:
+        case .airing, .pending:
             let aired = season.episodes.filter { $0.hasAired }.count
             return String(localized: "season_partial_out \(aired) \(season.episodeCount)")
-        default:
+        case .premieringSoon, .anticipated:
             return String(localized: "season_episode_count \(season.episodeCount)")
         }
     }
 
     private var statusCardBigValue: String {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady: return "NOW"
         case .anticipated: return "TBD"
-        default:
-            if let days = show.daysUntilFinale ?? show.daysUntilPremiere {
+        case .airing:
+            if let days = show.daysUntilFinale {
+                return "\(days)"
+            }
+            return "TBD"
+        case .pending:
+            // Pending has no finale date
+            return "TBD"
+        case .premieringSoon:
+            if let days = show.daysUntilPremiere {
                 return "\(days)"
             }
             return "TBD"
@@ -227,22 +235,25 @@ struct ShowDetailView: View {
     }
 
     private var statusCardEyebrow: String {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady: return String(localized: "status_ready_to_binge")
         case .anticipated: return String(localized: "status_until_new_season")
-        default: return String(localized: "status_until_binge_ready")
+        case .airing, .pending, .premieringSoon: return String(localized: "status_until_binge_ready")
         }
     }
 
     private var statusCardDateLine: String {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady:
             let eps = show.currentSeason?.episodeCount ?? 0
             return String(localized: "status_all_episodes_finished \(eps)")
-        case .airingNow:
+        case .airing:
             if let finaleDate = show.currentSeason?.finaleDate {
                 return String(localized: "status_finale_date \(finaleDate.localizedShortDate)")
             }
+            return String(localized: "status_airing_weekly")
+        case .pending:
+            // Pending = airing but no confirmed finale
             return String(localized: "status_airing_weekly")
         case .premieringSoon:
             if let premiereDate = show.currentSeason?.airDate,
@@ -257,11 +268,16 @@ struct ShowDetailView: View {
     }
 
     private var statusCardPillText: String {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady:
             let eps = show.currentSeason?.episodeCount ?? 0
             return String(localized: "pill_binge_ready \(eps)")
-        case .airingNow:
+        case .airing:
+            let aired = show.currentSeason?.episodes.filter { $0.hasAired }.count ?? 0
+            let total = show.currentSeason?.episodeCount ?? 0
+            return String(localized: "pill_now_airing \(aired) \(total)")
+        case .pending:
+            // Pending = airing but no finale countdown
             let aired = show.currentSeason?.episodes.filter { $0.hasAired }.count ?? 0
             let total = show.currentSeason?.episodeCount ?? 0
             return String(localized: "pill_now_airing \(aired) \(total)")
@@ -276,10 +292,10 @@ struct ShowDetailView: View {
     }
 
     private var lifecycleIndex: Int {
-        switch show.timelineCategory {
+        switch show.showState {
         case .anticipated: return 0
         case .premieringSoon: return 1
-        case .airingNow: return 2
+        case .airing, .pending: return 2
         case .bingeReady: return 3
         }
     }

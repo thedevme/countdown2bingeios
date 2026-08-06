@@ -17,7 +17,7 @@ struct DetailStatusInfo: View {
         if isAnticipated {
             // For anticipated seasons, show the premiere date
             return show.anticipatedSeason?.airDate ?? show.anticipatedSeason?.premiereDate
-        } else if show.timelineCategory == .airingNow {
+        } else if show.showState == .airing || show.showState == .pending {
             // For airing shows, show the finale date (last episode)
             return show.currentSeason?.episodes
                 .filter { $0.airDate != nil }

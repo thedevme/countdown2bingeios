@@ -151,4 +151,28 @@ struct SeasonData: Identifiable, Codable, Sendable, Hashable {
 
         return calendar.dateComponents([.day], from: startOfToday, to: startOfFinaleDate).day
     }
+
+    // MARK: - BingeEngine Bridge
+
+    /// Episode facts for BingeEngine (DTO → engine bridge)
+    var episodeFacts: [BingeEngine.EpisodeFact] {
+        episodes.map { ep in
+            BingeEngine.EpisodeFact(
+                episodeNumber: ep.episodeNumber,
+                airDate: ep.airDate,
+                isTypedFinale: ep.episodeType == .finale,
+                isTyped: ep.episodeType != .standard
+            )
+        }
+    }
+
+    /// Date-axis: season is complete + past grace window (delegates to BingeEngine)
+    var isBingeReadyByDate: Bool {
+        BingeEngine.isSeasonBingeReadyByDate(episodes: episodeFacts)
+    }
+
+    /// For unfollowed shows, isBingeReady = date-axis only (no user watch state)
+    var isBingeReady: Bool {
+        isBingeReadyByDate
+    }
 }

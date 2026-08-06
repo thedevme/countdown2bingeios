@@ -12,7 +12,7 @@ struct FollowConfirmationSheet: View {
     let onSave: () -> Void
 
     private var phaseInfo: FollowPhaseInfo {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady:
             return FollowPhaseInfo(
                 key: "ready",
@@ -22,7 +22,7 @@ struct FollowConfirmationSheet: View {
                 statUnit: String(localized: "phase_binge_ready"),
                 line: String(localized: "phase_ready_description \(show.currentSeason?.episodeCount ?? show.numberOfEpisodes)")
             )
-        case .airingNow:
+        case .airing:
             let days = show.daysUntilFinale ?? 0
             return FollowPhaseInfo(
                 key: "airing",
@@ -30,6 +30,16 @@ struct FollowConfirmationSheet: View {
                 tone: Color.c2bTeal,
                 stat: "\(max(0, days))",
                 statUnit: String(localized: "phase_days_to_finale"),
+                line: String(localized: "phase_airing_description")
+            )
+        case .pending:
+            // Pending = airing but no confirmed finale date
+            return FollowPhaseInfo(
+                key: "airing",
+                badge: String(localized: "phase_now_airing"),
+                tone: Color.c2bTeal,
+                stat: String(localized: "phase_stat_tbd"),
+                statUnit: String(localized: "phase_finale_tbd"),
                 line: String(localized: "phase_airing_description")
             )
         case .premieringSoon:

@@ -15,9 +15,9 @@ struct AddShowModal: View {
 
     @State private var selectedAnswer: WatchAnswer? = nil
 
-    // Phase info based on timeline category
+    // Phase info based on show state
     private var phaseInfo: PhaseInfo {
-        switch show.timelineCategory {
+        switch show.showState {
         case .bingeReady:
             return PhaseInfo(
                 key: "ready",
@@ -27,7 +27,7 @@ struct AddShowModal: View {
                 statLabel: String(localized: "phase_binge_ready"),
                 isDimmed: false
             )
-        case .airingNow:
+        case .airing:
             let days = show.daysUntilFinale ?? 0
             return PhaseInfo(
                 key: "airing",
@@ -35,6 +35,16 @@ struct AddShowModal: View {
                 description: String(localized: "phase_airing_description"),
                 stat: "\(max(0, days))",
                 statLabel: String(localized: "phase_days_to_finale"),
+                isDimmed: false
+            )
+        case .pending:
+            // Pending = airing but no confirmed finale date
+            return PhaseInfo(
+                key: "airing",
+                title: String(localized: "phase_now_airing"),
+                description: String(localized: "phase_airing_description"),
+                stat: String(localized: "phase_stat_tbd"),
+                statLabel: String(localized: "phase_finale_tbd"),
                 isDimmed: false
             )
         case .premieringSoon:

@@ -126,7 +126,13 @@ struct DetailStatusBlock: View {
     private var effectiveCategory: TimelineCategory {
         if shouldShowReadyState { return .bingeReady }
         if isViewingAnticipatedSeason { return .anticipated }
-        return show.timelineCategory
+        // Map ShowState to TimelineCategory
+        switch show.showState {
+        case .airing, .pending: return .airingNow
+        case .premieringSoon: return .premieringSoon
+        case .anticipated: return .anticipated
+        case .bingeReady: return .bingeReady
+        }
     }
 
     private var phaseTone: Color {
@@ -145,8 +151,8 @@ struct DetailStatusBlock: View {
         if isViewingAnticipatedSeason {
             return String(localized: "phase_anticipated")
         }
-        switch show.timelineCategory {
-        case .airingNow: return String(localized: "phase_now_airing")
+        switch show.showState {
+        case .airing, .pending: return String(localized: "phase_now_airing")
         case .premieringSoon: return String(localized: "phase_premiering_soon")
         case .anticipated: return String(localized: "phase_anticipated")
         case .bingeReady: return String(localized: "phase_binge_ready")

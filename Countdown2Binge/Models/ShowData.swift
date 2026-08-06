@@ -221,66 +221,23 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
         return calendar.dateComponents([.day], from: startOfToday, to: startOfDate).day
     }
 
-    /// Derived lifecycle state
-    var lifecycleState: ShowLifecycleState {
-        // Cancelled is the only status we trust from TMDB
-        if status == .canceled {
-            return .cancelled
-        }
+    // MARK: - BingeEngine Bridge
 
-        // No seasons yet = anticipated
-        guard let currentSeason = currentSeason else {
-            return .anticipated
-        }
-
-        // Season hasn't started airing
-        if !currentSeason.hasStarted {
-            return .anticipated
-        }
-
-        // Season is complete
-        if currentSeason.isComplete {
-            // Stay "airing" on finale day until midnight
-            if currentSeason.isFinaleDay {
-                return .airing
-            }
-            // If still in production, between seasons (anticipated)
-            // If not in production, show has ended
-            return inProduction ? .anticipated : .ended
-        }
-
-        // Season started but not complete
-        return .airing
-    }
-
-    /// Timeline category for UI
-    var timelineCategory: TimelineCategory {
-        let state = lifecycleState
-
-        switch state {
-        case .cancelled, .ended:
-            return .bingeReady
-
-        case .completed:
-            // User watch status - show in appropriate timeline category
-            return .bingeReady
-
-        case .airing:
-            return .airingNow
-
-        case .anticipated:
-            // Check if we have a known premiere date
-            if daysUntilPremiere != nil {
-                return .premieringSoon
-            }
-            // No premiere date = TBD
-            return .anticipated
+    /// Season facts for BingeEngine (DTO → engine bridge)
+    /// hasWatched is always false — unfollowed shows have no user-axis state
+    private var seasonFacts: [BingeEngine.SeasonFact] {
+        seasons.filter { !$0.isSpecials }.map { season in
+            BingeEngine.SeasonFact(
+                seasonNumber: season.seasonNumber,
+                episodes: season.episodeFacts,
+                hasWatched: false
+            )
         }
     }
 
-    /// Check if show is ready to binge
-    var isBingeReady: Bool {
-        timelineCategory == .bingeReady
+    /// The show's lifecycle state (delegates to BingeEngine)
+    var showState: ShowState {
+        BingeEngine.showState(seasons: seasonFacts)
     }
 
     /// Add-time prompt - always shown when there's a completed season to ask about.

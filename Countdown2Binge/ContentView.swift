@@ -190,8 +190,7 @@ struct ContentView: View {
     private func checkForDowngrade() {
         guard PremiumManager.shared.didDowngradeFromPremium else { return }
 
-        let store = FollowedShowsStore(modelContext: modelContext)
-        let followedCount = store.getFollowedCount()
+        let followedCount = seriesManager.allSeries().count
 
         if followedCount > 3 {
             // Check if already in grace period

@@ -13,8 +13,8 @@ struct ShowDetailHeroSection: View {
     let onDismiss: () -> Void
 
     private var phaseInfo: (label: String, tone: Color) {
-        switch show.timelineCategory {
-        case .airingNow: return ("Now Airing", .c2bTeal)
+        switch show.showState {
+        case .airing, .pending: return ("Now Airing", .c2bTeal)
         case .premieringSoon: return ("Premiering Soon", .c2bTeal.opacity(0.7))
         case .anticipated: return ("Anticipated", .c2bMuted)
         case .bingeReady: return ("Binge Ready", .c2bTealBright)
