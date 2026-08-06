@@ -91,8 +91,8 @@ struct FullTimelineView: View {
             }
         }
         .refreshable {
-            // Pull-to-refresh: Force fetch from TMDB API
-            await seriesManager.refreshAll(force: true)
+            // Pull-to-refresh: respects state-based cadence (doesn't hammer TMDB)
+            await seriesManager.refreshAll(force: false)
         }
         .background(Color.c2bBackground)
     }

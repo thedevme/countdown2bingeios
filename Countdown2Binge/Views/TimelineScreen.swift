@@ -161,9 +161,9 @@ struct TimelineScreen: View {
                 }
             }
             .refreshable {
-                // Pull-to-refresh: Force fetch from TMDB API
-                await seriesManager.refreshAll(force: true)
+                // Pull-to-refresh: respects state-based cadence (doesn't hammer TMDB)
                 // @Query auto-updates when context changes - no manual reload needed
+                await seriesManager.refreshAll(force: false)
             }
             .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(

@@ -190,7 +190,8 @@ struct MyListScreen: View {
             }
             .background(Color.c2bBackground)
             .refreshable {
-                await seriesManager.refreshAll(force: true)
+                // Pull-to-refresh: respects state-based cadence (doesn't hammer TMDB)
+                await seriesManager.refreshAll(force: false)
             }
             .onAppear {
                 viewModel.reloadArchivedShowIds()
