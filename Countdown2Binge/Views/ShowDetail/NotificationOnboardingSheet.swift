@@ -12,7 +12,7 @@ struct NotificationOnboardingOverlay: View {
     let onSave: () -> Void
 
     @StateObject private var settingsStore = NotificationSettingsStore.shared
-    @State private var settings = ShowNotificationSettings()
+    @State private var settings = NotificationSettings()
 
     var body: some View {
         ZStack {
@@ -56,17 +56,24 @@ struct NotificationOnboardingOverlay: View {
                         isOn: $settings.seasonPremiere
                     )
 
-                    // New Episodes
-                    NotificationOverlayRow(
-                        title: String(localized: "notif_option_episodes"),
-                        subtitle: String(localized: "notif_option_episodes_sub"),
-                        isOn: $settings.newEpisodes
-                    )
-
                     // Finale Reminder
                     NotificationOverlayFinaleRow(
                         isOn: $settings.finaleReminder,
                         timing: $settings.finaleTiming
+                    )
+
+                    // Binge Ready
+                    NotificationOverlayRow(
+                        title: String(localized: "notif_option_bingeready"),
+                        subtitle: String(localized: "notif_option_bingeready_sub"),
+                        isOn: $settings.bingeReady
+                    )
+
+                    // New Season
+                    NotificationOverlayRow(
+                        title: String(localized: "notif_option_newseason"),
+                        subtitle: String(localized: "notif_option_newseason_sub"),
+                        isOn: $settings.newSeason
                     )
                 }
                 .padding(.horizontal, 16)
@@ -97,19 +104,19 @@ struct NotificationOnboardingOverlay: View {
     }
 
     private func saveDefaults() {
-        settingsStore.setAsDefault(settings)
+        settingsStore.updateSettings(settings)
         settingsStore.markOnboardingComplete()
         onSave()
     }
 }
 
-// MARK: - Settings Overlay (for editing existing defaults)
+// MARK: - Settings Overlay (for editing existing global settings)
 
 struct NotificationSettingsOverlay: View {
     let onDismiss: () -> Void
 
     @StateObject private var settingsStore = NotificationSettingsStore.shared
-    @State private var settings = ShowNotificationSettings()
+    @State private var settings = NotificationSettings()
 
     var body: some View {
         ZStack {
@@ -154,15 +161,21 @@ struct NotificationSettingsOverlay: View {
                         isOn: $settings.seasonPremiere
                     )
 
-                    NotificationOverlayRow(
-                        title: String(localized: "notif_option_episodes"),
-                        subtitle: String(localized: "notif_option_episodes_sub"),
-                        isOn: $settings.newEpisodes
-                    )
-
                     NotificationOverlayFinaleRow(
                         isOn: $settings.finaleReminder,
                         timing: $settings.finaleTiming
+                    )
+
+                    NotificationOverlayRow(
+                        title: String(localized: "notif_option_bingeready"),
+                        subtitle: String(localized: "notif_option_bingeready_sub"),
+                        isOn: $settings.bingeReady
+                    )
+
+                    NotificationOverlayRow(
+                        title: String(localized: "notif_option_newseason"),
+                        subtitle: String(localized: "notif_option_newseason_sub"),
+                        isOn: $settings.newSeason
                     )
                 }
                 .padding(.horizontal, 16)
@@ -191,12 +204,12 @@ struct NotificationSettingsOverlay: View {
             .padding(.horizontal, 24)
         }
         .onAppear {
-            settings = settingsStore.defaults
+            settings = settingsStore.settings
         }
     }
 
     private func saveSettings() {
-        settingsStore.setAsDefault(settings)
+        settingsStore.updateSettings(settings)
         onDismiss()
     }
 }

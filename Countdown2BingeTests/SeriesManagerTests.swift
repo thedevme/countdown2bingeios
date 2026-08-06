@@ -776,6 +776,236 @@ struct SeriesManagerIntegrationTests {
         let s3 = series.regularSeasons.first { $0.seasonNumber == 3 }
         #expect(s3?.hasWatched == false)
     }
+
+    /// 6.6 Full cycle: TBA → premiering → airing → binge ready → watched → S2 repeats
+    /// Tests the TRANSITIONS between states on one show across a full loop by advancing `now`.
+    @Test("6.6 Full cycle: TBA → premiering → airing → binge ready → watched → S2 repeats")
+    @MainActor
+    func fullCycleAdvancingClock() async throws {
+        // Fixed base date for all calculations
+        let baseNow = testNow  // Aug 15, 2026
+
+        // Helper to compute dates relative to base
+        func dateOffset(_ days: Int) -> Date {
+            Calendar.current.date(byAdding: .day, value: days, to: baseNow)!
+        }
+
+        // Helper to build SeasonFacts from Series (since seasonFacts is private)
+        func seasonFacts(for series: Series) -> [BingeEngine.SeasonFact] {
+            series.regularSeasons.map { season in
+                BingeEngine.SeasonFact(
+                    seasonNumber: season.seasonNumber,
+                    episodes: season.episodeFacts,
+                    hasWatched: season.hasWatched
+                )
+            }
+        }
+
+        let container = try makeTestContainer()
+        let mockTMDB = MockTMDBService()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: mockTMDB,
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 1: S1 undated (TBA) → .anticipated
+        // ═══════════════════════════════════════════════════════════════════
+
+        var show = buildShowData(
+            id: 7001,
+            name: "Full Cycle Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: nil, isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: nil, isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: nil, isTypedFinale: true, isTyped: true)  // finale typed but undated
+                ]
+            )]
+        )
+
+        let result = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+        guard case .followed(_, _) = result else {
+            Issue.record("Expected .followed")
+            return
+        }
+        var series = manager.series(id: 7001)!
+
+        // now = baseNow (day 0), S1 undated
+        var now = baseNow
+        var facts = seasonFacts(for: series)
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .anticipated)
+        #expect(BingeEngine.bingeReadySeason(seasons: facts, now: now) == nil)
+        // Anticipated shows appear on timeline (waiting for date)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 2: S1 gets dated (premiere in 30 days) → .premieringSoon
+        // ═══════════════════════════════════════════════════════════════════
+
+        let s1Premiere = dateOffset(30)
+        let s1Finale = dateOffset(44)  // 2 weeks after premiere
+
+        show = buildShowData(
+            id: 7001,
+            name: "Full Cycle Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: s1Premiere, isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: dateOffset(37), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: s1Finale, isTypedFinale: true, isTyped: true)
+                ]
+            )]
+        )
+        await mockTMDB.setShow(show)
+        await manager.refresh(id: 7001, force: true)
+        series = manager.series(id: 7001)!
+        facts = seasonFacts(for: series)
+
+        // now = baseNow (day 0), premiere is day 30
+        now = baseNow
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .premieringSoon)
+        #expect(BingeEngine.daysUntilPremiere(seasons: facts, now: now) == 30)
+        #expect(BingeEngine.bingeReadySeason(seasons: facts, now: now) == nil)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 3: now = after premiere, before finale (finale confirmed) → .airing
+        // ═══════════════════════════════════════════════════════════════════
+
+        now = dateOffset(35)  // 5 days after premiere, 9 days before finale
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .airing)
+        #expect(BingeEngine.daysUntilFinale(seasons: facts, now: now) == 9)
+        #expect(BingeEngine.bingeReadySeason(seasons: facts, now: now) == nil)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 3b: variant with finale NOT confirmed → .pending
+        // ═══════════════════════════════════════════════════════════════════
+
+        // Update to remove the typed finale (make all episodes typed but none is finale)
+        let pendingShow = buildShowData(
+            id: 7001,
+            name: "Full Cycle Show",
+            seasons: [(
+                number: 1,
+                episodes: [
+                    (number: 1, airDate: s1Premiere, isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: dateOffset(37), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: s1Finale, isTypedFinale: false, isTyped: true)  // NOT typed as finale
+                ]
+            )]
+        )
+        await mockTMDB.setShow(pendingShow)
+        await manager.refresh(id: 7001, force: true)
+        series = manager.series(id: 7001)!
+        facts = seasonFacts(for: series)
+
+        now = dateOffset(35)
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .pending)
+        #expect(BingeEngine.daysUntilFinale(seasons: facts, now: now) == nil)  // no countdown for pending
+
+        // Restore the typed finale for remaining phases
+        await mockTMDB.setShow(show)
+        await manager.refresh(id: 7001, force: true)
+        series = manager.series(id: 7001)!
+        facts = seasonFacts(for: series)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 4: now = finale day → still .airing (grace window)
+        // ═══════════════════════════════════════════════════════════════════
+
+        now = s1Finale  // finale day
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .airing)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 5: now = finale day +2 → .bingeReady, NOT on timeline
+        // ═══════════════════════════════════════════════════════════════════
+
+        now = dateOffset(46)  // finale was day 44, now is day 46 (+2)
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .bingeReady)
+        let bingeReadyS1 = BingeEngine.bingeReadySeason(seasons: facts, now: now)
+        #expect(bingeReadyS1?.seasonNumber == 1)
+        #expect(bingeReadyS1?.hasWatched == false)
+        #expect(BingeEngine.isOnBingeReadySurface(seasons: facts, now: now) == true)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 6: markSeasonWatched(S1) → leaves surface
+        // ═══════════════════════════════════════════════════════════════════
+
+        try manager.markSeasonWatched(seriesId: 7001, seasonNumber: 1, watched: true)
+        series = manager.series(id: 7001)!
+        facts = seasonFacts(for: series)
+
+        #expect(BingeEngine.bingeReadySeason(seasons: facts, now: now) == nil)
+        // showState is still .bingeReady (Axis 1, date-fact), but not on surface (Axis 2, watched)
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .bingeReady)
+        #expect(BingeEngine.isOnBingeReadySurface(seasons: facts, now: now) == false)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 7: refresh adds dated S2 → .premieringSoon again (cycle restarts)
+        // ═══════════════════════════════════════════════════════════════════
+
+        let s2Premiere = dateOffset(100)
+        let s2Finale = dateOffset(114)
+
+        let showWithS2 = buildShowData(
+            id: 7001,
+            name: "Full Cycle Show",
+            seasons: [
+                (number: 1, episodes: [
+                    (number: 1, airDate: s1Premiere, isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: dateOffset(37), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: s1Finale, isTypedFinale: true, isTyped: true)
+                ]),
+                (number: 2, episodes: [
+                    (number: 1, airDate: s2Premiere, isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: dateOffset(107), isTypedFinale: false, isTyped: true),
+                    (number: 3, airDate: s2Finale, isTypedFinale: true, isTyped: true)
+                ])
+            ]
+        )
+        await mockTMDB.setShow(showWithS2)
+        await manager.refresh(id: 7001, force: true)
+        series = manager.series(id: 7001)!
+        facts = seasonFacts(for: series)
+
+        // now is still day 46, S2 premiere is day 100
+        now = dateOffset(46)
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .premieringSoon)
+        #expect(BingeEngine.daysUntilPremiere(seasons: facts, now: now) == 54)  // 100 - 46
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 8: advance through S2: premiere → airing → finale+2 → bingeReady
+        // ═══════════════════════════════════════════════════════════════════
+
+        // S2 premiere day → .airing
+        now = s2Premiere
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .airing)
+
+        // S2 finale day → still .airing (grace window)
+        now = s2Finale
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .airing)
+
+        // S2 finale +2 → .bingeReady
+        now = dateOffset(116)  // finale was 114, +2 = 116
+        #expect(BingeEngine.showState(seasons: facts, now: now) == .bingeReady)
+        let bingeReadyS2 = BingeEngine.bingeReadySeason(seasons: facts, now: now)
+        #expect(bingeReadyS2?.seasonNumber == 2)
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PHASE 9: confirm S1 still watched, S2 is the surface item — loop closed
+        // ═══════════════════════════════════════════════════════════════════
+
+        let s1 = series.regularSeasons.first { $0.seasonNumber == 1 }
+        let s2 = series.regularSeasons.first { $0.seasonNumber == 2 }
+        #expect(s1?.hasWatched == true, "S1 should still be watched")
+        #expect(s2?.hasWatched == false, "S2 should be unwatched")
+        #expect(bingeReadyS2?.seasonNumber == 2, "S2 should be the binge ready season")
+        #expect(BingeEngine.isOnBingeReadySurface(seasons: facts, now: now) == true)
+    }
 }
 
     // MARK: - Group 7: Refresh Preserves Watch State

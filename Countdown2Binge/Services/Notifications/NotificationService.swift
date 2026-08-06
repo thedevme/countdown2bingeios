@@ -2,7 +2,8 @@
 //  NotificationService.swift
 //  Countdown2Binge
 //
-//  Handles local notification scheduling for show reminders.
+//  Handles notification authorization and permission status.
+//  Scheduling logic is in NotificationPlanner.swift.
 //
 
 import Foundation
@@ -41,32 +42,7 @@ final class NotificationService: ObservableObject {
         }
     }
 
-    // MARK: - Scheduling
-
-    /// Schedule all notifications for a show based on settings
-    func scheduleNotifications(for show: ShowData, settings: ShowNotificationSettings) async {
-        // First ensure we have permission
-        if !isAuthorized {
-            let granted = await requestAuthorization()
-            guard granted else { return }
-        }
-
-        // Cancel existing notifications for this show
-        await cancelNotifications(for: show.id)
-
-        // Schedule based on settings
-        if settings.seasonPremiere {
-            await schedulePremiereNotification(for: show)
-        }
-
-        if settings.newEpisodes {
-            await scheduleEpisodeNotifications(for: show)
-        }
-
-        if settings.finaleReminder {
-            await scheduleFinaleNotification(for: show, timing: settings.finaleTiming)
-        }
-    }
+    // MARK: - Cancel
 
     /// Cancel all notifications for a show
     func cancelNotifications(for showId: Int) async {
@@ -81,103 +57,6 @@ final class NotificationService: ObservableObject {
     /// Cancel all notifications
     func cancelAllNotifications() {
         center.removeAllPendingNotificationRequests()
-    }
-
-    // MARK: - Private Scheduling Methods
-
-    private func schedulePremiereNotification(for show: ShowData) async {
-        guard let season = show.anticipatedSeason ?? show.currentSeason,
-              let premiereDate = season.premiereDate,
-              premiereDate > Date() else { return }
-
-        let identifier = "show-\(show.id)-premiere-s\(season.seasonNumber)"
-
-        let content = UNMutableNotificationContent()
-        content.title = String(localized: "notif_premiere_alert_title")
-        content.body = String(localized: "notif_premiere_alert_body \(show.name) \(season.seasonNumber)")
-        content.sound = .default
-        content.userInfo = ["showId": show.id, "type": "premiere"]
-
-        // Schedule for 9 AM on premiere day
-        var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: premiereDate)
-        dateComponents.hour = 9
-        dateComponents.minute = 0
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-        do {
-            try await center.add(request)
-        } catch {
-            print("Failed to schedule premiere notification: \(error)")
-        }
-    }
-
-    private func scheduleEpisodeNotifications(for show: ShowData) async {
-        guard let season = show.currentSeason else { return }
-
-        // Get episodes with air dates in the future
-        let futureEpisodes = season.episodes.filter { episode in
-            guard let airDate = episode.airDate else { return false }
-            return airDate > Date()
-        }
-
-        for episode in futureEpisodes.prefix(10) { // Limit to next 10 episodes
-            guard let airDate = episode.airDate else { continue }
-
-            let identifier = "show-\(show.id)-episode-s\(season.seasonNumber)e\(episode.episodeNumber)"
-
-            let content = UNMutableNotificationContent()
-            content.title = String(localized: "notif_episode_alert_title \(show.name)")
-            content.body = String(localized: "notif_episode_alert_body \(episode.episodeNumber) \(episode.name)")
-            content.sound = .default
-            content.userInfo = ["showId": show.id, "type": "episode", "season": season.seasonNumber, "episode": episode.episodeNumber]
-
-            // Schedule for 9 AM on air date
-            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: airDate)
-            dateComponents.hour = 9
-            dateComponents.minute = 0
-
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-            do {
-                try await center.add(request)
-            } catch {
-                print("Failed to schedule episode notification: \(error)")
-            }
-        }
-    }
-
-    private func scheduleFinaleNotification(for show: ShowData, timing: FinaleReminderTiming) async {
-        guard let season = show.currentSeason,
-              let finaleDate = season.finaleDate,
-              finaleDate > Date() else { return }
-
-        let reminderDate = timing.reminderDate(before: finaleDate)
-        guard reminderDate > Date() else { return }
-
-        let identifier = "show-\(show.id)-finale-s\(season.seasonNumber)"
-
-        let content = UNMutableNotificationContent()
-        content.title = String(localized: "notif_finale_alert_title")
-        content.body = String(localized: "notif_finale_alert_body \(show.name) \(timing.displayText)")
-        content.sound = .default
-        content.userInfo = ["showId": show.id, "type": "finale"]
-
-        // Schedule for 9 AM on reminder date
-        var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: reminderDate)
-        dateComponents.hour = 9
-        dateComponents.minute = 0
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-        do {
-            try await center.add(request)
-        } catch {
-            print("Failed to schedule finale notification: \(error)")
-        }
     }
 
     // MARK: - Debug
@@ -210,15 +89,15 @@ final class NotificationService: ObservableObject {
         case .premiere:
             content.title = "Season Premiere Today!"
             content.body = "Stranger Things Season 5 premieres today"
-        case .episode:
-            content.title = "New Episode: Stranger Things"
-            content.body = "Episode 3 \"The Monster\" is now available"
         case .finale:
             content.title = "Finale Reminder"
             content.body = "Stranger Things season finale is tomorrow"
         case .bingeReady:
             content.title = "Binge Ready!"
             content.body = "The full season of Stranger Things is now available to binge"
+        case .newSeason:
+            content.title = "New Season Announced!"
+            content.body = "Stranger Things Season 6 has been announced"
         }
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: delaySeconds, repeats: false)
@@ -234,22 +113,25 @@ final class NotificationService: ObservableObject {
 
     enum TestNotificationType: String, CaseIterable {
         case premiere = "Premiere"
-        case episode = "Episode"
         case finale = "Finale"
         case bingeReady = "Binge Ready"
+        case newSeason = "New Season"
     }
     #endif
 }
 
-// MARK: - Show Notification Settings
+// MARK: - Notification Settings (Global)
 
-struct ShowNotificationSettings: Codable, Equatable {
+/// Global notification settings applied to ALL followed shows.
+/// No per-show customization — set once at onboarding, applies everywhere.
+struct NotificationSettings: Codable, Equatable {
     var seasonPremiere: Bool = true
-    var newEpisodes: Bool = true
     var finaleReminder: Bool = true
     var finaleTiming: FinaleReminderTiming = .oneDayBefore
+    var bingeReady: Bool = true
+    var newSeason: Bool = true
 
-    static let `default` = ShowNotificationSettings()
+    static let `default` = NotificationSettings()
 }
 
 // MARK: - Finale Reminder Timing
@@ -278,6 +160,8 @@ enum FinaleReminderTiming: String, Codable, CaseIterable {
         }
     }
 
+    /// Compute reminder date from finale date (NOT from now).
+    /// "1 week before" is always finaleDate - 7 days.
     func reminderDate(before date: Date) -> Date {
         switch self {
         case .dayOf:

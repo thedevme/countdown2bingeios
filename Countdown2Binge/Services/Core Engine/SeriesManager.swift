@@ -41,6 +41,9 @@ final class SeriesManager {
     private let franchise: FranchiseResolving
     private let cloudKit: CloudSyncing
 
+    /// Notification scheduler (actor for thread safety)
+    private let notificationScheduler = NotificationScheduler()
+
     /// Shows refreshed from TMDB are considered fresh for this long.
     private let refreshInterval: TimeInterval = 60 * 60 * 24  // 24h
 
@@ -149,6 +152,15 @@ final class SeriesManager {
             await self.syncShowToCloudIfPremium(seriesId: seriesId)
         }
 
+        // Schedule notifications for this show (non-blocking)
+        launchBackgroundTask { [container] in
+            // Fetch fresh from context (the newSeries reference may be stale)
+            let bgContext = ModelContext(container)
+            let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+            guard let series = try? bgContext.fetch(descriptor).first else { return }
+            await self.scheduleNotificationsForShow(series, now: Date())
+        }
+
         // Decide whether to prompt the add-time watched question.
         let prompt = addTimeWatchedPrompt(for: newSeries)
         return .followed(newSeries, addTimePrompt: prompt)
@@ -166,6 +178,13 @@ final class SeriesManager {
 
     func unfollow(id: Int) throws {
         guard let s = series(id: id) else { return }
+
+        // Cancel notifications for this show (non-blocking)
+        let showId = s.id
+        launchBackgroundTask {
+            await self.cancelNotificationsForShow(showId)
+        }
+
         context.delete(s)               // cascades to seasons/episodes
         try context.save()
     }
@@ -317,22 +336,27 @@ final class SeriesManager {
 
     /// Refresh a single show from TMDB (metadata + new seasons/episodes),
     /// preserving watch state. `force` ignores the refresh interval.
-    func refresh(id: Int, force: Bool = false) async {
+    /// `now` parameter for testability (defaults to current date).
+    func refresh(id: Int, force: Bool = false, now: Date = Date()) async {
         guard let s = series(id: id) else { return }
         if !force, let last = s.lastRefreshedAt,
-           Date().timeIntervalSince(last) < refreshInterval {
+           now.timeIntervalSince(last) < refreshInterval {
             return
         }
+
+        // Snapshot old season numbers for new-season detection
+        let oldSeasonNumbers = Set(s.regularSeasons.map { $0.seasonNumber })
+        let seriesName = s.name
+
         do {
             let show = try await tmdb.getShowDetails(id: id)
             SeriesMapper.update(s, from: show, in: context)
-            s.lastRefreshedAt = .now
+            s.lastRefreshedAt = now
 
             // Fix hasWatched if new episodes were added to a "watched" season.
             // This is the single write funnel for this correction (R3).
             // Only un-mark if the season is STILL AIRING (finale hasn't aired).
             // Finished seasons with data corrections stay marked watched.
-            let now = Date()
             for season in s.seasons where season.hasWatched {
                 let allWatched = season.episodes.allSatisfy { $0.hasWatched }
                 if !allWatched {
@@ -349,16 +373,104 @@ final class SeriesManager {
             }
 
             try context.save()
+
+            // Snapshot new season numbers after update
+            let newSeasonNumbers = Set(s.regularSeasons.map { $0.seasonNumber })
+
+            // Schedule notifications for this show (based on updated dates)
+            await scheduleNotificationsForShow(s, now: now)
+
+            // Detect and fire new-season event notifications
+            await handleNewSeasonEvent(
+                seriesId: id,
+                seriesName: seriesName,
+                oldSeasonNumbers: oldSeasonNumbers,
+                newSeasonNumbers: newSeasonNumbers,
+                now: now
+            )
         } catch {
             // Silent: keep existing data on failure.
         }
     }
 
     /// Refresh every followed show. Call on launch / background refresh.
-    func refreshAll(force: Bool = false) async {
+    /// `now` parameter for testability (defaults to current date).
+    func refreshAll(force: Bool = false, now: Date = Date()) async {
         for s in allSeries() {
-            await refresh(id: s.id, force: force)
+            await refresh(id: s.id, force: force, now: now)
         }
+    }
+
+    // MARK: - Notifications (Premium-gated)
+
+    /// Schedule notifications for a single show based on current dates and global settings.
+    /// Premium-gated: free users get no notifications.
+    private func scheduleNotificationsForShow(_ series: Series, now: Date) async {
+        // Premium gate: free users get no notifications
+        guard PremiumManager.shared.isPremium else { return }
+
+        // Check notification authorization
+        guard NotificationService.shared.isAuthorized else { return }
+
+        // Get global settings (MainActor access)
+        let settings = NotificationSettingsStore.shared.settings
+
+        // Extract dates from Series (R2 compliant: reads Series, not ShowData)
+        let dateInfo = extractDateInfo(from: series, now: now)
+
+        // Plan notifications (pure function)
+        let plans = planNotifications(dates: dateInfo, settings: settings, now: now)
+
+        // Apply plans (schedule-once / update-only-on-change pattern)
+        await notificationScheduler.applyPlans(plans, for: series.id)
+    }
+
+    /// Detect and fire new season notifications (event-driven, fires once).
+    /// Called after refresh when new seasons are detected.
+    private func handleNewSeasonEvent(
+        seriesId: Int,
+        seriesName: String,
+        oldSeasonNumbers: Set<Int>,
+        newSeasonNumbers: Set<Int>,
+        now: Date
+    ) async {
+        // Premium gate
+        guard PremiumManager.shared.isPremium else { return }
+
+        // Check notification authorization
+        guard NotificationService.shared.isAuthorized else { return }
+
+        // Get global settings (MainActor access)
+        let settings = NotificationSettingsStore.shared.settings
+        guard settings.newSeason else { return }
+
+        // Find added seasons
+        let addedSeasons = newSeasonNumbers.subtracting(oldSeasonNumbers)
+
+        for seasonNumber in addedSeasons {
+            // Check if already fired (avoid duplicate notifications)
+            let alreadyFired = await notificationScheduler.hasNewSeasonFired(
+                showId: seriesId,
+                seasonNumber: seasonNumber
+            )
+            guard !alreadyFired else { continue }
+
+            // Fire immediate notification
+            let plan = NotificationPlan(
+                identifier: "show-\(seriesId)-newseason-s\(seasonNumber)",
+                type: .newSeason,
+                showId: seriesId,
+                showName: seriesName,
+                fireDate: now,
+                seasonNumber: seasonNumber
+            )
+            await notificationScheduler.fireImmediate(plan)
+        }
+    }
+
+    /// Cancel all notifications for a show (called on unfollow).
+    private func cancelNotificationsForShow(_ showId: Int) async {
+        await notificationScheduler.cancelAll(for: showId)
     }
 
     // MARK: - Spinoffs (Firebase, ONCE, stored — kills the flicker)

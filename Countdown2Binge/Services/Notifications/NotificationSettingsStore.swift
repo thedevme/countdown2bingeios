@@ -2,7 +2,8 @@
 //  NotificationSettingsStore.swift
 //  Countdown2Binge
 //
-//  Stores global default notification settings and per-show overrides.
+//  Stores GLOBAL notification settings applied to ALL followed shows.
+//  No per-show customization — set once at onboarding, applies everywhere.
 //
 
 import Foundation
@@ -12,37 +13,27 @@ import Combine
 final class NotificationSettingsStore: ObservableObject {
     static let shared = NotificationSettingsStore()
 
-    private let defaultsKey = "c2b_notification_defaults"
-    private let showSettingsKey = "c2b_notification_shows"
+    private let settingsKey = "c2b_notification_settings"
     private let onboardingCompleteKey = "c2b_notification_onboarding_complete"
 
     /// Whether the user has completed the one-time notification onboarding
     @Published private(set) var hasCompletedOnboarding: Bool
 
-    /// Global default settings applied to new follows
-    @Published var defaults: ShowNotificationSettings {
-        didSet { saveDefaults() }
+    /// Global settings applied to ALL shows
+    @Published var settings: NotificationSettings {
+        didSet { save() }
     }
-
-    /// Per-show notification settings (keyed by show ID)
-    @Published private(set) var showSettings: [Int: ShowNotificationSettings] = [:]
 
     private init() {
         // Load onboarding state
         self.hasCompletedOnboarding = UserDefaults.standard.bool(forKey: onboardingCompleteKey)
 
-        // Load defaults
-        if let data = UserDefaults.standard.data(forKey: defaultsKey),
-           let decoded = try? JSONDecoder().decode(ShowNotificationSettings.self, from: data) {
-            self.defaults = decoded
+        // Load settings
+        if let data = UserDefaults.standard.data(forKey: settingsKey),
+           let decoded = try? JSONDecoder().decode(NotificationSettings.self, from: data) {
+            self.settings = decoded
         } else {
-            self.defaults = .default
-        }
-
-        // Load per-show settings
-        if let data = UserDefaults.standard.data(forKey: showSettingsKey),
-           let decoded = try? JSONDecoder().decode([Int: ShowNotificationSettings].self, from: data) {
-            self.showSettings = decoded
+            self.settings = .default
         }
     }
 
@@ -60,70 +51,40 @@ final class NotificationSettingsStore: ObservableObject {
         UserDefaults.standard.set(false, forKey: onboardingCompleteKey)
     }
 
-    // MARK: - Defaults
+    // MARK: - Settings
 
-    private func saveDefaults() {
-        if let data = try? JSONEncoder().encode(defaults) {
-            UserDefaults.standard.set(data, forKey: defaultsKey)
+    private func save() {
+        if let data = try? JSONEncoder().encode(settings) {
+            UserDefaults.standard.set(data, forKey: settingsKey)
         }
     }
 
-    /// Update defaults from the current settings (when "Use as Default" is checked)
-    func setAsDefault(_ settings: ShowNotificationSettings) {
-        defaults = settings
-    }
-
-    // MARK: - Per-Show Settings
-
-    /// Get settings for a specific show (falls back to defaults if not set)
-    func settings(for showId: Int) -> ShowNotificationSettings {
-        showSettings[showId] ?? defaults
-    }
-
-    /// Save settings for a specific show
-    func saveSettings(_ settings: ShowNotificationSettings, for showId: Int) {
-        showSettings[showId] = settings
-        saveShowSettings()
-    }
-
-    /// Remove settings for a show (e.g., when unfollowing)
-    func removeSettings(for showId: Int) {
-        showSettings.removeValue(forKey: showId)
-        saveShowSettings()
-    }
-
-    /// Check if a show has custom settings (different from defaults)
-    func hasCustomSettings(for showId: Int) -> Bool {
-        showSettings[showId] != nil
-    }
-
-    private func saveShowSettings() {
-        if let data = try? JSONEncoder().encode(showSettings) {
-            UserDefaults.standard.set(data, forKey: showSettingsKey)
-        }
+    /// Update settings (from onboarding or settings screen)
+    func updateSettings(_ newSettings: NotificationSettings) {
+        settings = newSettings
     }
 
     // MARK: - Scheduled Notification Count
 
-    /// Get count of scheduled notification types for a show
-    func scheduledCount(for showId: Int) -> Int {
-        let settings = settings(for: showId)
+    /// Get count of enabled notification types
+    var enabledCount: Int {
         var count = 0
         if settings.seasonPremiere { count += 1 }
-        if settings.newEpisodes { count += 1 }
         if settings.finaleReminder { count += 1 }
+        if settings.bingeReady { count += 1 }
+        if settings.newSeason { count += 1 }
         return count
     }
 
-    /// Get description of scheduled notifications
-    func scheduledDescription(for showId: Int) -> String {
-        let count = scheduledCount(for: showId)
+    /// Get description of enabled notifications
+    var enabledDescription: String {
+        let count = enabledCount
         if count == 0 {
-            return String(localized: "notif_none_scheduled")
+            return String(localized: "notif_none_enabled")
         } else if count == 1 {
-            return String(localized: "notif_one_scheduled")
+            return String(localized: "notif_one_enabled")
         } else {
-            return String(localized: "notif_count_scheduled \(count)")
+            return String(localized: "notif_count_enabled \(count)")
         }
     }
 }
