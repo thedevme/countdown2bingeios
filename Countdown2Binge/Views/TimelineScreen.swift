@@ -8,21 +8,73 @@ struct TimelineScreen: View {
     var refreshTrigger: UUID = UUID()
     var onInfoTap: (() -> Void)? = nil
 
+    // MARK: - @Query for live SwiftData updates (R4 compliant)
+    @Query(sort: \Series.dateAdded, order: .reverse) private var allSeries: [Series]
+
     @Environment(\.modelContext) private var modelContext
     @Environment(SeriesManager.self) private var seriesManager
-    @State private var viewModel: TimelineViewModel = TimelineViewModel()
     @State private var heroCardIndex: Int = 0
     @State private var showNotificationSettings = false
     @State private var navigationPath = NavigationPath()
     private var profile: UserProfile { ProfileManager.shared.profile }
 
+    // MARK: - Computed Series Arrays (filtered by BingeEngine state)
+
+    /// Shows currently airing WITH a known finale date (sorted by finale, soonest first)
+    private var airingNowSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .airing && $0.daysUntilFinale != nil }
+            .sorted { ($0.daysUntilFinale ?? .max) < ($1.daysUntilFinale ?? .max) }
+    }
+
+    /// Shows premiering soon (sorted by premiere date, soonest first)
+    private var premieringSoonSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .premieringSoon }
+            .sorted { ($0.daysUntilPremiere ?? .max) < ($1.daysUntilPremiere ?? .max) }
+    }
+
+    /// Shows in pending state (airing but no confirmed finale)
+    private var pendingSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .pending }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    /// Shows anticipated (no date yet, sorted alphabetically)
+    private var anticipatedSeries: [Series] {
+        allSeries
+            .filter { $0.showState == .anticipated }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    /// Hero shows for the card stack (airing now, sorted by finale, limited to 5)
+    private var heroSeries: [Series] {
+        Array(airingNowSeries.prefix(5))
+    }
+
+    /// Hero show tuples for HeroCardStack
+    private var heroShowTuples: [HeroCardStack.ShowDataTuple] {
+        heroSeries.map { series in
+            (
+                show: series.toShowData(),
+                daysUntilFinale: series.daysUntilFinale,
+                episodesUntilFinale: nil,
+                finaleDate: series.currentSeason?.finaleDate
+            )
+        }
+    }
+
+    private var trackedCount: Int { allSeries.count }
+    private var upcomingCount: Int { airingNowSeries.count }
+
     /// Countdown value for the currently displayed hero card
     private var currentHeroCountdown: Int? {
-        guard !viewModel.heroShowTuples.isEmpty,
-              heroCardIndex < viewModel.heroShowTuples.count else {
+        guard !heroShowTuples.isEmpty,
+              heroCardIndex < heroShowTuples.count else {
             return nil
         }
-        return viewModel.heroShowTuples[heroCardIndex].daysUntilFinale
+        return heroShowTuples[heroCardIndex].daysUntilFinale
     }
 
     var body: some View {
@@ -34,28 +86,28 @@ struct TimelineScreen: View {
                     userName: profile.name,
                     onBellTap: { showNotificationSettings = true },
                     onInfoTap: onInfoTap,
-                    lastUpdated: viewModel.lastRefreshedAt
+                    lastUpdated: nil
                 )
 
                     // Stats Bar
                     StatsBar(
-                        tracked: viewModel.trackedCount,
-                        upcoming: viewModel.upcomingCount
+                        tracked: trackedCount,
+                        upcoming: upcomingCount
                     )
                     .padding(.horizontal, C2BLayout.horizontalPadding)
                     .padding(.top, 12)
                     .padding(.bottom, 4)
 
                     // Hero Card Stack
-                    if viewModel.heroShowTuples.isEmpty {
+                    if heroShowTuples.isEmpty {
                         HeroShowCard(show: nil, daysUntilFinale: nil)
                             .padding(.top, 14)
                     } else {
                         HeroCardStack(
-                            shows: viewModel.heroShowTuples,
+                            shows: heroShowTuples,
                             currentIndex: $heroCardIndex,
                             onShowTap: { show in
-                                if let series = viewModel.getSeries(for: show.id) {
+                                if let series = seriesManager.series(id: show.id) {
                                     navigationPath.append(series)
                                 }
                             },
@@ -91,7 +143,7 @@ struct TimelineScreen: View {
                     premieringSoonSection
 
                     // Pending Section (only shown when not empty)
-                    if !viewModel.pendingShows.isEmpty {
+                    if !pendingSeries.isEmpty {
                         pendingSection
                             .padding(.top, 20)
                     }
@@ -111,30 +163,14 @@ struct TimelineScreen: View {
             .refreshable {
                 // Pull-to-refresh: Force fetch from TMDB API
                 await seriesManager.refreshAll(force: true)
-                await viewModel.loadFollowedShows()
+                // @Query auto-updates when context changes - no manual reload needed
             }
-            .onAppear {
-                viewModel.configure(with: modelContext, seriesManager: seriesManager)
-                Task {
-                    await viewModel.loadFollowedShows()
-                }
-            }
-            .onChange(of: refreshTrigger) { _, _ in
-                Task {
-                    await viewModel.loadFollowedShows()
-                }
-            }
-            #if DEBUG
-            .onChange(of: DebugSettings.shared.showMockPendingSection) { _, _ in
-                Task { await viewModel.loadFollowedShows() }
-            }
-            #endif
             .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(
                     series: series,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
-                        Task { await viewModel.unfollowShow(series) }
+                        try? seriesManager.unfollow(id: series.id)
                     }
                 )
             }
@@ -164,11 +200,11 @@ struct TimelineScreen: View {
         TimelineSection(
             title: String(localized: "header_premiering_soon"),
             tone: .c2bTeal,
-            count: viewModel.premieringSoonShows.count,
+            count: premieringSoonSeries.count,
             storageKey: "timeline_premiering_expanded"
         ) { isExpanded in
             VStack(spacing: isExpanded ? 16 : 10) {
-                if viewModel.premieringSoonShows.isEmpty {
+                if premieringSoonSeries.isEmpty {
                     if isExpanded {
                         TimelineEmptySection()
                     } else {
@@ -177,19 +213,17 @@ struct TimelineScreen: View {
                 } else {
                     if isExpanded {
                         // Expanded: Individual cards for each show
-                        ForEach(viewModel.premieringSoonShows, id: \.id) { show in
+                        ForEach(premieringSoonSeries, id: \.id) { series in
                             Button(action: {
-                                if let series = viewModel.getSeries(for: show.id) {
-                                    navigationPath.append(series)
-                                }
+                                navigationPath.append(series)
                             }) {
-                                PremieringCard(showData: show)
+                                PremieringCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
                     } else {
                         // Collapsed: Unified list view with stacked posters
-                        TimelineSectionListView(seriesList: viewModel.premieringSoonSeries)
+                        TimelineSectionListView(seriesList: premieringSoonSeries)
                     }
                 }
             }
@@ -201,12 +235,9 @@ struct TimelineScreen: View {
     @ViewBuilder
     private var pendingSection: some View {
         PendingCardView(
-            shows: viewModel.pendingShows,
-            seriesList: viewModel.pendingSeries,
-            onShowTap: { show in
-                if let series = viewModel.getSeries(for: show.id) {
-                    navigationPath.append(series)
-                }
+            seriesList: pendingSeries,
+            onSeriesTap: { series in
+                navigationPath.append(series)
             }
         )
     }
@@ -216,11 +247,11 @@ struct TimelineScreen: View {
         TimelineSection(
             title: String(localized: "header_anticipated"),
             tone: .c2bMuted,
-            count: viewModel.anticipatedShows.count,
+            count: anticipatedSeries.count,
             storageKey: "timeline_anticipated_expanded"
         ) { isExpanded in
             VStack(spacing: isExpanded ? 16 : 10) {
-                if viewModel.anticipatedShows.isEmpty {
+                if anticipatedSeries.isEmpty {
                     if isExpanded {
                         TimelineEmptySection()
                     } else {
@@ -229,19 +260,17 @@ struct TimelineScreen: View {
                 } else {
                     if isExpanded {
                         // Expanded: Individual cards for each show
-                        ForEach(viewModel.anticipatedShows, id: \.id) { show in
+                        ForEach(anticipatedSeries, id: \.id) { series in
                             Button(action: {
-                                if let series = viewModel.getSeries(for: show.id) {
-                                    navigationPath.append(series)
-                                }
+                                navigationPath.append(series)
                             }) {
-                                AnticipatedCard(showData: show)
+                                AnticipatedCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
                     } else {
                         // Collapsed: Unified list view with stacked posters
-                        TimelineSectionListView(seriesList: viewModel.anticipatedSeries)
+                        TimelineSectionListView(seriesList: anticipatedSeries)
                     }
                 }
             }

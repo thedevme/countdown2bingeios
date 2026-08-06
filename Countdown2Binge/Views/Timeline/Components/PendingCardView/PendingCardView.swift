@@ -12,15 +12,14 @@
 import SwiftUI
 
 struct PendingCardView: View {
-    let shows: [ShowData]
     let seriesList: [Series]
-    let onShowTap: (ShowData) -> Void
+    let onSeriesTap: (Series) -> Void
 
     @AppStorage("timeline_pending_expanded") private var isExpanded: Bool = true
 
     var body: some View {
         // Only render if there are pending shows
-        if !shows.isEmpty {
+        if !seriesList.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 // Section Header
                 Button(action: { withAnimation { isExpanded.toggle() } }) {
@@ -32,7 +31,7 @@ struct PendingCardView: View {
                         Text("header_pending")
                             .displayStyle(size: 16, color: .c2bText)
 
-                        Text("\(shows.count)")
+                        Text("\(seriesList.count)")
                             .monoStyle(size: 9, color: .c2bYellowBright)
                             .padding(.horizontal, 7)
                             .padding(.vertical, 2)
@@ -57,18 +56,15 @@ struct PendingCardView: View {
                 VStack(spacing: isExpanded ? 16 : 10) {
                     if isExpanded {
                         // Expanded: Individual cards for each show
-                        ForEach(shows, id: \.id) { show in
-                            Button(action: { onShowTap(show) }) {
-                                PendingCard(showData: show)
+                        ForEach(seriesList, id: \.id) { series in
+                            Button(action: { onSeriesTap(series) }) {
+                                PendingCard(series: series)
                             }
                             .buttonStyle(.plain)
                         }
-                    } else if !seriesList.isEmpty {
+                    } else {
                         // Collapsed: Unified list view with stacked posters
                         TimelineSectionListView(seriesList: seriesList)
-                    } else {
-                        // Collapsed with no real Series data: show mini empty
-                        MiniEmptySection(dim: false)
                     }
                 }
                 .padding(.top, 20)
