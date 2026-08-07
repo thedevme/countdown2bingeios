@@ -15,7 +15,8 @@ enum DemoModeProvider {
     }
 }
 
-/// A more resilient async image loader that handles rapid view updates better than AsyncImage
+/// A more resilient async image loader that handles lazy containers (LazyVStack/LazyVGrid) properly.
+/// Uses .task(id:) which automatically cancels/restarts when the URL changes or view reappears.
 struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     let url: URL?
     let content: (Image) -> Content
@@ -27,15 +28,13 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
         return UIImage(named: imageName)
     }
 
-    // Check cache immediately during view init
+    // Check cache immediately during view evaluation (synchronous)
     private var cachedImage: UIImage? {
         guard let url = url else { return nil }
         return ImageCache.shared.get(for: url)
     }
 
     @State private var loadedImage: UIImage?
-    @State private var isLoading = false
-    @State private var currentURL: URL?
 
     init(
         url: URL?,
@@ -56,74 +55,46 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
                 content(Image(uiImage: image))
             } else {
                 placeholder()
-                    .overlay {
-                        if isLoading {
-                            ProgressView()
-                                .tint(Color.c2bMuted)
-                        }
-                    }
             }
         }
-        .onAppear {
-            if demoImage == nil && cachedImage == nil && loadedImage == nil {
-                currentURL = url
-                loadImage()
-            }
-        }
-        .onChange(of: url) { oldURL, newURL in
-            // URL changed - clear old image and load new one
-            if newURL != oldURL {
-                loadedImage = nil
-                isLoading = false
-                currentURL = newURL
-
-                // Check cache for new URL first
-                if let newURL = newURL, let cached = ImageCache.shared.get(for: newURL) {
-                    loadedImage = cached
-                } else if newURL != nil && demoImage == nil {
-                    loadImage()
-                }
-            }
+        // .task(id:) is the key fix - it automatically:
+        // 1. Cancels when view disappears (LazyVGrid recycles)
+        // 2. Restarts when view reappears with same URL
+        // 3. Cancels and restarts if URL changes
+        .task(id: url) {
+            await loadImage()
         }
     }
 
-    private func loadImage() {
-        guard let url = url, !isLoading else { return }
+    private func loadImage() async {
+        guard let url = url else { return }
 
         // Don't fetch demo images from network
         if url.absoluteString.hasPrefix("demo://") { return }
 
-        // Double-check cache
+        // Check cache first (might have been loaded by another view)
         if let cached = ImageCache.shared.get(for: url) {
             self.loadedImage = cached
             return
         }
 
-        isLoading = true
-        let urlToLoad = url
+        // Already have this image loaded
+        if loadedImage != nil { return }
 
-        Task {
-            do {
-                let (data, _) = try await URLSession.shared.data(from: urlToLoad)
-                if let uiImage = UIImage(data: data) {
-                    ImageCache.shared.set(uiImage, for: urlToLoad)
-                    await MainActor.run {
-                        // Only update if this is still the current URL
-                        if self.url == urlToLoad {
-                            self.loadedImage = uiImage
-                        }
-                        self.isLoading = false
-                    }
-                } else {
-                    await MainActor.run {
-                        self.isLoading = false
-                    }
-                }
-            } catch {
-                await MainActor.run {
-                    self.isLoading = false
-                }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+
+            // Check for task cancellation
+            try Task.checkCancellation()
+
+            if let uiImage = UIImage(data: data) {
+                ImageCache.shared.set(uiImage, for: url)
+                self.loadedImage = uiImage
             }
+        } catch is CancellationError {
+            // Task was cancelled (view scrolled away) - this is normal, don't log
+        } catch {
+            // Network error - image stays as placeholder
         }
     }
 }
@@ -135,7 +106,10 @@ final class ImageCache {
     private var cache = NSCache<NSURL, UIImage>()
 
     private init() {
-        cache.countLimit = 100
+        // Increased from 100 to handle scrolling through large lists
+        cache.countLimit = 500
+        // Also set a memory limit (~50MB for poster images)
+        cache.totalCostLimit = 50 * 1024 * 1024
     }
 
     func get(for url: URL) -> UIImage? {
@@ -143,6 +117,8 @@ final class ImageCache {
     }
 
     func set(_ image: UIImage, for url: URL) {
-        cache.setObject(image, forKey: url as NSURL)
+        // Store with cost based on image size for smarter eviction
+        let cost = image.jpegData(compressionQuality: 1.0)?.count ?? 0
+        cache.setObject(image, forKey: url as NSURL, cost: cost)
     }
 }

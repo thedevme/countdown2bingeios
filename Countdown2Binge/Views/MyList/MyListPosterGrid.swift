@@ -205,15 +205,8 @@ struct MyListPosterTile: View {
     private var posterImage: some View {
         ZStack(alignment: .bottomLeading) {
             // Base image
-            CachedAsyncImage(url: show.posterURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .modifier(PosterImageModifier(variant: variant))
-            } placeholder: {
-                Rectangle()
-                    .fill(Color.c2bSurface)
-            }
+            PosterView(url: show.posterURL, cornerRadius: 0)
+                .modifier(PosterImageModifier(variant: variant))
 
             // Overlays based on variant
             overlayContent
@@ -524,15 +517,8 @@ struct SeriesPosterTile: View {
     private var posterImage: some View {
         ZStack(alignment: .bottomLeading) {
             // Base image
-            CachedAsyncImage(url: series.posterURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .modifier(PosterImageModifier(variant: variant))
-            } placeholder: {
-                Rectangle()
-                    .fill(Color.c2bSurface)
-            }
+            PosterView(url: series.posterURL, cornerRadius: 0)
+                .modifier(PosterImageModifier(variant: variant))
 
             // Overlays based on variant
             overlayContent

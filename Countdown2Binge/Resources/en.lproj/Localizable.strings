@@ -317,6 +317,10 @@
 "notif_option_episodes_sub" = "Get notified when new episodes air";
 "notif_option_finale" = "FINALE REMINDER";
 "notif_option_finale_sub" = "Get reminded before the season finale";
+"notif_option_bingeready" = "BINGE READY";
+"notif_option_bingeready_sub" = "Get notified when a full season is ready to binge";
+"notif_option_newseason" = "NEW SEASON DETECTED";
+"notif_option_newseason_sub" = "Get notified when a new season is announced";
 "notif_use_as_default" = "Use as Default";
 "notif_save_button" = "SAVE NOTIFICATIONS";
 "notif_not_now" = "NOT NOW";
@@ -658,7 +662,7 @@
 // MARK: - Premium CTA
 // =============================================================================
 
-"premium_unlock_premium" = "UNLOCK PREMIUM";
+"premium_unlock_premium" = "UPGRADE TO PREMIUM";
 "premium_advanced_features" = "Advanced notifications, per-show timing & more";
 "premium_feature" = "PREMIUM FEATURE";
 "premium_feature_description" = "Fine-tune exactly when and how Countdown2Binge pings you. Unlock with Premium.";

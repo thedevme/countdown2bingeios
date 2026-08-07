@@ -73,26 +73,9 @@ struct PosterTileEditable: View {
 
     @ViewBuilder
     private var posterImage: some View {
-        if let url = posterURL {
-            CachedAsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .grayscale(isLocked ? 1.0 : 0.0)
-                    .opacity(isLocked ? 0.5 : 1.0)
-            } placeholder: {
-                Rectangle()
-                    .fill(Color(hex: "#1a1a1c"))
-            }
-        } else {
-            Rectangle()
-                .fill(Color(hex: "#1a1a1c"))
-                .overlay(
-                    Image(systemName: "tv")
-                        .font(.system(size: 24))
-                        .foregroundColor(.white.opacity(0.2))
-                )
-        }
+        PosterView(url: posterURL, cornerRadius: 10)
+            .grayscale(isLocked ? 1.0 : 0.0)
+            .opacity(isLocked ? 0.5 : 1.0)
     }
 }
 

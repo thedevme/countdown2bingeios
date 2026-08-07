@@ -20,7 +20,7 @@ struct ContentView: View {
     @State private var showWalkthrough: Bool = false
     @State private var showFreeLimitModal: Bool = false
     @State private var showDowngradeModal: Bool = false
-    @State private var selectedPlan: String = "yearly"
+    @State private var selectedPlan: String = "monthly"
     @State private var followedShows: [ShowSummary] = []
     @State private var timelineRefreshTrigger: UUID = UUID()
     @State private var showPremiumPaywall: Bool = false

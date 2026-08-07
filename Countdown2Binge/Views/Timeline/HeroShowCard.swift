@@ -16,24 +16,7 @@ struct HeroShowCard: View {
                 // Hero card with show poster and logo overlay
                 ZStack(alignment: .bottom) {
                     // Poster image
-                    AsyncImage(url: TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster)) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 280, height: 365)
-                        case .failure:
-                            artworkPlaceholder
-                        default:
-                            ZStack {
-                                artworkPlaceholder
-                                ProgressView()
-                                    .tint(.white.opacity(0.5))
-                            }
-                        }
-                    }
-                    .frame(width: 280, height: 365)
+                    PosterView(url: TMDBConfiguration.imageURL(path: show.posterPath ?? show.backdropPath, size: .poster), width: 280, cornerRadius: 0)
 
                     // Logo overlay with gradient
                     if show.logoPath != nil {
@@ -117,15 +100,12 @@ struct HeroShowCard: View {
     @ViewBuilder
     private func logoImage(for show: ShowData) -> some View {
         if let logoUrl = TMDBConfiguration.imageURL(path: show.logoPath, size: .logo) {
-            AsyncImage(url: logoUrl) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                default:
-                    Color.clear
-                }
+            CachedAsyncImage(url: logoUrl) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } placeholder: {
+                Color.clear
             }
         }
     }

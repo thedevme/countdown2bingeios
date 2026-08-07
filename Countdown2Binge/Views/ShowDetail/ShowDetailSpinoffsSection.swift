@@ -353,26 +353,8 @@ struct SpinoffsCardImageHeader: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             // Background image
-            AsyncImage(url: imageURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                default:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .overlay(
-                            ProgressView()
-                                .tint(.c2bMuted)
-                        )
-                }
-            }
+            BackdropView(url: imageURL)
             .aspectRatio(16/9, contentMode: .fit)
-            .clipped()
 
             // Gradient overlay
             LinearGradient(
@@ -477,17 +459,7 @@ struct SpinoffsPosterImage: View {
     let url: URL?
 
     var body: some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            default:
-                Rectangle()
-                    .fill(Color.c2bSurface)
-            }
-        }
+        PosterView(url: url, cornerRadius: 7)
     }
 }
 

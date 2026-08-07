@@ -222,8 +222,7 @@ private struct MoreShowsBadge: View {
                         .frame(width: 26, height: 26)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.c2bSurface)
+                    PlaceholderView(cornerRadius: 5)
                         .frame(width: 26, height: 26)
                 }
             }

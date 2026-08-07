@@ -13,6 +13,7 @@
 		4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAC830114F62001185C9 /* FirebaseDatabase */; };
 		4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAF33014EB59001185C9 /* YouTubePlayerKit */; };
 		4602DC9130245AF3001185C9 /* UserSpec in Frameworks */ = {isa = PBXBuildFile; productRef = 4602DC9030245AF3001185C9 /* UserSpec */; };
+		4602DCB43025880B001185C9 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602DCB33025880B001185C9 /* NukeUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 				4602CAB930114363001185C9 /* RevenueCat in Frameworks */,
 				4602CAB730114363001185C9 /* ReceiptParser in Frameworks */,
 				4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */,
+				4602DCB43025880B001185C9 /* NukeUI in Frameworks */,
 				4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */,
 				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
@@ -145,6 +147,7 @@
 				4602CABA30114363001185C9 /* RevenueCatUI */,
 				4602CAC830114F62001185C9 /* FirebaseDatabase */,
 				4602CAF33014EB59001185C9 /* YouTubePlayerKit */,
+				4602DCB33025880B001185C9 /* NukeUI */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -248,6 +251,7 @@
 				4602CAC730114F62001185C9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
 				4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */,
+				4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -469,12 +473,16 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.DesignToSwiftUI.Countdown2Binge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -503,12 +511,16 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.DesignToSwiftUI.Countdown2Binge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -670,6 +682,14 @@
 				kind = branch;
 			};
 		};
+		4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.0.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -702,6 +722,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */;
 			productName = UserSpec;
+		};
+		4602DCB33025880B001185C9 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

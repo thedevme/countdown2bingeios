@@ -78,22 +78,7 @@ struct DiscoverShowRow: View {
                 .frame(width: 44)
 
                 // Poster thumbnail
-                if let url = posterURL {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 52, height: 78)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        default:
-                            posterPlaceholder
-                        }
-                    }
-                } else {
-                    posterPlaceholder
-                }
+                PosterView(url: posterURL, width: 52, cornerRadius: 8)
 
                 // Show info
                 VStack(alignment: .leading, spacing: 6) {
@@ -144,17 +129,6 @@ struct DiscoverShowRow: View {
             .padding(.vertical, 12)
         }
         .buttonStyle(.plain)
-    }
-
-    private var posterPlaceholder: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.c2bSurface)
-            .frame(width: 52, height: 78)
-            .overlay(
-                Image(systemName: "tv")
-                    .font(.system(size: 16))
-                    .foregroundColor(.c2bMuted)
-            )
     }
 
     private func parseDate(_ string: String) -> Date? {

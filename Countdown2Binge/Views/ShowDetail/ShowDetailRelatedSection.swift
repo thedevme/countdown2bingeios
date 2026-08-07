@@ -68,26 +68,7 @@ private struct RelatedShowCard: View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 8) {
                 // Poster
-                if let url = posterURL {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: posterWidth, height: posterHeight)
-                                .clipped()
-                        default:
-                            Rectangle()
-                                .fill(Color.c2bSurface)
-                                .frame(width: posterWidth, height: posterHeight)
-                        }
-                    }
-                } else {
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .frame(width: posterWidth, height: posterHeight)
-                }
+                PosterView(url: posterURL, width: posterWidth, cornerRadius: 8)
 
                 // Title
                 Text(show.name)

@@ -25,20 +25,11 @@ struct ShowDetailHeroSection: View {
         GeometryReader { geo in
             ZStack(alignment: .bottom) {
                 // Backdrop image
-                AsyncImage(url: show.backdropURL ?? show.posterURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: geo.size.width, height: geo.size.width * 1.025)
-                            .clipped()
-                    default:
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                            .frame(width: geo.size.width, height: geo.size.width * 1.025)
-                    }
-                }
+                BackdropView(
+                    url: show.backdropURL ?? show.posterURL,
+                    width: geo.size.width,
+                    height: geo.size.width * 1.025
+                )
 
                 // Gradient overlay
                 LinearGradient(

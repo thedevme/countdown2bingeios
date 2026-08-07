@@ -304,22 +304,10 @@ private struct DowngradeShowCard: View {
         Button(action: onToggle) {
             HStack(spacing: 13) {
                 // Poster
-                AsyncImage(url: posterURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                    }
-                }
-                .frame(width: 46, height: 69)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .grayscale(isMarked ? 0.7 : 0)
-                .brightness(isMarked ? -0.45 : 0)
-                .animation(.easeOut(duration: 0.15), value: isMarked)
+                PosterView(url: posterURL, width: 46, cornerRadius: 8)
+                    .grayscale(isMarked ? 0.7 : 0)
+                    .brightness(isMarked ? -0.45 : 0)
+                    .animation(.easeOut(duration: 0.15), value: isMarked)
 
                 // Info
                 VStack(alignment: .leading, spacing: 5) {

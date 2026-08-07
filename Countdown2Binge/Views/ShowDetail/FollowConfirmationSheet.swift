@@ -129,21 +129,10 @@ private struct FollowConfirmHero: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Background image
-            AsyncImage(url: show.backdropURL ?? show.posterURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 150)
-                        .clipped()
-                default:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .frame(height: 150)
-                }
-            }
-            .frame(height: 150)
+            BackdropView(
+                url: show.backdropURL ?? show.posterURL,
+                height: 150
+            )
 
             // Gradient
             LinearGradient(

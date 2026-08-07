@@ -16,7 +16,6 @@ struct DiscoverShowCard: View {
     let onFollowTap: () -> Void
 
     private let cardWidth: CGFloat = 155
-    private let posterHeight: CGFloat = 220
 
     private var posterURL: URL? {
         guard let path = show.posterPath else { return nil }
@@ -29,22 +28,7 @@ struct DiscoverShowCard: View {
             Button(action: onTap) {
                 ZStack(alignment: .topLeading) {
                     // Poster image
-                    if let url = posterURL {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: cardWidth, height: posterHeight)
-                                    .clipped()
-                            default:
-                                posterPlaceholder
-                            }
-                        }
-                    } else {
-                        posterPlaceholder
-                    }
+                    PosterView(url: posterURL, width: cardWidth, cornerRadius: 14)
 
                     // Countdown badge
                     if let days = daysUntil, days > 0 {
@@ -64,7 +48,6 @@ struct DiscoverShowCard: View {
                         .padding(10)
                     }
                 }
-                .frame(width: cardWidth, height: posterHeight)
                 .cornerRadius(14)
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
@@ -111,22 +94,6 @@ struct DiscoverShowCard: View {
             .padding(.top, 12)
         }
         .frame(width: cardWidth)
-    }
-
-    private var posterPlaceholder: some View {
-        RoundedRectangle(cornerRadius: 14)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        Color(hex: networkColor).opacity(0.6),
-                        Color(hex: networkColor).opacity(0.2),
-                        Color.c2bSurface
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .frame(width: cardWidth, height: posterHeight)
     }
 
     private func parseDate(_ string: String) -> Date? {

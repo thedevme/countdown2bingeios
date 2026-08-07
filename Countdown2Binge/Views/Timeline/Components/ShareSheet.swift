@@ -241,22 +241,11 @@ private struct BingeCard: View {
             // Image section
             ZStack(alignment: .bottom) {
                 // Background image
-                AsyncImage(url: show.backdropURL ?? show.posterURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 180)
-                            .clipped()
-                            .saturation(isFinished ? 1.1 : 1.0)
-                    default:
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                            .frame(height: 180)
-                    }
-                }
-                .frame(height: 180)
+                BackdropView(
+                    url: show.backdropURL ?? show.posterURL,
+                    height: 180
+                )
+                .saturation(isFinished ? 1.1 : 1.0)
 
                 // Gradient overlay
                 LinearGradient(

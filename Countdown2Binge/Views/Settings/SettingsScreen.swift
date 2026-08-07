@@ -28,8 +28,11 @@ struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
     @State private var showPaywall = false
+    #if DEBUG
+    @State private var showPaywallPreview = false
+    #endif
     @State private var showProfile = false
-    @State private var selectedPlan = "yearly"
+    @State private var selectedPlan = "monthly"
     @State private var isPurchasing = false
     @State private var purchaseError: String?
     @State private var isRefreshingDiscover = false
@@ -161,6 +164,15 @@ struct SettingsScreen: View {
                             ),
                             disabled: !DebugSettings.shared.isRunningInSimulator
                         )
+
+                        // Preview Onboarding Paywall
+                        SettingsRowAction(
+                            icon: "creditcard",
+                            iconColor: .c2bTeal,
+                            title: "Preview Paywall",
+                            subtitle: "View onboarding paywall screen",
+                            action: { showPaywallPreview = true }
+                        )
                         #endif
 
                         SettingsRowAction(
@@ -252,13 +264,23 @@ struct SettingsScreen: View {
                 CloudSyncView()
             }
             .sheet(isPresented: $showPaywall) {
-                DiscoverPaywallSheet(
+                PaywallView(
                     selectedPlan: $selectedPlan,
-                    isPurchasing: $isPurchasing,
-                    purchaseError: $purchaseError,
-                    onDismiss: { showPaywall = false }
+                    onDismiss: { showPaywall = false },
+                    onContinueFree: nil,
+                    showContinueFree: false
                 )
             }
+            #if DEBUG
+            .sheet(isPresented: $showPaywallPreview) {
+                PaywallView(
+                    selectedPlan: $selectedPlan,
+                    onDismiss: { showPaywallPreview = false },
+                    onContinueFree: nil,
+                    showContinueFree: false
+                )
+            }
+            #endif
             .overlay {
                 if showNotifications {
                     NotificationSettingsOverlay(onDismiss: {

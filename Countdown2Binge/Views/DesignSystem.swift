@@ -32,6 +32,7 @@ extension Color {
     static let c2bBackground = Color(hex: "#000000")
     static let c2bSurface = Color(hex: "#0d0d0e")
     static let c2bSurface2 = Color(hex: "#161618")
+    static let c2bImagePlaceholder = Color(hex: "#080808")
 
     static let c2bText = Color(hex: "#f4f4f5")
     static let c2bDim = Color(hex: "#a1a1aa")

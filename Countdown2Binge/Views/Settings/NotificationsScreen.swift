@@ -12,7 +12,7 @@ struct NotificationsScreen: View {
     let isPremium: Bool
     @Environment(\.dismiss) private var dismiss
     @State private var showPaywall = false
-    @State private var selectedPlan = "yearly"
+    @State private var selectedPlan = "monthly"
     @State private var isPurchasing = false
     @State private var purchaseError: String?
 

@@ -20,20 +20,11 @@ struct DetailHeroSection: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .bottom) {
-                AsyncImage(url: show.backdropURL ?? show.posterURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: geo.size.width, height: geo.size.width * 0.95)
-                            .clipped()
-                    default:
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                            .frame(width: geo.size.width, height: geo.size.width * 0.95)
-                    }
-                }
+                BackdropView(
+                    url: show.backdropURL ?? show.posterURL,
+                    width: geo.size.width,
+                    height: geo.size.width * 0.95
+                )
 
                 LinearGradient(
                     colors: [.black.opacity(0.25), .clear, .black],

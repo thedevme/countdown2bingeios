@@ -69,20 +69,13 @@ private struct CastMemberCard: View {
     var body: some View {
         VStack(spacing: 8) {
             // Avatar
-            if let url = profileURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: avatarSize, height: avatarSize)
-                            .clipShape(Circle())
-                    default:
-                        initialsView
-                    }
-                }
-            } else {
+            CachedAsyncImage(url: profileURL) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: avatarSize, height: avatarSize)
+                    .clipShape(Circle())
+            } placeholder: {
                 initialsView
             }
 

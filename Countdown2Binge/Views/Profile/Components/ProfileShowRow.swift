@@ -32,21 +32,9 @@ struct ProfileShowRow: View {
         Button(action: onTap) {
             HStack(spacing: 13) {
                 // Poster
-                AsyncImage(url: posterURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                    }
-                }
-                .frame(width: 42, height: 63)
-                .clipShape(RoundedRectangle(cornerRadius: 7))
-                .grayscale(isSynced ? 0 : 0.6)
-                .brightness(isSynced ? 0 : -0.35)
+                PosterView(url: posterURL, width: 42, cornerRadius: 7)
+                    .grayscale(isSynced ? 0 : 0.6)
+                    .brightness(isSynced ? 0 : -0.35)
 
                 // Info
                 VStack(alignment: .leading, spacing: 6) {

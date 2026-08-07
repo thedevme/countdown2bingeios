@@ -50,26 +50,9 @@ struct TimelineStackedPosterView: View {
 
     @ViewBuilder
     private func posterImage(for series: Series) -> some View {
-        if let url = series.posterURL {
-            CachedAsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .grayscale(isGrayscale ? 1.0 : 0.0)
-                    .brightness(isGrayscale ? -0.4 : 0.0)  // brightness(0.6) = -0.4 adjustment
-            } placeholder: {
-                Rectangle()
-                    .fill(Color(hex: "#1a1a1c"))
-            }
-        } else {
-            Rectangle()
-                .fill(Color(hex: "#1a1a1c"))
-                .overlay(
-                    Text(String(series.name.prefix(1)))
-                        .font(.custom(.oswald.bold, size: 14))
-                        .foregroundColor(.c2bMuted)
-                )
-        }
+        PosterView(url: series.posterURL, width: posterWidth, cornerRadius: 6)
+            .grayscale(isGrayscale ? 1.0 : 0.0)
+            .brightness(isGrayscale ? -0.4 : 0.0)
     }
 
     /// Rotation: (i - 1.5) × 4° for fan from -6° to +6°

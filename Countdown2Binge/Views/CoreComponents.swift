@@ -1,7 +1,7 @@
 import SwiftUI
 
-// MARK: - Poster Component
-struct PosterView: View {
+// MARK: - Mock Poster Component (decorative placeholder for design mockups)
+struct MockPosterView: View {
     let title: String
     let season: String
     let platform: String

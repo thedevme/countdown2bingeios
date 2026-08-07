@@ -15,21 +15,10 @@ struct AddShowHero: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             // Background image
-            AsyncImage(url: backdropURL ?? posterURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 160)
-                        .clipped()
-                default:
-                    Rectangle()
-                        .fill(Color.c2bSurface)
-                        .frame(height: 160)
-                }
-            }
-            .frame(height: 160)
+            BackdropView(
+                url: backdropURL ?? posterURL,
+                height: 160
+            )
 
             // Gradient overlay
             LinearGradient(

@@ -67,26 +67,12 @@ private struct TrailerCard: View {
                 showPlayer = true
             } label: {
                 ZStack {
-                    if let thumbnailURL = video.thumbnailURL {
-                        AsyncImage(url: thumbnailURL) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: width, height: height)
-                                    .clipped()
-                            default:
-                                Rectangle()
-                                    .fill(Color.c2bSurface)
-                                    .frame(width: width, height: height)
-                            }
-                        }
-                    } else {
-                        Rectangle()
-                            .fill(Color.c2bSurface)
-                            .frame(width: width, height: height)
-                    }
+                    ThumbnailView(
+                        url: video.thumbnailURL,
+                        width: width,
+                        height: height,
+                        cornerRadius: 0
+                    )
 
                     // Play button overlay
                     Circle()

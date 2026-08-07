@@ -64,34 +64,14 @@ struct EpisodeCard: View {
     }
 
     private var thumbnailImage: some View {
-        Group {
-            if let url = showImageURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure:
-                        placeholderImage
-                    case .empty:
-                        placeholderImage
-                    @unknown default:
-                        placeholderImage
-                    }
-                }
-            } else {
-                placeholderImage
-            }
-        }
-        .frame(width: cardWidth, height: thumbnailHeight)
+        ThumbnailView(
+            url: showImageURL,
+            width: cardWidth,
+            height: thumbnailHeight,
+            cornerRadius: 0
+        )
         .brightness(imageBrightness)
         .saturation(imageSaturation)
-    }
-
-    private var placeholderImage: some View {
-        Rectangle()
-            .fill(Color.c2bSurface2)
     }
 
     private var imageBrightness: Double {

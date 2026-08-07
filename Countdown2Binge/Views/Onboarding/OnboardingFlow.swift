@@ -7,7 +7,7 @@ struct OnboardingFlow: View {
     let onComplete: (String, [ShowSummary]) -> Void
 
     @State private var currentStep: Int = 0
-    @State private var selectedPlan: String = "yearly"
+    @State private var selectedPlan: String = "monthly"
     @State private var viewModel = OnboardingViewModel()
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
@@ -18,81 +18,84 @@ struct OnboardingFlow: View {
         ZStack {
             Color(hex: "#000000").ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Header
-                OnboardingHeader(
-                    currentStep: currentStep,
-                    totalSteps: totalSteps,
-                    onBack: {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                            if currentStep > 0 { currentStep -= 1 }
-                        }
+            // Paywall step is full-screen (no header/footer)
+            if currentStep == 6 {
+                PaywallView(
+                    selectedPlan: $selectedPlan,
+                    onDismiss: {
+                        completeOnboarding()
                     },
-                    onSkip: {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                            currentStep = totalSteps - 1
-                        }
-                    }
+                    onContinueFree: {
+                        completeOnboarding()
+                    },
+                    showContinueFree: true
                 )
-
-                // Content
-                TabView(selection: $currentStep) {
-                    PainSlide()
-                        .tag(0)
-
-                    AgitateSlide()
-                        .tag(1)
-
-                    SolutionSlide()
-                        .tag(2)
-
-                    AddShowsStep(viewModel: viewModel)
-                        .tag(3)
-
-                    ReviewSelectionStep(viewModel: viewModel)
-                        .tag(4)
-
-                    AllSetStep(shows: viewModel.getSelectedShows())
-                        .tag(5)
-
-                    PaywallStep(
-                        followedCount: viewModel.selectedCount,
-                        selectedPlan: $selectedPlan
-                    )
-                    .tag(6)
-                }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .animation(.spring(response: 0.35, dampingFraction: 0.85), value: currentStep)
-
-                // Footer
-                OnboardingFooter(
-                    currentStep: currentStep,
-                    totalSteps: totalSteps,
-                    canProceed: (currentStep != 3 || viewModel.hasSelections) && !isPurchasing,
-                    selectedPlan: selectedPlan,
-                    isPurchasing: isPurchasing,
-                    onNext: {
-                        // Skip to completion if already premium (DEBUG/TestFlight)
-                        if currentStep >= 4 && PremiumManager.shared.isPremium {
-                            completeOnboarding()
-                            return
-                        } else if currentStep < totalSteps - 1 {
+            } else {
+                VStack(spacing: 0) {
+                    // Header
+                    OnboardingHeader(
+                        currentStep: currentStep,
+                        totalSteps: totalSteps,
+                        onBack: {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                currentStep += 1
+                                if currentStep > 0 { currentStep -= 1 }
                             }
-                        } else {
-                            // On paywall step - initiate purchase
-                            Task {
-                                await handlePurchase()
+                        },
+                        onSkip: {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                currentStep = totalSteps - 1
                             }
                         }
-                    },
-                    onRestore: {
-                        Task {
-                            await handleRestore()
-                        }
+                    )
+
+                    // Content
+                    TabView(selection: $currentStep) {
+                        PainSlide()
+                            .tag(0)
+
+                        AgitateSlide()
+                            .tag(1)
+
+                        SolutionSlide()
+                            .tag(2)
+
+                        AddShowsStep(viewModel: viewModel)
+                            .tag(3)
+
+                        ReviewSelectionStep(viewModel: viewModel)
+                            .tag(4)
+
+                        AllSetStep(shows: viewModel.getSelectedShows())
+                            .tag(5)
                     }
-                )
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .animation(.spring(response: 0.35, dampingFraction: 0.85), value: currentStep)
+
+                    // Footer
+                    OnboardingFooter(
+                        currentStep: currentStep,
+                        totalSteps: totalSteps,
+                        canProceed: (currentStep != 3 || viewModel.hasSelections) && !isPurchasing,
+                        selectedPlan: selectedPlan,
+                        isPurchasing: isPurchasing,
+                        onNext: {
+                            // Skip to completion if already premium (DEBUG/TestFlight)
+                            if currentStep >= 4 && PremiumManager.shared.isPremium {
+                                completeOnboarding()
+                                return
+                            } else if currentStep < totalSteps - 1 {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    currentStep += 1
+                                }
+                            }
+                        },
+                        onRestore: {
+                            Task {
+                                await handleRestore()
+                            }
+                        }
+                    )
+                }
             }
 
             // Purchase error alert
@@ -819,36 +822,7 @@ struct OnboardingShowCard: View {
             ZStack(alignment: .topLeading) {
                 // Tappable poster area
                 Button(action: onTap) {
-                    AsyncImage(url: show.posterSmallURL) { phase in
-                        switch phase {
-                        case .empty:
-                            Rectangle()
-                                .fill(Color(hex: "#1a1a1c"))
-                                .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                                .overlay(
-                                    ProgressView()
-                                        .tint(Color(hex: "#71717a"))
-                                )
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                        case .failure:
-                            Rectangle()
-                                .fill(Color(hex: "#1a1a1c"))
-                                .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                                .overlay(
-                                    Image(systemName: "tv")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color(hex: "#71717a"))
-                                )
-                        @unknown default:
-                            Rectangle()
-                                .fill(Color(hex: "#1a1a1c"))
-                                .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                        }
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 11))
+                    PosterView(url: show.posterSmallURL, cornerRadius: 11)
                 }
 
                 // Follow button (top-left)
@@ -969,34 +943,7 @@ struct ReviewShowCard: View {
     var body: some View {
         HStack(spacing: 12) {
             // Poster
-            AsyncImage(url: show.posterSmallURL) { phase in
-                switch phase {
-                case .empty:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                        .overlay(
-                            ProgressView()
-                                .tint(Color(hex: "#71717a"))
-                        )
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                        .overlay(
-                            Image(systemName: "tv")
-                                .font(.system(size: 16))
-                                .foregroundColor(Color(hex: "#71717a"))
-                        )
-                @unknown default:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                }
-            }
-            .frame(width: 60, height: 90)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            PosterView(url: show.posterSmallURL, width: 60, cornerRadius: 10)
 
             // Info
             VStack(alignment: .leading, spacing: 4) {
@@ -1059,31 +1006,9 @@ struct AllSetStep: View {
                     GeometryReader { geometry in
                         ZStack {
                             HStack(spacing: 0) {
-                                AsyncImage(url: shows[0].posterURL) { phase in
-                                    if case .success(let image) = phase {
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color(hex: "#1a1a1c"))
-                                    }
-                                }
-                                .frame(width: (geometry.size.width - 44) * 0.5, height: 240)
-                                .clipped()
+                                PosterView(url: shows[0].posterURL, width: (geometry.size.width - 44) * 0.5, height: 240, cornerRadius: 0)
 
-                                AsyncImage(url: shows[1].posterURL) { phase in
-                                    if case .success(let image) = phase {
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color(hex: "#1a1a1c"))
-                                    }
-                                }
-                                .frame(width: (geometry.size.width - 44) * 0.5, height: 240)
-                                .clipped()
+                                PosterView(url: shows[1].posterURL, width: (geometry.size.width - 44) * 0.5, height: 240, cornerRadius: 0)
                             }
                             .frame(maxWidth: .infinity)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -1157,198 +1082,14 @@ struct AllSetShowCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Poster
-            AsyncImage(url: show.posterURL) { phase in
-                switch phase {
-                case .empty:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                        .overlay(
-                            ProgressView()
-                                .tint(Color(hex: "#71717a"))
-                        )
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                case .failure:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                        .overlay(
-                            Image(systemName: "tv")
-                                .font(.system(size: 24))
-                                .foregroundColor(Color(hex: "#71717a"))
-                        )
-                @unknown default:
-                    Rectangle()
-                        .fill(Color(hex: "#1a1a1c"))
-                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
-                }
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+            PosterView(url: show.posterURL, cornerRadius: 12)
+                .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
 
             // Title
             Text(show.name)
                 .font(.system(size: 14, weight: .semibold, design: .default))
                 .foregroundColor(Color(hex: "#f4f4f5"))
                 .lineLimit(1)
-        }
-    }
-}
-
-// MARK: - Paywall Step
-struct PaywallStep: View {
-    let followedCount: Int
-    @Binding var selectedPlan: String
-
-    private let plans = [
-        ("yearly", "Pro Yearly", "$9.99", "/yr", "Best value · save 44%", true),
-        ("monthly", "Pro Monthly", "$1.49", "/mo", "Billed monthly", false),
-        ("lifetime", "Pro Lifetime", "$29.99", "", "One-time purchase", false)
-    ]
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("onboarding_choose_plan")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-                    .padding(.top, 12)
-
-                Text("onboarding_never_miss")
-                    .font(.custom(.oswald.bold, size: CustomFont.size.title))
-                    .textCase(.uppercase)
-                    .tracking(0.34)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 10)
-                    .padding(.bottom, 6)
-
-                Text(String(localized: "paywall_tracking_shows \(followedCount)"))
-                    .font(.system(size: 13.5, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(3)
-                    .padding(.bottom, 18)
-
-                // Plan cards
-                VStack(spacing: 11) {
-                    ForEach(0..<plans.count, id: \.self) { index in
-                        PlanCard(
-                            id: plans[index].0,
-                            name: plans[index].1,
-                            price: plans[index].2,
-                            period: plans[index].3,
-                            note: plans[index].4,
-                            isBest: plans[index].5,
-                            isSelected: selectedPlan == plans[index].0,
-                            onSelect: { selectedPlan = plans[index].0 }
-                        )
-                    }
-                }
-            }
-            .padding(.horizontal, 22)
-            .padding(.bottom, 140)
-        }
-    }
-}
-
-struct PlanCard: View {
-    let id: String
-    let name: String
-    let price: String
-    let period: String
-    let note: String
-    let isBest: Bool
-    let isSelected: Bool
-    let onSelect: () -> Void
-
-    var body: some View {
-        Button(action: onSelect) {
-            HStack(spacing: 14) {
-                // Radio button
-                ZStack {
-                    Circle()
-                        .stroke(
-                            isSelected ? Color(hex: "#2dd4bf") : Color.white.opacity(0.25),
-                            lineWidth: 2
-                        )
-                        .frame(width: 22, height: 22)
-
-                    if isSelected {
-                        Circle()
-                            .fill(Color(hex: "#2dd4bf"))
-                            .frame(width: 22, height: 22)
-
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(Color(hex: "#04201c"))
-                    }
-                }
-
-                // Plan info
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
-                        Text(name)
-                            .font(.custom(.oswald.bold, size: CustomFont.size.subheading))
-                            .foregroundColor(Color(hex: "#f4f4f5"))
-                            .textCase(.uppercase)
-                            .tracking(0.18)
-
-                        if isBest {
-                            Text("paywall_best")
-                                .font(.custom(.jetbrains.bold, size: 8))
-                                .foregroundColor(Color(hex: "#04201c"))
-                                .textCase(.uppercase)
-                                .tracking(1.6)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color(hex: "#5eead4"))
-                                .cornerRadius(5)
-                        }
-                    }
-
-                    Text(note)
-                        .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                        .foregroundColor(id == "free" ? Color(hex: "#71717a") : Color(hex: "#2dd4bf"))
-                        .textCase(.uppercase)
-                        .tracking(1.6)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                // Price
-                VStack(alignment: .trailing, spacing: 0) {
-                    HStack(alignment: .top, spacing: 0) {
-                        Text(price)
-                            .font(.custom(.oswald.bold, size: CustomFont.size.xl2))
-                            .foregroundColor(Color(hex: "#f4f4f5"))
-                            .textCase(.uppercase)
-                            .tracking(0.22)
-                        Text(period)
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                            .foregroundColor(Color(hex: "#71717a"))
-                            .textCase(.uppercase)
-                            .tracking(1.6)
-                    }
-                }
-            }
-            .padding(16)
-            .background(
-                isSelected ? Color(hex: "#2dd4bf").opacity(0.08) : Color.white.opacity(0.03)
-            )
-            .cornerRadius(16)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        isSelected ? Color(hex: "#2dd4bf") : Color.white.opacity(0.09),
-                        lineWidth: 1.5
-                    )
-            )
         }
     }
 }

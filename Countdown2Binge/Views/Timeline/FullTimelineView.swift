@@ -414,16 +414,7 @@ struct NowPlayingCard: View {
             // Right: Poster
             ZStack(alignment: .topTrailing) {
                 if let url = posterURL {
-                    CachedAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(Color(hex: "#1a1a1c"))
-                    }
-                    .frame(height: 140)
-                    .clipped()
+                    BackdropView(url: url, height: 140)
                     .overlay(Color.black.opacity(0.3))
                     .overlay(
                         Rectangle()

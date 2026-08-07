@@ -217,19 +217,7 @@ struct LineupShareSheet: View {
     }
 
     private func posterImage(for show: Series) -> some View {
-        return AsyncImage(url: show.posterURL) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            default:
-                Rectangle()
-                    .fill(Color.c2bSurface)
-            }
-        }
-        .aspectRatio(2/3, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        PosterView(url: show.posterURL, cornerRadius: 6)
     }
 
     private var shareDestinations: some View {

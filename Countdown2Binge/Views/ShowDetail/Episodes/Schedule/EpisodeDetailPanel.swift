@@ -217,20 +217,7 @@ struct EpisodeDetailPanel: View {
 
     private func thumbnailView(episode: EpisodeDisplayModel) -> some View {
         ZStack {
-            if let url = showImageURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle().fill(Color.c2bSurface2)
-                    }
-                }
-            } else {
-                Rectangle().fill(Color.c2bSurface2)
-            }
+            ThumbnailView(url: showImageURL, cornerRadius: 0)
 
             // Lock overlay for unaired
             if !episode.hasAired {

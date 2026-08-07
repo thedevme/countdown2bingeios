@@ -140,7 +140,7 @@ struct AddShowModal: View {
         }
         .background(Color(hex: "#0e0e0f"))
         .ignoresSafeArea(edges: .top)
-        .presentationDetents([.large])
+        .presentationDetents(addTimePrompt != nil ? [.large] : [.fraction(0.72)])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(24)
         .presentationBackground(Color(hex: "#0e0e0f"))
