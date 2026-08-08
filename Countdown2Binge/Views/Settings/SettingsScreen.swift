@@ -264,21 +264,21 @@ struct SettingsScreen: View {
                 CloudSyncView()
             }
             .sheet(isPresented: $showPaywall) {
-                PaywallView(
-                    selectedPlan: $selectedPlan,
-                    onDismiss: { showPaywall = false },
-                    onContinueFree: nil,
-                    showContinueFree: false
-                )
+//                PaywallView(
+//                    selectedPlan: $selectedPlan,
+//                    onDismiss: { showPaywall = false },
+//                    onContinueFree: nil,
+//                    showContinueFree: false
+//                )
             }
             #if DEBUG
             .sheet(isPresented: $showPaywallPreview) {
-                PaywallView(
-                    selectedPlan: $selectedPlan,
-                    onDismiss: { showPaywallPreview = false },
-                    onContinueFree: nil,
-                    showContinueFree: false
-                )
+//                PaywallView(
+//                    selectedPlan: $selectedPlan,
+//                    onDismiss: { showPaywallPreview = false },
+//                    onContinueFree: nil,
+//                    showContinueFree: false
+//                )
             }
             #endif
             .overlay {

@@ -24,18 +24,20 @@ final class CloudSettingsStore {
 
     // MARK: - Properties
 
+    // Stored (not computed) so @Observable tracks them and SwiftUI reacts to
+    // changes — e.g. resetting onboarding from Settings re-presents it live.
+    // `didSet` mirrors the value into iCloud's key-value store.
+
     var hasCompletedOnboarding: Bool {
-        get { store.bool(forKey: Keys.hasCompletedOnboarding) }
-        set {
-            store.set(newValue, forKey: Keys.hasCompletedOnboarding)
+        didSet {
+            store.set(hasCompletedOnboarding, forKey: Keys.hasCompletedOnboarding)
             store.synchronize()
         }
     }
 
     var hasSeenWalkthrough: Bool {
-        get { store.bool(forKey: Keys.hasSeenWalkthrough) }
-        set {
-            store.set(newValue, forKey: Keys.hasSeenWalkthrough)
+        didSet {
+            store.set(hasSeenWalkthrough, forKey: Keys.hasSeenWalkthrough)
             store.synchronize()
         }
     }
@@ -43,19 +45,26 @@ final class CloudSettingsStore {
     // MARK: - Init
 
     private init() {
-        // Sync from iCloud on launch
+        // Sync from iCloud on launch, then seed the stored mirrors.
         store.synchronize()
+        hasCompletedOnboarding = store.bool(forKey: Keys.hasCompletedOnboarding)
+        hasSeenWalkthrough = store.bool(forKey: Keys.hasSeenWalkthrough)
 
-        // Listen for changes from other devices
+        // Reflect changes made on other devices back into the observable mirrors.
         NotificationCenter.default.addObserver(
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: store,
             queue: .main
         ) { [weak self] _ in
-            // Trigger UI update by accessing properties
-            _ = self?.hasCompletedOnboarding
-            _ = self?.hasSeenWalkthrough
+            Task { @MainActor in self?.syncFromStore() }
         }
+    }
+
+    private func syncFromStore() {
+        let completed = store.bool(forKey: Keys.hasCompletedOnboarding)
+        if completed != hasCompletedOnboarding { hasCompletedOnboarding = completed }
+        let seen = store.bool(forKey: Keys.hasSeenWalkthrough)
+        if seen != hasSeenWalkthrough { hasSeenWalkthrough = seen }
     }
 
     // MARK: - Reset

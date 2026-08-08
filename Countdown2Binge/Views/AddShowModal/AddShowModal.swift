@@ -11,9 +11,14 @@ import SwiftUI
 struct AddShowModal: View {
     let show: ShowData
     let addTimePrompt: AddTimeWatchedPrompt?
-    let onDone: (WatchAnswer?) -> Void
+    /// The last season the user finished (0 = haven't started). All seasons up
+    /// through this one get marked watched, so nothing earlier is left behind.
+    let onDone: (_ lastWatchedSeason: Int) -> Void
 
-    @State private var selectedAnswer: WatchAnswer? = nil
+    /// Last season the user finished (0 = haven't started). Drives the new
+    /// "Where did you leave off?" catch-up picker.
+    @State private var lastDoneSeason: Int = 0
+
 
     // Phase info based on show state
     private var phaseInfo: PhaseInfo {
@@ -101,11 +106,13 @@ struct AddShowModal: View {
                         isDimmed: phaseInfo.isDimmed
                     )
 
-                    // Watch question (conditional)
+                    // Catch-up question — "Where did you leave off?"
+                    // prompt.seasonNumber = latest complete-by-date season, so the
+                    // picker offers S1…that season inclusive.
                     if let prompt = addTimePrompt {
-                        AddShowWatchQuestion(
-                            seasonNumber: prompt.seasonNumber,
-                            selectedAnswer: $selectedAnswer
+                        CatchUpSeasonPicker(
+                            airedSeasonCount: prompt.seasonNumber,
+                            lastDoneSeason: $lastDoneSeason
                         )
                         .padding(.top, 24)
                     }
@@ -118,11 +125,14 @@ struct AddShowModal: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom) {
-            // Save button pinned to bottom - disabled until question answered
-            let canSave = addTimePrompt == nil || selectedAnswer != nil
+            // Save button pinned to bottom. The catch-up picker always has a
+            // valid state (0 = haven't started), so Save is always enabled.
+            let canSave = true
 
             Button {
-                onDone(selectedAnswer)
+                // All seasons through the one you finished get marked watched
+                // (0 when there's no catch-up prompt).
+                onDone(addTimePrompt != nil ? lastDoneSeason : 0)
             } label: {
                 Text("button_save")
                     .font(.custom(.oswald.bold, size: 16))

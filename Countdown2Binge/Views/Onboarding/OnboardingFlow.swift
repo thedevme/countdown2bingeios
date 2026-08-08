@@ -1,1095 +1,288 @@
+//
+//  OnboardingFlow.swift
+//  Countdown2Binge
+//
+//  v2 onboarding flow — 17 screens with shared shell chrome (back, progress,
+//  STEP NN/NN, teal CTA). Ported from c2b-onboarding.jsx `OnboardingFlow`.
+//
+//  DESIGN-ONLY: selections use sample data; `onComplete` hands back the chosen
+//  plan + followed shows (as ShowSummary) for you to persist. The first-run
+//  timeline walkthrough is shown separately by ContentView, so it is not a step
+//  here.
+//
+
 import SwiftUI
-import RevenueCat
 
-// MARK: - Onboarding Flow
-struct OnboardingFlow: View {
-    @Binding var isPresented: Bool
-    let onComplete: (String, [ShowSummary]) -> Void
+// MARK: - Shell chrome
 
-    @State private var currentStep: Int = 0
-    @State private var selectedPlan: String = "monthly"
-    @State private var viewModel = OnboardingViewModel()
-    @State private var isPurchasing: Bool = false
-    @State private var purchaseError: String?
-
-    private let totalSteps = 7
-
-    var body: some View {
-        ZStack {
-            Color(hex: "#000000").ignoresSafeArea()
-
-            // Paywall step is full-screen (no header/footer)
-            if currentStep == 6 {
-                PaywallView(
-                    selectedPlan: $selectedPlan,
-                    onDismiss: {
-                        completeOnboarding()
-                    },
-                    onContinueFree: {
-                        completeOnboarding()
-                    },
-                    showContinueFree: true
-                )
-            } else {
-                VStack(spacing: 0) {
-                    // Header
-                    OnboardingHeader(
-                        currentStep: currentStep,
-                        totalSteps: totalSteps,
-                        onBack: {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                if currentStep > 0 { currentStep -= 1 }
-                            }
-                        },
-                        onSkip: {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                currentStep = totalSteps - 1
-                            }
-                        }
-                    )
-
-                    // Content
-                    TabView(selection: $currentStep) {
-                        PainSlide()
-                            .tag(0)
-
-                        AgitateSlide()
-                            .tag(1)
-
-                        SolutionSlide()
-                            .tag(2)
-
-                        AddShowsStep(viewModel: viewModel)
-                            .tag(3)
-
-                        ReviewSelectionStep(viewModel: viewModel)
-                            .tag(4)
-
-                        AllSetStep(shows: viewModel.getSelectedShows())
-                            .tag(5)
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .animation(.spring(response: 0.35, dampingFraction: 0.85), value: currentStep)
-
-                    // Footer
-                    OnboardingFooter(
-                        currentStep: currentStep,
-                        totalSteps: totalSteps,
-                        canProceed: (currentStep != 3 || viewModel.hasSelections) && !isPurchasing,
-                        selectedPlan: selectedPlan,
-                        isPurchasing: isPurchasing,
-                        onNext: {
-                            // Skip to completion if already premium (DEBUG/TestFlight)
-                            if currentStep >= 4 && PremiumManager.shared.isPremium {
-                                completeOnboarding()
-                                return
-                            } else if currentStep < totalSteps - 1 {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                    currentStep += 1
-                                }
-                            }
-                        },
-                        onRestore: {
-                            Task {
-                                await handleRestore()
-                            }
-                        }
-                    )
-                }
-            }
-
-            // Purchase error alert
-            if let error = purchaseError {
-                Color.black.opacity(0.5).ignoresSafeArea()
-                    .onTapGesture { purchaseError = nil }
-
-                VStack(spacing: 16) {
-                    Text("alert_purchase_failed")
-                        .font(.custom(.oswald.bold, size: 18))
-                        .foregroundColor(.white)
-
-                    Text(error)
-                        .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "#a1a1aa"))
-                        .multilineTextAlignment(.center)
-
-                    Button("button_ok") {
-                        purchaseError = nil
-                    }
-                    .font(.custom(.oswald.bold, size: 16))
-                    .foregroundColor(Color(hex: "#04201c"))
-                    .padding(.horizontal, 40)
-                    .padding(.vertical, 12)
-                    .background(Color(hex: "#2dd4bf"))
-                    .cornerRadius(10)
-                }
-                .padding(24)
-                .background(Color(hex: "#1a1a1c"))
-                .cornerRadius(16)
-                .padding(40)
-            }
-        }
-    }
-
-    // MARK: - Purchase Handling
-
-    private func handlePurchase() async {
-        // Map plan ID to RevenueCat package identifier
-        let packageId: String
-        switch selectedPlan {
-        case "yearly":
-            packageId = "$rc_annual"
-        case "monthly":
-            packageId = "$rc_monthly"
-        case "lifetime":
-            packageId = "$rc_lifetime"
-        default:
-            // Unknown plan, complete without purchase
-            completeOnboarding()
-            return
-        }
-
-        isPurchasing = true
-        purchaseError = nil
-
-        do {
-            let offerings = try await PremiumManager.shared.getOfferings()
-
-            guard let currentOffering = offerings.current,
-                  let package = currentOffering.package(identifier: packageId) else {
-                print("OnboardingFlow: Package \(packageId) not found in offerings")
-                // Package not found - complete anyway (user can purchase later)
-                completeOnboarding()
-                return
-            }
-
-            let success = try await PremiumManager.shared.purchase(package: package)
-
-            if success {
-                // Purchase successful
-                completeOnboarding()
-            } else {
-                // User cancelled - still complete onboarding but as free
-                selectedPlan = "free"
-                completeOnboarding()
-            }
-        } catch {
-            isPurchasing = false
-            purchaseError = error.localizedDescription
-        }
-    }
-
-    private func completeOnboarding() {
-        isPurchasing = false
-        let shows = viewModel.getSelectedShows()
-        print("OnboardingFlow: Completing with \(shows.count) shows: \(shows.map { $0.name })")
-        onComplete(selectedPlan, shows)
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-            isPresented = false
-        }
-    }
-
-    private func handleRestore() async {
-        isPurchasing = true
-        purchaseError = nil
-
-        do {
-            try await PremiumManager.shared.restorePurchases()
-
-            if PremiumManager.shared.isPremium {
-                // Restore successful - user has premium
-                selectedPlan = "restored"
-                completeOnboarding()
-            } else {
-                // No purchases to restore
-                isPurchasing = false
-                purchaseError = String(localized: "error_no_purchases")
-            }
-        } catch {
-            isPurchasing = false
-            purchaseError = error.localizedDescription
-        }
-    }
-}
-
-// MARK: - Onboarding Flow with Default Binding
-struct OnboardingFlowPreview: View {
-    @State private var showOnboarding = true
+struct OBShell<Content: View>: View {
+    let step: Int
+    let total: Int
+    var onBack: () -> Void
+    var onSkip: (() -> Void)?
+    var ctaLabel: String?
+    var ctaDisabled: Bool = false
+    var onCta: (() -> Void)?
+    var secondary: String?
+    var onSecondary: (() -> Void)?
+    @ViewBuilder var content: () -> Content
 
     var body: some View {
-        OnboardingFlow(
-            isPresented: $showOnboarding,
-            onComplete: { plan, shows in
-                print("Completed with plan: \(plan), shows: \(shows.map { $0.name })")
-            }
-        )
-    }
-}
-
-// MARK: - Onboarding Header
-struct OnboardingHeader: View {
-    let currentStep: Int
-    let totalSteps: Int
-    let onBack: () -> Void
-    let onSkip: () -> Void
-
-    var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 0) {
+            // top bar: back · progress · skip
             HStack(spacing: 12) {
-                // Back button
                 Button(action: onBack) {
-                    DirectionalIcon(systemName: "chevron.left")
+                    Image(systemName: "chevron.left")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(Color(hex: "#cccccc"))
                         .frame(width: 34, height: 34)
                         .background(Color.white.opacity(0.04))
                         .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                        )
+                        .overlay(Circle().stroke(Color.white.opacity(0.12), lineWidth: 1))
                 }
-                .opacity(currentStep == 0 ? 0 : 1)
+                .buttonStyle(.plain)
+                .opacity(step == 0 ? 0 : 1)
+                .disabled(step == 0)
 
-                // Progress bars
                 HStack(spacing: 5) {
-                    ForEach(0..<totalSteps, id: \.self) { index in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(index <= currentStep ? Color(hex: "#2dd4bf") : Color.white.opacity(0.12))
+                    ForEach(0..<total, id: \.self) { i in
+                        Capsule()
+                            .fill(i <= step ? Color.c2bTeal : Color.white.opacity(0.12))
                             .frame(height: 3)
                     }
                 }
 
-                // Skip button
-                if currentStep < totalSteps - 2 {
+                if let onSkip {
                     Button(action: onSkip) {
-                        Text("button_skip")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                            .foregroundColor(Color(hex: "#71717a"))
-                            .textCase(.uppercase)
-                            .tracking(1.6)
+                        Text("SKIP")
+                            .font(.custom(.jetbrains.regular, size: 9.5))
+                            .tracking(1.33)
+                            .foregroundColor(.c2bMuted)
                     }
-                    .frame(width: 34)
+                    .buttonStyle(.plain)
                 } else {
-                    Spacer()
-                        .frame(width: 34)
+                    Color.clear.frame(width: 30, height: 1)
                 }
             }
-            .padding(.horizontal, 22)
-            .padding(.top, 50)
+            .padding(.top, 50).padding(.horizontal, 22).padding(.bottom, 6)
 
-            // Step indicator
-            Text("STEP \(String(format: "%02d", currentStep + 1)) / \(String(format: "%02d", totalSteps))")
-                .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                .foregroundColor(Color(hex: "#71717a"))
-                .textCase(.uppercase)
-                .tracking(1.6)
-                .padding(.top, 4)
-                .padding(.horizontal, 22)
+            Text("STEP \(String(format: "%02d", step + 1)) / \(String(format: "%02d", total))")
+                .font(.custom(.jetbrains.bold, size: 9))
+                .tracking(1.98)
+                .foregroundColor(.c2bMuted)
                 .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
+                .padding(.horizontal, 22).padding(.top, 4)
 
-// MARK: - Onboarding Footer
-struct OnboardingFooter: View {
-    let currentStep: Int
-    let totalSteps: Int
-    let canProceed: Bool
-    let selectedPlan: String
-    var isPurchasing: Bool = false
-    let onNext: () -> Void
-    var onRestore: (() -> Void)? = nil
-
-    private var buttonText: String {
-        if isPurchasing {
-            return "PROCESSING..."
-        }
-
-        switch currentStep {
-        case 0, 1:
-            return "CONTINUE"
-        case 2:
-            return "LET'S SET YOU UP →"
-        case 3:
-            return followedText
-        case 4:
-            return "CONFIRM SELECTION"
-        case 5:
-            return "CONTINUE"
-        case 6:
-            return paywallButtonText
-        default:
-            return "CONTINUE"
-        }
-    }
-
-    private var paywallButtonText: String {
-        switch selectedPlan {
-        case "lifetime":
-            return "PURCHASE LIFETIME"
-        default:
-            return "START 7-DAY FREE TRIAL"
-        }
-    }
-
-    private var followedText: String {
-        canProceed ? "CONTINUE" : "FOLLOW AT LEAST ONE"
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Button(action: onNext) {
-                HStack(spacing: 10) {
-                    if isPurchasing {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "#04201c")))
-                            .scaleEffect(0.8)
-                    }
-                    Text(buttonText)
-                        .font(.custom(.oswald.bold, size: 17))
-                        .foregroundColor(canProceed ? Color(hex: "#04201c") : Color(hex: "#71717a"))
-                        .textCase(.uppercase)
-                        .tracking(0.17)
+            GeometryReader { proxy in
+                ScrollView {
+                    content()
+                        .padding(.horizontal, 22).padding(.top, 12).padding(.bottom, 14)
+                        .frame(minHeight: proxy.size.height, alignment: .top)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(canProceed ? Color(hex: "#2dd4bf") : Color.white.opacity(0.07))
-                .cornerRadius(15)
             }
-            .disabled(!canProceed || isPurchasing)
-            .padding(.horizontal, 22)
-            .padding(.bottom, 26)
 
-            // Legal text for paywall
-            if currentStep == totalSteps - 1 {
-                VStack(spacing: 8) {
-                    if selectedPlan != "lifetime" {
-                        Text("premium_trial_legal")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                            .foregroundColor(Color(hex: "#71717a"))
-                            .textCase(.uppercase)
-                            .tracking(1.6)
-                            .multilineTextAlignment(.center)
-                    }
-
-                    HStack(spacing: 12) {
-                        Button(action: {}) {
-                            Text("link_terms")
-                                .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                                .foregroundColor(Color(hex: "#a1a1aa"))
-                                .textCase(.uppercase)
-                                .tracking(1.6)
+            if let ctaLabel {
+                VStack(spacing: 14) {
+                    if let secondary {
+                        Button(action: { onSecondary?() }) {
+                            Text(secondary.uppercased())
+                                .font(.custom(.jetbrains.regular, size: 11))
+                                .tracking(1.32)
+                                .foregroundColor(.c2bDim)
+                                .frame(maxWidth: .infinity)
                         }
-
-                        Text("·")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                            .foregroundColor(Color(hex: "#71717a"))
-
-                        Button(action: {}) {
-                            Text("link_privacy")
-                                .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                                .foregroundColor(Color(hex: "#a1a1aa"))
-                                .textCase(.uppercase)
-                                .tracking(1.6)
-                        }
-
-                        Text("·")
-                            .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                            .foregroundColor(Color(hex: "#71717a"))
-
-                        Button(action: { onRestore?() }) {
-                            Text("link_restore")
-                                .font(.custom(.jetbrains.bold, size: CustomFont.size.sm))
-                                .foregroundColor(Color(hex: "#a1a1aa"))
-                                .textCase(.uppercase)
-                                .tracking(1.6)
-                        }
+                        .buttonStyle(.plain)
                     }
-                }
-                .padding(.bottom, 20)
-            }
-        }
-        .background(
-            LinearGradient(
-                colors: [Color.clear, Color(hex: "#000000")],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 140)
-            .offset(y: -80)
-        )
-    }
-}
-
-// MARK: - Pain Slide
-struct PainSlide: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Illustration
-                PainIllustration()
-                    .padding(.vertical, 26)
-
-                Text("onboarding_pain_label")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-
-                Text("onboarding_pain_title")
-                    .font(.custom(.oswald.bold, size: CustomFont.size.display))
-                    .textCase(.uppercase)
-                    .tracking(0.42)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 12)
-                    .padding(.bottom, 20)
-
-                Text("onboarding_pain_description")
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(4)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer()
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 12)
-            .padding(.bottom, 140)
-        }
-    }
-}
-
-struct PainIllustration: View {
-    var body: some View {
-        ZStack {
-            // Poster with "Season Ended" stamp
-            Image("severance")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 150, height: 225)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .rotationEffect(.degrees(-4))
-                .grayscale(0.6)
-                .brightness(-0.2)
-                .overlay(
-                    Text("status_season_ended")
-                        .font(.custom(.oswald.bold, size: CustomFont.size.body))
-                        .foregroundColor(Color(hex: "#dd524c"))
-                        .textCase(.uppercase)
-                        .tracking(0.15)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 6)
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(hex: "#dd524c"), lineWidth: 3)
-                        )
-                        .rotationEffect(.degrees(-8))
-                )
-
-            // Notification badge
-            VStack {
-                HStack {
-                    Spacer()
-                    ZStack {
-                        Circle()
-                            .fill(Color(hex: "#dd524c"))
-                            .frame(width: 30, height: 30)
-                            .shadow(color: Color(hex: "#dd524c").opacity(0.5), radius: 8, x: 0, y: 3)
-
-                        Text("!")
-                            .font(.custom(.oswald.bold, size: CustomFont.size.body))
-                            .foregroundColor(.white)
-                            .textCase(.uppercase)
-                    }
-                    .rotationEffect(.degrees(6))
-                    .offset(x: 30, y: -30)
-                }
-                Spacer()
-            }
-        }
-        .frame(height: 130)
-    }
-}
-
-// MARK: - Agitate Slide
-struct AgitateSlide: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Illustration
-                AgitateIllustration()
-                    .padding(.bottom, 20)
-                    .frame(maxWidth: .infinity)
-
-                Text("onboarding_agitate_label")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-
-                Text("onboarding_agitate_title")
-                    .font(.custom(.oswald.bold, size: 35))
-                    .textCase(.uppercase)
-                    .tracking(0.35)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 12)
-                    .padding(.bottom, 20)
-
-                Text("onboarding_agitate_description")
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(4)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer()
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 12)
-            .padding(.bottom, 140)
-        }
-    }
-}
-
-struct AgitateIllustration: View {
-    private let platforms = [
-        ("NETFLIX", "#E50914", -70.0, 0.0, -8.0),
-        ("MAX", "#5A35E0", 44.0, -16.0, 6.0),
-        ("PRIME", "#1FB6FF", -20.0, 26.0, -3.0),
-        ("HULU", "#1CE783", 78.0, 30.0, 9.0),
-        ("APPLE TV+", "#A1A1AA", -84.0, 44.0, 5.0),
-        ("DISNEY+", "#1FA2FF", 30.0, 58.0, -7.0)
-    ]
-
-    var body: some View {
-        ZStack {
-            ForEach(0..<platforms.count, id: \.self) { index in
-                let platform = platforms[index]
-                Text(platform.0)
-                    .font(.custom(.oswald.bold, size: 14))
-                    .foregroundColor(.white)
-                    .textCase(.uppercase)
-                    .tracking(0.14)
-                    .padding(.horizontal, 13)
-                    .padding(.vertical, 8)
-                    .background(Color(hex: "#141416").opacity(0.9))
-                    .cornerRadius(9)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 9)
-                            .stroke(Color(hex: platform.1), lineWidth: 1)
-                    )
-                    .shadow(color: Color(hex: platform.1).opacity(0.3), radius: 9, x: 0, y: 3)
-                    .offset(x: platform.2, y: platform.3)
-                    .rotationEffect(.degrees(platform.4))
-            }
-        }
-        .frame(height: 130)
-    }
-}
-
-// MARK: - Solution Slide
-struct SolutionSlide: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // Illustration
-                SolutionIllustration()
-                    .padding(.vertical, 26)
-
-                Text("onboarding_solution_label")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-
-                Text("onboarding_solution_title")
-                    .font(.custom(.oswald.bold, size: CustomFont.size.display))
-                    .textCase(.uppercase)
-                    .tracking(0.42)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 12)
-                    .padding(.bottom, 20)
-
-                Text("onboarding_solution_description")
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(4)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer()
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 12)
-            .padding(.bottom, 140)
-        }
-    }
-}
-
-struct SolutionIllustration: View {
-    private let items = [
-        ("Ready in 4 days", true),
-        ("Airing now", true),
-        ("Premieres soon", false)
-    ]
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ForEach(0..<items.count, id: \.self) { index in
-                HStack(spacing: 14) {
-                    Circle()
-                        .fill(items[index].1 ? Color(hex: "#2dd4bf") : Color(hex: "#0a0a0b"))
-                        .frame(width: 12, height: 12)
-                        .overlay(
-                            Circle()
-                                .stroke(
-                                    Color(hex: "#2dd4bf").opacity(items[index].1 ? 0.0 : 0.5),
-                                    lineWidth: 2
-                                )
-                        )
-                        .overlay(
-                            Circle()
-                                .stroke(
-                                    items[index].1 ? Color(hex: "#2dd4bf").opacity(0.14) : Color.clear,
-                                    lineWidth: 10
-                                )
-                        )
-
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.white.opacity(0.04))
-                        .frame(height: 40)
-                        .overlay(
-                            HStack {
-                                Text(items[index].0)
-                                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                                    .foregroundColor(Color(hex: "#a1a1aa"))
-                                    .textCase(.uppercase)
-                                    .tracking(1.6)
-                                    .padding(.leading, 14)
-                                Spacer()
-                            }
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.white.opacity(0.08), lineWidth: 1)
-                        )
-                }
-            }
-        }
-        .padding(.horizontal, 6)
-    }
-}
-
-// MARK: - Add Shows Step
-struct AddShowsStep: View {
-    @Bindable var viewModel: OnboardingViewModel
-    @State private var selectedShow: ShowSummary?
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("onboarding_add_shows_label")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-                    .padding(.top, 12)
-
-                Text("onboarding_add_shows_title")
-                    .font(.custom(.oswald.bold, size: 36))
-                    .textCase(.uppercase)
-                    .tracking(0.36)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 10)
-                    .padding(.bottom, 8)
-
-                Text("onboarding_add_shows_description")
-                    .font(.system(size: 14, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(3)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, 16)
-
-                // Search bar
-                SearchBar(text: Binding(
-                    get: { viewModel.searchText },
-                    set: { viewModel.searchText = $0 }
-                ))
-                .padding(.bottom, 16)
-
-                // Loading state
-                if viewModel.isLoading {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .tint(Color(hex: "#2dd4bf"))
-                        Spacer()
-                    }
-                    .padding(.vertical, 40)
-                } else if let error = viewModel.error {
-                    // Error state
-                    VStack(spacing: 12) {
-                        Text(error)
-                            .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "#a1a1aa"))
-                            .multilineTextAlignment(.center)
-
-                        Button("button_try_again") {
-                            Task {
-                                await viewModel.loadTrendingShows()
-                            }
-                        }
-                        .font(.custom(.oswald.bold, size: 14))
-                        .foregroundColor(Color(hex: "#2dd4bf"))
-                    }
-                    .padding(.vertical, 40)
-                } else {
-                    // Show grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 13) {
-                        ForEach(viewModel.displayedShows) { show in
-                            OnboardingShowCard(
-                                show: show,
-                                isFollowing: viewModel.isSelected(show),
-                                onTap: {
-                                    selectedShow = show
-                                },
-                                onFollowTap: {
-                                    viewModel.toggleSelection(show)
-                                }
-                            )
-                            .id("\(show.id)-\(viewModel.isSelected(show))")
-                        }
-                    }
-                }
-            }
-            .padding(.horizontal, 22)
-            .padding(.bottom, 140)
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
-        .task {
-            await viewModel.loadTrendingShows()
-        }
-        .sheet(item: $selectedShow) { show in
-            ShowDetailView(
-                summary: show,
-                isFollowing: viewModel.isSelected(show),
-                onFollowTap: {
-                    viewModel.toggleSelection(show)
-                },
-                onDismiss: {
-                    selectedShow = nil
-                }
-            )
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
-        }
-    }
-}
-
-struct OnboardingShowCard: View {
-    let show: ShowSummary
-    let isFollowing: Bool
-    let onTap: () -> Void
-    let onFollowTap: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Poster with follow button overlay
-            ZStack(alignment: .topLeading) {
-                // Tappable poster area
-                Button(action: onTap) {
-                    PosterView(url: show.posterSmallURL, cornerRadius: 11)
-                }
-
-                // Follow button (top-left)
-                Button(action: onFollowTap) {
-                    ZStack {
-                        Circle()
-                            .fill(isFollowing ? Color.c2bTeal : Color.black.opacity(0.6))
-                            .frame(width: 28, height: 28)
-                            .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
-
-                        Image(systemName: isFollowing ? "checkmark" : "plus")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(isFollowing ? Color(hex: "#04201c") : .white)
-                    }
-                }
-                .padding(7)
-            }
-
-            // Title
-            Text(show.name)
-                .font(.system(size: 13, weight: .semibold, design: .default))
-                .foregroundColor(Color(hex: "#f4f4f5"))
-                .lineLimit(1)
-                .padding(.top, 9)
-
-            // Year
-            Text(show.yearString ?? "TBA")
-                .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                .foregroundColor(isFollowing ? Color(hex: "#5eead4") : Color(hex: "#71717a"))
-                .textCase(.uppercase)
-                .tracking(1.6)
-                .padding(.top, 4)
-        }
-        .padding(9)
-        .background(
-            isFollowing ? Color(hex: "#2dd4bf").opacity(0.06) : Color.white.opacity(0.03)
-        )
-        .cornerRadius(15)
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(
-                    isFollowing ? Color(hex: "#2dd4bf").opacity(0.40) : Color.white.opacity(0.07),
-                    lineWidth: 1
-                )
-        )
-    }
-}
-
-// MARK: - Review Selection Step
-struct ReviewSelectionStep: View {
-    @Bindable var viewModel: OnboardingViewModel
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("onboarding_review_title")
-                            .font(.custom(.oswald.bold, size: 40))
-                            .textCase(.uppercase)
-                            .tracking(0.40)
-                            .foregroundColor(Color(hex: "#f4f4f5"))
-                            .lineLimit(nil)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    Spacer()
-
-                    // Show count badge
-                    Text(String(localized: "onboarding_shows_count \(viewModel.selectedCount)"))
-                        .font(.custom(.oswald.bold, size: 14))
-                        .foregroundColor(Color(hex: "#04201c"))
-                        .textCase(.uppercase)
-                        .tracking(0.14)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(Color(hex: "#2dd4bf"))
-                        .cornerRadius(999)
-                }
-                .padding(.top, 12)
-                .padding(.bottom, 16)
-
-                Text("onboarding_review_description")
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(4)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, 20)
-
-                // Show cards
-                VStack(spacing: 12) {
-                    ForEach(viewModel.getSelectedShows()) { show in
-                        ReviewShowCard(
-                            show: show,
-                            onRemove: {
-                                viewModel.toggleSelection(show)
-                            }
-                        )
-                    }
-                }
-
-                Spacer()
-            }
-            .padding(.horizontal, 22)
-            .padding(.top, 12)
-            .padding(.bottom, 140)
-        }
-    }
-}
-
-struct ReviewShowCard: View {
-    let show: ShowSummary
-    let onRemove: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            // Poster
-            PosterView(url: show.posterSmallURL, width: 60, cornerRadius: 10)
-
-            // Info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(show.name.uppercased())
-                    .font(.custom(.oswald.bold, size: CustomFont.size.subheading))
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .textCase(.uppercase)
-                    .tracking(0.18)
-                    .lineLimit(1)
-
-                Text(show.yearString ?? "TBA")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.label))
-                    .foregroundColor(Color(hex: "#71717a"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-            }
-
-            Spacer()
-
-            // Remove button
-            Button(action: onRemove) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.06))
-                        .frame(width: 40, height: 40)
-
-                    Circle()
-                        .stroke(Color.white.opacity(0.16), lineWidth: 1)
-                        .frame(width: 40, height: 40)
-
-                    Image(systemName: "minus")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color(hex: "#cfcfcf"))
-                }
-            }
-        }
-        .padding(10)
-        .background(Color.white.opacity(0.03))
-        .cornerRadius(14)
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
-        )
-    }
-}
-
-// MARK: - All Set Step
-struct AllSetStep: View {
-    let shows: [ShowSummary]
-
-    private var followedCount: Int {
-        shows.count
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Split image with checkmark
-                if shows.count >= 2 {
-                    GeometryReader { geometry in
-                        ZStack {
-                            HStack(spacing: 0) {
-                                PosterView(url: shows[0].posterURL, width: (geometry.size.width - 44) * 0.5, height: 240, cornerRadius: 0)
-
-                                PosterView(url: shows[1].posterURL, width: (geometry.size.width - 44) * 0.5, height: 240, cornerRadius: 0)
-                            }
+                    Button(action: { if !ctaDisabled { onCta?() } }) {
+                        Text(ctaLabel)
+                            .font(.custom(.oswald.bold, size: 17))
+                            .tracking(0.51)
+                            .foregroundColor(ctaDisabled ? .c2bMuted : .c2bOnTeal)
                             .frame(maxWidth: .infinity)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-
-                            // Checkmark overlay
-                            ZStack {
-                                Circle()
-                                    .fill(Color(hex: "#2dd4bf"))
-                                    .frame(width: 80, height: 80)
-                                    .shadow(color: Color(hex: "#2dd4bf").opacity(0.4), radius: 16, x: 0, y: 6)
-
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 36, weight: .bold))
-                                    .foregroundColor(Color(hex: "#04201c"))
-                            }
-                        }
-                        .padding(.horizontal, 22)
+                            .padding(.vertical, 16)
+                            .background(ctaDisabled ? Color.white.opacity(0.07) : Color.c2bTeal)
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
                     }
-                    .frame(height: 240)
-                    .padding(.top, 12)
-                    .padding(.bottom, 28)
+                    .buttonStyle(.plain)
+                    .disabled(ctaDisabled)
                 }
-
-                // Title
-                Text("onboarding_all_set_title")
-                    .font(.custom(.oswald.bold, size: 44))
-                    .textCase(.uppercase)
-                    .tracking(0.44)
-                    .foregroundColor(Color(hex: "#f4f4f5"))
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 12)
-
-                // Description
-                Text(String(localized: "onboarding_all_set_description \(followedCount)"))
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundColor(Color(hex: "#a1a1aa"))
-                    .lineSpacing(4)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 30)
-                    .padding(.bottom, 40)
-
-                // Following label
-                Text("onboarding_following")
-                    .font(.custom(.jetbrains.bold, size: CustomFont.size.base))
-                    .foregroundColor(Color(hex: "#2dd4bf"))
-                    .textCase(.uppercase)
-                    .tracking(1.6)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 22)
-                    .padding(.bottom, 12)
-
-                // Show grid
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                    ForEach(shows) { show in
-                        AllSetShowCard(show: show)
-                    }
-                }
-                .padding(.horizontal, 22)
-
-                Spacer()
+                .padding(.horizontal, 22).padding(.top, 10).padding(.bottom, 26)
             }
-            .padding(.top, 12)
-            .padding(.bottom, 140)
         }
+        .background(Color.black.ignoresSafeArea())
     }
 }
 
-struct AllSetShowCard: View {
-    let show: ShowSummary
+// MARK: - Flow
+
+struct OnboardingFlow: View {
+    @Binding var isPresented: Bool
+    var onComplete: (_ plan: String, _ shows: [ShowSummary]) -> Void
+
+    @State private var step = 0
+    @State private var followed: Set<Int> = []
+    @State private var genres: Set<String> = []
+    @State private var services: Set<String> = []
+    @State private var behavior: String?
+    @State private var tired: String?
+    @State private var showSystemPrompt = false
+    @State private var selectedPlan = "yearly"
+
+    private let data = OnboardingDataLoader.shared
+    private let total = 18
+    /// Bare, full-screen timeline walkthrough sits between "Add Shows" and "Four States".
+    private let walkthroughStep = 10
+    /// Final step is the RevenueCat paywall (full-screen, its own chrome).
+    private let paywallStep = 17
+    private var size: Int { followed.count }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Poster
-            PosterView(url: show.posterURL, cornerRadius: 12)
-                .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+        ZStack {
+            if step == paywallStep {
+                PaywallView(
+                    selectedPlan: $selectedPlan,
+                    onDismiss: { finish(selectedPlan) },
+                    onContinueFree: { finish("free") },
+                    showContinueFree: true
+                )
+            } else if step == walkthroughStep {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    TimelineWalkthrough(isPresented: walkthroughBinding)
+                }
+            } else {
+                OBShell(
+                    step: step,
+                    total: total,
+                    onBack: { back() },
+                    onSkip: step >= total - 1 ? nil : { skip() },
+                    ctaLabel: meta.label,
+                    ctaDisabled: meta.disabled,
+                    onCta: meta.onCta,
+                    secondary: meta.secondary,
+                    onSecondary: meta.secondary != nil ? { next() } : nil
+                ) {
+                    stepContent
+                }
+            }
 
-            // Title
-            Text(show.name)
-                .font(.system(size: 14, weight: .semibold, design: .default))
-                .foregroundColor(Color(hex: "#f4f4f5"))
-                .lineLimit(1)
+            if showSystemPrompt {
+                OBSystemPermission(
+                    onAllow: { showSystemPrompt = false; next() },
+                    onDeny: { showSystemPrompt = false; next() }
+                )
+            }
         }
     }
+
+    /// Drives the bare walkthrough step: closing it advances to "Four States".
+    private var walkthroughBinding: Binding<Bool> {
+        Binding(get: { step == walkthroughStep }, set: { presented in if !presented { next() } })
+    }
+
+    // MARK: Step content
+
+    @ViewBuilder
+    private var stepContent: some View {
+        switch step {
+        case 0: OBWelcomeSlide()
+        case 1: OBProblemSlide()
+        case 2: OBAgitateSlide()
+        case 3: OBSolutionSlide()
+        case 4: OBGenresSlide(picked: $genres)
+        case 5: OBServicesSlide(picked: $services)
+        case 6: OBBehaviorSlide(answer: $behavior)
+        case 7: OBStatSlide(behavior: behavior)
+        case 8: OBReflectionSlide(genres: genres, services: services, behavior: behavior)
+        case 9: OBAddShowsSlide(followed: $followed)
+        // 10: timeline walkthrough · 17: paywall — both handled in body
+        case 11: OBBucketsSlide()
+        case 12: OBReviewSlide(count: max(size, 3))
+        case 13: OBNotifPrimeSlide()
+        case 14: OBSummarySlide(count: max(size, 3))
+        case 15: OBCommitmentSlide(answer: $tired)
+        case 16: OBPriceAnchorSlide(services: services)
+        default: EmptyView()
+        }
+    }
+
+    // MARK: Step metadata (CTA labels come from JSON/localized strings)
+
+    private struct StepMeta {
+        var label: String?
+        var disabled = false
+        var secondary: String?
+        var onCta: (() -> Void)?
+    }
+
+    private var meta: StepMeta {
+        var m = StepMeta(label: ctaLabel(step), secondary: secondaryLabel(step), onCta: next)
+        switch step {
+        case 4: m.disabled = genres.isEmpty
+        case 5: m.disabled = services.isEmpty
+        case 6: m.disabled = behavior == nil
+        case 9: m.disabled = size == 0
+        case 13: m.onCta = { showSystemPrompt = true }
+        case 15: m.disabled = tired == nil
+        default: break
+        }
+        return m
+    }
+
+    private func ctaLabel(_ step: Int) -> String? {
+        switch step {
+        case 0: return data.welcomeSlide?.buttonText
+        case 1: return data.problemSlide?.buttonText
+        case 2: return data.agitateSlide?.buttonText
+        case 3: return data.solutionSlide?.buttonText
+        case 4: return data.genresQuestion?.buttonText
+        case 5: return data.servicesQuestion?.buttonText
+        case 6: return data.behaviorQuestion?.buttonText
+        case 7: return data.statSlide?.buttonText
+        case 8: return data.reflectionSlide?.buttonText
+        case 9: return size > 0
+            ? String(format: NSLocalizedString("onboarding_add_shows_button %lld", comment: ""), size)
+            : "ADD THREE TO START"
+        case 11: return data.bucketsSlide?.buttonText
+        case 12: return data.reviewPromptSlide?.buttonText
+        case 13: return data.notifPrimingSlide?.buttonText
+        case 14: return data.journeySummarySlide?.buttonText
+        case 15: return data.commitmentQuestion?.buttonText
+        case 16: return data.priceAnchorSlide?.buttonText
+        default: return nil
+        }
+    }
+
+    private func secondaryLabel(_ step: Int) -> String? {
+        switch step {
+        case 12: return data.reviewPromptSlide?.buttonTextAlt
+        case 13: return data.notifPrimingSlide?.buttonTextAlt
+        default: return nil
+        }
+    }
+
+    // MARK: Navigation
+
+    private func next() { withAnimation(.easeInOut(duration: 0.25)) { step = min(total - 1, step + 1) } }
+    private func back() { withAnimation(.easeInOut(duration: 0.25)) { step = max(0, step - 1) } }
+    private func skip() { step == 0 ? finish("free") : withAnimation { step = total - 1 } }
+
+    private func finish(_ plan: String) {
+        let shows = OnboardingData.popular.filter { followed.contains($0.id) }.map { $0.summary }
+        onComplete(plan, shows)
+        withAnimation { isPresented = false }
+    }
+}
+
+#Preview {
+    struct Wrapper: View {
+        @State private var show = true
+        var body: some View {
+            OnboardingFlow(isPresented: $show) { plan, shows in
+                print("plan=\(plan) shows=\(shows.count)")
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+    return Wrapper()
 }

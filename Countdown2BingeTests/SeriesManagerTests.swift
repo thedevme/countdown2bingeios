@@ -667,6 +667,146 @@ struct SeriesManagerIntegrationTests {
         #expect(series.isOnBingeReadySurface == false)
     }
 
+    /// MyList advance: completing the current (earliest) season moves selection
+    /// to the next complete-unwatched season, and the deck count shrinks by one.
+    @Test("MyList: complete current season → earliestUnwatchedSeason advances")
+    @MainActor
+    func myListAdvanceOnCompletion() async throws {
+        let container = try makeTestContainer()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: MockTMDBService(),
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        // S1 and S2 both complete (finales aired, past grace) and unwatched.
+        let show = buildShowData(
+            id: 2100,
+            name: "Advance",
+            seasons: [
+                (number: 1, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -120), isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: date(daysFromNow: -110), isTypedFinale: false, isTyped: false)
+                ]),
+                (number: 2, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -60), isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: date(daysFromNow: -50), isTypedFinale: false, isTyped: false)
+                ])
+            ]
+        )
+        let result = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+        guard case .followed(let series, _) = result else { Issue.record("follow failed"); return }
+
+        // Currently on S1, two seasons to catch up.
+        #expect(series.earliestUnwatchedSeason?.seasonNumber == 1)
+        #expect(series.bingeableUnwatchedSeasonCount == 2)
+
+        // ✓ ALL on the complete S1 → every episode aired → season fully watched.
+        try manager.markAiredEpisodesWatched(seriesId: series.id, seasonNumber: 1)
+
+        // Advances to S2; deck shrinks to 1.
+        #expect(series.earliestUnwatchedSeason?.seasonNumber == 2)
+        #expect(series.bingeableUnwatchedSeasonCount == 1)
+    }
+
+    /// MyList no-false-advance: ✓ ALL on a STILL-AIRING season marks only aired
+    /// episodes, so hasWatched stays false and selection does NOT move.
+    @Test("MyList: ✓ ALL on a still-airing season does not advance")
+    @MainActor
+    func myListNoFalseAdvance() async throws {
+        let container = try makeTestContainer()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: MockTMDBService(),
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        // S1 complete+unwatched; S2 still airing (finale in the future).
+        let show = buildShowData(
+            id: 2101,
+            name: "NoAdvance",
+            seasons: [
+                (number: 1, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -120), isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: date(daysFromNow: -110), isTypedFinale: false, isTyped: false)
+                ]),
+                (number: 2, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -5), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: date(daysFromNow: 5), isTypedFinale: true, isTyped: true)
+                ])
+            ]
+        )
+        let result = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+        guard case .followed(let series, _) = result else { Issue.record("follow failed"); return }
+
+        // Only S1 is bingeable; S2 is airing (Timeline's job).
+        #expect(series.earliestUnwatchedSeason?.seasonNumber == 1)
+        #expect(series.bingeableUnwatchedSeasonCount == 1)
+
+        // ✓ ALL on the still-airing S2 marks aired ep1 only → not complete.
+        try manager.markAiredEpisodesWatched(seriesId: series.id, seasonNumber: 2)
+
+        let s2 = series.regularSeasons.first { $0.seasonNumber == 2 }
+        #expect(s2?.hasWatched == false)                       // unaired ep2 remains
+        #expect(series.earliestUnwatchedSeason?.seasonNumber == 1)  // no false advance
+        #expect(series.bingeableUnwatchedSeasonCount == 1)
+    }
+
+    /// Add-time "caught up" must mark ALL prior seasons, not just the latest —
+    /// otherwise an earlier unwatched season keeps the show on MyList (the HotD bug).
+    @Test("MyList: caught up through latest ended season → nothing bingeable, off MyList")
+    @MainActor
+    func caughtUpMarksAllPriorSeasons() async throws {
+        let container = try makeTestContainer()
+        let manager = SeriesManager(
+            container: container,
+            tmdb: MockTMDBService(),
+            franchise: MockFranchiseResolver(),
+            cloudKit: MockCloudSyncing()
+        )
+
+        // House of the Dragon shape: S1 & S2 ended, S3 still airing.
+        let show = buildShowData(
+            id: 2200,
+            name: "Dragon",
+            seasons: [
+                (number: 1, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -400), isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: date(daysFromNow: -390), isTypedFinale: false, isTyped: false)
+                ]),
+                (number: 2, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -200), isTypedFinale: false, isTyped: false),
+                    (number: 2, airDate: date(daysFromNow: -190), isTypedFinale: false, isTyped: false)
+                ]),
+                (number: 3, episodes: [
+                    (number: 1, airDate: date(daysFromNow: -3), isTypedFinale: false, isTyped: true),
+                    (number: 2, airDate: date(daysFromNow: 7), isTypedFinale: true, isTyped: true)
+                ])
+            ]
+        )
+        let result = try manager.follow(showData: show)
+        await manager.awaitPendingBackgroundWork()
+        guard case .followed(let series, let prompt?) = result else {
+            Issue.record("expected a follow with an add-time prompt"); return
+        }
+
+        // Before catching up, S1 is the earliest bingeable season.
+        #expect(series.earliestUnwatchedSeason?.seasonNumber == 1)
+        #expect(prompt.seasonNumber == 2)   // latest ended season
+
+        // "All caught up" through S2 → marks S1 AND S2.
+        try manager.markSeasonsWatched(seriesId: series.id, throughSeasonNumber: prompt.seasonNumber)
+
+        let s1 = series.regularSeasons.first { $0.seasonNumber == 1 }
+        #expect(s1?.hasWatched == true)                        // the fix: S1 not left behind
+        #expect(series.earliestUnwatchedSeason == nil)         // nothing to binge
+        #expect(series.bingeableUnwatchedSeasonCount == 0)     // off MyList → Timeline only
+    }
+
     /// 6.4 S3 airs → Airing/Pending; S3 completes unwatched → Binge Ready = S3
     @Test("6.4 New season complete and unwatched → becomes Binge Ready")
     @MainActor

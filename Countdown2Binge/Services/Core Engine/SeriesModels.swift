@@ -161,6 +161,20 @@ final class Series {
         return regularSeasons.first { $0.seasonNumber == fact.seasonNumber }
     }
 
+    /// The EARLIEST complete-by-date, unwatched season — the season MyList shows
+    /// (the one you're currently on). Same completeness predicate as
+    /// `bingeReadySeason`, but the min rather than the max. Nil when caught up.
+    var earliestUnwatchedSeason: Season? {
+        guard let fact = BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasonFacts) else { return nil }
+        return regularSeasons.first { $0.seasonNumber == fact.seasonNumber }
+    }
+
+    /// Count of complete-by-date, unwatched seasons — MyList wallet-deck depth
+    /// (remaining seasons to catch up). Cap at 5 in the UI.
+    var bingeableUnwatchedSeasonCount: Int {
+        BingeEngine.bingeableUnwatchedSeasonCount(seasons: seasonFacts)
+    }
+
     /// First season user hasn't fully watched (user-axis, for Binge Ready UI).
     /// Different from currentSeason which is date-based.
     /// "First season with an aired-but-unwatched episode."
@@ -318,6 +332,12 @@ final class Season {
     /// Count of episodes marked watched in this season.
     var watchedEpisodeCount: Int {
         episodes.filter { $0.hasWatched }.count
+    }
+
+    /// Full-season watch-time in seconds (sum of episode runtimes, average-filling
+    /// any unaired/missing runtimes). Drives the MyList card's runtime clock.
+    var watchTimeSeconds: Int {
+        WatchTime.totalSeconds(runtimesMinutes: sortedEpisodes.map { $0.runtime })
     }
 
     /// Convert Season to SeasonData for compatibility with legacy views.

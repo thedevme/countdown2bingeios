@@ -12,8 +12,10 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(SeriesManager.self) private var seriesManager
 
-    // Cloud-synced onboarding flags (persists across devices via iCloud)
-    private var cloudSettings: CloudSettingsStore { CloudSettingsStore.shared }
+    // Cloud-synced onboarding flags (persists across devices via iCloud).
+    // Held as @State so its @Observable changes drive the UI — e.g. resetting
+    // onboarding in Settings (or completing it on another device) reflects live.
+    @State private var cloudSettings = CloudSettingsStore.shared
 
     @State private var activeTab: String = "timeline"
     @State private var showOnboarding: Bool = false
@@ -49,7 +51,7 @@ struct ContentView: View {
                 .badge(badgeManager.timelineBadge ? 1 : 0)
 
                 Tab("tab_my_list", image: "tab-mylist", value: "mylist") {
-                    MyListScreen()
+                    MyListLandscapeView()
                 }
                 .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
@@ -72,6 +74,11 @@ struct ContentView: View {
                 if !cloudSettings.hasCompletedOnboarding {
                     showOnboarding = true
                 }
+            }
+            // React to the iCloud flag changing — reset from Settings re-presents
+            // onboarding immediately; completion on another device dismisses it.
+            .onChange(of: cloudSettings.hasCompletedOnboarding) { _, completed in
+                withAnimation { showOnboarding = !completed }
             }
 
             // Onboarding overlay
@@ -319,14 +326,6 @@ struct SettingsPlaceholder: View {
                 numberStyle: "stacked"
             )
         }
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("My List") {
-    ZStack {
-        Color.c2bBackground.ignoresSafeArea()
-        MyListScreen()
     }
     .preferredColorScheme(.dark)
 }

@@ -25,7 +25,8 @@ struct FollowedShowDetail: View {
     @State private var videos: [TMDBVideo] = []
     @State private var isLoadingShowInfo = false
 
-    // Archive storage key (shared with MyListViewModel)
+    // Archive storage key. NOTE: My List no longer has an Archived tab (Ready /
+    // Watched only), so this set is written here but not currently surfaced.
     private let archivedShowsKey = "archivedShowIds"
 
     /// Convert Series to ShowData for child components

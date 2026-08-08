@@ -1075,3 +1075,169 @@
 "pending_tba" = "TBA";
 "pending_finale_date_label" = "FINALE DATE";
 "pending_finale_tba_badge" = "FINALE DATE TBA";
+
+// =============================================================================
+// MARK: - Onboarding V2 (18-Step Flow)
+// =============================================================================
+
+// Step 1: Welcome
+"onboarding_welcome_headline" = "COUNTDOWN2BINGE";
+"onboarding_welcome_tagline" = "Know when it's binge-ready.";
+"onboarding_welcome_button" = "GET STARTED";
+
+// Step 2: Problem
+"onboarding_problem_label" = "THE PROBLEM";
+"onboarding_problem_headline" = "YOU FINISHED THE SEASON.";
+"onboarding_problem_accent" = "THEN WHAT?";
+"onboarding_problem_body" = "The show ends. The app forgets it. You forget it. Six months later someone spoils season three at a party.";
+"onboarding_problem_button" = "YEAH, THAT'S ME";
+
+// Step 3: Agitate
+"onboarding_agitate_label" = "WHY IT HAPPENS";
+"onboarding_agitate_headline" = "NOBODY TELLS YOU";
+"onboarding_agitate_accent" = "WHEN IT COMES BACK.";
+"onboarding_agitate_body" = "No email. No alert. Networks announce renewals on a Tuesday afternoon and you find out eight months late — if you find out at all.";
+
+// Step 4: Solution
+"onboarding_solution_label" = "THE FIX";
+"onboarding_solution_headline" = "SO WE WATCH";
+"onboarding_solution_accent" = "FOR YOU.";
+"onboarding_solution_body" = "Renewed. Cancelled. Premiere date locked. You'll know the day it happens, without checking anything.";
+"onboarding_solution_button" = "SHOW ME";
+"onboarding_solution_renewed" = "Renewed";
+"onboarding_solution_cancelled" = "Cancelled";
+"onboarding_solution_premiere" = "Premiere date locked";
+
+// Step 5: Genres Question
+"onboarding_genres_headline" = "WHAT DO YOU";
+"onboarding_genres_accent" = "ACTUALLY WATCH?";
+"onboarding_genres_body" = "Pick a few. We'll use these to find shows worth tracking.";
+"onboarding_genre_scifi" = "Sci-Fi & Fantasy";
+"onboarding_genre_drama" = "Drama";
+"onboarding_genre_comedy" = "Comedy";
+"onboarding_genre_crime" = "Crime";
+"onboarding_genre_thriller" = "Thriller";
+"onboarding_genre_documentary" = "Documentary";
+"onboarding_genre_animation" = "Animation";
+"onboarding_genre_reality" = "Reality";
+"onboarding_genre_action" = "Action";
+"onboarding_genre_mystery" = "Mystery";
+"onboarding_genre_horror" = "Horror";
+"onboarding_genre_family" = "Family";
+
+// Step 6: Services Question
+"onboarding_services_headline" = "WHERE DO";
+"onboarding_services_accent" = "YOU WATCH?";
+"onboarding_services_body" = "We'll only show you shows you can actually stream.";
+"onboarding_service_netflix" = "Netflix";
+"onboarding_service_max" = "Max";
+"onboarding_service_hulu" = "Hulu";
+"onboarding_service_disney" = "Disney+";
+"onboarding_service_appletv" = "Apple TV+";
+"onboarding_service_prime" = "Prime Video";
+"onboarding_service_paramount" = "Paramount+";
+"onboarding_service_peacock" = "Peacock";
+"onboarding_service_other" = "Other";
+
+// Step 7: Behavior Question
+"onboarding_behavior_headline" = "HOW DO YOU TRACK";
+"onboarding_behavior_accent" = "RETURNING SHOWS?";
+"onboarding_behavior_notes" = "I keep a list in my Notes app";
+"onboarding_behavior_siri" = "I set a Siri reminder and miss it";
+"onboarding_behavior_imdb" = "I check IMDb every few months";
+"onboarding_behavior_social" = "I wait to see it on social media";
+
+// Step 8: Stat Slide (variants based on behavior answer)
+"onboarding_stat_label" = "HERE'S WHY";
+"onboarding_stat_headline" = "THE AVERAGE GAP BETWEEN SEASONS IS";
+"onboarding_stat_unit" = "MONTHS.";
+"onboarding_stat_attribution" = "Source: Ampere Analysis, 2026 — 1,611 scripted originals";
+"onboarding_stat_button" = "THAT'S THE PROBLEM";
+"onboarding_stat_variant_notes" = "Your list will still be there in 21 months. You won't have opened it in 20 of them.";
+"onboarding_stat_variant_siri" = "A reminder set today fires two years from now, in a stack of forty others, on a Tuesday afternoon.";
+"onboarding_stat_variant_imdb" = "That's roughly seven check-ins per show, per season. Times however many shows you're waiting on.";
+"onboarding_stat_variant_social" = "Your feed will show you the finale discourse. It won't show you the premiere date eight months earlier.";
+
+// Step 9: Reflection (recap of Q1-3)
+"onboarding_reflection_label" = "RECAP";
+"onboarding_reflection_headline" = "HERE'S WHAT";
+"onboarding_reflection_accent" = "YOU TOLD US.";
+"onboarding_reflection_body" = "Let's fix the last one.";
+"onboarding_reflection_you_watch" = "YOU WATCH";
+"onboarding_reflection_you_pay" = "YOU PAY FOR";
+"onboarding_reflection_you_find" = "YOU FIND OUT ABOUT NEW SEASONS";
+"onboarding_reflection_services_count %lld" = "%lld services";
+
+// Step 10: Add Shows (existing - just update labels)
+"onboarding_add_shows_label_v2" = "ADD YOUR SHOWS";
+"onboarding_add_shows_title_v2" = "WHAT ARE YOU";
+"onboarding_add_shows_accent" = "WAITING ON?";
+"onboarding_add_shows_desc_v2" = "Search and follow the shows you want to binge. Add as many as you like.";
+"onboarding_add_shows_button %lld" = "CONTINUE (%lld ADDED)";
+
+// Step 11: Timeline Reveal (Quick Tour)
+"onboarding_timeline_tour_label" = "QUICK TOUR";
+"onboarding_timeline_tour_headline" = "YOUR TIMELINE,";
+"onboarding_timeline_tour_accent" = "SORTED FOR YOU.";
+"onboarding_timeline_tour_body" = "Every show you follow is grouped into three stages by how close it is to bingeable — and shows move up on their own as time passes. Step through to see where each one lands.";
+"onboarding_timeline_tour_button" = "SHOW ME";
+"onboarding_timeline_tour_your_shows" = "YOUR SHOWS";
+
+// Step 12: Buckets (Four States)
+"onboarding_buckets_label" = "THE MODEL";
+"onboarding_buckets_headline" = "FOUR STATES.";
+"onboarding_buckets_accent" = "THAT'S THE WHOLE APP.";
+"onboarding_buckets_button" = "GOT IT";
+"onboarding_bucket_binge_ready" = "BINGE READY";
+"onboarding_bucket_binge_ready_desc" = "Season complete. Go.";
+"onboarding_bucket_now_airing" = "NOW AIRING";
+"onboarding_bucket_now_airing_desc" = "Episodes dropping weekly. We're counting to the finale.";
+"onboarding_bucket_premiering" = "PREMIERING SOON";
+"onboarding_bucket_premiering_desc" = "Date confirmed. Counting down.";
+"onboarding_bucket_anticipated" = "ANTICIPATED";
+"onboarding_bucket_anticipated_desc" = "Renewed, no date yet. We're watching for the announcement.";
+
+// Step 13: Review Prompt (Rating)
+"onboarding_review_prompt_label" = "ONE SMALL THING";
+"onboarding_review_prompt_headline" = "3 SHOWS.";
+"onboarding_review_prompt_accent" = "ZERO EFFORT FROM HERE.";
+"onboarding_review_prompt_body" = "If this already feels better than googling, a rating helps other people find us.";
+"onboarding_review_prompt_button" = "RATE COUNTDOWN2BINGE";
+"onboarding_review_prompt_skip" = "MAYBE LATER";
+
+// Step 14: Notification Priming
+"onboarding_notif_label" = "PERMISSIONS";
+"onboarding_notif_headline" = "ONE TAP AND YOU'RE";
+"onboarding_notif_accent" = "DONE FOREVER.";
+"onboarding_notif_body" = "This is the whole product. Without notifications, we're just a list — we can't tell you the day your show comes back.";
+"onboarding_notif_button" = "ENABLE ALERTS";
+"onboarding_notif_skip" = "NOT NOW";
+"onboarding_notif_example_title" = "Shogun is back";
+"onboarding_notif_example_body" = "New season premieres today.";
+
+// Step 15: Journey Summary
+"onboarding_journey_label" = "YOU'RE SET";
+"onboarding_journey_headline" = "WE'RE";
+"onboarding_journey_accent" = "ON IT.";
+"onboarding_journey_body %lld" = "Now watching %lld shows for renewals, cancellations, and premiere dates.";
+"onboarding_journey_next_update" = "NEXT UPDATE";
+"onboarding_journey_reassurance" = "You don't have to do anything else.";
+
+// Step 16: Commitment Question
+"onboarding_commitment_label" = "LAST THING";
+"onboarding_commitment_headline" = "HOW TIRED ARE YOU";
+"onboarding_commitment_accent" = "OF MISSING SHOWS?";
+"onboarding_commitment_extremely" = "Extremely. I've lost track of at least three.";
+"onboarding_commitment_pretty" = "Pretty tired.";
+"onboarding_commitment_sometimes" = "It happens sometimes.";
+
+// Step 17: Price Anchor
+"onboarding_price_label" = "THE MATH";
+"onboarding_price_headline" = "YOU SPEND";
+"onboarding_price_accent" = "$41/MONTH";
+"onboarding_price_stat_label" = "ON STREAMING.";
+"onboarding_price_body" = "This is $9.99 a year so you don't waste it.";
+"onboarding_price_testimonial" = "\"I stopped googling 'is [show] renewed' — it just tells me.\"";
+"onboarding_price_button" = "START FREE TRIAL";
+
+// Step 18: Paywall (existing PaywallView)

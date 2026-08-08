@@ -249,8 +249,10 @@ final class DiscoverViewModel {
         }
     }
 
-    /// Actually follow the show and handle the WatchAnswer from AddShowModal
-    func handleAddShowDone(answer: WatchAnswer?) async {
+    /// Actually follow the show and apply the catch-up answer from AddShowModal.
+    /// `lastWatchedSeason` is the last season the user finished; every season up
+    /// through it is marked watched (0 = haven't started → leave in Binge Ready).
+    func handleAddShowDone(lastWatchedSeason: Int) async {
         guard let show = pendingFollowShow, let seriesManager else {
             clearPendingFollow()
             return
@@ -261,23 +263,14 @@ final class DiscoverViewModel {
             let result = try seriesManager.follow(showData: show)
             followedShowIds.insert(show.id)
 
-            // Handle the watch answer if there was a prompt
-            if case let .followed(_, prompt?) = result, let answer {
-                switch answer {
-                case .finished:
-                    // User finished the season - mark it watched
-                    try seriesManager.answerAddTimeWatched(
-                        seriesId: prompt.seriesId,
-                        seasonNumber: prompt.seasonNumber,
-                        watched: true
-                    )
-                case .started:
-                    // User started but didn't finish - leave unwatched for now
-                    break
-                case .notWatched:
-                    // User hasn't watched - leave in Binge Ready
-                    break
-                }
+            // Mark all seasons up through the one they finished (if there was a
+            // catch-up prompt). This leaves nothing earlier unwatched, so a
+            // caught-up show has no bingeable season and stays on the Timeline.
+            if case let .followed(_, prompt?) = result, lastWatchedSeason > 0 {
+                try seriesManager.markSeasonsWatched(
+                    seriesId: prompt.seriesId,
+                    throughSeasonNumber: lastWatchedSeason
+                )
             }
         } catch {
             print("Error following show: \(error)")

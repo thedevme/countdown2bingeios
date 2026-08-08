@@ -42,7 +42,25 @@ extension Color {
     static let c2bTealBright = Color(hex: "#5eead4")
     static let c2bTealLine = Color(hex: "#2dd4bf").opacity(0.40)
 
-    // Pending/Warning colors (yellow/amber)
+    // Handoff-accurate tokens (ported 1:1 from Color.kt — the design contract)
+    static let c2bCard = Color(hex: "#101012")        // poster row / card bg
+    static let c2bCardDim = Color(hex: "#0c0c0e")     // Anticipated / dim row bg
+    static let c2bOnTeal = Color(hex: "#04201c")      // text / icons on teal fills
+    static let c2bTealWash = Color(hex: "#2dd4bf").opacity(0.06)
+    static let c2bTealSoft = Color(hex: "#2dd4bf").opacity(0.10)
+
+    // Pending amber — handoff PENDING accent (#E9A944, "no finale date")
+    static let c2bAmber = Color(hex: "#e9a944")
+    static let c2bAmberLine = Color(hex: "#e9a944").opacity(0.50)
+    static let c2bAmberWash = Color(hex: "#e9a944").opacity(0.16)
+
+    // Hairlines, scrims & ghost fills (white alphas from Color.kt)
+    static let c2bHair = Color.white.opacity(0.08)        // card borders
+    static let c2bHairSoft = Color.white.opacity(0.04)
+    static let c2bHairStrong = Color.white.opacity(0.14)
+    static let c2bFill = Color.white.opacity(0.05)        // ghost buttons
+
+    // Pending/Warning colors (yellow/amber) — legacy; prefer c2bAmber* above
     static let c2bYellow = Color(hex: "#eab308")
     static let c2bYellowBright = Color(hex: "#facc15")
     static let c2bYellowLine = Color(hex: "#eab308").opacity(0.40)

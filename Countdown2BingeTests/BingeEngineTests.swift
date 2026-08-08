@@ -527,3 +527,69 @@ struct BingeReadySurfaceTests {
         #expect(bingeReady == nil)
     }
 }
+
+// MARK: - Group: My List Selection (earliest unwatched complete)
+
+@Suite("Group — My List Selection")
+struct MyListSelectionTests {
+
+    /// A complete (binge-ready) season: premiered in the past, typed finale
+    /// aired 3 days ago (past the +2 grace window).
+    private func completeSeason(_ n: Int, watched: Bool = false) -> BingeEngine.SeasonFact {
+        season(number: n, episodes: [
+            episode(number: 1, airDate: date(daysFromNow: -30)),
+            episode(number: 2, airDate: date(daysFromNow: -3), isTypedFinale: true),
+        ], hasWatched: watched)
+    }
+
+    /// A still-airing season: premiered, typed finale still in the future →
+    /// not bingeable, belongs on the Timeline, must be excluded from MyList.
+    private func airingSeason(_ n: Int) -> BingeEngine.SeasonFact {
+        season(number: n, episodes: [
+            episode(number: 1, airDate: date(daysFromNow: -7)),
+            episode(number: 2, airDate: date(daysFromNow: 7), isTypedFinale: true),
+        ])
+    }
+
+    @Test("Earliest unwatched complete season = lowest season number")
+    func earliestIsLowest() {
+        let seasons = [completeSeason(1), completeSeason(2), completeSeason(3)]
+        let pick = BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasons, now: referenceDate)
+        #expect(pick?.seasonNumber == 1)
+    }
+
+    @Test("Watched seasons are skipped → next unwatched")
+    func skipsWatched() {
+        let seasons = [completeSeason(1, watched: true), completeSeason(2), completeSeason(3)]
+        let pick = BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasons, now: referenceDate)
+        #expect(pick?.seasonNumber == 2)
+    }
+
+    @Test("All watched → nil (caught up)")
+    func allWatched() {
+        let seasons = [completeSeason(1, watched: true), completeSeason(2, watched: true)]
+        #expect(BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasons, now: referenceDate) == nil)
+    }
+
+    @Test("Advance: marking the current complete season watched moves to the next")
+    func advanceOnCompletion() {
+        let seasons = [completeSeason(1, watched: true), completeSeason(2)]
+        let pick = BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasons, now: referenceDate)
+        #expect(pick?.seasonNumber == 2)
+    }
+
+    @Test("Completeness rule: S1 complete+unwatched, S2 still airing → shows S1, S2 excluded")
+    func completenessBoundary() {
+        let seasons = [completeSeason(1), airingSeason(2)]
+        let pick = BingeEngine.earliestBingeableUnwatchedSeason(seasons: seasons, now: referenceDate)
+        #expect(pick?.seasonNumber == 1)
+        #expect(BingeEngine.bingeableUnwatchedSeasonCount(seasons: seasons, now: referenceDate) == 1)
+    }
+
+    @Test("Stack depth counts complete-unwatched only; watched + airing excluded")
+    func stackDepthReleasedOnly() {
+        // S1 watched, S2 & S3 complete-unwatched, S4 still airing → depth 2.
+        let seasons = [completeSeason(1, watched: true), completeSeason(2), completeSeason(3), airingSeason(4)]
+        #expect(BingeEngine.bingeableUnwatchedSeasonCount(seasons: seasons, now: referenceDate) == 2)
+    }
+}

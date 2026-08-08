@@ -1,0 +1,245 @@
+{
+  "slides": [
+    {
+      "id": "welcome",
+      "type": "hero",
+      "step": 1,
+      "labelKey": null,
+      "headlineKey": "onboarding_welcome_headline",
+      "headlineAccentKey": null,
+      "bodyKey": "onboarding_welcome_tagline",
+      "buttonKey": "onboarding_welcome_button"
+    },
+    {
+      "id": "problem",
+      "type": "problem",
+      "step": 2,
+      "labelKey": "onboarding_problem_label",
+      "headlineKey": "onboarding_problem_headline",
+      "headlineAccentKey": "onboarding_problem_accent",
+      "bodyKey": "onboarding_problem_body",
+      "buttonKey": "onboarding_problem_button"
+    },
+    {
+      "id": "agitate",
+      "type": "problem",
+      "step": 3,
+      "labelKey": "onboarding_agitate_label",
+      "headlineKey": "onboarding_agitate_headline",
+      "headlineAccentKey": "onboarding_agitate_accent",
+      "bodyKey": "onboarding_agitate_body",
+      "buttonKey": "button_continue"
+    },
+    {
+      "id": "solution",
+      "type": "problem",
+      "step": 4,
+      "labelKey": "onboarding_solution_label",
+      "headlineKey": "onboarding_solution_headline",
+      "headlineAccentKey": "onboarding_solution_accent",
+      "bodyKey": "onboarding_solution_body",
+      "buttonKey": "onboarding_solution_button"
+    },
+    {
+      "id": "stat",
+      "type": "stat",
+      "step": 8,
+      "labelKey": "onboarding_stat_label",
+      "headlineKey": "onboarding_stat_headline",
+      "headlineAccentKey": null,
+      "stat": "21",
+      "statLabelKey": "onboarding_stat_unit",
+      "attributionKey": "onboarding_stat_attribution",
+      "buttonKey": "onboarding_stat_button"
+    },
+    {
+      "id": "reflection",
+      "type": "recap",
+      "step": 9,
+      "labelKey": "onboarding_reflection_label",
+      "headlineKey": "onboarding_reflection_headline",
+      "headlineAccentKey": "onboarding_reflection_accent",
+      "bodyKey": "onboarding_reflection_body",
+      "buttonKey": "button_continue"
+    },
+    {
+      "id": "buckets",
+      "type": "buckets",
+      "step": 12,
+      "labelKey": "onboarding_buckets_label",
+      "headlineKey": "onboarding_buckets_headline",
+      "headlineAccentKey": "onboarding_buckets_accent",
+      "bodyKey": null,
+      "buttonKey": "onboarding_buckets_button"
+    },
+    {
+      "id": "review-prompt",
+      "type": "reviewPrompt",
+      "step": 13,
+      "labelKey": "onboarding_review_prompt_label",
+      "headlineKey": "onboarding_review_prompt_headline",
+      "headlineAccentKey": "onboarding_review_prompt_accent",
+      "bodyKey": "onboarding_review_prompt_body",
+      "buttonKey": "onboarding_review_prompt_button",
+      "buttonAltKey": "onboarding_review_prompt_skip"
+    },
+    {
+      "id": "notif-priming",
+      "type": "notifPriming",
+      "step": 14,
+      "labelKey": "onboarding_notif_label",
+      "headlineKey": "onboarding_notif_headline",
+      "headlineAccentKey": "onboarding_notif_accent",
+      "bodyKey": "onboarding_notif_body",
+      "buttonKey": "onboarding_notif_button",
+      "buttonAltKey": "onboarding_notif_skip"
+    },
+    {
+      "id": "journey-summary",
+      "type": "summary",
+      "step": 15,
+      "labelKey": "onboarding_journey_label",
+      "headlineKey": "onboarding_journey_headline",
+      "headlineAccentKey": "onboarding_journey_accent",
+      "bodyKey": null,
+      "buttonKey": "button_continue"
+    },
+    {
+      "id": "price-anchor",
+      "type": "stat",
+      "step": 17,
+      "labelKey": "onboarding_price_label",
+      "headlineKey": "onboarding_price_headline",
+      "headlineAccentKey": "onboarding_price_accent",
+      "statLabelKey": "onboarding_price_stat_label",
+      "bodyKey": "onboarding_price_body",
+      "buttonKey": "onboarding_price_button"
+    }
+  ],
+  "questions": [
+    {
+      "id": "genres",
+      "step": 5,
+      "questionNumber": 1,
+      "totalQuestions": 3,
+      "headlineKey": "onboarding_genres_headline",
+      "headlineAccentKey": "onboarding_genres_accent",
+      "bodyKey": "onboarding_genres_body",
+      "allowsMultiple": true,
+      "buttonKey": "button_continue",
+      "options": [
+        { "id": "scifi", "labelKey": "onboarding_genre_scifi" },
+        { "id": "drama", "labelKey": "onboarding_genre_drama" },
+        { "id": "comedy", "labelKey": "onboarding_genre_comedy" },
+        { "id": "crime", "labelKey": "onboarding_genre_crime" },
+        { "id": "thriller", "labelKey": "onboarding_genre_thriller" },
+        { "id": "documentary", "labelKey": "onboarding_genre_documentary" },
+        { "id": "animation", "labelKey": "onboarding_genre_animation" },
+        { "id": "reality", "labelKey": "onboarding_genre_reality" },
+        { "id": "action", "labelKey": "onboarding_genre_action" },
+        { "id": "mystery", "labelKey": "onboarding_genre_mystery" },
+        { "id": "horror", "labelKey": "onboarding_genre_horror" },
+        { "id": "family", "labelKey": "onboarding_genre_family" }
+      ]
+    },
+    {
+      "id": "services",
+      "step": 6,
+      "questionNumber": 2,
+      "totalQuestions": 3,
+      "headlineKey": "onboarding_services_headline",
+      "headlineAccentKey": "onboarding_services_accent",
+      "bodyKey": "onboarding_services_body",
+      "allowsMultiple": true,
+      "buttonKey": "button_continue",
+      "options": [
+        { "id": "netflix", "labelKey": "onboarding_service_netflix", "icon": "N", "iconColor": "#E50914" },
+        { "id": "max", "labelKey": "onboarding_service_max", "icon": "M", "iconColor": "#5A35E0" },
+        { "id": "hulu", "labelKey": "onboarding_service_hulu", "icon": "H", "iconColor": "#1CE783" },
+        { "id": "disney", "labelKey": "onboarding_service_disney", "icon": "D", "iconColor": "#1FA2FF" },
+        { "id": "appletv", "labelKey": "onboarding_service_appletv", "icon": "A", "iconColor": "#A1A1AA" },
+        { "id": "prime", "labelKey": "onboarding_service_prime", "icon": "P", "iconColor": "#1FB6FF" },
+        { "id": "paramount", "labelKey": "onboarding_service_paramount", "icon": "P", "iconColor": "#1A6DFF" },
+        { "id": "peacock", "labelKey": "onboarding_service_peacock", "icon": "P", "iconColor": "#F5A623" },
+        { "id": "other", "labelKey": "onboarding_service_other", "icon": "O", "iconColor": "#71717A" }
+      ]
+    },
+    {
+      "id": "behavior",
+      "step": 7,
+      "questionNumber": 3,
+      "totalQuestions": 3,
+      "headlineKey": "onboarding_behavior_headline",
+      "headlineAccentKey": "onboarding_behavior_accent",
+      "bodyKey": null,
+      "allowsMultiple": false,
+      "buttonKey": "button_continue",
+      "options": [
+        { "id": "notes", "labelKey": "onboarding_behavior_notes" },
+        { "id": "siri", "labelKey": "onboarding_behavior_siri" },
+        { "id": "imdb", "labelKey": "onboarding_behavior_imdb" },
+        { "id": "social", "labelKey": "onboarding_behavior_social" }
+      ]
+    },
+    {
+      "id": "commitment",
+      "step": 16,
+      "questionNumber": 0,
+      "totalQuestions": 0,
+      "headlineKey": "onboarding_commitment_headline",
+      "headlineAccentKey": "onboarding_commitment_accent",
+      "bodyKey": null,
+      "allowsMultiple": false,
+      "buttonKey": "button_continue",
+      "options": [
+        { "id": "extremely", "labelKey": "onboarding_commitment_extremely" },
+        { "id": "pretty", "labelKey": "onboarding_commitment_pretty" },
+        { "id": "sometimes", "labelKey": "onboarding_commitment_sometimes" }
+      ]
+    }
+  ],
+  "statVariants": [
+    {
+      "behaviorId": "notes",
+      "subheadKey": "onboarding_stat_variant_notes"
+    },
+    {
+      "behaviorId": "siri",
+      "subheadKey": "onboarding_stat_variant_siri"
+    },
+    {
+      "behaviorId": "imdb",
+      "subheadKey": "onboarding_stat_variant_imdb"
+    },
+    {
+      "behaviorId": "social",
+      "subheadKey": "onboarding_stat_variant_social"
+    }
+  ],
+  "buckets": [
+    {
+      "id": "bingeReady",
+      "titleKey": "onboarding_bucket_binge_ready",
+      "descriptionKey": "onboarding_bucket_binge_ready_desc",
+      "isHighlighted": false
+    },
+    {
+      "id": "nowAiring",
+      "titleKey": "onboarding_bucket_now_airing",
+      "descriptionKey": "onboarding_bucket_now_airing_desc",
+      "isHighlighted": false
+    },
+    {
+      "id": "premieringSoon",
+      "titleKey": "onboarding_bucket_premiering",
+      "descriptionKey": "onboarding_bucket_premiering_desc",
+      "isHighlighted": true
+    },
+    {
+      "id": "anticipated",
+      "titleKey": "onboarding_bucket_anticipated",
+      "descriptionKey": "onboarding_bucket_anticipated_desc",
+      "isHighlighted": false
+    }
+  ]
+}

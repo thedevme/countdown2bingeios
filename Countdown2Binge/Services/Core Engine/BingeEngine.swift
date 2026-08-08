@@ -211,6 +211,33 @@ enum BingeEngine {
         bingeReadySeason(seasons: seasons, now: now) != nil
     }
 
+    // MARK: - My List Selection (Axis 1 ∩ Axis 2) — the season you're "on"
+
+    /// Complete-by-date AND unwatched seasons — the same predicate as Binge Ready
+    /// (`bingeReadySeason` is the max of this set). Shared so MyList and Binge
+    /// Ready can never disagree about what "bingeable" means (the airing↔complete
+    /// boundary invariant).
+    private static func bingeableUnwatchedSeasons(seasons: [SeasonFact], now: Date) -> [SeasonFact] {
+        seasons
+            .filter { $0.seasonNumber > 0 }
+            .filter { !$0.hasWatched }
+            .filter { isSeasonBingeReadyByDate(episodes: $0.episodes, now: now) }
+    }
+
+    /// The EARLIEST complete-by-date, unwatched season — the season MyList shows
+    /// for a show (the one you're currently on). Still-airing seasons are excluded
+    /// (they live on the Timeline). Returns nil when nothing is bingeable/unwatched.
+    static func earliestBingeableUnwatchedSeason(seasons: [SeasonFact], now: Date = Date()) -> SeasonFact? {
+        bingeableUnwatchedSeasons(seasons: seasons, now: now)
+            .min(by: { $0.seasonNumber < $1.seasonNumber })
+    }
+
+    /// Count of complete-by-date, unwatched seasons — the MyList wallet-deck depth
+    /// (how many seasons remain to catch up). Cap at 5 in the UI.
+    static func bingeableUnwatchedSeasonCount(seasons: [SeasonFact], now: Date = Date()) -> Int {
+        bingeableUnwatchedSeasons(seasons: seasons, now: now).count
+    }
+
     // MARK: - Countdowns
 
     /// Days until the current season's premiere (nil if started/undated).

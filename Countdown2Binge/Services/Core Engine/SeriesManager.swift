@@ -301,6 +301,19 @@ final class SeriesManager {
         syncWatchProgressToCloud()
     }
 
+    /// Mark every regular season up to and including `throughSeasonNumber` as
+    /// watched — the "caught up through Season N" catch-up answer. Marks ALL
+    /// prior seasons, not just the latest, so nothing earlier is left unwatched.
+    /// `throughSeasonNumber <= 0` marks nothing (haven't started).
+    func markSeasonsWatched(seriesId: Int, throughSeasonNumber n: Int) throws {
+        guard n > 0, let s = series(id: seriesId) else { return }
+        for season in s.regularSeasons where season.seasonNumber <= n {
+            setSeasonWatched(season, watched: true)
+        }
+        try context.save()
+        syncWatchProgressToCloud()
+    }
+
     /// Toggle episode watched by TMDB episode ID.
     func toggleEpisodeWatched(seriesId: Int, episodeId: Int) throws {
         guard let s = series(id: seriesId) else { return }

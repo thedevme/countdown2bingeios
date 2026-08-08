@@ -164,13 +164,13 @@ struct DiscoverScreen: View {
             AddShowModal(
                 show: pendingShow,
                 addTimePrompt: pendingShow.addTimePrompt,
-                onDone: { answer in
+                onDone: { lastWatchedSeason in
                     // Trigger badge based on show state
                     badgeManager?.showFollowed(pendingShow)
 
-                    // Handle the watch answer and clear state
+                    // Follow + mark all seasons through the one they finished
                     Task {
-                        await viewModel.handleAddShowDone(answer: answer)
+                        await viewModel.handleAddShowDone(lastWatchedSeason: lastWatchedSeason)
                     }
 
                     // Show notification onboarding if this is the first follow
@@ -233,12 +233,12 @@ struct DiscoverPaywallSheet: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        PaywallView(
-            selectedPlan: $selectedPlan,
-            onDismiss: onDismiss,
-            onContinueFree: nil,
-            showContinueFree: false
-        )
+//        PaywallView(
+//            selectedPlan: $selectedPlan,
+//            onDismiss: onDismiss,
+//            onContinueFree: nil,
+//            showContinueFree: false
+//        )
     }
 }
 
