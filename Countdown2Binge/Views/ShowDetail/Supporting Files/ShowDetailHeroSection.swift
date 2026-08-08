@@ -38,10 +38,11 @@ struct ShowDetailHeroSection: View {
                     endPoint: .bottom
                 )
 
-                // Top bar with back and badge
+                // Custom (smaller) back button only — the network chip now lives in
+                // the nav bar toolbar, so pass networkName: nil here.
                 ShowDetailTopBar(
                     isFollowing: isFollowing,
-                    networkName: show.primaryNetwork?.name,
+                    networkName: nil,
                     onDismiss: onDismiss
                 )
 

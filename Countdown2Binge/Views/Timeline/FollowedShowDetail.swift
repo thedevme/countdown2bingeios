@@ -104,6 +104,23 @@ struct FollowedShowDetail: View {
                                 onSpinoffTap: onSpinoffTap
                             )
                         }
+
+                        // Unfollow — full-width destructive action at the page bottom
+                        Button {
+                            showUnfollowConfirmation = true
+                        } label: {
+                            Text(String(localized: "button_unfollow"))
+                                .font(.custom(.oswald.bold, size: 16))
+                                .tracking(0.5)
+                                .textCase(.uppercase)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(Color(hex: "#E5484D"))
+                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 36)
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 20)
@@ -120,7 +137,7 @@ struct FollowedShowDetail: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -152,18 +169,14 @@ struct FollowedShowDetail: View {
                         )
                     }
 
-                    // Unfollow
-                    Section {
-                        Button(role: .destructive) {
-                            showUnfollowConfirmation = true
-                        } label: {
-                            Label(String(localized: "button_unfollow"), systemImage: "xmark.circle")
-                        }
-                    }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Image(systemName: "ellipsis")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
                 }
             }
+            .sharedBackgroundVisibility(.hidden)
         }
         .confirmationDialog(
             String(localized: "alert_unfollow \(series.name)"),

@@ -53,6 +53,23 @@ struct DiscoverScreen: View {
                     .padding(.horizontal, C2BLayout.horizontalPadding)
                     .padding(.bottom, 20)
 
+                    // Preference-filtered recommendation surface (hard-filtered by
+                    // taste). Isolated from the browse rails + search below.
+                    DiscoverForYouRail(
+                        shows: viewModel.forYouShows,
+                        relaxationLabel: viewModel.forYouLabel,
+                        isLoading: viewModel.isLoadingForYou,
+                        onShowTap: { show in
+                            Task {
+                                await viewModel.loadShowDetail(for: show)
+                                if let showData = viewModel.selectedShowData {
+                                    navigationPath.append(showData)
+                                }
+                            }
+                        }
+                    )
+                    .padding(.bottom, viewModel.forYouShows.isEmpty ? 0 : 24)
+
                     // Tab switcher
                     DiscoverTabSwitcher(selectedTab: $selectedTab)
                         .padding(.horizontal, C2BLayout.horizontalPadding)
@@ -152,10 +169,11 @@ struct DiscoverScreen: View {
         }
         .task {
             viewModel.configure(with: modelContext, seriesManager: seriesManager)
-            // Fire off both loads - they update UI as data arrives
+            // Fire off loads - they update UI as data arrives
             async let cacheTask: () = viewModel.loadDiscoverFromCache()
             async let networkTask: () = viewModel.loadAllNetworks()
-            _ = await (cacheTask, networkTask)
+            async let forYouTask: () = viewModel.loadForYou()
+            _ = await (cacheTask, networkTask, forYouTask)
         }
         .sheet(item: Binding(
             get: { viewModel.pendingFollowShow },

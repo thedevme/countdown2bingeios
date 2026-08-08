@@ -22,11 +22,11 @@ enum SeasonWatchState: Int, CaseIterable {
 
     var label: String {
         switch self {
-        case .ready: return "READY"
-        case .watching: return "WATCHING"
-        case .airing: return "AIRING"
-        case .soon: return "SOON"
-        case .done: return "WATCHED"
+        case .ready: return String(localized: "mylist_ls_state_ready")
+        case .watching: return String(localized: "mylist_ls_state_watching")
+        case .airing: return String(localized: "mylist_ls_state_airing")
+        case .soon: return String(localized: "mylist_ls_state_soon")
+        case .done: return String(localized: "mylist_ls_state_watched")
         }
     }
 
@@ -100,9 +100,9 @@ struct MyListSeasonDisplay: Identifiable {
 
     /// "SEASON COMPLETE" / "START HERE" / "UP NEXT".
     var deckSublabel: String {
-        if allWatched { return "SEASON COMPLETE" }
-        if watchedCount == 0 { return "START HERE" }
-        return "UP NEXT"
+        if allWatched { return String(localized: "mylist_ls_deck_complete") }
+        if watchedCount == 0 { return String(localized: "mylist_ls_deck_start") }
+        return String(localized: "mylist_ls_deck_upnext")
     }
 
     var totalSeconds: Int { watchTimeSeconds }
@@ -111,7 +111,9 @@ struct MyListSeasonDisplay: Identifiable {
     var nightsText: String {
         let mins = watchTimeSeconds / 60
         let n = max(1, Int((Double(mins) / 120.0).rounded()))
-        return n == 1 ? "1 night" : "\(n) nights"
+        return n == 1
+            ? String(localized: "mylist_ls_night_one")
+            : String(format: NSLocalizedString("mylist_ls_nights %lld", comment: ""), n)
     }
 
     /// Wallet-deck depth = remaining seasons to catch up, clamped 1…5.
@@ -125,16 +127,16 @@ enum LandscapeListTab: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .ready: return "Ready"
-        case .watched: return "Watched"
-        case .archived: return "Archived"
+        case .ready: return String(localized: "mylist_ls_tab_ready")
+        case .watched: return String(localized: "mylist_ls_tab_watched")
+        case .archived: return String(localized: "mylist_ls_tab_archived")
         }
     }
     var desc: String {
         switch self {
-        case .ready: return "Full seasons out — start one or pick up where you left off."
-        case .watched: return "Seasons you've watched all the way through."
-        case .archived: return "Shows you've set aside."
+        case .ready: return String(localized: "mylist_ls_desc_ready")
+        case .watched: return String(localized: "mylist_ls_desc_watched")
+        case .archived: return String(localized: "mylist_ls_desc_archived")
         }
     }
 }

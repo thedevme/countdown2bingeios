@@ -15,15 +15,39 @@ private let selectionData = OnboardingDataLoader.shared
 // MARK: - 10 Add your shows (no JSON slide entry — uses localized keys directly)
 
 struct OBAddShowsSlide: View {
-    @Binding var followed: Set<Int>
+    /// Preferences drafted from the in-flow genre/service picks.
+    let preferences: TastePreferences
+    /// The shows the user chooses to follow (real TMDB shows).
+    @Binding var selected: [ShowSummary]
+
     @State private var query = ""
+    @State private var feed: [ShowSummary] = []
+    @State private var searchResults: [ShowSummary] = []
+    @State private var isLoading = false
+    @State private var isLoadingMore = false
+    @State private var relaxationLabel: String?
+    @State private var searchTask: Task<Void, Never>?
 
-    private var results: [OnboardingShow] {
-        query.isEmpty ? OnboardingData.popular
-            : OnboardingData.popular.filter { $0.title.localizedCaseInsensitiveContains(query) }
-    }
+    // Pagination cursors — the taste feed and the title search paginate
+    // independently so infinite scroll continues wherever the user is browsing.
+    @State private var feedPage = 1
+    @State private var feedLevel: DiscoverQuery.Relaxation = .full
+    @State private var feedReachedEnd = false
+    @State private var searchPage = 1
+    @State private var searchTotalPages = 1
 
+    private let tmdb = TMDBService()
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 13), count: 2)
+
+    private var trimmedQuery: String { query.trimmingCharacters(in: .whitespacesAndNewlines) }
+    /// Empty query → the preference-filtered suggestion rail. Typing → plain title
+    /// search (explicit intent), which uses the untouched /search/tv path.
+    private var results: [ShowSummary] { trimmedQuery.isEmpty ? feed : searchResults }
+
+    /// Re-seed the rail if the drafted preferences change.
+    private var preferenceKey: String {
+        "\(preferences.genreIDs)-\(preferences.providerIDs)-\(preferences.watchRegion)"
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -48,7 +72,7 @@ struct OBAddShowsSlide: View {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 15))
                     .foregroundColor(.c2bMuted)
-                TextField("", text: $query, prompt: Text("Search shows…").foregroundColor(.c2bMuted))
+                TextField("", text: $query, prompt: Text(String(localized: "onboarding_search_placeholder")).foregroundColor(.c2bMuted))
                     .font(.system(size: 15))
                     .foregroundColor(.c2bText)
                     .autocorrectionDisabled()
@@ -59,32 +83,134 @@ struct OBAddShowsSlide: View {
             .overlay(RoundedRectangle(cornerRadius: 13).stroke(Color.white.opacity(0.08), lineWidth: 1))
             .padding(.top, 16)
 
-            LazyVGrid(columns: columns, spacing: 13) {
-                ForEach(results) { show in
-                    OBAddShowTile(show: show, following: followed.contains(show.id)) {
-                        toggle(show.id)
+            // Honest label when the suggestion rail had to broaden.
+            if trimmedQuery.isEmpty, let relaxationLabel {
+                Text(relaxationLabel.uppercased())
+                    .font(.custom(.jetbrains.regular, size: 9))
+                    .tracking(0.9)
+                    .foregroundColor(.c2bMuted)
+                    .padding(.top, 12)
+            }
+
+            if isLoading && results.isEmpty {
+                ProgressView()
+                    .tint(.c2bTeal)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 48)
+            } else {
+                LazyVGrid(columns: columns, spacing: 13) {
+                    ForEach(results) { show in
+                        OBAddShowTile(show: show, following: isSelected(show)) { toggle(show) }
+                            .onAppear {
+                                // Reached the last tile → pull the next page.
+                                if show.id == results.last?.id { Task { await loadMore() } }
+                            }
                     }
                 }
+                .padding(.top, 16)
+
+                if isLoadingMore {
+                    ProgressView()
+                        .tint(.c2bTeal)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                }
             }
-            .padding(.top, 16)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .task(id: preferenceKey) { await loadFeed() }
+        .onChange(of: query) { _, newValue in scheduleSearch(newValue) }
     }
 
-    private func toggle(_ id: Int) {
-        if followed.contains(id) { followed.remove(id) } else { followed.insert(id) }
+    // MARK: - Selection
+
+    private func isSelected(_ show: ShowSummary) -> Bool {
+        selected.contains { $0.id == show.id }
+    }
+
+    private func toggle(_ show: ShowSummary) {
+        if let idx = selected.firstIndex(where: { $0.id == show.id }) {
+            selected.remove(at: idx)
+        } else {
+            selected.append(show)
+        }
+    }
+
+    // MARK: - Loading (same RecommendationService path the app uses)
+
+    private func loadFeed() async {
+        isLoading = true
+        feedPage = 1
+        feedReachedEnd = false
+        let result = await RecommendationService.shared.feed(for: preferences, minResults: 10)
+        feed = result.shows
+        feedLevel = result.level
+        relaxationLabel = result.relaxationLabel
+        isLoading = false
+    }
+
+    /// Infinite scroll: append the next page of whichever list is showing — the
+    /// taste feed (empty query) or the title search (typed query). De-dupes by id
+    /// so tiles never collide, and stops cleanly at the end of each source.
+    private func loadMore() async {
+        guard !isLoadingMore else { return }
+
+        if trimmedQuery.isEmpty {
+            guard !feedReachedEnd else { return }
+            isLoadingMore = true
+            let next = feedPage + 1
+            let more = await RecommendationService.shared.morePage(
+                for: preferences, page: next, level: feedLevel)
+            let seen = Set(feed.map(\.id))
+            let fresh = more.filter { !seen.contains($0.id) }
+            if more.isEmpty {
+                feedReachedEnd = true
+            } else {
+                feed.append(contentsOf: fresh)
+                feedPage = next
+            }
+            isLoadingMore = false
+        } else {
+            guard searchPage < searchTotalPages else { return }
+            isLoadingMore = true
+            let next = searchPage + 1
+            if let response = try? await tmdb.searchShows(query: trimmedQuery, page: next) {
+                let seen = Set(searchResults.map(\.id))
+                let fresh = response.results.map { $0.toShowSummary() }
+                    .filter { !seen.contains($0.id) }
+                searchResults.append(contentsOf: fresh)
+                searchPage = next
+                searchTotalPages = response.totalPages
+            }
+            isLoadingMore = false
+        }
+    }
+
+    private func scheduleSearch(_ raw: String) {
+        searchTask?.cancel()
+        let q = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { searchResults = []; searchPage = 1; searchTotalPages = 1; return }
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            if Task.isCancelled { return }
+            guard let response = try? await tmdb.searchShows(query: q, page: 1),
+                  !Task.isCancelled else { return }
+            searchResults = response.results.map { $0.toShowSummary() }
+            searchPage = 1
+            searchTotalPages = response.totalPages
+        }
     }
 }
 
 private struct OBAddShowTile: View {
-    let show: OnboardingShow
+    let show: ShowSummary
     let following: Bool
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 0) {
-                OnboardingPoster(seed: show.title, cornerRadius: 11)
+                PosterView(url: show.posterURL, cornerRadius: 11)
                     .overlay(alignment: .topLeading) {
                         if following {
                             ZStack {
@@ -97,12 +223,12 @@ private struct OBAddShowTile: View {
                             .padding(7)
                         }
                     }
-                Text(show.title)
+                Text(show.name)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.c2bText)
                     .lineLimit(1)
                     .padding(.top, 9)
-                Text(following ? "✓ " + String(localized: "onboarding_following") : "TAP TO FOLLOW")
+                Text(following ? "✓ " + String(localized: "onboarding_following") : String(localized: "onboarding_tap_to_follow"))
                     .font(.custom(.jetbrains.regular, size: 9))
                     .tracking(0.72)
                     .foregroundColor(following ? .c2bTealBright : .c2bMuted)

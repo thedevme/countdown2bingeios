@@ -63,11 +63,11 @@ struct OBSystemPermission: View {
 
             VStack(spacing: 0) {
                 VStack(spacing: 8) {
-                    Text("“Countdown2Binge” Would Like to Send You Notifications")
+                    Text(String(localized: "onboarding_notif_perm_title"))
                         .font(.system(size: 15.5, weight: .bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
-                    Text("Notifications may include alerts, sounds, and icon badges. Configure in Settings.")
+                    Text(String(localized: "onboarding_notif_perm_body"))
                         .font(.system(size: 12.5))
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
@@ -79,12 +79,12 @@ struct OBSystemPermission: View {
 
                 HStack(spacing: 0) {
                     Button(action: onDeny) {
-                        Text("Don't Allow").font(.system(size: 16)).foregroundColor(ios)
+                        Text(String(localized: "onboarding_notif_perm_deny")).font(.system(size: 16)).foregroundColor(ios)
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
                     }
                     Divider().overlay(Color.white.opacity(0.22)).frame(height: 44)
                     Button(action: onAllow) {
-                        Text("Allow").font(.system(size: 16, weight: .semibold)).foregroundColor(ios)
+                        Text(String(localized: "onboarding_notif_perm_allow")).font(.system(size: 16, weight: .semibold)).foregroundColor(ios)
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
                     }
                 }

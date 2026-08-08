@@ -18,83 +18,124 @@ struct CloudSyncView: View {
 
     @State private var viewModel = CloudSyncViewModel()
 
+    /// Show pending confirmation before removing (unfollowing) from iCloud.
+    @State private var pendingRemoval: Series?
+
     // Computed from @Query (auto-updates)
     private var syncedCount: Int { allSeries.filter { $0.isSynced }.count }
+
+    /// The grid lists shows backed up to iCloud. Premium → only synced shows, so
+    /// removing one drops it out of the grid. Free → all shows (shown locked) to
+    /// illustrate what Premium would back up.
+    private var gridShows: [Series] {
+        effectivePremium ? allSeries.filter { $0.isSynced } : allSeries
+    }
 
     #if DEBUG
     @State private var previewAsPremium = true
     #endif
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Header
-                header
-                    .padding(.top, 20)
-                    .padding(.bottom, 16)
+        ZStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Header
+                    header
+                        .padding(.top, 20)
+                        .padding(.bottom, 16)
 
-                #if DEBUG
-                // Debug toggle
-                debugToggle
+                    #if DEBUG
+                    // Debug toggle
+                    debugToggle
+                        .padding(.horizontal, C2BLayout.horizontalPadding)
+                        .padding(.bottom, 16)
+                    #endif
+
+                    // Status card
+                    CloudSyncStatusCard(
+                        isPremium: effectivePremium,
+                        syncedCount: syncedCount
+                    )
                     .padding(.horizontal, C2BLayout.horizontalPadding)
                     .padding(.bottom, 16)
-                #endif
 
-                // Status card
-                CloudSyncStatusCard(
-                    isPremium: effectivePremium,
-                    syncedCount: syncedCount
-                )
-                .padding(.horizontal, C2BLayout.horizontalPadding)
-                .padding(.bottom, 16)
-
-                // Upsell card (free only)
-                if !effectivePremium {
-                    CloudSyncUpsellCard {
-                        // TODO: Navigate to paywall
+                    // Upsell card (free only)
+                    if !effectivePremium {
+                        CloudSyncUpsellCard {
+                            // TODO: Navigate to paywall
+                        }
+                        .padding(.horizontal, C2BLayout.horizontalPadding)
+                        .padding(.bottom, 16)
                     }
+
+                    // Section header
+                    CloudSyncSectionHeader(
+                        isEditMode: viewModel.isEditMode,
+                        isPremium: effectivePremium
+                    )
                     .padding(.horizontal, C2BLayout.horizontalPadding)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 12)
+
+                    // Show grid
+                    CloudSyncShowGrid(
+                        shows: gridShows,
+                        isPremium: effectivePremium,
+                        isEditMode: viewModel.isEditMode,
+                        onRemove: { series in
+                            pendingRemoval = series
+                        }
+                    )
+                    .padding(.horizontal, C2BLayout.horizontalPadding)
+                    .padding(.bottom, 24)
+
+                    // Footer text
+                    footerText
+                        .padding(.horizontal, C2BLayout.horizontalPadding)
+                        .padding(.bottom, 100)
                 }
-
-                // Section header
-                CloudSyncSectionHeader(
-                    isEditMode: viewModel.isEditMode,
-                    isPremium: effectivePremium
-                )
-                .padding(.horizontal, C2BLayout.horizontalPadding)
-                .padding(.bottom, 12)
-
-                // Show grid
-                CloudSyncShowGrid(
-                    shows: allSeries,
-                    isPremium: effectivePremium,
-                    isEditMode: viewModel.isEditMode,
-                    onRemove: { series in
-                        viewModel.removeFromCloud(series: series, seriesManager: seriesManager)
+            }
+            .background(Color.c2bBackground)
+            .gesture(
+                // Long press to enter edit mode (premium only)
+                LongPressGesture(minimumDuration: 0.5)
+                    .onEnded { _ in
+                        if effectivePremium && !viewModel.isEditMode {
+                            viewModel.toggleEditMode()
+                        }
                     }
-                )
-                .padding(.horizontal, C2BLayout.horizontalPadding)
-                .padding(.bottom, 24)
-
-                // Footer text
-                footerText
-                    .padding(.horizontal, C2BLayout.horizontalPadding)
-                    .padding(.bottom, 100)
+            )
+            .onAppear {
+                viewModel.configure(premiumManager: premiumManager)
+            }
+            .confirmationDialog(
+                "Remove from iCloud?",
+                isPresented: Binding(
+                    get: { pendingRemoval != nil },
+                    set: { if !$0 { pendingRemoval = nil } }
+                ),
+                titleVisibility: .visible,
+                presenting: pendingRemoval
+            ) { series in
+                Button("Remove from Follow List", role: .destructive) {
+                    removeAndUnfollow(series)
+                }
+                Button("Cancel", role: .cancel) { pendingRemoval = nil }
+            } message: { series in
+                Text("\(series.name) will be removed from your follow list on every device.")
             }
         }
-        .background(Color.c2bBackground)
-        .gesture(
-            // Long press to enter edit mode (premium only)
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    if effectivePremium && !viewModel.isEditMode {
-                        viewModel.toggleEditMode()
-                    }
-                }
-        )
-        .onAppear {
-            viewModel.configure(premiumManager: premiumManager)
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+
+    /// Deletes the show's iCloud backup and unfollows it (removes from the
+    /// follow list) — the two now happen together per the Cloud Sync X button.
+    private func removeAndUnfollow(_ series: Series) {
+        let id = series.id
+        pendingRemoval = nil
+        viewModel.exitEditMode()
+        Task {
+            await seriesManager.unsyncShowFromCloud(seriesId: id)
+            try? seriesManager.unfollow(id: id)
         }
     }
 
@@ -112,17 +153,6 @@ struct CloudSyncView: View {
 
     private var header: some View {
         HStack {
-            Button(action: { dismiss() }) {
-                DirectionalIcon(systemName: "chevron.left")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.06))
-                    .cornerRadius(22)
-            }
-
-            Spacer()
-
             Text("CLOUD SYNC")
                 .font(.custom(.oswald.bold, size: 20))
                 .foregroundColor(.white)
@@ -185,7 +215,7 @@ struct CloudSyncView: View {
     }
 
     private var premiumFooter: String {
-        "Removing a show from iCloud deletes its backup on every device. It stays on this device until you unfollow it."
+        "This list shows what's backed up to iCloud. Removing a show deletes its backup on every device and removes it from your follow list."
     }
 
     private var freeFooter: String {

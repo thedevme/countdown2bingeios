@@ -156,12 +156,8 @@ struct OBSlide<Content: View>: View {
         self.content = content
     }
 
-    private var titleText: Text {
-        var t = Text(title ?? "")
-        if let accent {
-            t = t + Text("\n") + Text(accent).foregroundColor(.c2bTeal)
-        }
-        return t
+    private var titleLines: [String] {
+        (title ?? "").components(separatedBy: "\n")
     }
 
     var body: some View {
@@ -173,13 +169,19 @@ struct OBSlide<Content: View>: View {
                     .foregroundColor(.c2bTeal)
             }
             if title != nil {
-                titleText
-                    .font(.custom(.oswald.bold, size: titleSize))
-                    .foregroundColor(.white)
-                    .lineSpacing(2)
-                    .multilineTextAlignment(center ? .center : .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 12)
+                VStack(alignment: center ? .center : .leading, spacing: -8) {
+                    ForEach(Array(titleLines.enumerated()), id: \.offset) { _, line in
+                        Text(line).foregroundColor(.white)
+                    }
+                    if let accent {
+                        Text(accent).foregroundColor(.c2bTeal)
+                    }
+                }
+                .font(.custom(.oswald.bold, size: titleSize))
+                .textCase(.uppercase)
+                .multilineTextAlignment(center ? .center : .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 12)
             }
             if let message {
                 Text(message)

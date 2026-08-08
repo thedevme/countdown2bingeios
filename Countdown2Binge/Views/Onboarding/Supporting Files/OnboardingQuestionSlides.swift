@@ -15,7 +15,32 @@ import SwiftUI
 private let onboardingData = OnboardingDataLoader.shared
 
 private func questionEyebrow(_ q: OnboardingQuestion) -> String {
-    "QUESTION \(q.questionNumber) OF \(q.totalQuestions)"
+    String(format: NSLocalizedString("onboarding_question_of %lld %lld", comment: ""), q.questionNumber, q.totalQuestions)
+}
+
+/// Trailing "SELECT ALL / CLEAR ALL" toggle for the multi-select questions.
+private struct OBSelectAllButton: View {
+    let allIds: [String]
+    @Binding var picked: Set<String>
+
+    private var allSelected: Bool { !allIds.isEmpty && Set(allIds).isSubset(of: picked) }
+
+    var body: some View {
+        Button {
+            if allSelected {
+                allIds.forEach { picked.remove($0) }
+            } else {
+                allIds.forEach { picked.insert($0) }
+            }
+        } label: {
+            Text(String(localized: allSelected ? "onboarding_clear_all" : "onboarding_select_all"))
+                .font(.custom(.jetbrains.bold, size: 10))
+                .tracking(1.0)
+                .foregroundColor(.c2bTeal)
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+    }
 }
 
 // MARK: - 05 Genres
@@ -26,22 +51,25 @@ struct OBGenresSlide: View {
     var body: some View {
         if let q = onboardingData.genresQuestion {
             OBSlide(eyebrow: questionEyebrow(q), title: q.headline, accent: q.headlineAccent, message: q.body) {
-                FlowLayout(spacing: 8) {
-                    ForEach(q.options) { option in
-                        let on = picked.contains(option.id)
-                        Button { toggle(option.id) } label: {
-                            Text(option.label)
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(on ? .c2bOnTeal : .c2bDim)
-                                .padding(.horizontal, 14).padding(.vertical, 10)
-                                .background(on ? Color.c2bTeal : Color.white.opacity(0.04))
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(on ? Color.c2bTeal : Color.white.opacity(0.1), lineWidth: 1))
+                VStack(alignment: .leading, spacing: 12) {
+                    OBSelectAllButton(allIds: q.options.map { $0.id }, picked: $picked)
+                    FlowLayout(spacing: 8) {
+                        ForEach(q.options) { option in
+                            let on = picked.contains(option.id)
+                            Button { toggle(option.id) } label: {
+                                Text(option.label)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(on ? .c2bOnTeal : .c2bDim)
+                                    .padding(.horizontal, 14).padding(.vertical, 10)
+                                    .background(on ? Color.c2bTeal : Color.white.opacity(0.04))
+                                    .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(on ? Color.c2bTeal : Color.white.opacity(0.1), lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.top, 22)
+                .padding(.top, 18)
             }
         }
     }
@@ -67,7 +95,9 @@ struct OBServicesSlide: View {
     var body: some View {
         if let q = onboardingData.servicesQuestion {
             OBSlide(eyebrow: questionEyebrow(q), title: q.headline, accent: q.headlineAccent, message: q.body) {
-                LazyVGrid(columns: columns, spacing: 9) {
+                VStack(alignment: .leading, spacing: 12) {
+                    OBSelectAllButton(allIds: q.options.map { $0.id }, picked: $picked)
+                    LazyVGrid(columns: columns, spacing: 9) {
                     ForEach(q.options) { option in
                         let on = picked.contains(option.id)
                         Button { toggle(option.id) } label: {
@@ -95,8 +125,9 @@ struct OBServicesSlide: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    }
                 }
-                .padding(.top, 22)
+                .padding(.top, 18)
             }
         }
     }
@@ -182,14 +213,14 @@ struct OBStatSlide: View {
                     .foregroundColor(.c2bTeal)
             }
 
-            Spacer(minLength: 20)
-
             if let headline = slide?.headline {
                 Text(headline)
                     .font(.custom(.oswald.bold, size: 34))
                     .foregroundColor(.white)
-                    .lineSpacing(2)
+                    .textCase(.uppercase)
+                    .lineSpacing(0)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 14)
             }
 
             HStack(alignment: .firstTextBaseline, spacing: 10) {

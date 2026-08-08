@@ -101,6 +101,14 @@ final class MockTMDBService: TMDBServiceProtocol, @unchecked Sendable {
         TMDBWatchProvidersResponse(id: id, results: [:])
     }
 
+    func getWatchProvidersTV(region: String) async throws -> [TMDBWatchProvider] { [] }
+
+    func getShowName(id: Int) async throws -> String { "Mock Show" }
+
+    func discover(query: DiscoverQuery, relaxation: DiscoverQuery.Relaxation) async throws -> TMDBSearchResponse {
+        TMDBSearchResponse(page: 1, results: [], totalPages: 0, totalResults: 0)
+    }
+
     func getShowDetailsWithExtras(id: Int) async throws -> ShowDetailsWithExtras {
         let show = try await getShowDetails(id: id)
         return ShowDetailsWithExtras(show: show, cast: [], videos: [], recommendations: [])

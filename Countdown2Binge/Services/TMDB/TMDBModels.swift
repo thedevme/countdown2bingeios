@@ -252,6 +252,11 @@ struct TMDBWatchProvidersResponse: Codable {
     let results: [String: TMDBCountryProviders]
 }
 
+/// Response for /watch/providers/tv — a flat list of providers for a region.
+struct TMDBProviderListResponse: Codable {
+    let results: [TMDBWatchProvider]
+}
+
 struct TMDBCountryProviders: Codable {
     let link: String?
     let flatrate: [TMDBWatchProvider]?

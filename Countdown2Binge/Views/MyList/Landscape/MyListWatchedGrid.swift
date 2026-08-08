@@ -69,13 +69,17 @@ struct MyListWatchedGrid: View {
     private var headerTitle: String {
         switch variant {
         case .watched:
-            return "\(totalSeasons == 1 ? "season" : "seasons") finished, across \(shows.count) \(shows.count == 1 ? "show" : "shows")"
+            return String(format: NSLocalizedString("mylist_ls_finished %lld", comment: ""), shows.count)
         case .archived:
-            return "\(shows.count == 1 ? "show" : "shows") set aside"
+            return String(localized: "mylist_ls_setaside")
         }
     }
 
-    private var headerClockLabel: String { variant == .watched ? "WATCHED" : "ARCHIVED" }
+    private var headerClockLabel: String {
+        variant == .watched
+            ? String(localized: "mylist_ls_clock_watched")
+            : String(localized: "mylist_ls_clock_archived")
+    }
 
     private var totalsHeader: some View {
         HStack(spacing: 13) {
@@ -85,11 +89,11 @@ struct MyListWatchedGrid: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(headerTitle)
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.c2bText)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("TAP A SHOW TO SEE ITS SEASONS")
-                    .font(.custom(.jetbrains.regular, size: 8))
+                Text(String(localized: "mylist_ls_tap_seasons"))
+                    .font(.custom(.jetbrains.regular, size: 9))
                     .tracking(0.8)
                     .foregroundColor(.c2bMuted)
             }
@@ -100,7 +104,7 @@ struct MyListWatchedGrid: View {
                 VStack(alignment: .trailing, spacing: 4) {
                     RuntimeClock(seconds: totalSeconds, numberSize: 20, unitSize: 9, tone: .c2bDim)
                     Text(headerClockLabel)
-                        .font(.custom(.jetbrains.regular, size: 7.5))
+                        .font(.custom(.jetbrains.regular, size: 8.5))
                         .tracking(0.75)
                         .foregroundColor(.c2bMuted)
                 }
@@ -127,7 +131,7 @@ struct MyListWatchedGrid: View {
                         PosterView(url: show.posterURL, cornerRadius: 0)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .grayscale(on ? 0 : (variant == .archived ? 1 : 0.55))
-                            .brightness(on ? -0.28 : -0.4)
+                            .brightness(on ? -0.28 : (variant == .watched ? -0.2 : -0.4))
                     )
                     .overlay(
                         LinearGradient(colors: [Color(hex: "#060808").opacity(0.95), .clear],
@@ -138,8 +142,8 @@ struct MyListWatchedGrid: View {
                             Text("\(show.seasonCount)")
                                 .font(.custom(.oswald.bold, size: 15))
                                 .foregroundColor(on ? .c2bTealBright : .white)
-                            Text(show.seasonCount == 1 ? "SEASON" : "SEASONS")
-                                .font(.custom(.jetbrains.regular, size: 7))
+                            Text(show.seasonCount == 1 ? String(localized: "mylist_ls_word_season") : String(localized: "mylist_ls_word_seasons"))
+                                .font(.custom(.jetbrains.regular, size: 8))
                                 .tracking(0.7)
                                 .foregroundColor(.c2bMuted)
                         }
@@ -163,7 +167,7 @@ struct MyListWatchedGrid: View {
                     )
 
                 Text(show.title)
-                    .font(.system(size: 11.5, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(on ? .c2bText : .c2bDim)
                     .lineLimit(1)
                     .padding(.top, 8)
@@ -180,11 +184,11 @@ struct MyListWatchedGrid: View {
             HStack(spacing: 11) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(show.title)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 15, weight: .bold))
                         .foregroundColor(.c2bText)
                         .lineLimit(1)
-                    Text("\(show.seasonCount) \(show.seasonCount == 1 ? "SEASON" : "SEASONS") · \(show.episodeCount) \(show.episodeCount == 1 ? "EPISODE" : "EPISODES")")
-                        .font(.custom(.jetbrains.regular, size: 8.5))
+                    Text("\(show.seasonCount) " + (show.seasonCount == 1 ? String(localized: "mylist_ls_word_season") : String(localized: "mylist_ls_word_seasons")) + " · \(show.episodeCount) " + (show.episodeCount == 1 ? String(localized: "mylist_ls_word_episode") : String(localized: "mylist_ls_word_episodes")))
+                        .font(.custom(.jetbrains.regular, size: 9))
                         .tracking(0.68)
                         .foregroundColor(.c2bMuted)
                 }
@@ -211,8 +215,8 @@ struct MyListWatchedGrid: View {
             }
 
             if show.seasons.isEmpty {
-                Text("No released seasons to show.")
-                    .font(.system(size: 12.5))
+                Text(String(localized: "mylist_ls_no_seasons"))
+                    .font(.system(size: 14))
                     .foregroundColor(.c2bMuted)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 22)

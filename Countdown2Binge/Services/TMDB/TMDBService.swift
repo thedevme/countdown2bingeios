@@ -52,6 +52,10 @@ protocol TMDBServiceProtocol {
     func getShowCredits(id: Int) async throws -> TMDBCreditsResponse
     func getShowRecommendations(id: Int) async throws -> [TMDBShowSummary]
     func getWatchProviders(id: Int) async throws -> TMDBWatchProvidersResponse
+    func getWatchProvidersTV(region: String) async throws -> [TMDBWatchProvider]
+
+    // Preference-driven discovery (params from DiscoverQueryBuilder)
+    func discover(query: DiscoverQuery, relaxation: DiscoverQuery.Relaxation) async throws -> TMDBSearchResponse
 
     // Parallel batch methods
     func getShowDetailsWithExtras(id: Int) async throws -> ShowDetailsWithExtras
@@ -60,6 +64,7 @@ protocol TMDBServiceProtocol {
     func getMultipleShowsByGenre(genreIds: [Int], page: Int) async throws -> [Int: [ShowSummary]]
 
     // Lightweight methods (no season fetching)
+    func getShowName(id: Int) async throws -> String
     func getShowBasicInfo(id: Int) async throws -> (episodes: Int, seasons: Int)
     func getMultipleShowBasicInfo(ids: [Int]) async throws -> [Int: (episodes: Int, seasons: Int)]
 }
@@ -110,6 +115,13 @@ final class TMDBService: TMDBServiceProtocol, @unchecked Sendable {
     func getShowsByDateRange(networkId: Int, startDate: Date, endDate: Date, page: Int = 1) async throws -> TMDBSearchResponse {
         let endpoint = TMDBEndpoint.discoverByDateRange(networkId: networkId, startDate: startDate, endDate: endDate, page: page)
         return try await fetch(endpoint)
+    }
+
+    /// Get the show's title in the current app language (one request, no season
+    /// fetching). Used to re-localize stored titles when the language changes.
+    func getShowName(id: Int) async throws -> String {
+        let details: TMDBShowDetails = try await fetch(TMDBEndpoint.tvDetails(id: id))
+        return details.name
     }
 
     /// Get basic show info (episode/season counts only - no season details)
@@ -227,6 +239,20 @@ final class TMDBService: TMDBServiceProtocol, @unchecked Sendable {
     func getWatchProviders(id: Int) async throws -> TMDBWatchProvidersResponse {
         let endpoint = TMDBEndpoint.tvWatchProviders(id: id)
         return try await fetch(endpoint)
+    }
+
+    /// Get the live watch-provider catalog for a region (source of truth for IDs)
+    func getWatchProvidersTV(region: String) async throws -> [TMDBWatchProvider] {
+        let response: TMDBProviderListResponse = try await fetch(.watchProvidersTV(region: region))
+        return response.results
+    }
+
+    /// Preference-driven discovery. All parameters come from DiscoverQueryBuilder
+    /// (the single source) — this method never composes discovery params itself.
+    func discover(query: DiscoverQuery,
+                  relaxation: DiscoverQuery.Relaxation = .full) async throws -> TMDBSearchResponse {
+        let items = DiscoverQueryBuilder.queryItems(for: query, relaxation: relaxation)
+        return try await fetch(.discover(items: items))
     }
 
     // MARK: - Parallel Batch Methods

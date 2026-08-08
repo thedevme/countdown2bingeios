@@ -13,7 +13,7 @@ struct SeasonStatePip: View {
 
     var body: some View {
         Text(state.label)
-            .font(.custom(.jetbrains.bold, size: 6.5))
+            .font(.custom(.jetbrains.bold, size: 7.5))
             .tracking(0.65)
             .foregroundColor(state.isReady ? .c2bOnTeal : state.tone)
             .padding(.horizontal, 7)

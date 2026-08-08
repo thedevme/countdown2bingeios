@@ -16,20 +16,7 @@ struct ShowDetailTopBar: View {
         VStack {
             HStack {
                 // Back button
-                Button(action: onDismiss) {
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .frame(width: 38, height: 38)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                        .overlay(
-                            DirectionalIcon(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                        )
-                }
+                
 
                 Spacer()
 

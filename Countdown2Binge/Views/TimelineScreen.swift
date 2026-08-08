@@ -411,7 +411,7 @@ struct TimelineHeader: View {
 
             // Last Updated
             if let lastUpdated {
-                Text("Last updated: \(lastUpdated.formatted(date: .omitted, time: .shortened))")
+                Text(String(format: NSLocalizedString("timeline_last_updated %@", comment: ""), lastUpdated.formatted(date: .omitted, time: .shortened)))
                     .font(.custom(.jetbrains.regular, size: 11))
                     .tracking(0.5)
                     .foregroundColor(.c2bMuted)

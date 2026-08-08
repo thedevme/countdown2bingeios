@@ -123,6 +123,20 @@ struct PaywallView: View {
                                     onSelect: { selectedPlan = "lifetime" }
                                 )
                             }
+
+                            // Free — a real, selectable choice during onboarding.
+                            if showContinueFree {
+                                PlanCard(
+                                    id: "free",
+                                    name: "FREE",
+                                    price: "$0",
+                                    period: "",
+                                    subtitle: "TRACK 3 SHOWS · BASIC TIMELINE · NO ALERTS OR SYNC",
+                                    badge: nil,
+                                    isSelected: selectedPlan == "free",
+                                    onSelect: { selectedPlan = "free" }
+                                )
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -204,20 +218,9 @@ struct PaywallView: View {
                     .tracking(0.5)
                     .padding(.top, 16)
 
-                    // Continue with free option
-                    if showContinueFree {
-                        Button(action: { onContinueFree?() ?? onDismiss() }) {
-                            Text("CONTINUE WITH FREE · 3 SHOWS")
-                                .font(.custom(.jetbrains.bold, size: 12))
-                                .foregroundColor(.c2bTeal)
-                                .tracking(0.5)
-                        }
-                        .padding(.top, 20)
-                        .padding(.bottom, 40)
-                    } else {
-                        Spacer()
-                            .frame(height: 40)
-                    }
+                    // Free is now a selectable plan row above, so no separate link.
+                    Spacer()
+                        .frame(height: 40)
                 }
             }
             .background(Color.c2bBackground)
@@ -243,6 +246,8 @@ struct PaywallView: View {
 
     private var ctaButtonText: String {
         switch selectedPlan {
+        case "free":
+            return "CONTINUE FREE"
         case "yearly":
             return "START 7-DAY FREE TRIAL"
         case "lifetime":
@@ -266,6 +271,8 @@ struct PaywallView: View {
             return "CANCEL ANYTIME"
         case "lifetime":
             return "ONE-TIME PURCHASE · NEVER EXPIRES"
+        case "free":
+            return "UP TO 3 SHOWS · NO ALERTS OR SYNC"
         default:
             return ""
         }
@@ -274,6 +281,11 @@ struct PaywallView: View {
     // MARK: - Actions
 
     private func handlePurchase() {
+        // Free is not a StoreKit purchase — continue into the app on the free tier.
+        if selectedPlan == "free" {
+            onContinueFree?() ?? onDismiss()
+            return
+        }
         Task {
             guard let package = getPackage(for: selectedPlan) else {
                 purchaseError = "Package not found"

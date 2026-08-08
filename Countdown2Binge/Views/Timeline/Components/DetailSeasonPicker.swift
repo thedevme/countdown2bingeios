@@ -48,6 +48,16 @@ struct DetailSeasonPicker: View {
         return series.seasons.first { $0.seasonNumber == seasonNumber }?.episodeCount ?? 0
     }
 
+    /// Episodes marked watched in a season — reads live from the stored model so
+    /// the picker reflects marking a season watched (both immediately and on
+    /// return). Previously hard-coded to 0.
+    private func watchedCount(for seasonNumber: Int) -> Int {
+        if let current = series.currentSeason, current.seasonNumber == seasonNumber {
+            return current.watchedEpisodeCount
+        }
+        return series.seasons.first { $0.seasonNumber == seasonNumber }?.watchedEpisodeCount ?? 0
+    }
+
     private func isAnticipated(_ seasonNumber: Int) -> Bool {
         guard let season = series.seasons.first(where: { $0.seasonNumber == seasonNumber }) else {
             return false
@@ -93,7 +103,7 @@ struct DetailSeasonPicker: View {
                     // Show episode count if episodes exist
                     let selectedCount = episodeCount(for: selectedSeason)
                     if selectedCount > 0 {
-                        Text(String(localized: "binge_watched_count \(0) \(selectedCount)"))
+                        Text(String(localized: "binge_watched_count \(watchedCount(for: selectedSeason)) \(selectedCount)"))
                             .font(.custom(.jetbrains.regular, size: 9.5))
                             .foregroundColor(.c2bMuted)
                             .tracking(1.0)
@@ -151,7 +161,7 @@ struct DetailSeasonPicker: View {
                                 // Show episode count if episodes exist
                                 let count = episodeCount(for: season)
                                 if count > 0 {
-                                    Text("0/\(count)")
+                                    Text("\(watchedCount(for: season))/\(count)")
                                         .font(.custom(.jetbrains.regular, size: 11))
                                         .foregroundColor(.c2bMuted)
                                 }

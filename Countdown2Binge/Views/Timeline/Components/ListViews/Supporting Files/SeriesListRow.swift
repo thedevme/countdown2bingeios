@@ -16,12 +16,11 @@ struct SeriesListRow: View {
 
     // MARK: - Computed Properties
 
-    private var seasonNumber: Int {
-        if let currentSeason = series.currentSeason {
-            return currentSeason.seasonNumber
-        }
-        // For anticipated, show next expected season
-        return series.numberOfSeasons + 1
+    /// The real season the engine is pointing at (announced next season for
+    /// anticipated shows). Nil when there is no real season in the data — the row
+    /// then shows no season badge rather than a fabricated `numberOfSeasons + 1`.
+    private var seasonNumber: Int? {
+        series.currentSeason?.seasonNumber
     }
 
     private var statusText: String {
@@ -29,32 +28,32 @@ struct SeriesListRow: View {
         case .premieringSoon:
             if let days = series.daysUntilPremiere {
                 if days == 0 {
-                    return "PREMIERES TODAY"
+                    return String(localized: "timeline_row_premieres_today")
                 } else if days == 1 {
-                    return "PREMIERES TOMORROW"
+                    return String(localized: "timeline_row_premieres_tomorrow")
                 } else {
-                    return "PREMIERES IN \(days) DAYS"
+                    return String(format: NSLocalizedString("timeline_row_premieres_in %lld", comment: ""), days)
                 }
             }
-            return "PREMIERING SOON"
+            return String(localized: "timeline_row_premiering_soon")
 
         case .airing:
             if let days = series.daysUntilFinale {
-                return "FINALE IN \(days) DAYS"
+                return String(format: NSLocalizedString("timeline_row_finale_in %lld", comment: ""), days)
             }
-            return "NOW AIRING"
+            return String(localized: "timeline_row_now_airing")
 
         case .pending:
             if let days = series.daysUntilPremiere, days > 0 {
-                return "PREMIERES IN \(days) DAYS"
+                return String(format: NSLocalizedString("timeline_row_premieres_in %lld", comment: ""), days)
             }
-            return "PREMIERE SET · FINALE DATE TBA"
+            return String(localized: "timeline_row_premiere_set")
 
         case .anticipated:
-            return "RELEASE DATES TBA"
+            return String(localized: "timeline_row_release_tba")
 
         case .bingeReady:
-            return "BINGE READY"
+            return String(localized: "timeline_row_binge_ready")
         }
     }
 
@@ -77,9 +76,11 @@ struct SeriesListRow: View {
                     .foregroundColor(.white)
                     .lineLimit(1)
 
-                Text("S\(seasonNumber)")
-                    .font(.custom(.oswald.light, size: 15))
-                    .foregroundColor(.c2bMuted)
+                if let seasonNumber {
+                    Text("S\(seasonNumber)")
+                        .font(.custom(.oswald.light, size: 15))
+                        .foregroundColor(.c2bMuted)
+                }
             }
 
             // Row 2: Status line

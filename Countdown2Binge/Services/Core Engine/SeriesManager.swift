@@ -394,6 +394,43 @@ final class SeriesManager {
     ///
     /// Cadence is state-based: anticipated (3d), premieringSoon (1d), airing (7d),
     /// airing near finale (1d), pending (2d), bingeReady (7d). See RefreshCadence.
+    /// Show titles are TMDB content (like search), so they should follow the app
+    /// language. Stored titles are captured in the language active when a show was
+    /// followed; when the language changes, re-fetch each title in the new language
+    /// (one light request per show). No-op when the language hasn't changed. R3:
+    /// the single write funnel for the name correction.
+    func relocalizeNamesIfLanguageChanged() async {
+        let current = TMDBConfiguration.currentLanguage
+        let key = "seriesNameLanguage"
+        guard UserDefaults.standard.string(forKey: key) != current else { return }
+
+        let ids = allSeries().map { $0.id }
+        guard !ids.isEmpty else {
+            UserDefaults.standard.set(current, forKey: key)
+            return
+        }
+
+        let tmdb = self.tmdb
+        var names: [Int: String] = [:]
+        await withTaskGroup(of: (Int, String)?.self) { group in
+            for id in ids {
+                group.addTask {
+                    guard let name = try? await tmdb.getShowName(id: id), !name.isEmpty else { return nil }
+                    return (id, name)
+                }
+            }
+            for await item in group {
+                if let (id, name) = item { names[id] = name }
+            }
+        }
+
+        for (id, name) in names {
+            series(id: id)?.name = name
+        }
+        try? context.save()
+        UserDefaults.standard.set(current, forKey: key)
+    }
+
     func refresh(id: Int, force: Bool = false, now: Date = Date()) async {
         guard let s = series(id: id) else { return }
 

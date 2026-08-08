@@ -367,7 +367,7 @@
 // MARK: - Onboarding
 // =============================================================================
 
-"onboarding_welcome" = "Welcome to";
+"onboarding_welcome" = "Hey";
 "onboarding_app_name" = "Countdown2Binge";
 "onboarding_tagline" = "Know when it's binge-ready.";
 "onboarding_add_shows" = "Add Your Shows";
@@ -404,6 +404,7 @@
 // All set step
 "onboarding_all_set_title" = "YOU'RE ALL SET.";
 "onboarding_following" = "FOLLOWING";
+"onboarding_tap_to_follow" = "TAP TO FOLLOW";
 
 // Paywall step
 "onboarding_choose_plan" = "CHOOSE YOUR PLAN";
@@ -1081,13 +1082,13 @@
 // =============================================================================
 
 // Step 1: Welcome
-"onboarding_welcome_headline" = "COUNTDOWN2BINGE";
-"onboarding_welcome_tagline" = "Know when it's binge-ready.";
+"onboarding_welcome_headline" = "Let's get your shows sorted.";
+"onboarding_welcome_tagline" = "Takes about a minute — then we'll watch them for you.";
 "onboarding_welcome_button" = "GET STARTED";
 
 // Step 2: Problem
 "onboarding_problem_label" = "THE PROBLEM";
-"onboarding_problem_headline" = "YOU FINISHED THE SEASON.";
+"onboarding_problem_headline" = "YOU FINISHED\nTHE SEASON.";
 "onboarding_problem_accent" = "THEN WHAT?";
 "onboarding_problem_body" = "The show ends. The app forgets it. You forget it. Six months later someone spoils season three at a party.";
 "onboarding_problem_button" = "YEAH, THAT'S ME";
@@ -1116,13 +1117,13 @@
 "onboarding_genre_drama" = "Drama";
 "onboarding_genre_comedy" = "Comedy";
 "onboarding_genre_crime" = "Crime";
-"onboarding_genre_thriller" = "Thriller";
+"onboarding_genre_warpolitics" = "War & Politics";
 "onboarding_genre_documentary" = "Documentary";
 "onboarding_genre_animation" = "Animation";
 "onboarding_genre_reality" = "Reality";
-"onboarding_genre_action" = "Action";
+"onboarding_genre_action" = "Action & Adventure";
 "onboarding_genre_mystery" = "Mystery";
-"onboarding_genre_horror" = "Horror";
+"onboarding_genre_western" = "Western";
 "onboarding_genre_family" = "Family";
 
 // Step 6: Services Question
@@ -1154,8 +1155,8 @@
 "onboarding_stat_attribution" = "Source: Ampere Analysis, 2026 — 1,611 scripted originals";
 "onboarding_stat_button" = "THAT'S THE PROBLEM";
 "onboarding_stat_variant_notes" = "Your list will still be there in 21 months. You won't have opened it in 20 of them.";
-"onboarding_stat_variant_siri" = "A reminder set today fires two years from now, in a stack of forty others, on a Tuesday afternoon.";
-"onboarding_stat_variant_imdb" = "That's roughly seven check-ins per show, per season. Times however many shows you're waiting on.";
+"onboarding_stat_variant_siri" = "A reminder set today fires two years from now, buried in a stack of forty others, on a Tuesday afternoon.";
+"onboarding_stat_variant_imdb" = "That's seven check-ins per show. Six of them on a page that hasn't changed.";
 "onboarding_stat_variant_social" = "Your feed will show you the finale discourse. It won't show you the premiere date eight months earlier.";
 
 // Step 9: Reflection (recap of Q1-3)
@@ -1241,3 +1242,85 @@
 "onboarding_price_button" = "START FREE TRIAL";
 
 // Step 18: Paywall (existing PaywallView)
+
+
+/* --- My List (landscape) --- */
+"mylist_ls_title" = "My List";
+"mylist_ls_shown %lld" = "%lld SHOWN";
+"mylist_ls_tab_ready" = "Ready";
+"mylist_ls_tab_watched" = "Watched";
+"mylist_ls_tab_archived" = "Archived";
+"mylist_ls_desc_ready" = "Full seasons out — start one or pick up where you left off.";
+"mylist_ls_desc_watched" = "Seasons you've watched all the way through.";
+"mylist_ls_desc_archived" = "Shows you've set aside.";
+"mylist_ls_empty_ready_title" = "Nothing ready yet";
+"mylist_ls_empty_ready_sub" = "Seasons land here the day their finale airs.";
+"mylist_ls_empty_watched_title" = "Nothing finished yet";
+"mylist_ls_empty_watched_sub" = "Seasons you complete collect here.";
+"mylist_ls_empty_archived_title" = "Nothing archived";
+"mylist_ls_empty_archived_sub" = "Shows you set aside stay here, out of your list.";
+"mylist_ls_state_ready" = "READY";
+"mylist_ls_state_watching" = "WATCHING";
+"mylist_ls_state_airing" = "AIRING";
+"mylist_ls_state_soon" = "SOON";
+"mylist_ls_state_watched" = "WATCHED";
+"mylist_ls_deck_complete" = "SEASON COMPLETE";
+"mylist_ls_deck_start" = "START HERE";
+"mylist_ls_deck_upnext" = "UP NEXT";
+"mylist_ls_night_one" = "1 night";
+"mylist_ls_nights %lld" = "%lld nights";
+"mylist_ls_note_all_watched" = "ALL WATCHED";
+"mylist_ls_note_watched %lld %lld" = "%lld/%lld WATCHED";
+"mylist_ls_note_ready" = "READY TO BINGE";
+"mylist_ls_all" = "ALL";
+"mylist_ls_left_to_watch" = "LEFT TO WATCH";
+"mylist_ls_fully_released" = "EVERYTHING HERE IS FULLY RELEASED";
+"mylist_ls_stats_title %lld" = "seasons binge ready, spanning %lld shows";
+"mylist_ls_tap_seasons" = "TAP A SHOW TO SEE ITS SEASONS";
+"mylist_ls_clock_watched" = "WATCHED";
+"mylist_ls_clock_archived" = "ARCHIVED";
+"mylist_ls_word_season" = "SEASON";
+"mylist_ls_word_seasons" = "SEASONS";
+"mylist_ls_word_episode" = "EPISODE";
+"mylist_ls_word_episodes" = "EPISODES";
+"mylist_ls_finished %lld" = "seasons finished, across %lld shows";
+"mylist_ls_setaside" = "shows set aside";
+"mylist_ls_no_seasons" = "No released seasons to show.";
+
+
+/* --- Timeline list row + status --- */
+"timeline_row_premieres_today" = "PREMIERES TODAY";
+"timeline_row_premieres_tomorrow" = "PREMIERES TOMORROW";
+"timeline_row_premieres_in %lld" = "PREMIERES IN %lld DAYS";
+"timeline_row_premiering_soon" = "PREMIERING SOON";
+"timeline_row_finale_in %lld" = "FINALE IN %lld DAYS";
+"timeline_row_now_airing" = "NOW AIRING";
+"timeline_row_premiere_set" = "PREMIERE SET · FINALE DATE TBA";
+"timeline_row_release_tba" = "RELEASE DATES TBA";
+"timeline_row_binge_ready" = "BINGE READY";
+"timeline_last_updated %@" = "Last updated: %@";
+
+
+/* --- Onboarding chrome --- */
+"onboarding_nav_to_go" = "TO GO";
+"onboarding_nav_skip" = "SKIP";
+"onboarding_search_placeholder" = "Search shows…";
+"onboarding_question_of %lld %lld" = "QUESTION %lld OF %lld";
+"onboarding_select_all" = "SELECT ALL";
+"onboarding_clear_all" = "CLEAR ALL";
+"onboarding_season_ended" = "SEASON ENDED";
+"onboarding_renewed_no_alert" = "RENEWED · NO ALERT";
+"onboarding_notif_perm_body" = "Notifications may include alerts, sounds, and icon badges. Configure in Settings.";
+"onboarding_notif_perm_deny" = "Don't Allow";
+"onboarding_notif_perm_allow" = "Allow";
+"onboarding_notif_perm_title" = "“Countdown2Binge” Would Like to Send You Notifications";
+
+
+/* --- Taste preferences (Settings) --- */
+"settings_taste_title" = "Recommendation Preferences";
+"settings_taste_not_set" = "Not set yet";
+"settings_taste_summary %lld %lld" = "%lld genres · %lld services";
+"settings_taste_desc" = "These drive Discover and your suggestion rails. Search is never filtered.";
+"settings_taste_genres" = "GENRES";
+"settings_taste_services" = "STREAMING SERVICES";
+"settings_taste_save" = "SAVE";

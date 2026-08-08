@@ -12,6 +12,7 @@
 //
 
 import SwiftUI
+import StoreKit
 
 // MARK: - Shell chrome
 
@@ -27,51 +28,45 @@ struct OBShell<Content: View>: View {
     var onSecondary: (() -> Void)?
     @ViewBuilder var content: () -> Content
 
+    /// Steps remaining after the current one.
+    private var remaining: Int { max(total - step - 1, 0) }
+    /// 0…1 progress used for the track fill and glowing thumb.
+    private var progress: CGFloat { CGFloat(step + 1) / CGFloat(total) }
+
     var body: some View {
         VStack(spacing: 0) {
-            // top bar: back · progress · skip
-            HStack(spacing: 12) {
-                Button(action: onBack) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(Color(hex: "#cccccc"))
-                        .frame(width: 34, height: 34)
-                        .background(Color.white.opacity(0.04))
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white.opacity(0.12), lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .opacity(step == 0 ? 0 : 1)
-                .disabled(step == 0)
-
-                HStack(spacing: 5) {
-                    ForEach(0..<total, id: \.self) { i in
-                        Capsule()
-                            .fill(i <= step ? Color.c2bTeal : Color.white.opacity(0.12))
-                            .frame(height: 3)
-                    }
-                }
-
-                if let onSkip {
-                    Button(action: onSkip) {
-                        Text("SKIP")
-                            .font(.custom(.jetbrains.regular, size: 9.5))
-                            .tracking(1.33)
-                            .foregroundColor(.c2bMuted)
+            // top bar: back · progress slider · N TO GO.
+            // The first screen (step 0) shows no chrome at all — just the content.
+            if step > 0 {
+                HStack(spacing: 16) {
+                    Button(action: onBack) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(Color(hex: "#cccccc"))
+                            .frame(width: 44, height: 44)
+                            .background(Color.white.opacity(0.04))
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.white.opacity(0.12), lineWidth: 1))
                     }
                     .buttonStyle(.plain)
-                } else {
-                    Color.clear.frame(width: 30, height: 1)
-                }
-            }
-            .padding(.top, 50).padding(.horizontal, 22).padding(.bottom, 6)
 
-            Text("STEP \(String(format: "%02d", step + 1)) / \(String(format: "%02d", total))")
-                .font(.custom(.jetbrains.bold, size: 9))
-                .tracking(1.98)
-                .foregroundColor(.c2bMuted)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 22).padding(.top, 4)
+                    progressSlider
+
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("\(remaining)")
+                            .font(.custom(.oswald.bold, size: 32))
+                            .foregroundColor(.white)
+                        Text(String(localized: "onboarding_nav_to_go"))
+                            .font(.custom(.jetbrains.regular, size: 8))
+                            .tracking(1.5)
+                            .foregroundColor(.c2bMuted)
+                    }
+                    .fixedSize()
+                }
+                .padding(.top, 50).padding(.horizontal, 22).padding(.bottom, 12)
+            } else {
+                Color.clear.frame(height: 50)
+            }
 
             GeometryReader { proxy in
                 ScrollView {
@@ -93,10 +88,21 @@ struct OBShell<Content: View>: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    if step == 0, let onSkip {
+                        Button(action: onSkip) {
+                            Text(String(localized: "onboarding_nav_skip"))
+                                .font(.custom(.jetbrains.regular, size: 11))
+                                .tracking(1.32)
+                                .foregroundColor(.c2bDim)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.plain)
+                    }
                     Button(action: { if !ctaDisabled { onCta?() } }) {
                         Text(ctaLabel)
                             .font(.custom(.oswald.bold, size: 17))
                             .tracking(0.51)
+                            .textCase(.uppercase)
                             .foregroundColor(ctaDisabled ? .c2bMuted : .c2bOnTeal)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
@@ -111,6 +117,38 @@ struct OBShell<Content: View>: View {
         }
         .background(Color.black.ignoresSafeArea())
     }
+
+    // MARK: - Progress slider (glowing teal thumb over a rounded track)
+
+    private var progressSlider: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let x = max(9, min(w - 9, w * progress))
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.white.opacity(0.12))
+                    .frame(height: 6)
+
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.c2bTeal.opacity(0.35), Color.c2bTeal],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                    .frame(width: x, height: 6)
+
+                Circle()
+                    .fill(Color.c2bTeal)
+                    .frame(width: 18, height: 18)
+                    .shadow(color: Color.c2bTeal.opacity(0.85), radius: 7)
+                    .shadow(color: Color.c2bTeal.opacity(0.5), radius: 14)
+                    .offset(x: x - 9)
+            }
+            .frame(height: geo.size.height, alignment: .center)
+        }
+        .frame(height: 44)
+    }
 }
 
 // MARK: - Flow
@@ -119,8 +157,11 @@ struct OnboardingFlow: View {
     @Binding var isPresented: Bool
     var onComplete: (_ plan: String, _ shows: [ShowSummary]) -> Void
 
+    /// System App Store rating prompt, triggered by the review step.
+    @Environment(\.requestReview) private var requestReview
+
     @State private var step = 0
-    @State private var followed: Set<Int> = []
+    @State private var followed: [ShowSummary] = []
     @State private var genres: Set<String> = []
     @State private var services: Set<String> = []
     @State private var behavior: String?
@@ -136,12 +177,25 @@ struct OnboardingFlow: View {
     private let paywallStep = 17
     private var size: Int { followed.count }
 
+    /// Preferences drafted from the in-flow selections, used to seed the add-shows
+    /// suggestion rail through the SAME RecommendationService path the app uses.
+    private var draftPreferences: TastePreferences {
+        TastePreferences(
+            genreIDs: TasteCatalog.tmdbGenreIDs(for: genres),
+            providerIDs: TasteCatalog.fallbackProviderIDs(for: services),
+            watchRegion: TastePreferences.defaultRegion,
+            completedPreferenceStep: true
+        )
+    }
+
     var body: some View {
         ZStack {
             if step == paywallStep {
                 PaywallView(
                     selectedPlan: $selectedPlan,
-                    onDismiss: { finish(selectedPlan) },
+                    // X / dismiss: keep the purchased plan only if they actually
+                    // bought; otherwise fall through to free (no premium without purchase).
+                    onDismiss: { finish(PremiumManager.shared.isPremium ? selectedPlan : "free") },
                     onContinueFree: { finish("free") },
                     showContinueFree: true
                 )
@@ -194,7 +248,7 @@ struct OnboardingFlow: View {
         case 6: OBBehaviorSlide(answer: $behavior)
         case 7: OBStatSlide(behavior: behavior)
         case 8: OBReflectionSlide(genres: genres, services: services, behavior: behavior)
-        case 9: OBAddShowsSlide(followed: $followed)
+        case 9: OBAddShowsSlide(preferences: draftPreferences, selected: $followed)
         // 10: timeline walkthrough · 17: paywall — both handled in body
         case 11: OBBucketsSlide()
         case 12: OBReviewSlide(count: max(size, 3))
@@ -222,6 +276,7 @@ struct OnboardingFlow: View {
         case 5: m.disabled = services.isEmpty
         case 6: m.disabled = behavior == nil
         case 9: m.disabled = size == 0
+        case 12: m.onCta = { requestReview(); next() }   // review step → App Store rating prompt
         case 13: m.onCta = { showSystemPrompt = true }
         case 15: m.disabled = tired == nil
         default: break
@@ -268,8 +323,14 @@ struct OnboardingFlow: View {
     private func skip() { step == 0 ? finish("free") : withAnimation { step = total - 1 } }
 
     private func finish(_ plan: String) {
-        let shows = OnboardingData.popular.filter { followed.contains($0.id) }.map { $0.summary }
-        onComplete(plan, shows)
+        // Persist the taste layer (previously discarded) so it can drive every
+        // recommendation surface. Genres map synchronously; providers resolve via
+        // the live catalog with an offline fallback.
+        TastePreferencesStore.shared.applyFromOnboarding(
+            genreOptionIDs: genres,
+            serviceOptionIDs: services
+        )
+        onComplete(plan, followed)
         withAnimation { isPresented = false }
     }
 }

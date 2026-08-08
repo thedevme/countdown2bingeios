@@ -41,7 +41,15 @@ struct SettingsScreen: View {
     @State private var iCloudAvailable: Bool = true
     @State private var syncEligibility: SyncEligibility = .eligible
     @State private var showCloudSync = false
+    @State private var showTastePrefs = false
     private var profile: UserProfile { ProfileManager.shared.profile }
+
+    private var tastePrefsSubtitle: String {
+        let p = TastePreferencesStore.shared.preferences
+        guard p.completedPreferenceStep else { return String(localized: "settings_taste_not_set") }
+        let g = p.genreIDs.count, s = p.providerIDs.count
+        return String(format: NSLocalizedString("settings_taste_summary %lld %lld", comment: ""), g, s)
+    }
 
     private var isPremium: Bool { PremiumManager.shared.isPremium }
 
@@ -98,8 +106,15 @@ struct SettingsScreen: View {
                             icon: "moon.fill",
                             title: String(localized: "settings_appearance"),
                             subtitle: String(localized: "settings_dark"),
-                            isLast: true,
                             action: { }
+                        )
+
+                        SettingsRowChevron(
+                            icon: "slider.horizontal.3",
+                            title: String(localized: "settings_taste_title"),
+                            subtitle: tastePrefsSubtitle,
+                            isLast: true,
+                            action: { showTastePrefs = true }
                         )
                     }
 
@@ -262,6 +277,9 @@ struct SettingsScreen: View {
             }
             .navigationDestination(isPresented: $showCloudSync) {
                 CloudSyncView()
+            }
+            .navigationDestination(isPresented: $showTastePrefs) {
+                TastePreferencesEditorView()
             }
             .sheet(isPresented: $showPaywall) {
 //                PaywallView(

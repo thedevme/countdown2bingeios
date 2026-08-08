@@ -20,16 +20,16 @@ struct MyListSeasonsStatsBar: View {
     var body: some View {
         HStack(spacing: 13) {
             Text(String(format: "%02d", seasonCount))
-                .font(.custom(.oswald.bold, size: 30))
+                .font(.custom(.oswald.bold, size: 42))
                 .foregroundColor(.c2bTealBright)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(seasonCount == 1 ? "season" : "seasons") binge ready, spanning \(showCount) \(showCount == 1 ? "show" : "shows")")
-                    .font(.system(size: 13.5, weight: .semibold))
+                Text(String(format: NSLocalizedString("mylist_ls_stats_title %lld", comment: ""), showCount))
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundColor(.c2bText)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("EVERYTHING HERE IS FULLY RELEASED")
-                    .font(.custom(.jetbrains.regular, size: 8))
+                Text(String(localized: "mylist_ls_fully_released"))
+                    .font(.custom(.jetbrains.regular, size: 9))
                     .tracking(0.8)
                     .foregroundColor(.c2bMuted)
             }
@@ -41,8 +41,8 @@ struct MyListSeasonsStatsBar: View {
                     .frame(width: 1, height: 34)
                 VStack(alignment: .trailing, spacing: 4) {
                     RuntimeClock(seconds: secondsLeft, numberSize: 20, unitSize: 9)
-                    Text("LEFT TO WATCH")
-                        .font(.custom(.jetbrains.regular, size: 7.5))
+                    Text(String(localized: "mylist_ls_left_to_watch"))
+                        .font(.custom(.jetbrains.regular, size: 8.5))
                         .tracking(0.75)
                         .foregroundColor(.c2bMuted)
                 }

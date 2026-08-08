@@ -88,9 +88,9 @@ struct MyListLandscapeView: View {
         let state: SeasonWatchState = season.hasWatched ? .done : (watched > 0 ? .watching : .ready)
         let note: String
         switch state {
-        case .done: note = "ALL WATCHED"
-        case .watching: note = "\(watched)/\(max(epCount, 1)) WATCHED"
-        default: note = "READY TO BINGE"
+        case .done: note = String(localized: "mylist_ls_note_all_watched")
+        case .watching: note = String(format: NSLocalizedString("mylist_ls_note_watched %lld %lld", comment: ""), watched, max(epCount, 1))
+        default: note = String(localized: "mylist_ls_note_ready")
         }
         return MyListSeasonDisplay(
             id: "\(series.id)-\(season.seasonNumber)",
@@ -142,19 +142,19 @@ struct MyListLandscapeView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("MY LIST")
+            Text(String(localized: "mylist_ls_title").uppercased())
                 .font(.custom(.oswald.bold, size: 27))
                 .tracking(0.54)
                 .foregroundColor(.white)
 
-            Text("\(shownCount) SHOWN · \(tab.label.uppercased())")
-                .font(.custom(.jetbrains.bold, size: 9.5))
+            Text(String(format: NSLocalizedString("mylist_ls_shown %lld", comment: ""), shownCount) + " · " + tab.label.uppercased())
+                .font(.custom(.jetbrains.bold, size: 10.5))
                 .tracking(0.95)
                 .foregroundColor(.c2bMuted)
                 .padding(.top, 8)
 
             Text(tab.desc)
-                .font(.system(size: 12.5))
+                .font(.system(size: 14))
                 .foregroundColor(.c2bDim)
                 .lineSpacing(3)
                 .fixedSize(horizontal: false, vertical: true)
@@ -183,7 +183,7 @@ struct MyListLandscapeView: View {
                     withAnimation(.easeInOut(duration: 0.2)) { tab = item }
                 } label: {
                     Text(item.label.uppercased())
-                        .font(.custom(.jetbrains.bold, size: 10))
+                        .font(.custom(.jetbrains.bold, size: 11))
                         .tracking(0.6)
                         .foregroundColor(selected ? .c2bOnTeal : .c2bDim)
                         .frame(maxWidth: .infinity)
@@ -218,7 +218,7 @@ struct MyListLandscapeView: View {
                         showCount: readyItems.count,
                         secondsLeft: readySecondsLeft
                     )
-                    LazyVStack(spacing: 13) {
+                    LazyVStack(spacing: 20) {
                         ForEach(readyItems, id: \.display.id) { entry in
                             MyListLandscapeCard(
                                 season: entry.display,
@@ -259,10 +259,10 @@ struct MyListLandscapeView: View {
     private var emptyState: some View {
         VStack(spacing: 8) {
             Text(emptyTitle)
-                .font(.custom(.oswald.bold, size: 18))
+                .font(.custom(.oswald.medium, size: 18))
                 .foregroundColor(.c2bDim)
             Text(emptySubtitle)
-                .font(.system(size: 12.5))
+                .font(.system(size: 14))
                 .foregroundColor(.c2bMuted)
                 .multilineTextAlignment(.center)
         }
@@ -276,17 +276,17 @@ struct MyListLandscapeView: View {
 
     private var emptyTitle: String {
         switch tab {
-        case .ready: return "Nothing ready yet"
-        case .watched: return "Nothing finished yet"
-        case .archived: return "Nothing archived"
+        case .ready: return String(localized: "mylist_ls_empty_ready_title")
+        case .watched: return String(localized: "mylist_ls_empty_watched_title")
+        case .archived: return String(localized: "mylist_ls_empty_archived_title")
         }
     }
 
     private var emptySubtitle: String {
         switch tab {
-        case .ready: return "Seasons land here the day their finale airs."
-        case .watched: return "Seasons you complete collect here."
-        case .archived: return "Shows you set aside stay here, out of your list."
+        case .ready: return String(localized: "mylist_ls_empty_ready_sub")
+        case .watched: return String(localized: "mylist_ls_empty_watched_sub")
+        case .archived: return String(localized: "mylist_ls_empty_archived_sub")
         }
     }
 }

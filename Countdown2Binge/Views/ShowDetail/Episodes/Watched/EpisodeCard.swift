@@ -32,32 +32,54 @@ struct EpisodeCard: View {
 
     private var thumbnailArea: some View {
         ZStack {
-            // Background image
+            // Background image — no flat darkener; watched goes black & white.
             thumbnailImage
 
-            // Bottom gradient
-            VStack {
-                Spacer()
-                LinearGradient(
-                    colors: [.clear, .black.opacity(0.35)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: thumbnailHeight * 0.45)
-            }
+            // Legibility gradient for the overlaid title: clear across the top,
+            // ramping to dark over the bottom half where the title sits.
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: .clear, location: 0.0),
+                    .init(color: .clear, location: 0.45),
+                    .init(color: .black.opacity(0.8), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
-            // Checkbox (top-right)
-            VStack {
-                HStack {
+            VStack(spacing: 0) {
+                // Top row: episode number (left) · watched checkmark (right).
+                HStack(alignment: .top) {
+                    Text("E\(episode.number)")
+                        .font(.custom(.oswald.bold, size: 20))
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.6), radius: 3, y: 1)
+                        .padding(.leading, 12)
+                        .padding(.top, 10)
+
                     Spacer()
-                    checkboxView
-                        .padding(9)
-                }
-                Spacer()
-            }
 
-            // Status labels
-            statusLabels
+                    checkboxView
+                        .padding(.trailing, 9)
+                        .padding(.top, 9)
+                }
+
+                Spacer(minLength: 0)
+
+                // Bottom: episode title over the image.
+                HStack {
+                    Text(episode.title)
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .shadow(color: .black.opacity(0.5), radius: 3, y: 1)
+                    Spacer(minLength: 0)
+                }
+                .padding(.leading, 12)
+                .padding(.trailing, 12)
+                .padding(.bottom, 11)
+            }
         }
         .frame(width: cardWidth, height: thumbnailHeight)
         .clipShape(RoundedRectangle(cornerRadius: 14))
@@ -70,20 +92,21 @@ struct EpisodeCard: View {
             height: thumbnailHeight,
             cornerRadius: 0
         )
-        .brightness(imageBrightness)
         .saturation(imageSaturation)
+        .brightness(imageBrightness)
+    }
+
+    // No flat darkener anymore. Watched → black & white; not-yet-aired stays
+    // dimmed/muted to read as locked; aired-unwatched is full colour.
+    private var imageSaturation: Double {
+        if episode.isWatched { return 0.0 }
+        if !episode.hasAired { return 0.4 }
+        return 1.0
     }
 
     private var imageBrightness: Double {
-        if !episode.hasAired { return -0.35 }
-        if episode.isWatched { return -0.3 }
-        return -0.05
-    }
-
-    private var imageSaturation: Double {
-        if !episode.hasAired { return 0.4 }
-        if episode.isWatched { return 0.75 }
-        return 1.0
+        if !episode.hasAired { return -0.25 }
+        return 0.0
     }
 
     // MARK: - Checkbox
@@ -116,72 +139,38 @@ struct EpisodeCard: View {
         }
     }
 
-    // MARK: - Status Labels
-
-    private var statusLabels: some View {
-        ZStack {
-            // "WATCHED" label (top-left when watched)
-            if episode.isWatched {
-                VStack {
-                    HStack {
-                        Text("episode_watched")
-                            .font(.custom(CustomFont.jetbrains.bold, size: 8))
-                            .tracking(1.6)
-                            .foregroundColor(.c2bTealBright)
-                            .padding(.leading, 12)
-                            .padding(.top, 13)
-                        Spacer()
-                    }
-                    Spacer()
-                }
-            }
-
-            // "NOT YET AIRED" label (bottom-left when locked)
-            if !episode.hasAired {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Text("episode_not_aired")
-                            .font(.custom(CustomFont.jetbrains.bold, size: 8))
-                            .tracking(1.4)
-                            .foregroundColor(.white.opacity(0.7))
-                            .padding(.leading, 12)
-                            .padding(.bottom, 11)
-                        Spacer()
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Metadata
+
+    /// Text status shown above the description: watched, or locked/not-aired.
+    /// Aired-but-unwatched shows no label.
+    private var statusLabel: (text: LocalizedStringKey, color: Color)? {
+        if episode.isWatched { return ("episode_watched", .c2bTealBright) }
+        if !episode.hasAired { return ("episode_not_aired", .c2bMuted) }
+        return nil
+    }
 
     private var metadataArea: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Episode number
-            Text(String(localized: "episode_number \(episode.number)"))
-                .font(.custom(CustomFont.jetbrains.bold, size: 9))
-                .tracking(1.6)
-                .textCase(.uppercase)
-                .foregroundColor(.c2bMuted)
-                .padding(.top, 11)
+            // Status label (WATCHED / NOT YET AIRED) above the description.
+            // The lock icon on the image still marks not-yet-aired; this makes
+            // the state explicit in words.
+            if let status = statusLabel {
+                Text(status.text)
+                    .font(.custom(CustomFont.jetbrains.bold, size: 8))
+                    .tracking(1.6)
+                    .textCase(.uppercase)
+                    .foregroundColor(status.color)
+                    .padding(.top, 11)
+            }
 
-            // Title
-            Text(episode.title)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(.c2bText)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .padding(.top, 4)
-
-            // Description
+            // Description (episode number + title now live on the image)
             Text(episode.description)
                 .font(.system(size: 12.5))
                 .foregroundColor(.c2bDim)
                 .lineSpacing(2)
                 .lineLimit(3)
                 .truncationMode(.tail)
-                .padding(.top, 6)
+                .padding(.top, statusLabel == nil ? 11 : 6)
 
             // Runtime
             HStack(spacing: 6) {

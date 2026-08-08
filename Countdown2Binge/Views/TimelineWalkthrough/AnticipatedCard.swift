@@ -93,15 +93,18 @@ struct AnticipatedCard: View {
         series?.posterURL ?? showData?.posterURL ?? show?.posterURL
     }
 
-    // For Anticipated shows, we show the next expected season
-    private var anticipatedSeasonNumber: Int {
+    /// The real anticipated/next season number — the engine's current season for a
+    /// Series (the announced not-yet-started season), or the DTO's announced-season
+    /// computed for ShowData. Nil when there is NO real next season in the data, so
+    /// the view renders no season badge rather than fabricating `numberOfSeasons + 1`.
+    private var anticipatedSeasonNumber: Int? {
         if let series = series {
-            return series.numberOfSeasons + 1
+            return series.currentSeason?.seasonNumber
         }
         if let showData = showData {
-            return showData.numberOfSeasons + 1
+            return showData.anticipatedSeason?.seasonNumber
         }
-        return 2 // Default for mock
+        return Int(mockData.season) // walkthrough mock
     }
 
     // Expected release year (next year, formatted as '26)
@@ -109,10 +112,6 @@ struct AnticipatedCard: View {
         let nextYear = Calendar.current.component(.year, from: Date()) + 1
         let shortYear = nextYear % 100
         return "'\(shortYear)"
-    }
-
-    private var seasonString: String {
-        return String(localized: "timeline_season \(anticipatedSeasonNumber)")
     }
 
     private var platformString: String {
@@ -201,16 +200,18 @@ struct AnticipatedCard: View {
 
                     // Bottom: Season + Show name
                     HStack(alignment: .bottom, spacing: 8) {
-                        // Season badge (S5 style)
-                        HStack(spacing: 0) {
-                            Text("season_abbrev")
-                                .font(.custom(.oswald.bold, size: 28))
-                                .foregroundColor(.white)
-                            Text(String(anticipatedSeasonNumber))
-                                .font(.custom(.oswald.light, size: 28))
-                                .foregroundColor(.white)
+                        // Season badge (S5 style) — only when a real season exists
+                        if let seasonNum = anticipatedSeasonNumber {
+                            HStack(spacing: 0) {
+                                Text("season_abbrev")
+                                    .font(.custom(.oswald.bold, size: 28))
+                                    .foregroundColor(.white)
+                                Text(String(seasonNum))
+                                    .font(.custom(.oswald.light, size: 28))
+                                    .foregroundColor(.white)
+                            }
+                            .shadow(color: .black.opacity(0.7), radius: 4, x: 0, y: 2)
                         }
-                        .shadow(color: .black.opacity(0.7), radius: 4, x: 0, y: 2)
 
                         Text(displayName.uppercased())
                             .font(.custom(.oswald.bold, size: 19))

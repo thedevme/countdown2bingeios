@@ -57,6 +57,13 @@ final class DiscoverViewModel {
     private(set) var genreShows: [Int: [ShowSummary]] = [:]
     private(set) var networkShows: [Int: [ShowSummary]] = [:]
 
+    /// Preference-driven "For You" rail — hard-filtered by taste. Additive and
+    /// isolated: served by RecommendationService (the same path onboarding uses),
+    /// never by the network/cache browse pipeline or search.
+    private(set) var forYouShows: [ShowSummary] = []
+    private(set) var forYouLabel: String?
+    private(set) var isLoadingForYou = false
+
     // Genre pagination state
     private var genreCurrentPage: [Int: Int] = [:]
     private var genreTotalPages: [Int: Int] = [:]
@@ -66,6 +73,9 @@ final class DiscoverViewModel {
     private var trendingCurrentPage = 0
     private var trendingTotalPages = 0
     private(set) var isLoadingMoreTrending = false
+    /// The relaxation level that produced the current trending page, so "load
+    /// more" paginates the same taste-filtered query (never dropping providers).
+    private var trendingRelaxation: DiscoverQuery.Relaxation = .full
 
     /// Cached discover shows (loaded from SwiftData)
     private(set) var cachedShows: [CachedDiscoverShow] = [] {
@@ -154,14 +164,28 @@ final class DiscoverViewModel {
         isLoading = true
         error = nil
 
-        do {
-            let response = try await tmdbService.getTrendingShows(page: 1)
-            trendingShows = response.results.map { $0.toShowSummary() }
-            trendingCurrentPage = 1
-            trendingTotalPages = response.totalPages
-        } catch {
-            self.error = String(localized: "error_load_trending")
-            print("Error loading trending shows: \(error)")
+        // Personalized + availability-filtered: only shows the user can actually
+        // stream (their providers + region + flatrate) in their genres. Broadens by
+        // dropping genre if needed, but NEVER drops the provider filter.
+        let query = TastePreferencesStore.shared.preferences.discoverQuery(page: 1)
+        let ladder = DiscoverQueryBuilder.relaxationLadder(for: query)
+
+        for (index, level) in ladder.enumerated() {
+            do {
+                let response = try await tmdbService.discover(query: query, relaxation: level)
+                let shows = response.results.map { $0.toShowSummary() }
+                if shows.count >= 10 || index == ladder.count - 1 {
+                    trendingShows = shows
+                    trendingCurrentPage = 1
+                    trendingTotalPages = response.totalPages
+                    trendingRelaxation = level
+                    break
+                }
+            } catch {
+                self.error = String(localized: "error_load_trending")
+                print("Error loading trending shows: \(error)")
+                break
+            }
         }
 
         isLoading = false
@@ -179,8 +203,10 @@ final class DiscoverViewModel {
         let nextPage = trendingCurrentPage + 1
         isLoadingMoreTrending = true
 
+        // Paginate the SAME taste-filtered query at the level that produced page 1.
+        let query = TastePreferencesStore.shared.preferences.discoverQuery(page: nextPage)
         do {
-            let response = try await tmdbService.getTrendingShows(page: nextPage)
+            let response = try await tmdbService.discover(query: query, relaxation: trendingRelaxation)
             let newShows = response.results.map { $0.toShowSummary() }
             trendingShows.append(contentsOf: newShows)
             trendingCurrentPage = nextPage
@@ -529,6 +555,18 @@ final class DiscoverViewModel {
         }
 
         isLoadingGenre = false
+    }
+
+    /// Load the preference-filtered "For You" rail via the shared
+    /// RecommendationService. Additive: leaves the network/cache browse paths and
+    /// search entirely untouched.
+    func loadForYou() async {
+        let prefs = TastePreferencesStore.shared.preferences
+        isLoadingForYou = true
+        let feed = await RecommendationService.shared.feed(for: prefs, minResults: 10)
+        forYouShows = feed.shows
+        forYouLabel = feed.relaxationLabel
+        isLoadingForYou = false
     }
 
     func loadAllNetworks() async {

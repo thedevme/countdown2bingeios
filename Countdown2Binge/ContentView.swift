@@ -75,6 +75,11 @@ struct ContentView: View {
                     showOnboarding = true
                 }
             }
+            // Show titles are TMDB content — re-localize stored titles if the app
+            // language changed since they were saved (like search fetches live).
+            .task {
+                await seriesManager.relocalizeNamesIfLanguageChanged()
+            }
             // React to the iCloud flag changing — reset from Settings re-presents
             // onboarding immediately; completion on another device dismisses it.
             .onChange(of: cloudSettings.hasCompletedOnboarding) { _, completed in

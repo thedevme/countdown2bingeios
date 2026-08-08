@@ -35,6 +35,12 @@ enum TMDBConfiguration {
         return languageMapping[languageCode] ?? "en-US"
     }
 
+    /// Current device region (ISO 3166-1) for `watch_region`. `Locale.current`
+    /// region is optional, so nil never propagates into a query — defaults to "US".
+    static var currentRegion: String {
+        Locale.current.region?.identifier ?? "US"
+    }
+
     /// API key loaded from Config.plist
     static var apiKey: String {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),

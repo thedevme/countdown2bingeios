@@ -87,23 +87,30 @@ struct MyListLandscapeCard: View {
             LandscapeBackdrop(url: season.backdropURL, seed: season.showTitle)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .grayscale(isDone ? 1 : 0)
-                .brightness(isDone ? -0.6 : -0.48)   // JSX: brightness .4 (done) / .52
+                .brightness(isDone ? -0.4 : 0)   // flat darkener removed on active cards
 
-            // left-weighted scrim so the identity reads over any key art
+            // bottom scrim keeps the show name legible over bright key art
             LinearGradient(
                 stops: [
-                    .init(color: Color(hex: "#060808").opacity(0.92), location: 0),
-                    .init(color: Color(hex: "#060808").opacity(0.55), location: 0.52),
-                    .init(color: Color(hex: "#060808").opacity(0.28), location: 1),
+                    .init(color: Color(hex: "#060808").opacity(0.85), location: 0),
+                    .init(color: Color(hex: "#060808").opacity(0), location: 0.55),
                 ],
-                startPoint: .leading, endPoint: .trailing
+                startPoint: .bottom, endPoint: .top
+            )
+            // top-left scrim for the S · E identity
+            LinearGradient(
+                stops: [
+                    .init(color: Color(hex: "#060808").opacity(0.72), location: 0),
+                    .init(color: Color(hex: "#060808").opacity(0), location: 0.5),
+                ],
+                startPoint: .topLeading, endPoint: .bottomTrailing
             )
 
-            // season, big and left — the card's identity
+            // season · episode, big and top-left — the card's identity
             VStack(alignment: .leading, spacing: 5) {
                 deckNumber
                 Text(season.deckSublabel)
-                    .font(.custom(.jetbrains.regular, size: 7.5))
+                    .font(.custom(.jetbrains.regular, size: 8.5))
                     .tracking(1.05)
                     .foregroundColor(.white.opacity(0.55))
             }
@@ -114,6 +121,18 @@ struct MyListLandscapeCard: View {
             SeasonStatePip(state: season.state)
                 .padding(11)
         }
+        .overlay(alignment: .bottomLeading) {
+            // show name lives inside the card, bottom-left
+            Text(season.showTitle.uppercased())
+                .font(.custom(.oswald.bold, size: 22))
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .shadow(color: .black.opacity(0.55), radius: 3, y: 1)
+                .padding(.leading, 14)
+                .padding(.trailing, 14)
+                .padding(.bottom, 12)
+        }
     }
 
     private var deckNumber: some View {
@@ -123,7 +142,7 @@ struct MyListLandscapeCard: View {
             + Text("E").foregroundColor(base.opacity(0.55))
             + Text("\(season.upNextEpisode)")
         )
-        .font(.custom(.oswald.bold, size: 30))
+        .font(.custom(.oswald.bold, size: 38))
         .foregroundColor(base)
         .lineLimit(1)
     }
@@ -132,53 +151,20 @@ struct MyListLandscapeCard: View {
 
     private var detailRow: some View {
         HStack(alignment: .top, spacing: 8) {
+            // timestamp on the left, directly under the indicators, with the
+            // episode count (spelled out, no "nights") beneath it
             VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    seasonBadge
-                    Text(season.showTitle)
-                        .font(.system(size: 13.5, weight: .semibold))
-                        .foregroundColor(.c2bText)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-
-                HStack(spacing: 5) {
-                    Image(systemName: "clock")
-                        .font(.system(size: 9, weight: .semibold))
-                    Text("\(season.episodeCount) eps · ~\(season.nightsText)")
-                }
-                .font(.custom(.jetbrains.regular, size: 9.5))
-                .tracking(0.57)
-                .foregroundColor(.c2bMuted)
-                .textCase(.uppercase)
-                .lineLimit(1)
-                .padding(.top, 7)
-
-                Text(season.note)
-                    .font(.custom(.jetbrains.regular, size: 9.5))
+                RuntimeClock(seconds: season.totalSeconds, numberSize: 30, unitSize: 12)
+                Text("\(season.episodeCount) " + (season.episodeCount == 1 ? String(localized: "mylist_ls_word_episode") : String(localized: "mylist_ls_word_episodes")))
+                    .font(.custom(.jetbrains.regular, size: 10.5))
                     .tracking(0.57)
-                    .foregroundColor(isReady ? .c2bTealBright : .c2bMuted)
-                    .textCase(.uppercase)
+                    .foregroundColor(.c2bMuted)
                     .lineLimit(1)
-                    .truncationMode(.tail)
-                    .padding(.top, 5)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            RuntimeClock(seconds: season.totalSeconds, numberSize: 30, unitSize: 12)
-                .padding(.leading, 10)
-
             markAllButton
         }
-    }
-
-    private var seasonBadge: some View {
-        let tint: Color = isReady ? .c2bTealBright : .c2bDim
-        return (
-            Text("S").font(.custom(.oswald.bold, size: 14))
-            + Text("\(season.seasonNumber)").font(.custom(.oswald.light, size: 14))
-        )
-        .foregroundColor(tint)
     }
 
     private var markAllButton: some View {
@@ -187,9 +173,9 @@ struct MyListLandscapeCard: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 9, weight: .heavy))
-                Text("ALL")
-                    .font(.custom(.jetbrains.bold, size: 7))
+                    .font(.system(size: 10, weight: .heavy))
+                Text(String(localized: "mylist_ls_all"))
+                    .font(.custom(.jetbrains.bold, size: 8.5))
                     .tracking(0.56)
             }
             .foregroundColor(allWatched ? .c2bOnTeal : .c2bDim)

@@ -16,7 +16,7 @@ struct PosterTileEditable: View {
     let isLocked: Bool
     let onRemove: () -> Void
 
-    @State private var jiggleAmount: Double = 0
+    @State private var jiggling = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -47,19 +47,25 @@ struct PosterTileEditable: View {
                         .offset(x: 6, y: -6)
                 }
             }
-            .rotationEffect(.degrees(isEditMode ? jiggleAmount : 0))
-            .animation(
-                isEditMode
-                    ? Animation.easeInOut(duration: 0.12).repeatForever(autoreverses: true)
-                    : .default,
-                value: isEditMode
-            )
+            // Jiggle only the rotation via an explicit, self-contained animation
+            // so the conditionally-inserted X button and badge don't get swept
+            // into a repeatForever transaction (which made them blink).
+            .rotationEffect(.degrees(isEditMode ? (jiggling ? 1.5 : -1.5) : 0))
             .onChange(of: isEditMode) { _, editing in
-                jiggleAmount = editing ? Double.random(in: -1.5...1.5) : 0
+                if editing {
+                    jiggling = false
+                    withAnimation(.easeInOut(duration: 0.13).repeatForever(autoreverses: true)) {
+                        jiggling = true
+                    }
+                } else {
+                    withAnimation(.easeInOut(duration: 0.1)) { jiggling = false }
+                }
             }
             .onAppear {
                 if isEditMode {
-                    jiggleAmount = Double.random(in: -1.5...1.5)
+                    withAnimation(.easeInOut(duration: 0.13).repeatForever(autoreverses: true)) {
+                        jiggling = true
+                    }
                 }
             }
 

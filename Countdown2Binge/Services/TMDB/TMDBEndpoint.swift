@@ -20,6 +20,11 @@ enum TMDBEndpoint {
     case discoverByGenre(genreIds: [Int], page: Int)
     case discoverByNetwork(networkId: Int, page: Int)
     case discoverByDateRange(networkId: Int, startDate: Date, endDate: Date, page: Int)
+    /// Preference-driven discovery. Query items come pre-built from
+    /// `DiscoverQueryBuilder` — the single source of discovery parameters.
+    case discover(items: [URLQueryItem])
+    /// Live watch-provider catalog for a region (source of truth for provider IDs).
+    case watchProvidersTV(region: String)
 
     var path: String {
         switch self {
@@ -49,6 +54,10 @@ enum TMDBEndpoint {
             return "/discover/tv"
         case .discoverByDateRange:
             return "/discover/tv"
+        case .discover:
+            return "/discover/tv"
+        case .watchProvidersTV:
+            return "/watch/providers/tv"
         }
     }
 
@@ -107,6 +116,11 @@ enum TMDBEndpoint {
             items.append(URLQueryItem(name: "include_adult", value: "false"))
             items.append(URLQueryItem(name: "without_genres", value: "16")) // Exclude Animation
             items.append(URLQueryItem(name: "with_type", value: "2")) // Scripted only (no reality/talk)
+        case .discover(let discoverItems):
+            // Parameters are pre-composed by DiscoverQueryBuilder (single source).
+            items.append(contentsOf: discoverItems)
+        case .watchProvidersTV(let region):
+            items.append(URLQueryItem(name: "watch_region", value: region))
         }
 
         return items

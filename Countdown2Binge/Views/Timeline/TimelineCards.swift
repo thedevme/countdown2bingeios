@@ -234,8 +234,10 @@ struct MiniAnticipatedCard: View {
         return String(nextYear)
     }
 
-    private var anticipatedSeasonNumber: String {
-        String(showData.numberOfSeasons + 1)
+    /// The real announced next season from the data (not a fabricated +1). Nil when
+    /// there is no real next season, so the badge is hidden rather than wrong.
+    private var anticipatedSeasonNumber: Int? {
+        showData.anticipatedSeason?.seasonNumber
     }
 
     var body: some View {
@@ -255,14 +257,16 @@ struct MiniAnticipatedCard: View {
             .frame(width: 68, alignment: .leading)
 
             HStack(alignment: .center, spacing: 8) {
-                HStack(spacing: 0) {
-                    Text("season_abbrev")
-                        .font(.custom(.oswald.bold, size: 20))
-                        .foregroundColor(Color.white.opacity(0.82))
+                if let seasonNum = anticipatedSeasonNumber {
+                    HStack(spacing: 0) {
+                        Text("season_abbrev")
+                            .font(.custom(.oswald.bold, size: 20))
+                            .foregroundColor(Color.white.opacity(0.82))
 
-                    Text(anticipatedSeasonNumber)
-                        .font(.custom(.oswald.light, size: 20))
-                        .foregroundColor(Color.white.opacity(0.82))
+                        Text(String(seasonNum))
+                            .font(.custom(.oswald.light, size: 20))
+                            .foregroundColor(Color.white.opacity(0.82))
+                    }
                 }
 
                 Text(showData.name)

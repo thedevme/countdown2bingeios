@@ -25,54 +25,62 @@ private func wordmark(_ s: String) -> Text {
 
 struct OBWelcomeSlide: View {
     private var slide: OnboardingSlide? { introData.welcomeSlide }
-    private var posters: [OnboardingShow] { Array(OnboardingData.popular.prefix(5)) }
+    /// Real poster art from the asset library, used as bottom-edge texture.
+    private let posters = ["shogun", "fallout", "the-last-of-us", "reacher", "outlander"]
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer(minLength: 8)
+
+            // Greeting — localized casual greeting, all caps, with a teal period.
+            (Text(String(localized: "onboarding_welcome").uppercased()) + Text(".").foregroundColor(.c2bTeal))
+                .font(.custom(.oswald.bold, size: 64))
+                .foregroundColor(.white)
+
+            // Subhead
+            Text(slide?.headline ?? "Let's get your shows sorted.")
+                .font(.custom(.oswald.medium, size: 26))
+                .foregroundColor(.white)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 6)
+
+            // Timing line — system UI face, one hierarchy step down.
+            if let body = slide?.body {
+                Text(body)
+                    .font(.system(size: 14.5))
+                    .foregroundColor(.c2bMuted)
+                    .lineSpacing(7)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 290, alignment: .leading)
+                    .padding(.top, 14)
+            }
+
             Spacer(minLength: 20)
 
-            ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(LinearGradient(colors: [Color.c2bTeal.opacity(0.22), Color.c2bTeal.opacity(0.05)],
-                                         startPoint: .topTrailing, endPoint: .bottomLeading))
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.c2bTealLine, lineWidth: 1))
-                    .frame(width: 68, height: 68)
-                Image(systemName: "clock")
-                    .font(.system(size: 32, weight: .light))
-                    .foregroundColor(.c2bTealBright)
-            }
-
-            wordmark(slide?.headline ?? "COUNTDOWN2BINGE")
-                .font(.custom(.oswald.bold, size: 40))
-                .foregroundColor(.white)
-                .padding(.top, 26)
-
-            if let tagline = slide?.body {
-                Text(tagline)
-                    .font(.system(size: 16))
-                    .foregroundColor(.c2bDim)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-                    .frame(maxWidth: 290)
-                    .padding(.top, 16)
-            }
-
-            Spacer(minLength: 24)
-
-            HStack(spacing: -14) {
-                ForEach(Array(posters.enumerated()), id: \.element.id) { i, show in
-                    OnboardingPoster(seed: show.title, cornerRadius: 7)
-                        .frame(width: 46)
-                        .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: "#0a0a0b"), lineWidth: 1.5))
-                        .rotationEffect(.degrees(Double(i - 2) * 5))
-                        .offset(y: abs(Double(i - 2)) * 4)
+            // Posters — full-color poster art as a bottom-edge band. Per the design:
+            // grayscale(0.4) + brightness(0.7) per image (via colorMultiply), the
+            // whole strip at 0.42 opacity, and a V-shape stagger (center highest)
+            // with an 8px overlap. Full-bleed, cropped at the bottom edge.
+            HStack(alignment: .top, spacing: -8) {
+                ForEach(Array(posters.enumerated()), id: \.offset) { i, name in
+                    Image(name)
+                        .resizable()
+                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
+                        .frame(width: 120, height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .grayscale(0.4)
+                        .colorMultiply(Color(white: 0.7))          // ≈ brightness(0.7)
+                        .padding(.top, CGFloat(abs(i - 2)) * 12)   // V-stagger: 24,12,0,12,24
                 }
             }
-            .opacity(0.5)
+            .frame(maxWidth: .infinity)
+            .frame(height: 185, alignment: .top)
+            .clipped()
+            .opacity(0.42)                       // container opacity
+            .padding(.horizontal, -22)           // full-bleed past OBShell's padding
 
-            Spacer(minLength: 12)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -85,20 +93,20 @@ struct OBProblemSlide: View {
         OBSlide(eyebrow: slide?.label, title: slide?.headline, accent: slide?.headlineAccent, message: slide?.body) {
             VStack {
                 ZStack {
-                    OnboardingPoster(seed: "Shōgun", cornerRadius: 14)
-                        .frame(width: 168)
+                    Image("stranger-things")
+                        .resizable()
+                        .aspectRatio(2.0 / 3.0, contentMode: .fill)
+                        .frame(width: 168, height: 252)
                         .grayscale(1)
-                        .brightness(-0.32)
-                        .overlay(
-                            LinearGradient(colors: [.black.opacity(0.7), .clear],
-                                           startPoint: .bottom, endPoint: .center)
-                        )
-                    Text("SEASON ENDED")
+                        .overlay(Color.black.opacity(0.1))   // darkener at 10%
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                    Text(String(localized: "onboarding_season_ended"))
                         .font(.custom(.jetbrains.bold, size: 9.5))
                         .tracking(1.5)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(Color(hex: "#E5484D"))
                         .padding(.horizontal, 12).padding(.vertical, 6)
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.white.opacity(0.35), lineWidth: 2))
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(hex: "#E5484D").opacity(0.85), lineWidth: 2))
                         .rotationEffect(.degrees(-11))
                 }
             }
@@ -129,7 +137,7 @@ struct OBAgitateSlide: View {
                             .fill(hit ? Color.white.opacity(0.16) : Color.white.opacity(0.06))
                             .frame(height: 1)
                         if hit {
-                            Text("RENEWED · NO ALERT")
+                            Text(String(localized: "onboarding_renewed_no_alert"))
                                 .font(.custom(.jetbrains.regular, size: 8))
                                 .tracking(0.8)
                                 .foregroundColor(.c2bMuted)
