@@ -30,7 +30,7 @@ struct ShowDateInfo {
 }
 
 /// Output: what to schedule
-struct NotificationPlan: Equatable {
+nonisolated struct NotificationPlan: Equatable {
     let identifier: String       // stable key: "show-123-finale-s2"
     let type: NotificationType
     let showId: Int

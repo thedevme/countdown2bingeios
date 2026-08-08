@@ -46,7 +46,10 @@ final class TastePreferencesStore {
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: cloud, queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in self?.adoptFromCloud() }
+            // Delivered on the main queue — hop onto the main actor synchronously
+            // instead of capturing self into a new Task.
+            guard let self else { return }
+            MainActor.assumeIsolated { self.adoptFromCloud() }
         }
     }
 

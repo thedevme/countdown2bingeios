@@ -56,7 +56,10 @@ final class CloudSettingsStore {
             object: store,
             queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in self?.syncFromStore() }
+            // The observer is delivered on the main queue, so hop onto the main
+            // actor synchronously instead of capturing self into a new Task.
+            guard let self else { return }
+            MainActor.assumeIsolated { self.syncFromStore() }
         }
     }
 

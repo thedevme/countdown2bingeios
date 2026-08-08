@@ -218,8 +218,11 @@ struct FollowedShowDetail: View {
 
         do {
             let tmdbService = TMDBService()
-            async let creditsResult = tmdbService.getShowCredits(id: series.id)
-            async let videosResult = tmdbService.getShowVideos(id: series.id)
+            // Read the Sendable id on the main actor so the non-Sendable Series
+            // is never captured into the concurrent async-let child tasks.
+            let showId = series.id
+            async let creditsResult = tmdbService.getShowCredits(id: showId)
+            async let videosResult = tmdbService.getShowVideos(id: showId)
 
             let (credits, fetchedVideos) = try await (creditsResult, videosResult)
             cast = credits.cast

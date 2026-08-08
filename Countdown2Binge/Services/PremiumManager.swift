@@ -191,8 +191,7 @@ final class PremiumManager {
         #if DEBUG
         // Skip entitlement check for DEBUG builds - always premium
         return
-        #endif
-
+        #else
         // Skip entitlement check for TestFlight - premium is always enabled
         if Self.isTestFlight {
             return
@@ -207,6 +206,7 @@ final class PremiumManager {
         } catch {
             print("PremiumManager: Failed to check entitlements - \(error)")
         }
+        #endif
     }
 
     /// Update internal state from CustomerInfo

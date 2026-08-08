@@ -105,7 +105,7 @@ struct Countdown2BingeApp: App {
 
     /// Schedule the next background refresh request.
     /// Called: (1) inside the task handler (schedules NEXT), (2) on scenePhase .background (ensures FIRST).
-    private func scheduleBackgroundRefresh() {
+    nonisolated private func scheduleBackgroundRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: "com.countdown2binge.refresh")
         // Earliest 4 hours out — iOS decides actual timing based on usage patterns
         request.earliestBeginDate = Date(timeIntervalSinceNow: 4 * 60 * 60)

@@ -91,8 +91,7 @@ struct CatchUpSeasonPicker: View {
             HStack(spacing: 11) {
                 Group {
                     if lastDoneSeason > 0 {
-                        (Text("S").font(.custom(.oswald.bold, size: 22))
-                            + Text("\(lastDoneSeason)").font(.custom(.oswald.light, size: 22)))
+                        Text("\(Text("S").font(.custom(.oswald.bold, size: 22)))\(Text("\(lastDoneSeason)").font(.custom(.oswald.light, size: 22)))")
                             .foregroundColor(.c2bTealBright)
                     } else {
                         Text("—").font(.custom(.oswald.bold, size: 22)).foregroundColor(.c2bMuted)
@@ -166,8 +165,7 @@ struct CatchUpSeasonPicker: View {
                 )
                 .overlay(
                     VStack(spacing: 1) {
-                        (Text("S").font(.custom(.oswald.bold, size: 11))
-                            + Text("\(n)").font(.custom(.oswald.light, size: 11)))
+                        Text("\(Text("S").font(.custom(.oswald.bold, size: 11)))\(Text("\(n)").font(.custom(.oswald.light, size: 11)))")
                             .foregroundColor(marked ? .c2bOnTeal : (watched ? .c2bTealBright : .c2bDim))
                         if watched {
                             Image(systemName: "checkmark")

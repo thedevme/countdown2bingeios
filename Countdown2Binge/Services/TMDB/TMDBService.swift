@@ -74,7 +74,7 @@ final class TMDBService: TMDBServiceProtocol, @unchecked Sendable {
     private let session: URLSession
     private let decoder: JSONDecoder
 
-    init(session: URLSession = URLSession(configuration: .default)) {
+    nonisolated init(session: URLSession = URLSession(configuration: .default)) {
         self.session = session
         self.decoder = JSONDecoder()
     }

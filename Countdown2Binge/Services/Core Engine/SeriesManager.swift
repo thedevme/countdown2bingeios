@@ -53,13 +53,15 @@ final class SeriesManager {
     init(
         container: ModelContainer,
         tmdb: TMDBServiceProtocol = TMDBService(),
-        franchise: FranchiseResolving = FranchiseService.shared,
-        cloudKit: CloudSyncing = CloudKitManager.shared
+        franchise: FranchiseResolving? = nil,
+        cloudKit: CloudSyncing? = nil
     ) {
         self.container = container
         self.tmdb = tmdb
-        self.franchise = franchise
-        self.cloudKit = cloudKit
+        // Resolve the shared singletons in the (main-actor) init body rather than
+        // in nonisolated default-argument position.
+        self.franchise = franchise ?? FranchiseService.shared
+        self.cloudKit = cloudKit ?? CloudKitManager.shared
     }
 
     #if DEBUG
@@ -124,7 +126,7 @@ final class SeriesManager {
         let task = Task {
             await operation()
             // Self-remove on completion to avoid unbounded growth
-            await MainActor.run { self.pendingTasks.removeValue(forKey: taskId) }
+            await MainActor.run { _ = self.pendingTasks.removeValue(forKey: taskId) }
         }
         pendingTasks[taskId] = task
         #else

@@ -37,7 +37,7 @@ struct ShowSummary: Identifiable, Codable, Sendable, Hashable {
 
 extension TMDBShowSummary {
     /// Convert API response to domain model
-    func toShowSummary() -> ShowSummary {
+    nonisolated func toShowSummary() -> ShowSummary {
         ShowSummary(
             id: id,
             name: name,

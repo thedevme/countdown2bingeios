@@ -223,7 +223,7 @@ struct MyListWatchedGrid: View {
             } else {
                 VStack(spacing: 18) {
                     ForEach(show.seasons) { season in
-                        MyListLandscapeCard(season: season) { onOpenSeries(show.series) }
+                        MyListLandscapeCard(season: season, onOpen: { onOpenSeries(show.series) })
                     }
                 }
                 .padding(.horizontal, 14).padding(.vertical, 16)

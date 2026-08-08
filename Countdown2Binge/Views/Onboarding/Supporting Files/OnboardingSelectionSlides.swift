@@ -56,8 +56,7 @@ struct OBAddShowsSlide: View {
                 .tracking(2.0)
                 .foregroundColor(.c2bTeal)
 
-            (Text(String(localized: "onboarding_add_shows_title_v2") + " ")
-                + Text(String(localized: "onboarding_add_shows_accent")).foregroundColor(.c2bTeal))
+            Text("\(Text(String(localized: "onboarding_add_shows_title_v2") + " "))\(Text(String(localized: "onboarding_add_shows_accent")).foregroundColor(.c2bTeal))")
                 .font(.custom(.oswald.bold, size: 36))
                 .foregroundColor(.white)
                 .padding(.top, 10)
@@ -327,7 +326,7 @@ struct OBReviewSlide: View {
             }
             .padding(.bottom, 22)
 
-            (Text((slide?.headline ?? "") + "\n") + Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal))
+            Text("\(Text((slide?.headline ?? "") + "\n"))\(Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal))")
                 .font(.custom(.oswald.bold, size: 34))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)

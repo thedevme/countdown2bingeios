@@ -267,7 +267,7 @@ struct TimelineWalkthrough: View {
     private func flyPoster(showId: String, toBucket: String) {
         // Animate directly to final position with smooth deceleration
         withAnimation(.easeOut(duration: 0.7)) {
-            landedShows.insert(showId)
+            _ = landedShows.insert(showId)
         }
     }
 

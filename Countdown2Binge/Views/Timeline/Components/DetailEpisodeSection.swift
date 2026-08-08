@@ -35,7 +35,7 @@ struct DetailEpisodeSection: View {
     }
 
     private var synopsis: String {
-        season?.overview ?? series.overview ?? ""
+        season?.overview ?? series.overview
     }
 
     private var isAnticipatedSeason: Bool {

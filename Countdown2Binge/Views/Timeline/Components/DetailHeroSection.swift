@@ -40,6 +40,6 @@ struct DetailHeroSection: View {
                 )
             }
         }
-        .frame(height: UIScreen.main.bounds.width * 0.95)
+        .frame(height: UIScreen.activeWidth * 0.95)
     }
 }

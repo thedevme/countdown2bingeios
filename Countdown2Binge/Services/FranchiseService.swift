@@ -31,19 +31,15 @@ final class FranchiseService {
         // Don't refetch if already loaded
         guard !isLoaded else { return }
 
-        do {
-            // TODO: Replace with actual Firebase fetch when SDK is added
-            // let snapshot = try await Database.database().reference().child("franchises").getData()
-            // franchises = parseFranchises(from: snapshot)
+        // TODO: Replace with actual Firebase fetch when SDK is added
+        // let snapshot = try await Database.database().reference().child("franchises").getData()
+        // franchises = parseFranchises(from: snapshot)
 
-            // For now, use bundled JSON or mock data
-            franchises = loadBundledFranchises()
-            buildLookupMap()
-            isLoaded = true
-            print("FranchiseService: Loaded \(franchises.count) franchises")
-        } catch {
-            print("FranchiseService: Failed to fetch franchises - \(error)")
-        }
+        // For now, use bundled JSON or mock data
+        franchises = loadBundledFranchises()
+        buildLookupMap()
+        isLoaded = true
+        print("FranchiseService: Loaded \(franchises.count) franchises")
     }
 
     /// Get franchise for a show (O(1) lookup)

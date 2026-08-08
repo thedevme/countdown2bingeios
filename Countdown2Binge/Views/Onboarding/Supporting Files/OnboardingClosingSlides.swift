@@ -120,7 +120,7 @@ struct OBSummarySlide: View {
 
             Spacer(minLength: 20)
 
-            (Text((slide?.headline ?? "") + " ") + Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal))
+            Text("\(Text((slide?.headline ?? "") + " "))\(Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal))")
                 .font(.custom(.oswald.bold, size: 44))
                 .foregroundColor(.white)
 
@@ -197,9 +197,7 @@ struct OBPriceAnchorSlide: View {
 
             Spacer(minLength: 20)
 
-            (Text((slide?.headline ?? "") + "\n")
-                + Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal)
-                + Text("\n" + (slide?.statLabel ?? "")))
+            Text("\(Text((slide?.headline ?? "") + "\n"))\(Text(slide?.headlineAccent ?? "").foregroundColor(.c2bTeal))\(Text("\n" + (slide?.statLabel ?? "")))")
                 .font(.custom(.oswald.bold, size: 36))
                 .foregroundColor(.white)
                 .lineSpacing(2)

@@ -14,9 +14,7 @@ private let introData = OnboardingDataLoader.shared
 /// Color a single "2" teal in the wordmark (brand mark), else plain.
 private func wordmark(_ s: String) -> Text {
     if let r = s.range(of: "2") {
-        return Text(String(s[..<r.lowerBound]))
-            + Text("2").foregroundColor(.c2bTeal)
-            + Text(String(s[r.upperBound...]))
+        return Text("\(Text(String(s[..<r.lowerBound])))\(Text("2").foregroundColor(.c2bTeal))\(Text(String(s[r.upperBound...])))")
     }
     return Text(s)
 }
@@ -33,7 +31,7 @@ struct OBWelcomeSlide: View {
             Spacer(minLength: 8)
 
             // Greeting — localized casual greeting, all caps, with a teal period.
-            (Text(String(localized: "onboarding_welcome").uppercased()) + Text(".").foregroundColor(.c2bTeal))
+            Text("\(Text(String(localized: "onboarding_welcome").uppercased()))\(Text(".").foregroundColor(.c2bTeal))")
                 .font(.custom(.oswald.bold, size: 64))
                 .foregroundColor(.white)
 

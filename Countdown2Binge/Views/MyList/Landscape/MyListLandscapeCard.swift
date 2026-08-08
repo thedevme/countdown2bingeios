@@ -137,11 +137,7 @@ struct MyListLandscapeCard: View {
 
     private var deckNumber: some View {
         let base: Color = isReady ? .c2bTealBright : .white
-        return (
-            Text("S\(season.seasonNumber)")
-            + Text("E").foregroundColor(base.opacity(0.55))
-            + Text("\(season.upNextEpisode)")
-        )
+        return Text("\(Text("S\(season.seasonNumber)"))\(Text("E").foregroundColor(base.opacity(0.55)))\(Text("\(season.upNextEpisode)"))")
         .font(.custom(.oswald.bold, size: 38))
         .foregroundColor(base)
         .lineLimit(1)

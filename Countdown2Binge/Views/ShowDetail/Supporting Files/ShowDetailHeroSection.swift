@@ -6,6 +6,17 @@
 //
 
 import SwiftUI
+import UIKit
+
+extension UIScreen {
+    /// Non-deprecated replacement for `UIScreen.main.bounds.width` (iOS 26):
+    /// reads the active window scene's screen, with a sensible fallback.
+    static var activeWidth: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.screen.bounds.width ?? 393
+    }
+}
 
 struct ShowDetailHeroSection: View {
     let show: ShowData
@@ -55,7 +66,7 @@ struct ShowDetailHeroSection: View {
                 )
             }
         }
-        .frame(height: UIScreen.main.bounds.width * 1.025)
+        .frame(height: UIScreen.activeWidth * 1.025)
     }
 }
 

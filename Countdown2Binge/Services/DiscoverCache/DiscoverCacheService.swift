@@ -80,7 +80,7 @@ final class DiscoverCacheService {
 
     /// Get cached shows for a bucket, optionally filtered by network
     func getShows(bucket: DiscoverBucket, networkId: Int? = nil) -> [CachedDiscoverShow] {
-        var descriptor = FetchDescriptor<CachedDiscoverShow>()
+        let descriptor = FetchDescriptor<CachedDiscoverShow>()
 
         // We filter by current bucket (computed from days) not stored bucket
         let allShows = (try? modelContext.fetch(descriptor)) ?? []
@@ -93,7 +93,7 @@ final class DiscoverCacheService {
 
     /// Get all cached shows, optionally filtered by network
     func getAllShows(networkId: Int? = nil) -> [CachedDiscoverShow] {
-        var descriptor = FetchDescriptor<CachedDiscoverShow>()
+        let descriptor = FetchDescriptor<CachedDiscoverShow>()
         let allShows = (try? modelContext.fetch(descriptor)) ?? []
 
         return allShows

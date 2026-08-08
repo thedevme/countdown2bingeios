@@ -26,7 +26,7 @@ struct TastePreferences: Codable, Equatable {
     )
 
     /// `Locale.current.region` is optional; nil never reaches a query.
-    static var defaultRegion: String {
+    nonisolated static var defaultRegion: String {
         Locale.current.region?.identifier ?? "US"
     }
 
