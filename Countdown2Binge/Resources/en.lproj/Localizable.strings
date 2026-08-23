@@ -1343,3 +1343,28 @@
 "unit_days" = "days";
 "unit_episode" = "episode";
 "unit_episodes" = "episodes";
+
+/* Import shows */
+"import_title" = "IMPORT SHOWS";
+"import_intro" = "Paste your list from Notes, a spreadsheet, anywhere. One per line or separated by commas — we'll sort out the rest.";
+"import_placeholder" = "Silo\nSeverance\nThe Bear, Shogun\n1. Slow Horses\n- The Diplomat (2024)\nFallout season 2";
+"import_nothing_pasted" = "Nothing pasted yet";
+"import_titles_found %lld" = "%lld titles found";
+"import_cta_empty" = "PASTE A LIST TO CONTINUE";
+"import_cta_add %lld" = "ADD %lld SHOWS";
+"import_adding_count %lld %lld" = "Adding · %lld of %lld";
+"import_added_count %lld" = "%lld added";
+"import_missed_count %lld" = "Couldn't find · %lld";
+"import_missed_hint" = "Check the spelling, or search for these once you're in.";
+"import_view_timeline" = "VIEW MY TIMELINE";
+"import_another" = "Import another list";
+"import_state_waiting" = "Waiting";
+"import_state_searching" = "Searching…";
+"import_state_added" = "Added";
+"import_state_already" = "Already following";
+"import_state_not_found" = "Not found";
+"import_state_failed" = "Failed";
+"settings_group_library" = "LIBRARY";
+"settings_import_title" = "Import shows";
+"settings_import_subtitle" = "Paste a list and add them all at once";
+"settings_import_premium" = "Premium · paste a list and add them all at once";

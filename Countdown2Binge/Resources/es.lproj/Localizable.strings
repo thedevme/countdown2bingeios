@@ -1255,3 +1255,28 @@
 "unit_days" = "días";
 "unit_episode" = "episodio";
 "unit_episodes" = "episodios";
+
+/* Import shows */
+"import_title" = "IMPORTAR SERIES";
+"import_intro" = "Pega tu lista desde Notas, una hoja de cálculo, donde sea. Una por línea o separadas por comas — nosotros nos encargamos del resto.";
+"import_placeholder" = "Silo\nSeverance\nThe Bear, Shogun\n1. Slow Horses\n- The Diplomat (2024)\nFallout season 2";
+"import_nothing_pasted" = "Nada pegado todavía";
+"import_titles_found %lld" = "%lld títulos encontrados";
+"import_cta_empty" = "PEGA UNA LISTA PARA CONTINUAR";
+"import_cta_add %lld" = "AÑADIR %lld SERIES";
+"import_adding_count %lld %lld" = "Añadiendo · %lld de %lld";
+"import_added_count %lld" = "%lld añadidas";
+"import_missed_count %lld" = "No encontradas · %lld";
+"import_missed_hint" = "Revisa la ortografía o búscalas cuando entres.";
+"import_view_timeline" = "VER MI TIMELINE";
+"import_another" = "Importar otra lista";
+"import_state_waiting" = "En espera";
+"import_state_searching" = "Buscando…";
+"import_state_added" = "Añadida";
+"import_state_already" = "Ya la sigues";
+"import_state_not_found" = "No encontrada";
+"import_state_failed" = "Error";
+"settings_group_library" = "BIBLIOTECA";
+"settings_import_title" = "Importar series";
+"settings_import_subtitle" = "Pega una lista y añádelas todas de una vez";
+"settings_import_premium" = "Premium · pega una lista y añádelas todas de una vez";

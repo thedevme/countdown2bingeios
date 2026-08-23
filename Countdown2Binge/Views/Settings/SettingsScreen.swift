@@ -42,6 +42,7 @@ struct SettingsScreen: View {
     @State private var syncEligibility: SyncEligibility = .eligible
     @State private var showCloudSync = false
     @State private var showTastePrefs = false
+    @State private var showImport = false
     private var profile: UserProfile { ProfileManager.shared.profile }
 
     private var tastePrefsSubtitle: String {
@@ -91,6 +92,22 @@ struct SettingsScreen: View {
                         SettingsPremiumCTA {
                             showPaywall = true
                         }
+                    }
+
+                    // Library Group — bulk import is a premium feature; the
+                    // free tier caps at 3 shows, so there's nothing to import.
+                    SettingsGroup(label: String(localized: "settings_group_library")) {
+                        SettingsRowChevron(
+                            icon: "square.and.arrow.down",
+                            title: String(localized: "settings_import_title"),
+                            subtitle: isPremium
+                                ? String(localized: "settings_import_subtitle")
+                                : String(localized: "settings_import_premium"),
+                            isLast: true,
+                            action: {
+                                if isPremium { showImport = true } else { showPaywall = true }
+                            }
+                        )
                     }
 
                     // Preferences Group
@@ -277,6 +294,9 @@ struct SettingsScreen: View {
             }
             .navigationDestination(isPresented: $showCloudSync) {
                 CloudSyncView()
+            }
+            .navigationDestination(isPresented: $showImport) {
+                ImportShowsView(onDismiss: { showImport = false })
             }
             .navigationDestination(isPresented: $showTastePrefs) {
                 TastePreferencesEditorView()

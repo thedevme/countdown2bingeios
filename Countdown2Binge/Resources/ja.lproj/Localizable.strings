@@ -1257,3 +1257,28 @@
 "unit_days" = "日";
 "unit_episode" = "話";
 "unit_episodes" = "話";
+
+/* Import shows */
+"import_title" = "作品をインポート";
+"import_intro" = "メモやスプレッドシートなど、どこからでもリストを貼り付けてください。1行に1つ、またはカンマ区切りで — あとはこちらで処理します。";
+"import_placeholder" = "Silo\nSeverance\nThe Bear, Shogun\n1. Slow Horses\n- The Diplomat (2024)\nFallout season 2";
+"import_nothing_pasted" = "まだ貼り付けられていません";
+"import_titles_found %lld" = "%lld 件の作品名";
+"import_cta_empty" = "リストを貼り付けてください";
+"import_cta_add %lld" = "%lld 作品を追加";
+"import_adding_count %lld %lld" = "追加中 · %lld / %lld";
+"import_added_count %lld" = "%lld 件を追加";
+"import_missed_count %lld" = "見つかりません · %lld";
+"import_missed_hint" = "スペルを確認するか、アプリ内で検索してください。";
+"import_view_timeline" = "タイムラインを見る";
+"import_another" = "別のリストをインポート";
+"import_state_waiting" = "待機中";
+"import_state_searching" = "検索中…";
+"import_state_added" = "追加済み";
+"import_state_already" = "フォロー済み";
+"import_state_not_found" = "見つかりません";
+"import_state_failed" = "失敗";
+"settings_group_library" = "ライブラリ";
+"settings_import_title" = "作品をインポート";
+"settings_import_subtitle" = "リストを貼り付けて一括追加";
+"settings_import_premium" = "Premium · リストを貼り付けて一括追加";
