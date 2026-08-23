@@ -62,6 +62,8 @@ struct MyListSeasonDisplay: Identifiable {
     var remainingSeasons: Int
     /// Full-season watch-time in seconds (sum of episode runtimes, average-filled).
     var watchTimeSeconds: Int
+    /// Per-episode ticks (id, watched, aired) — drives the tappable tick meter.
+    var ticks: [EpisodeTick]
 
     init(
         id: String,
@@ -74,7 +76,8 @@ struct MyListSeasonDisplay: Identifiable {
         state: SeasonWatchState,
         note: String,
         remainingSeasons: Int = 1,
-        watchTimeSeconds: Int = 0
+        watchTimeSeconds: Int = 0,
+        ticks: [EpisodeTick] = []
     ) {
         self.id = id
         self.showTitle = showTitle
@@ -87,6 +90,7 @@ struct MyListSeasonDisplay: Identifiable {
         self.note = note
         self.remainingSeasons = remainingSeasons
         self.watchTimeSeconds = watchTimeSeconds
+        self.ticks = ticks
     }
 
     // MARK: Derived

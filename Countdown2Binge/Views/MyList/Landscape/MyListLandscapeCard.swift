@@ -16,6 +16,18 @@ struct MyListLandscapeCard: View {
     /// Marks the season's aired episodes watched. A complete season becomes fully
     /// watched → advances; a still-airing season stays (unaired episodes remain).
     var onMarkAll: (() -> Void)? = nil
+    /// Toggles a single episode's watched state (tick tap).
+    var onToggleEpisode: ((EpisodeTick) -> Void)? = nil
+    /// Whether this show currently has notifications enabled (drives the bell glyph).
+    var notificationsOn: Bool = true
+    /// Opens the per-show notification settings overlay.
+    var onBell: (() -> Void)? = nil
+
+    /// Forces every aired tick to render watched during the mark-all sweep, so the
+    /// meter animates the fill before the real mutation lands and the card advances.
+    @State private var forceAllWatched = false
+    /// True while the mark-all fill animation is running (disables tick taps).
+    @State private var sweeping = false
 
     private let peek: CGFloat = 7
     private let deckTints: [Color] = [
@@ -27,16 +39,26 @@ struct MyListLandscapeCard: View {
     private var isDone: Bool { season.isDone }
     private var allWatched: Bool { season.allWatched }
 
+    /// Real ticks, with all aired episodes forced watched during the mark-all
+    /// sweep so the fill animates before the data (and the card) advances.
+    private var displayTicks: [EpisodeTick] {
+        guard forceAllWatched else { return season.ticks }
+        return season.ticks.map { tick in
+            tick.aired
+                ? EpisodeTick(id: tick.id, number: tick.number, watched: true, aired: true)
+                : tick
+        }
+    }
+
     var body: some View {
         Button(action: onOpen) {
             VStack(alignment: .leading, spacing: 0) {
                 deck
                 EpisodeTickMeter(
-                    episodeCount: season.episodeCount,
-                    watchedCount: season.watchedCount,
-                    releasedCount: max(season.releasedCount, season.watchedCount)
+                    ticks: displayTicks,
+                    onToggle: sweeping ? nil : onToggleEpisode
                 )
-                .padding(.top, 9)
+                .padding(.top, 2)
 
                 detailRow
                     .padding(.top, 8)
@@ -160,12 +182,31 @@ struct MyListLandscapeCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             markAllButton
+            bellButton
         }
+    }
+
+    private var bellButton: some View {
+        Button {
+            onBell?()
+        } label: {
+            Image(systemName: notificationsOn ? "bell.fill" : "bell.slash.fill")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(notificationsOn ? .c2bTeal : .c2bDim)
+                .frame(width: 30, height: 30)
+                .background(Color.white.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 9))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 9)
+                        .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     private var markAllButton: some View {
         Button {
-            onMarkAll?()
+            sweepThenMarkAll()
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "checkmark")
@@ -185,6 +226,29 @@ struct MyListLandscapeCard: View {
             )
         }
         .buttonStyle(.plain)
+        .disabled(sweeping)
+    }
+
+    // MARK: - Mark-all sweep
+
+    /// Fills the aired-but-unwatched ticks one by one, then commits the real
+    /// mark-all (which advances the card to the next season).
+    private func sweepThenMarkAll() {
+        guard !sweeping else { return }
+        let hasUnfilled = season.ticks.contains { $0.aired && !$0.watched }
+        guard hasUnfilled else { onMarkAll?(); return }
+
+        sweeping = true
+        forceAllWatched = true    // meter sweeps the fill via its per-tick delay
+
+        // Wait out the sweep (last visible tick's delay + fade) before committing.
+        let visible = Double(min(season.ticks.count, 10))
+        let total = visible * 0.04 + 0.3
+        DispatchQueue.main.asyncAfter(deadline: .now() + total) {
+            onMarkAll?()          // real mutation → season advances / rolls up
+            sweeping = false
+            forceAllWatched = false
+        }
     }
 }
 

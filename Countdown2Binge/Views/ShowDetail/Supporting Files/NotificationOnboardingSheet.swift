@@ -11,6 +11,7 @@ import SwiftUI
 struct NotificationOnboardingOverlay: View {
     let onSave: () -> Void
 
+    @Environment(SeriesManager.self) private var seriesManager
     @StateObject private var settingsStore = NotificationSettingsStore.shared
     @State private var settings = NotificationSettings()
 
@@ -79,7 +80,9 @@ struct NotificationOnboardingOverlay: View {
                 .padding(.horizontal, 16)
 
                 // Save button
-                Button(action: saveDefaults) {
+                Button {
+                    Task { await saveDefaults() }
+                } label: {
                     Text("notif_onboarding_save")
                         .font(.custom(.oswald.bold, size: 15))
                         .tracking(0.45)
@@ -103,9 +106,21 @@ struct NotificationOnboardingOverlay: View {
         }
     }
 
-    private func saveDefaults() {
+    private func saveDefaults() async {
         settingsStore.updateSettings(settings)
         settingsStore.markOnboardingComplete()
+
+        // Ask the OS for notification permission now that the user has opted in.
+        // Without this, `NotificationService.isAuthorized` stays false and every
+        // scheduling attempt in SeriesManager silently bails.
+        let granted = await NotificationService.shared.requestAuthorization()
+
+        // The first followed show's scheduling task already ran (and bailed) before
+        // authorization existed, so reschedule everything once permission is granted.
+        if granted {
+            seriesManager.rescheduleAllNotifications()
+        }
+
         onSave()
     }
 }
@@ -254,7 +269,7 @@ struct NotificationOverlayRow: View {
 
 // MARK: - Finale Row
 
-private struct NotificationOverlayFinaleRow: View {
+struct NotificationOverlayFinaleRow: View {
     @Binding var isOn: Bool
     @Binding var timing: FinaleReminderTiming
 

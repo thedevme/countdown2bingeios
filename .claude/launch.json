@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "c2b-design",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "/Users/craigclayton/apps/appstore/Countdown2Binge/app/claude design/countdown2binge/project"],
+      "port": 8765
+    }
+  ]
+}

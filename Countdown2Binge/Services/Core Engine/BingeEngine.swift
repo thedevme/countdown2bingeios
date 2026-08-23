@@ -103,6 +103,19 @@ enum BingeEngine {
         finaleDate(from: episodes) != nil
     }
 
+    /// Does this season have anything real behind it yet?
+    ///
+    /// TMDB lists a next season as soon as one is ordered — no episodes, no
+    /// air date, nothing but a number. Displaying it claims a season exists
+    /// when there is nothing to show. A season earns its place once it has at
+    /// least one episode, or a stated air date.
+    ///
+    /// Show-axis only (dates and data presence). Watch marks never affect it.
+    /// Anywhere seasons are listed for display, filter on this.
+    static func hasPublishedData(episodes: [EpisodeFact], airDate: Date?) -> Bool {
+        !episodes.isEmpty || airDate != nil
+    }
+
     /// Has the finale-day + 1 grace window fully elapsed?
     /// True starting at the beginning of day +2 after the finale date.
     /// (Rule 2)
@@ -259,6 +272,31 @@ enum BingeEngine {
         let startFinale = calendar.startOfDay(for: finale)
         guard startFinale >= startToday else { return nil }
         return calendar.dateComponents([.day], from: startToday, to: startFinale).day
+    }
+
+    /// Has an episode aired?
+    ///
+    /// Start-of-day, like every other date comparison in this engine: an
+    /// episode dated today counts as aired for the whole day, rather than
+    /// flipping partway through it depending on the timestamp TMDB happened to
+    /// supply. No air date means it hasn't aired.
+    ///
+    /// The single definition — `Episode.hasAired` and `EpisodeData.hasAired`
+    /// both delegate here, so counts, tick meters and countdowns agree.
+    static func hasAired(airDate: Date?, now: Date = Date()) -> Bool {
+        guard let airDate else { return false }
+        return calendar.startOfDay(for: airDate) <= calendar.startOfDay(for: now)
+    }
+
+    /// Episodes of the current season still to air — the episode-count
+    /// counterpart to `daysUntilFinale`, for the days/episodes toggle.
+    /// An episode with no air date counts as still to come.
+    static func episodesUntilFinale(seasons: [SeasonFact], now: Date = Date()) -> Int? {
+        guard let current = currentSeason(seasons: seasons, now: now) else { return nil }
+        return current.episodes
+            .filter { $0.episodeNumber > 0 }
+            .filter { !hasAired(airDate: $0.airDate, now: now) }
+            .count
     }
 
     // MARK: - My List Grouping (Axis 2, with Axis 1 override for archive)

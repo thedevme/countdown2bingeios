@@ -171,6 +171,13 @@ struct SeasonData: Identifiable, Codable, Sendable, Hashable {
         BingeEngine.isSeasonBingeReadyByDate(episodes: episodeFacts)
     }
 
+    /// Has anything real behind it — episodes, or at least an air date.
+    /// False for TMDB's placeholder for an ordered-but-unannounced season.
+    /// (Pure delegation to BingeEngine — same rule the Series model uses.)
+    var hasPublishedData: Bool {
+        BingeEngine.hasPublishedData(episodes: episodeFacts, airDate: airDate)
+    }
+
     /// For unfollowed shows, isBingeReady = date-axis only (no user watch state)
     var isBingeReady: Bool {
         isBingeReadyByDate

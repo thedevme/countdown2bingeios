@@ -852,6 +852,10 @@
 "notif_onboarding_subtitle" = "Choose which alerts you'd like for all your followed shows. You can change this anytime in Settings.";
 "notif_onboarding_save" = "SAVE DEFAULTS";
 "notif_settings_title" = "Notification Settings";
+"notif_show_toggle_title" = "Notifications";
+"notif_show_toggle_on_sub" = "Alerts are on for this show";
+"notif_show_toggle_off_sub" = "Notifications are off for this show";
+"notif_show_settings_title %@" = "%@ Notification Settings";
 
 // Countdown display mode
 "countdown_mode_days" = "Days";
@@ -1324,3 +1328,18 @@
 "settings_taste_genres" = "GENRES";
 "settings_taste_services" = "STREAMING SERVICES";
 "settings_taste_save" = "SAVE";
+
+/* Episode tracker */
+"badge_next" = "NEXT";
+"season_watched_of %lld %lld" = "%lld of %lld watched";
+"label_show" = "SHOW";
+"label_shows" = "SHOWS";
+
+/* Airing overflow rail */
+"airing_rail_more %lld" = "+%lld MORE AIRING";
+"airing_rail_hide %lld" = "HIDE %lld SHOWS";
+"airing_rail_next_days %lld %lld" = "NEXT IN %lld DAYS · THROUGH %lld";
+"airing_rail_next_eps %lld %lld" = "NEXT IN %lld EPS · THROUGH %lld";
+"unit_days" = "days";
+"unit_episode" = "episode";
+"unit_episodes" = "episodes";

@@ -14,6 +14,8 @@ struct TimelineScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(SeriesManager.self) private var seriesManager
     @State private var heroCardIndex: Int = 0
+    /// Days vs episodes — set by the rail's toggle, read by the hero ticker too.
+    @State private var countdownUnit: CountdownDisplayMode = .days
     @State private var showNotificationSettings = false
     @State private var navigationPath = NavigationPath()
     private var profile: UserProfile { ProfileManager.shared.profile }
@@ -48,9 +50,15 @@ struct TimelineScreen: View {
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
-    /// Hero shows for the card stack (airing now, sorted by finale, limited to 5)
+    /// Hero shows for the card stack — three cards, matching what it fans.
     private var heroSeries: [Series] {
-        Array(airingNowSeries.prefix(5))
+        Array(airingNowSeries.prefix(3))
+    }
+
+    /// The hero minimises to three shows up top; every other airing show goes
+    /// in the overflow rail. 12 airing → 3 up top, 9 on the rail.
+    private var overflowAiringSeries: [Series] {
+        Array(airingNowSeries.dropFirst(3))
     }
 
     /// Hero show tuples for HeroCardStack
@@ -59,7 +67,7 @@ struct TimelineScreen: View {
             (
                 show: series.toShowData(),
                 daysUntilFinale: series.daysUntilFinale,
-                episodesUntilFinale: nil,
+                episodesUntilFinale: series.episodesUntilFinale,
                 finaleDate: series.currentSeason?.finaleDate
             )
         }
@@ -74,7 +82,11 @@ struct TimelineScreen: View {
               heroCardIndex < heroShowTuples.count else {
             return nil
         }
-        return heroShowTuples[heroCardIndex].daysUntilFinale
+        let hero = heroShowTuples[heroCardIndex]
+        switch countdownUnit {
+        case .days:     return hero.daysUntilFinale
+        case .episodes: return hero.episodesUntilFinale
+        }
     }
 
     var body: some View {
@@ -119,25 +131,26 @@ struct TimelineScreen: View {
                     // Day Ticker - syncs with current hero card
                     DayTicker(
                         value: currentHeroCountdown,
-                        displayMode: .days
+                        displayMode: countdownUnit
                     )
                     .padding(.vertical, 10)
 
-                    // View Timeline Button
-                    Button(action: { navigationPath.append("fullTimeline") }) {
-                        Text("button_view_timeline")
-                            .monoStyle(size: 11, color: .c2bText)
-                            .padding(.horizontal, 26)
-                            .padding(.vertical, 13)
-                            .background(Color.white.opacity(0.05))
-                            .cornerRadius(13)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 13)
-                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                            )
-                    }
-                    .padding(.top, 6)
-                    .padding(.bottom, 26)
+                    // Airing overflow rail — the airing shows the hero's three
+                    // cards don't cover. Replaces both the standalone "view
+                    // timeline" button and the hero's old "+X MORE" pill.
+                    AiringOverflowRailView(
+                        series: overflowAiringSeries,
+                        onSelect: { navigationPath.append($0) },
+                        onViewAll: { navigationPath.append("fullTimeline") },
+                        unit: $countdownUnit
+                    )
+                    .padding(.horizontal, C2BLayout.horizontalPadding)
+                    .padding(.top, 16)
+
+                    // The thread down into the first section
+                    TimelineDropLine()
+                        .padding(.top, 18)
+                        .padding(.bottom, 20)
 
                     // Premiering Soon Section
                     premieringSoonSection
@@ -543,23 +556,32 @@ struct DayTicker: View {
             Text(String(localized: "today_date \(formattedDate)"))
                 .monoStyle(size: 9.5, color: .c2bMuted)
                 .padding(.top, 12)
-
-            // Gradient line
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [Color.c2bTeal, Color.c2bTeal.opacity(0)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .frame(width: 2, height: 40)
-                .padding(.top, 10)
         }
     }
 
     private var formattedDate: String {
         Date().localizedShortDate
+    }
+}
+
+// MARK: - Timeline Drop Line
+
+/// The teal thread that runs from the ticker area down into the first section.
+/// Split out of DayTicker so the airing overflow rail can sit between the date
+/// line and the thread.
+struct TimelineDropLine: View {
+    var height: CGFloat = 40
+
+    var body: some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    colors: [Color.c2bTeal, Color.c2bTeal.opacity(0)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .frame(width: 2, height: height)
     }
 }
 

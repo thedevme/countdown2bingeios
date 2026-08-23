@@ -7,7 +7,7 @@ import SwiftUI
 
 /// A fanned card stack component for airing shows on the timeline.
 /// Shows are displayed with horizontal swiping to navigate between cards.
-/// Limited to 3 cards max with a "+X MORE" badge for additional shows.
+/// Limited to 3 cards max; extra airing shows live in the overflow rail.
 struct HeroCardStack: View {
     typealias ShowDataTuple = (show: ShowData, daysUntilFinale: Int?, episodesUntilFinale: Int?, finaleDate: Date?)
 
@@ -22,16 +22,6 @@ struct HeroCardStack: View {
     /// Shows visible in the stack (max 3)
     private var visibleShows: [ShowDataTuple] {
         Array(shows.prefix(maxVisibleCards))
-    }
-
-    /// Number of additional shows beyond the 3 visible
-    private var additionalShowsCount: Int {
-        max(0, shows.count - maxVisibleCards)
-    }
-
-    /// The 4th show (for thumbnail in badge)
-    private var nextShow: ShowDataTuple? {
-        shows.count > maxVisibleCards ? shows[maxVisibleCards] : nil
     }
 
     // Default card dimensions (aspect ratio 1.5)
@@ -87,15 +77,9 @@ struct HeroCardStack: View {
                 }
             }
 
-            // "+X MORE" Badge
-            if additionalShowsCount > 0, let nextShow = nextShow {
-                MoreShowsBadge(
-                    count: additionalShowsCount,
-                    nextShowPosterURL: nextShow.show.posterURL
-                )
-                .offset(x: cardSize.width / 2 - 20, y: cardSize.height / 2 - 40)
-                .zIndex(Double(shows.count * 2 + 1))
-            }
+            // The "+X MORE" pill that used to sit here is gone — the airing
+            // overflow rail below the ticker carries that job now, and shows
+            // the extra titles without leaving the timeline.
         }
         .frame(
             width: cardSize.width + (120 * scaleFactor), // Extra space for fanned cards
@@ -203,45 +187,5 @@ struct HeroCardStack: View {
 
     private func goToPreviousShow() {
         currentIndex = (currentIndex - 1 + visibleShows.count) % visibleShows.count
-    }
-}
-
-// MARK: - More Shows Badge
-private struct MoreShowsBadge: View {
-    let count: Int
-    let nextShowPosterURL: URL?
-
-    var body: some View {
-        HStack(spacing: 8) {
-            // Thumbnail of next show
-            if let url = nextShowPosterURL {
-                CachedAsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 26, height: 26)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                } placeholder: {
-                    PlaceholderView(cornerRadius: 5)
-                        .frame(width: 26, height: 26)
-                }
-            }
-
-            Text(String(localized: "hero_more_count \(count)"))
-                .font(.custom(.jetbrains.bold, size: 11))
-                .tracking(1.1)
-                .foregroundColor(.c2bTealBright)
-        }
-        .padding(.leading, 6)
-        .padding(.trailing, 14)
-        .padding(.vertical, 6)
-        .background(
-            Capsule()
-                .fill(Color(hex: "#0e0e0f").opacity(0.9))
-        )
-        .overlay(
-            Capsule()
-                .stroke(Color.c2bTealLine, lineWidth: 1)
-        )
     }
 }

@@ -125,8 +125,9 @@ struct TimelineSectionListView: View {
             )
             .padding(.top, 4)
 
-            // Right: Content
-            VStack(alignment: .leading, spacing: 10) {
+            // Right: Content. Tight spacing — the 45pt count carries its own
+            // line-box padding, so anything larger reads as a wide gap.
+            VStack(alignment: .leading, spacing: 4) {
                 // Header with count
                 SeriesCountHeader(
                     count: seriesList.count,

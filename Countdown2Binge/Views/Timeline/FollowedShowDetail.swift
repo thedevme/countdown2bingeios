@@ -44,14 +44,15 @@ struct FollowedShowDetail: View {
         FranchiseService.shared.franchise(forShowId: series.id)
     }
 
-    init(series: Series, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
+    init(series: Series, initialSeason: Int? = nil, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
         self.series = series
         self.onDismiss = onDismiss
         self.onUnfollow = onUnfollow
         self.onSpinoffTap = onSpinoffTap
-        // Default to current season (not anticipated), falling back to numberOfSeasons
-        let initialSeason = series.currentSeason?.seasonNumber ?? series.numberOfSeasons
-        self._selectedSeason = State(initialValue: initialSeason)
+        // Prefer an explicit season (e.g. the season a My List card is on), else
+        // default to the current season (not anticipated), falling back to count.
+        let fallback = series.currentSeason?.seasonNumber ?? series.numberOfSeasons
+        self._selectedSeason = State(initialValue: initialSeason ?? fallback)
     }
 
     var body: some View {
@@ -71,11 +72,9 @@ struct FollowedShowDetail: View {
                         .padding(.top, 18)
                         .padding(.bottom, 16)
 
-                        // Season picker and status block (only on Season Info tab)
+                        // Status block (only on Season Info tab). The season
+                        // dropdown lives in the tracker below now.
                         if selectedTab == .seasonInfo {
-                            DetailSeasonPicker(series: series, selectedSeason: $selectedSeason)
-                                .padding(.bottom, 16)
-
                             // Status card with countdown + lifecycle + clock
                             DetailStatusBlock(show: show, selectedSeason: selectedSeason)
                                 .padding(.bottom, 16)
@@ -86,7 +85,7 @@ struct FollowedShowDetail: View {
                         case .seasonInfo:
                             SeasonInfoTabContent(
                                 series: series,
-                                selectedSeason: selectedSeason
+                                selectedSeason: $selectedSeason
                             )
 
                         case .showInfo:
@@ -264,12 +263,12 @@ struct FollowedShowDetail: View {
 
 private struct SeasonInfoTabContent: View {
     let series: Series
-    let selectedSeason: Int
+    @Binding var selectedSeason: Int
 
     var body: some View {
         VStack(spacing: 0) {
-            // Episode list
-            DetailEpisodeSection(series: series, selectedSeason: selectedSeason)
+            // Season accordion — the open season reveals its episode tracker.
+            EpisodeTrackerView(series: series, selectedSeason: $selectedSeason)
         }
     }
 }

@@ -15,18 +15,27 @@ struct SeriesCountHeader: View {
     /// Muted color: #71717A
     private let mutedColor = Color(hex: "#71717A")
 
+    private let labelSize: CGFloat = 9.5
+
+    /// SHOW for one, SHOWS for any other count.
+    private var label: String {
+        count == 1
+            ? String(localized: "label_show")
+            : String(localized: "label_shows")
+    }
+
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             // Count number (zero-padded)
             Text(String(format: "%02d", count))
-                .font(.custom(.oswald.bold, size: 30))
+                .font(.custom(.oswald.bold, size: 45))
                 .foregroundColor(accentColor)
 
-            // "SHOWS" label
-            Text("SHOWS")
-                .font(.custom(.jetbrains.bold, size: 9.5))
+            // "SHOW" / "SHOWS" label
+            Text(label)
+                .font(.custom(.jetbrains.bold, size: labelSize))
                 .foregroundColor(mutedColor)
-                .tracking(9.5 * 0.16)
+                .tracking(labelSize * 0.16)
 
             Spacer()
         }

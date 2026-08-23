@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.countdown2binge.refresh</string>
+	</array>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
@@ -22,20 +24,6 @@
 		<string>nl</string>
 		<string>th</string>
 	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Oswald-Bold.ttf</string>
-		<string>Oswald-Light.ttf</string>
-		<string>Oswald-Medium.ttf</string>
-		<string>JetBrainsMono-Bold.ttf</string>
-		<string>JetBrainsMono-Regular.ttf</string>
-	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>NSCameraUsageDescription</key>
-	<string>Countdown2Binge uses your camera to take a profile photo.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Countdown2Binge accesses your photo library to choose a profile photo.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>netflix</string>
@@ -49,9 +37,13 @@
 		<string>showtime</string>
 		<string>amcplus</string>
 	</array>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<key>UIAppFonts</key>
 	<array>
-		<string>com.countdown2binge.refresh</string>
+		<string>Oswald-Bold.ttf</string>
+		<string>Oswald-Light.ttf</string>
+		<string>Oswald-Medium.ttf</string>
+		<string>JetBrainsMono-Bold.ttf</string>
+		<string>JetBrainsMono-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

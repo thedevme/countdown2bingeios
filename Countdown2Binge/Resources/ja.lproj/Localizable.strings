@@ -1014,6 +1014,10 @@
 "notif_onboarding_subtitle" = "フォローしているすべての作品に対して受け取りたい通知を選んでください。いつでも設定で変更できます。";
 "notif_onboarding_save" = "デフォルトを保存";
 "notif_settings_title" = "通知設定";
+"notif_show_toggle_title" = "通知";
+"notif_show_toggle_on_sub" = "この番組の通知はオンです";
+"notif_show_toggle_off_sub" = "この番組の通知はオフです";
+"notif_show_settings_title %@" = "%@の通知設定";
 "profile_choose_photo" = "写真を選択";
 "profile_take_photo" = "写真を撮る";
 "profile_choose_from_library" = "ライブラリから選択";
@@ -1238,3 +1242,18 @@
 "settings_taste_genres" = "ジャンル";
 "settings_taste_services" = "ストリーミングサービス";
 "settings_taste_save" = "保存";
+
+/* Episode tracker */
+"badge_next" = "次";
+"season_watched_of %lld %lld" = "%lld / %lld 視聴済み";
+"label_show" = "作品";
+"label_shows" = "作品";
+
+/* Airing overflow rail */
+"airing_rail_more %lld" = "他 %lld 作品が放送中";
+"airing_rail_hide %lld" = "%lld 作品を隠す";
+"airing_rail_next_days %lld %lld" = "次は %lld 日後 · 最長 %lld";
+"airing_rail_next_eps %lld %lld" = "次は %lld 話後 · 最長 %lld";
+"unit_days" = "日";
+"unit_episode" = "話";
+"unit_episodes" = "話";

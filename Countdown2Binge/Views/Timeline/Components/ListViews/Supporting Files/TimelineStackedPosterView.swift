@@ -16,16 +16,19 @@ struct TimelineStackedPosterView: View {
     let seriesList: [Series]
     var isGrayscale: Bool = false
 
-    // Poster dimensions: 38px wide, 2:3 aspect ratio = 38×57
-    private let posterWidth: CGFloat = 38
-    private let posterHeight: CGFloat = 57
-    private let overlap: CGFloat = 18
+    // Poster dimensions: 80px tall, 2:3 aspect ratio = 53.33×80.
+    // Overlap and container scale off the height so the fan keeps its shape
+    // and still fits — they were tuned against the old 38×57 poster.
+    private let posterHeight: CGFloat = 80
+    private var posterWidth: CGFloat { posterHeight * 2 / 3 }
+    private var overlap: CGFloat { posterWidth * (18 / 38) }
     private let rotationStep: Double = 4  // (i - 1.5) × 4°
-    private let containerWidth: CGFloat = 84  // Fixed width for alignment
+    /// Fixed width so every section's text column starts at the same x.
+    private var containerWidth: CGFloat { posterWidth * (84 / 38) }
 
-    /// Posters to display (max 4)
+    /// Posters to display (max 3)
     private var postersToShow: [Series] {
-        Array(seriesList.prefix(4))
+        Array(seriesList.prefix(3))
     }
 
     var body: some View {

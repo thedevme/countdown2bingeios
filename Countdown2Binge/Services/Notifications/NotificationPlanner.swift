@@ -8,6 +8,18 @@
 
 import Foundation
 import UserNotifications
+import os
+
+// MARK: - Notification Logging
+
+/// Logs to both the unified log (filterable in Console.app / `log stream`) and
+/// stdout (visible in Xcode's console). Registration = a UNNotificationRequest
+/// added; deregistration = a pending request removed.
+nonisolated func logNotif(_ message: String) {
+    Logger(subsystem: "com.countdown2binge", category: "notifications")
+        .log("\(message, privacy: .public)")
+    print("🔔[Notifications] \(message)")
+}
 
 // MARK: - Notification Types
 
@@ -210,10 +222,15 @@ actor NotificationScheduler {
         // Execute changes
         if !toCancel.isEmpty {
             center.removePendingNotificationRequests(withIdentifiers: toCancel)
+            for id in toCancel { logNotif("➖ DEREGISTER \(id)") }
         }
 
         for plan in toAdd {
             await scheduleOne(plan)
+        }
+
+        if toCancel.isEmpty && toAdd.isEmpty {
+            logNotif("• no change for show-\(showId) (\(desired.count) desired, already in sync)")
         }
     }
 
@@ -227,6 +244,7 @@ actor NotificationScheduler {
 
         if !identifiers.isEmpty {
             center.removePendingNotificationRequests(withIdentifiers: identifiers)
+            logNotif("➖ DEREGISTER ALL for show-\(showId): \(identifiers.joined(separator: ", "))")
         }
     }
 
@@ -270,7 +288,12 @@ actor NotificationScheduler {
             trigger: trigger
         )
 
-        try? await center.add(request)
+        do {
+            try await center.add(request)
+            logNotif("🔔 FIRE-NOW \(plan.identifier) — \(plan.showName)")
+        } catch {
+            logNotif("⚠️ FAILED to fire \(plan.identifier): \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Private
@@ -302,7 +325,13 @@ actor NotificationScheduler {
             trigger: trigger
         )
 
-        try? await center.add(request)
+        do {
+            try await center.add(request)
+            let when = plan.fireDate.formatted(date: .abbreviated, time: .omitted)
+            logNotif("➕ REGISTER \(plan.identifier) — \(title(for: plan)) · fires \(when) 9AM · \(plan.showName)")
+        } catch {
+            logNotif("⚠️ FAILED to register \(plan.identifier): \(error.localizedDescription)")
+        }
     }
 
     private func title(for plan: NotificationPlan) -> String {

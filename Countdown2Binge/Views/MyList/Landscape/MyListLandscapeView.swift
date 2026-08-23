@@ -19,6 +19,10 @@ struct MyListLandscapeView: View {
     @State private var tab: LandscapeListTab = .ready
     @State private var archive = MyListArchiveStore()
     @State private var navigationPath = NavigationPath()
+    @State private var notificationSeries: Series?
+    /// Show ids that currently have scheduled notifications — drives the bell
+    /// glyph so it matches the modal's real "scheduled or not" status.
+    @State private var scheduledShowIds: Set<Int> = []
 
     // MARK: - Ready tab (one card per show = the season you're on)
 
@@ -43,7 +47,7 @@ struct MyListLandscapeView: View {
         allSeries
             .filter { !archive.isArchived($0.id) }
             .compactMap { series -> WatchedShow? in
-                let done = series.regularSeasons
+                let done = series.visibleSeasons
                     .filter { $0.hasWatched }
                     .sorted { $0.seasonNumber > $1.seasonNumber }
                 guard !done.isEmpty else { return nil }
@@ -59,7 +63,7 @@ struct MyListLandscapeView: View {
             .filter { archive.isArchived($0.id) }
             .map { series in
                 // Released seasons (complete or already watched), newest first.
-                let released = series.regularSeasons
+                let released = series.visibleSeasons
                     .filter { $0.isBingeReadyByDate || $0.hasWatched }
                     .sorted { $0.seasonNumber > $1.seasonNumber }
                 return makeGridShow(series, seasons: released)
@@ -92,6 +96,9 @@ struct MyListLandscapeView: View {
         case .watching: note = String(format: NSLocalizedString("mylist_ls_note_watched %lld %lld", comment: ""), watched, max(epCount, 1))
         default: note = String(localized: "mylist_ls_note_ready")
         }
+        let ticks = season.sortedEpisodes.map { ep in
+            EpisodeTick(id: ep.id, number: ep.episodeNumber, watched: ep.hasWatched, aired: ep.hasAired)
+        }
         return MyListSeasonDisplay(
             id: "\(series.id)-\(season.seasonNumber)",
             showTitle: series.name,
@@ -103,7 +110,8 @@ struct MyListLandscapeView: View {
             state: state,
             note: note,
             remainingSeasons: remainingSeasons,
-            watchTimeSeconds: season.watchTimeSeconds
+            watchTimeSeconds: season.watchTimeSeconds,
+            ticks: ticks
         )
     }
 
@@ -130,12 +138,39 @@ struct MyListLandscapeView: View {
             .navigationDestination(for: Series.self) { series in
                 FollowedShowDetail(
                     series: series,
+                    // Open on the season the My List card is on (the one you're
+                    // catching up), falling back to the detail view's own default.
+                    initialSeason: series.earliestUnwatchedSeason?.seasonNumber,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: { try? seriesManager.unfollow(id: series.id) }
                 )
             }
         }
         .onAppear { archive.reload() }
+        .task { await refreshScheduledStatus() }
+        .overlay {
+            if let series = notificationSeries {
+                ShowNotificationSettingsOverlay(
+                    series: series,
+                    onDismiss: {
+                        notificationSeries = nil
+                        // Let the save's background reschedule land, then refresh
+                        // the bells so their state matches what was just saved.
+                        Task {
+                            try? await Task.sleep(for: .milliseconds(500))
+                            await refreshScheduledStatus()
+                        }
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(100)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: notificationSeries)
+    }
+
+    private func refreshScheduledStatus() async {
+        scheduledShowIds = await NotificationService.shared.scheduledShowIds()
     }
 
     // MARK: - Header
@@ -228,7 +263,20 @@ struct MyListLandscapeView: View {
                                         seriesId: entry.series.id,
                                         seasonNumber: entry.display.seasonNumber
                                     )
-                                }
+                                },
+                                onToggleEpisode: { tick in
+                                    // Cumulative: tapping an unwatched episode marks
+                                    // everything through it watched; tapping a watched
+                                    // one rolls progress back to just before it.
+                                    let through = tick.watched ? tick.number - 1 : tick.number
+                                    try? seriesManager.setWatchedThrough(
+                                        seriesId: entry.series.id,
+                                        seasonNumber: entry.display.seasonNumber,
+                                        episodeNumber: through
+                                    )
+                                },
+                                notificationsOn: scheduledShowIds.contains(entry.series.id),
+                                onBell: { notificationSeries = entry.series }
                             )
                         }
                     }

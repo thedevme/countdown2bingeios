@@ -35,9 +35,10 @@ final class NotificationService: ObservableObject {
         do {
             let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
             await checkAuthorizationStatus()
+            logNotif(granted ? "✅ OS authorization GRANTED" : "🚫 OS authorization DENIED")
             return granted
         } catch {
-            print("Notification authorization error: \(error)")
+            logNotif("⚠️ authorization error: \(error.localizedDescription)")
             return false
         }
     }
@@ -57,6 +58,30 @@ final class NotificationService: ObservableObject {
     /// Cancel all notifications
     func cancelAllNotifications() {
         center.removeAllPendingNotificationRequests()
+    }
+
+    // MARK: - Status
+
+    /// The pending (scheduled) notification identifiers for a show — the real
+    /// answer to "is this show scheduled right now?". Drives the per-show
+    /// modal's master toggle so it reflects actual status, not stored intent.
+    func scheduledIdentifiers(for showId: Int) async -> [String] {
+        let pending = await center.pendingNotificationRequests()
+        return pending
+            .filter { $0.identifier.hasPrefix("show-\(showId)-") }
+            .map { $0.identifier }
+    }
+
+    /// The set of show ids that currently have at least one scheduled
+    /// notification — drives the My List bell glyph (slashed = not scheduled).
+    func scheduledShowIds() async -> Set<Int> {
+        let pending = await center.pendingNotificationRequests()
+        var ids: Set<Int> = []
+        for request in pending where request.identifier.hasPrefix("show-") {
+            let parts = request.identifier.split(separator: "-")
+            if parts.count >= 2, let id = Int(parts[1]) { ids.insert(id) }
+        }
+        return ids
     }
 
     // MARK: - Debug

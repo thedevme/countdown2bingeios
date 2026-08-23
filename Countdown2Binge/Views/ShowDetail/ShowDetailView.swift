@@ -62,7 +62,11 @@ struct ShowDetailView: View {
         self.onRelatedTap = onRelatedTap
         self.onSpinoffTap = onSpinoffTap
         self.onDismiss = onDismiss
-        self._selectedSeason = State(initialValue: show.numberOfSeasons)
+        // visibleSeasons, not numberOfSeasons: TMDB counts the empty
+        // placeholder it creates the moment a new season is ordered.
+        self._selectedSeason = State(
+            initialValue: show.visibleSeasons.last?.seasonNumber ?? show.numberOfSeasons
+        )
     }
 
     var body: some View {
@@ -110,7 +114,7 @@ struct ShowDetailView: View {
 
                         // Season Bar
                         ShowDetailSeasonBar(
-                            seasonNumber: show.numberOfSeasons,
+                            seasonNumber: show.visibleSeasonCount,
                             status: seasonStatus,
                             episodeInfo: seasonEpisodeInfo
                         )

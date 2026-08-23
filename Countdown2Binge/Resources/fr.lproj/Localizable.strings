@@ -1014,6 +1014,10 @@
 "notif_onboarding_subtitle" = "Choisissez les alertes que vous souhaitez pour toutes vos séries suivies. Vous pouvez changer cela à tout moment dans les Réglages.";
 "notif_onboarding_save" = "ENREGISTRER LES VALEURS PAR DÉFAUT";
 "notif_settings_title" = "Réglages des notifications";
+"notif_show_toggle_title" = "Notifications";
+"notif_show_toggle_on_sub" = "Les alertes sont activées pour cette série";
+"notif_show_toggle_off_sub" = "Les notifications sont désactivées pour cette série";
+"notif_show_settings_title %@" = "Notifications de %@";
 "profile_choose_photo" = "Choisir une photo";
 "profile_take_photo" = "Prendre une photo";
 "profile_choose_from_library" = "Choisir dans la photothèque";
@@ -1238,3 +1242,18 @@
 "settings_taste_genres" = "GENRES";
 "settings_taste_services" = "SERVICES DE STREAMING";
 "settings_taste_save" = "ENREGISTRER";
+
+/* Episode tracker */
+"badge_next" = "SUIVANT";
+"season_watched_of %lld %lld" = "%lld sur %lld vus";
+"label_show" = "SÉRIE";
+"label_shows" = "SÉRIES";
+
+/* Airing overflow rail */
+"airing_rail_more %lld" = "+%lld AUTRES EN COURS";
+"airing_rail_hide %lld" = "MASQUER %lld SÉRIES";
+"airing_rail_next_days %lld %lld" = "PROCHAIN DANS %lld JOURS · JUSQU'À %lld";
+"airing_rail_next_eps %lld %lld" = "PROCHAIN DANS %lld ÉPS · JUSQU'À %lld";
+"unit_days" = "jours";
+"unit_episode" = "épisode";
+"unit_episodes" = "épisodes";

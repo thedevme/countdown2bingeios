@@ -58,6 +58,16 @@ final class Series {
     /// Set to true when synced, false when removed from cloud or user loses premium.
     var isSynced: Bool = false
 
+    /// Master per-show notification switch. When false, NO notifications fire for
+    /// this show regardless of the per-type settings below (which are remembered).
+    /// Mutated only through SeriesManager.updateNotifications(...).
+    var notificationsEnabled: Bool = true
+
+    /// Per-show notification preferences (the four types + finale timing), stored
+    /// as JSON. Seeded from the global defaults at follow-time, then overridable
+    /// per show. Mutated only through SeriesManager.updateNotifications(...).
+    var notificationSettingsJSON: Data?
+
     // MARK: Spinoffs (resolved once at follow-time, stored, never re-fetched)
 
     /// Related franchise/spinoff TMDB ids. Rendered from here — no live lookup.
@@ -110,6 +120,20 @@ final class Series {
         set { relatedShowIdsJSON = encode(newValue) }
     }
 
+    /// Per-show notification settings. Defaults to all-on when never set.
+    var notificationSettings: NotificationSettings {
+        get { decode(notificationSettingsJSON) ?? .default }
+        set { notificationSettingsJSON = encode(newValue) }
+    }
+
+    /// Whether notifications are effectively active for this show — the master
+    /// switch is on AND at least one type is enabled. Drives the bell glyph.
+    var notificationsActive: Bool {
+        guard notificationsEnabled else { return false }
+        let s = notificationSettings
+        return s.seasonPremiere || s.finaleReminder || s.bingeReady || s.newSeason
+    }
+
     // MARK: - Computed metadata
 
     var status: ShowStatus {
@@ -123,9 +147,20 @@ final class Series {
     var spinoffCount: Int { relatedShowIds.count }
 
     /// Regular seasons (excludes specials), sorted ascending.
+    ///
+    /// This is the *data* view — it deliberately still contains TMDB's empty
+    /// placeholder for an ordered-but-unannounced season, because refresh uses
+    /// it to notice a new season was ordered and notifications plan off it.
+    /// For anything the user looks at, use `visibleSeasons`.
     var regularSeasons: [Season] {
         seasons.filter { $0.seasonNumber > 0 }
             .sorted { $0.seasonNumber < $1.seasonNumber }
+    }
+
+    /// Regular seasons that have something real behind them, sorted ascending.
+    /// The list to render anywhere seasons are shown to the user.
+    var visibleSeasons: [Season] {
+        regularSeasons.filter(\.hasPublishedData)
     }
 
     // MARK: - Lifecycle (delegates to BingeEngine — Axis 1)
@@ -206,6 +241,12 @@ final class Series {
 
     var daysUntilFinale: Int? {
         BingeEngine.daysUntilFinale(seasons: seasonFacts)
+    }
+
+    /// Episodes of the current season still to air — the episode-count
+    /// counterpart to `daysUntilFinale`, for the days/episodes toggle.
+    var episodesUntilFinale: Int? {
+        BingeEngine.episodesUntilFinale(seasons: seasonFacts)
     }
 
     /// Which My List tab this show belongs in.
@@ -309,6 +350,12 @@ final class Season {
     var hasStarted: Bool { BingeEngine.hasStarted(episodes: episodeFacts) }
     var hasConfirmedFinale: Bool { BingeEngine.hasConfirmedFinale(episodes: episodeFacts) }
 
+    /// Has anything real behind it — episodes, or at least an air date.
+    /// False for the placeholder TMDB creates the moment a season is ordered.
+    var hasPublishedData: Bool {
+        BingeEngine.hasPublishedData(episodes: episodeFacts, airDate: airDate)
+    }
+
     /// This season's own show-state.
     var showState: ShowState {
         BingeEngine.seasonShowState(episodes: episodeFacts)
@@ -398,9 +445,10 @@ final class Episode {
         String(format: "S%02dE%02d", seasonNumber, episodeNumber)
     }
 
+    /// Start-of-day, via the engine — an episode dated today counts as aired
+    /// for the whole day (R1: the rule lives in BingeEngine, not here).
     var hasAired: Bool {
-        guard let airDate else { return false }
-        return airDate <= Date()
+        BingeEngine.hasAired(airDate: airDate)
     }
 
     var isFinale: Bool { episodeType == .finale }

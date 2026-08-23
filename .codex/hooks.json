@@ -1,0 +1,33 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/craigclayton/apps/appstore/Countdown2Binge/app/Countdown2Binge/.codex/hooks/protect-engine.sh'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/craigclayton/apps/appstore/Countdown2Binge/app/Countdown2Binge/.codex/hooks/protect-structure.sh'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/craigclayton/apps/appstore/Countdown2Binge/app/Countdown2Binge/.codex/hooks/protect-git.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -172,6 +172,8 @@ final class SeriesManager {
 
         let newSeries = SeriesMapper.makeSeries(from: show, in: context)
         newSeries.lastRefreshedAt = .now
+        // Seed per-show notification prefs from the user's global defaults.
+        newSeries.notificationSettings = NotificationSettingsStore.shared.settings
         try context.save()
 
         // Capture ID for background tasks (avoid capturing model object)
@@ -345,6 +347,25 @@ final class SeriesManager {
         syncWatchProgressToCloud()
     }
 
+    /// Set watched progress up to (and including) an episode number: episodes at
+    /// or before it become watched, those after become unwatched. Cumulative
+    /// "watched through here" behavior — like the add-show season selector.
+    func setWatchedThrough(seriesId: Int, seasonNumber: Int, episodeNumber: Int) throws {
+        guard let s = series(id: seriesId),
+              let season = s.regularSeasons.first(where: { $0.seasonNumber == seasonNumber })
+        else { return }
+
+        for episode in season.episodes {
+            let shouldWatch = episode.episodeNumber <= episodeNumber
+            guard episode.hasWatched != shouldWatch else { continue }
+            episode.hasWatched = shouldWatch
+            episode.watchedAt = shouldWatch ? .now : nil
+        }
+        syncSeasonWatchedState(season)
+        try context.save()
+        syncWatchProgressToCloud()
+    }
+
     /// Mark all aired episodes in a season as watched.
     /// Note: season.hasWatched only becomes true if ALL episodes (including unaired)
     /// are watched. For a still-airing season, this correctly leaves hasWatched=false
@@ -506,23 +527,75 @@ final class SeriesManager {
 
     // MARK: - Notifications (Premium-gated)
 
+    /// Update the per-show master switch + notification settings. The write
+    /// funnel (R3). Persists, then reschedules this show — master OFF (or all
+    /// types off) → the plan is empty → everything for the show is cancelled.
+    func updateNotifications(enabled: Bool, settings: NotificationSettings, for series: Series) {
+        series.notificationsEnabled = enabled
+        series.notificationSettings = settings
+        series.lastUpdated = .now
+        try? context.save()
+        logNotif("✎ \(series.name): master=\(enabled) — rescheduling")
+
+        let seriesId = series.id
+        launchBackgroundTask { [container] in
+            let bgContext = ModelContext(container)
+            let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+            guard let s = try? bgContext.fetch(descriptor).first else { return }
+            await self.scheduleNotificationsForShow(s, now: Date())
+        }
+    }
+
+    /// Reschedule notifications for every followed show.
+    /// Called after notification authorization is granted (e.g. from the onboarding
+    /// overlay on first follow). Per-show scheduling on `follow` is skipped while
+    /// authorization is still undetermined, so the first followed show(s) need this
+    /// pass once the user grants permission.
+    func rescheduleAllNotifications() {
+        let now = Date()
+        for series in allSeries() {
+            let seriesId = series.id
+            launchBackgroundTask { [container] in
+                let bgContext = ModelContext(container)
+                let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == seriesId })
+                guard let s = try? bgContext.fetch(descriptor).first else { return }
+                await self.scheduleNotificationsForShow(s, now: now)
+            }
+        }
+    }
+
     /// Schedule notifications for a single show based on current dates and global settings.
     /// Premium-gated: free users get no notifications.
     private func scheduleNotificationsForShow(_ series: Series, now: Date) async {
         // Premium gate: free users get no notifications
-        guard PremiumManager.shared.isPremium else { return }
+        guard PremiumManager.shared.isPremium else {
+            logNotif("⛔️ skip \(series.name): not premium")
+            return
+        }
 
         // Check notification authorization
-        guard NotificationService.shared.isAuthorized else { return }
+        guard NotificationService.shared.isAuthorized else {
+            logNotif("⛔️ skip \(series.name): OS notifications not authorized")
+            return
+        }
 
-        // Get global settings (MainActor access)
-        let settings = NotificationSettingsStore.shared.settings
+        // Master per-show switch: off → cancel everything for this show.
+        guard series.notificationsEnabled else {
+            logNotif("↻ \(series.name): master OFF → deregistering all for this show")
+            await notificationScheduler.applyPlans([], for: series.id)
+            return
+        }
+
+        // Per-show settings (all-off → planNotifications returns [] → applyPlans
+        // cancels everything for this show).
+        let settings = series.notificationSettings
 
         // Extract dates from Series (R2 compliant: reads Series, not ShowData)
         let dateInfo = extractDateInfo(from: series, now: now)
 
         // Plan notifications (pure function)
         let plans = planNotifications(dates: dateInfo, settings: settings, now: now)
+        logNotif("↻ planning \(series.name): premiere=\(settings.seasonPremiere) finale=\(settings.finaleReminder) bingeReady=\(settings.bingeReady) newSeason=\(settings.newSeason) → \(plans.count) to register")
 
         // Apply plans (schedule-once / update-only-on-change pattern)
         await notificationScheduler.applyPlans(plans, for: series.id)
@@ -543,8 +616,8 @@ final class SeriesManager {
         // Check notification authorization
         guard NotificationService.shared.isAuthorized else { return }
 
-        // Get global settings (MainActor access)
-        let settings = NotificationSettingsStore.shared.settings
+        // Per-show setting (defaults to on when the show has no stored prefs).
+        let settings = series(id: seriesId)?.notificationSettings ?? .default
         guard settings.newSeason else { return }
 
         // Find added seasons

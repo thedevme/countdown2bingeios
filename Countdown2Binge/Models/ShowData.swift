@@ -111,6 +111,23 @@ struct ShowData: Identifiable, Codable, Sendable, Hashable {
 
     // MARK: - Lifecycle Helpers
 
+    /// Regular seasons that have something real behind them, ascending.
+    /// The list to render anywhere seasons are shown — TMDB's placeholder for
+    /// an ordered-but-unannounced season is filtered out. Mirrors
+    /// `Series.visibleSeasons`.
+    var visibleSeasons: [SeasonData] {
+        seasons
+            .filter { !$0.isSpecials && $0.hasPublishedData }
+            .sorted { $0.seasonNumber < $1.seasonNumber }
+    }
+
+    /// Seasons the user should be told this show has — TMDB's `numberOfSeasons`
+    /// counts the empty placeholder, so it overstates by one while a new season
+    /// is ordered but unannounced.
+    var visibleSeasonCount: Int {
+        visibleSeasons.count
+    }
+
     /// Current season - the season that is currently airing or most recently completed
     /// Does NOT include anticipated/future seasons that haven't started yet
     var currentSeason: SeasonData? {

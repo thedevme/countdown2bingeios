@@ -1014,6 +1014,10 @@
 "notif_onboarding_subtitle" = "Wähle, welche Alerts du für alle Serien möchtest, denen du folgst. Du kannst das jederzeit in den Einstellungen ändern.";
 "notif_onboarding_save" = "STANDARDS SPEICHERN";
 "notif_settings_title" = "Benachrichtigungseinstellungen";
+"notif_show_toggle_title" = "Benachrichtigungen";
+"notif_show_toggle_on_sub" = "Hinweise für diese Serie sind aktiviert";
+"notif_show_toggle_off_sub" = "Benachrichtigungen für diese Serie sind deaktiviert";
+"notif_show_settings_title %@" = "%@ – Benachrichtigungen";
 "profile_choose_photo" = "Foto auswählen";
 "profile_take_photo" = "Foto aufnehmen";
 "profile_choose_from_library" = "Aus Mediathek wählen";
@@ -1238,3 +1242,18 @@
 "settings_taste_genres" = "GENRES";
 "settings_taste_services" = "STREAMING-DIENSTE";
 "settings_taste_save" = "SPEICHERN";
+
+/* Episode tracker */
+"badge_next" = "NÄCHSTE";
+"season_watched_of %lld %lld" = "%lld von %lld gesehen";
+"label_show" = "SERIE";
+"label_shows" = "SERIEN";
+
+/* Airing overflow rail */
+"airing_rail_more %lld" = "+%lld WEITERE LAUFEN";
+"airing_rail_hide %lld" = "%lld SERIEN AUSBLENDEN";
+"airing_rail_next_days %lld %lld" = "NÄCHSTE IN %lld TAGEN · BIS %lld";
+"airing_rail_next_eps %lld %lld" = "NÄCHSTE IN %lld FOLGEN · BIS %lld";
+"unit_days" = "Tage";
+"unit_episode" = "Folge";
+"unit_episodes" = "Folgen";

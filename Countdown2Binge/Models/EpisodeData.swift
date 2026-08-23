@@ -50,9 +50,9 @@ struct EpisodeData: Identifiable, Codable, Sendable, Hashable {
         String(format: "S%02dE%02d", seasonNumber, episodeNumber)
     }
 
+    /// Start-of-day, via the engine — same rule the Episode model uses.
     var hasAired: Bool {
-        guard let airDate else { return false }
-        return airDate <= Date()
+        BingeEngine.hasAired(airDate: airDate)
     }
 
     var runtimeFormatted: String? {

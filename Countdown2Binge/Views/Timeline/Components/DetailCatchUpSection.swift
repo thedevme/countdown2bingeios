@@ -29,7 +29,7 @@ struct DetailCatchUpSection: View {
 
     /// Prior seasons for catch-up planning
     private var priorSeasons: [SeasonDisplayModel] {
-        series.regularSeasons
+        series.visibleSeasons
             .filter { $0.seasonNumber < (currentSeason?.seasonNumber ?? 1) }
             .map { SeasonDisplayModel(from: $0, isCurrent: false) }
     }
