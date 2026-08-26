@@ -56,13 +56,14 @@ nonisolated struct NotificationPlan: Equatable {
 /// Pure, testable function. No side effects.
 /// Given dates + settings + now → returns what SHOULD be scheduled.
 ///
-/// NOTE: finaleTiming offset is computed from finaleDate (not now),
-/// so "1 week before" is always finaleDate - 7 days regardless of when refresh runs.
+/// NOTE: the finale alert fires ON the finale date, and binge-ready 24 hours
+/// after it. No offsets are subtracted from either — the dates come straight
+/// from TMDB and only the hour is stamped (noon, see `scheduleOne`).
 func planNotifications(
     dates: ShowDateInfo,
     settings: NotificationSettings,
     now: Date,
-    graceWindowDays: Int = 2
+    bingeReadyDelayDays: Int = 1
 ) -> [NotificationPlan] {
     var plans: [NotificationPlan] = []
 
@@ -82,11 +83,14 @@ func planNotifications(
         ))
     }
 
-    // FINALE — if enabled, date exists, reminder date is in future
-    // Offset is computed from finaleDate, NOT from now
+    // FINALE — if enabled, date exists, and it hasn't already passed.
+    // Fires ON the finale date at noon. `settings.finaleTiming` is deliberately
+    // NOT applied: subtracting a day put the alert out before the episode
+    // existed, and the pair (finale, then binge-ready 24h later) only reads
+    // correctly if the first one lands on the day itself.
     if settings.finaleReminder,
        let finale = dates.finaleDate {
-        let reminderDate = settings.finaleTiming.reminderDate(before: finale)
+        let reminderDate = finale
         if reminderDate > now {
             plans.append(NotificationPlan(
                 identifier: "show-\(dates.showId)-finale-s\(seasonNum)",
@@ -99,12 +103,15 @@ func planNotifications(
         }
     }
 
-    // BINGE READY — if enabled, finale date exists, binge date is in future
-    // Timing: finaleDate + grace window. NO user offset.
+    // BINGE READY — if enabled, finale date exists, binge date is in future.
+    // 24 hours after the finale, which lands at noon the following day once
+    // the scheduler stamps the hour. NOT the engine's grace window: that one
+    // governs how long a finished season lingers on the timeline before moving
+    // to My List, and is a separate question from when we tell the user.
     if settings.bingeReady,
        let finale = dates.finaleDate {
         let bingeDate = Calendar.current.date(
-            byAdding: .day, value: graceWindowDays, to: finale
+            byAdding: .day, value: bingeReadyDelayDays, to: finale
         )!
         if bingeDate > now {
             plans.append(NotificationPlan(
@@ -308,11 +315,16 @@ actor NotificationScheduler {
             "type": plan.type.rawValue
         ]
 
-        // Schedule at 9 AM on the fire date
+        // Fire at noon local on the fire date. TMDB carries no air time — its
+        // air_date is date-only — so there is no real release time to honour.
+        // Noon is late enough that a same-day release has landed in most
+        // places, and it never buzzes anyone overnight. A show that airs in
+        // the evening is simply announced a few hours early; for a binge
+        // tracker "the season is complete" is the message, not "it's starting".
         var components = Calendar.current.dateComponents(
             [.year, .month, .day], from: plan.fireDate
         )
-        components.hour = 9
+        components.hour = 12
         components.minute = 0
 
         let trigger = UNCalendarNotificationTrigger(
@@ -328,7 +340,7 @@ actor NotificationScheduler {
         do {
             try await center.add(request)
             let when = plan.fireDate.formatted(date: .abbreviated, time: .omitted)
-            logNotif("➕ REGISTER \(plan.identifier) — \(title(for: plan)) · fires \(when) 9AM · \(plan.showName)")
+            logNotif("➕ REGISTER \(plan.identifier) — \(title(for: plan)) · fires \(when) 12PM · \(plan.showName)")
         } catch {
             logNotif("⚠️ FAILED to register \(plan.identifier): \(error.localizedDescription)")
         }

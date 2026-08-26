@@ -150,7 +150,12 @@ struct AddShowModal: View {
         }
         .background(Color(hex: "#0e0e0f"))
         .ignoresSafeArea(edges: .top)
-        .presentationDetents(addTimePrompt != nil ? [.large] : [.fraction(0.72)])
+        // Same starting height either way. Forcing .large for the catch-up case
+        // stretched the sheet to the full screen regardless of how much content
+        // there was, which stranded the resolution card up near the hero with a
+        // gap of dead space above the pinned Save button. .large stays available
+        // as a second detent so the expanded season grid still has room.
+        .presentationDetents(addTimePrompt != nil ? [.fraction(0.72), .large] : [.fraction(0.72)])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(24)
         .presentationBackground(Color(hex: "#0e0e0f"))

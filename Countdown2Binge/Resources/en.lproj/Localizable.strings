@@ -690,6 +690,35 @@
 "share_until_premiere" = "Until premiere";
 "share_release_pending" = "Release date pending";
 "share_season_complete" = "Season complete";
+"share_stat_now" = "NOW";
+"share_stat_tbd" = "TBD";
+"share_post_text" = "Post text";
+"share_copy" = "Copy";
+"share_copied" = "Copied";
+"share_post_waiting" = "Still waiting.";
+"share_post_complete" = "Season complete.";
+"share_post_just_binged" = "Just binged.";
+"share_post_ready" = "Binge-ready now.";
+"share_post_pending" = "Release date pending.";
+"share_post_season %@" = "Season %@";
+"share_post_days %lld" = "%lld days until binge-ready.";
+"share_tiktok" = "TikTok";
+"share_x" = "X";
+"share_status_pasteboard" = "Card saved to Photos · caption copied — paste it in the post.";
+"share_status_saved" = "Card saved to Photos. That app isn't installed.";
+"share_status_photos_denied" = "Photos access is off, so the card can't be saved. Turn it on in Settings.";
+"share_status_no_messages" = "This device can't send messages.";
+"share_status_failed" = "Couldn't build the card. Try again.";
+"share_saved_title" = "Saved to Photos";
+"share_saved_body %@" = "The card is in your library and the caption is copied. Open %@ and add them to your post.";
+"share_open_app %@" = "Open %@";
+"share_back_to_destinations" = "Choose somewhere else";
+"share_status_saved_only" = "Saved to Photos. The caption is on your clipboard.";
+"share_photos_app" = "Photos";
+"share_save_to_photos" = "Save to Photos";
+"share_status_paste_in_x" = "Opened X. The card is on your clipboard — long-press in the composer and paste it.";
+"share_saved_body_copy %@" = "The card is in your library. Copy the caption below, then open %@ and post.";
+"share_button" = "Share";
 "share_messages" = "Messages";
 "share_instagram" = "Instagram";
 "share_copy_link" = "Copy Link";
@@ -1368,3 +1397,50 @@
 "settings_import_title" = "Import shows";
 "settings_import_subtitle" = "Paste a list and add them all at once";
 "settings_import_premium" = "Premium · paste a list and add them all at once";
+
+/* Follow digest */
+"digest_title" = "Added to your timeline";
+"digest_body %@" = "You're now following %@.";
+"digest_body_more %@ %lld" = "You're now following %@ and %lld more.";
+"settings_premium_locked" = "Premium — upgrade to change";
+"account_premium" = "PREMIUM";
+
+/* Notification copy — delivered text */
+"notif_finale_title" = "Finale is coming";
+"notif_bingeready_title" = "Ready to binge 🍿";
+"notif_newseason_title" = "New season announced";
+"notif_premiere_body %@" = "%@ premieres today. First episode is out.";
+"notif_finale_body %@" = "The %@ finale airs soon — last episode before it's bingeable.";
+"notif_bingeready_body %@" = "All of %@ is out. Start to finish, whenever you want.";
+"notif_newseason_body %@ %lld" = "%@ Season %lld is official. We'll count down from here.";
+
+/* Show alerts sheet */
+"alerts_sheet_title" = "YOUR ALERTS";
+"alerts_sheet_title_edit" = "EDIT ALERTS";
+"alerts_sheet_count %lld %lld" = "%lld of %lld on";
+"alerts_section_this_show %@" = "%@ only";
+"alerts_edit_footnote" = "Turning one off here affects this show only. Global defaults live in Settings.";
+"alerts_button_edit" = "Edit alerts";
+"alerts_button_done" = "Done";
+"alert_badge_new_season" = "New season detected";
+"alert_badge_premiere" = "Season premiere";
+"alert_badge_finale" = "Finale reminder";
+"alert_badge_binge_ready" = "Binge ready";
+"alert_status_sent" = "Already sent";
+"alert_status_awaiting" = "Awaiting date";
+"alert_status_off" = "Turned off";
+"alert_note_sent" = "Already sent";
+"alert_note_awaiting" = "No date announced yet";
+"alert_note_off" = "Turned off for this show";
+
+/* Rating confirm prompt */
+"review_prompt_title" = "Enjoying Countdown2Binge?";
+"review_prompt_message" = "A rating helps other people find it.";
+"review_prompt_rate" = "Rate the app";
+"review_prompt_later" = "Not now";
+
+/* Free-tier show limit sheet */
+"limit_title %lld" = "That's your %lld shows";
+"limit_body %lld" = "The free plan tracks up to %lld shows at once. Unfollow one to make room, or go Premium for unlimited shows, alerts and sync.";
+"limit_upgrade" = "Go Premium";
+"limit_not_now" = "Not now";

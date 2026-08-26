@@ -106,38 +106,41 @@ struct DetailTopBar: View {
                                     .foregroundColor(.white)
                             )
                     }
-                }
+                    // Both dialogs hang off the Menu that raises them. On the
+                    // outer VStack — which fills the screen behind a Spacer —
+                    // iOS 26 anchored them to the whole page and parked the
+                    // bubble in mid-air.
+                    .confirmationDialog(
+                        isArchived
+                            ? String(localized: "alert_unarchive_title")
+                            : String(localized: "alert_archive_title"),
+                        isPresented: $showArchiveConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button(isArchived ? String(localized: "button_unarchive") : String(localized: "button_archive")) {
+                            onArchive?()
+                        }
+                        Button(String(localized: "button_cancel"), role: .cancel) {}
+                    } message: {
+                        Text(isArchived ? "alert_unarchive_message" : "alert_archive_message")
+                    }
+                    .confirmationDialog(
+                        String(localized: "alert_unfollow \(show?.name ?? "")"),
+                        isPresented: $showUnfollowConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button(String(localized: "button_unfollow"), role: .destructive) {
+                            onUnfollow?()
+                        }
+                        Button(String(localized: "button_cancel"), role: .cancel) {}
+                    } message: {
+                        Text("alert_remove_message")
+                    }                }
             }
             .padding(.horizontal, 18)
             .padding(.top, 52)
 
             Spacer()
-        }
-        .confirmationDialog(
-            isArchived
-                ? String(localized: "alert_unarchive_title")
-                : String(localized: "alert_archive_title"),
-            isPresented: $showArchiveConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button(isArchived ? String(localized: "button_unarchive") : String(localized: "button_archive")) {
-                onArchive?()
-            }
-            Button(String(localized: "button_cancel"), role: .cancel) {}
-        } message: {
-            Text(isArchived ? "alert_unarchive_message" : "alert_archive_message")
-        }
-        .confirmationDialog(
-            String(localized: "alert_unfollow \(show?.name ?? "")"),
-            isPresented: $showUnfollowConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button(String(localized: "button_unfollow"), role: .destructive) {
-                onUnfollow?()
-            }
-            Button(String(localized: "button_cancel"), role: .cancel) {}
-        } message: {
-            Text("alert_remove_message")
         }
     }
 

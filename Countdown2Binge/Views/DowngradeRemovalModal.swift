@@ -304,7 +304,11 @@ private struct DowngradeShowCard: View {
         Button(action: onToggle) {
             HStack(spacing: 13) {
                 // Poster
-                PosterView(url: posterURL, width: 46, cornerRadius: 8)
+                // Height is explicit, not inferred. With only a width set,
+                // `.aspectRatio(.fit)` sizes against whatever the row proposes
+                // — here the text column, ~50pt — so the poster came out
+                // near-square instead of 2:3.
+                PosterView(url: posterURL, width: 46, height: 69, cornerRadius: 8)
                     .grayscale(isMarked ? 0.7 : 0)
                     .brightness(isMarked ? -0.45 : 0)
                     .animation(.easeOut(duration: 0.15), value: isMarked)

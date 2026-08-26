@@ -158,7 +158,6 @@ struct OnboardingFlow: View {
     var onComplete: (_ plan: String, _ shows: [ShowSummary]) -> Void
 
     /// System App Store rating prompt, triggered by the review step.
-    @Environment(\.requestReview) private var requestReview
 
     @State private var step = 0
     @State private var followed: [ShowSummary] = []
@@ -170,11 +169,11 @@ struct OnboardingFlow: View {
     @State private var selectedPlan = "yearly"
 
     private let data = OnboardingDataLoader.shared
-    private let total = 18
+    private let total = 17
     /// Bare, full-screen timeline walkthrough sits between "Add Shows" and "Four States".
     private let walkthroughStep = 10
     /// Final step is the RevenueCat paywall (full-screen, its own chrome).
-    private let paywallStep = 17
+    private let paywallStep = 16
     private var size: Int { followed.count }
 
     /// Preferences drafted from the in-flow selections, used to seed the add-shows
@@ -251,11 +250,13 @@ struct OnboardingFlow: View {
         case 9: OBAddShowsSlide(preferences: draftPreferences, selected: $followed)
         // 10: timeline walkthrough · 17: paywall — both handled in body
         case 11: OBBucketsSlide()
-        case 12: OBReviewSlide(count: max(size, 3))
-        case 13: OBNotifPrimeSlide()
-        case 14: OBSummarySlide(count: max(size, 3))
-        case 15: OBCommitmentSlide(answer: $tired)
-        case 16: OBPriceAnchorSlide(services: services)
+        // The App Store rating slide that used to sit here was removed:
+        // Guideline 5.6.3 forbids requesting a rating during onboarding.
+        // Rating is now asked later, from real usage — see ReviewPrompt.
+        case 12: OBNotifPrimeSlide()
+        case 13: OBSummarySlide(count: max(size, 3))
+        case 14: OBCommitmentSlide(answer: $tired)
+        case 15: OBPriceAnchorSlide(services: services)
         default: EmptyView()
         }
     }
@@ -276,9 +277,8 @@ struct OnboardingFlow: View {
         case 5: m.disabled = services.isEmpty
         case 6: m.disabled = behavior == nil
         case 9: m.disabled = size == 0
-        case 12: m.onCta = { requestReview(); next() }   // review step → App Store rating prompt
-        case 13: m.onCta = { showSystemPrompt = true }
-        case 15: m.disabled = tired == nil
+        case 12: m.onCta = { showSystemPrompt = true }
+        case 14: m.disabled = tired == nil
         default: break
         }
         return m
@@ -299,19 +299,17 @@ struct OnboardingFlow: View {
             ? String(format: NSLocalizedString("onboarding_add_shows_button %lld", comment: ""), size)
             : "ADD THREE TO START"
         case 11: return data.bucketsSlide?.buttonText
-        case 12: return data.reviewPromptSlide?.buttonText
-        case 13: return data.notifPrimingSlide?.buttonText
-        case 14: return data.journeySummarySlide?.buttonText
-        case 15: return data.commitmentQuestion?.buttonText
-        case 16: return data.priceAnchorSlide?.buttonText
+        case 12: return data.notifPrimingSlide?.buttonText
+        case 13: return data.journeySummarySlide?.buttonText
+        case 14: return data.commitmentQuestion?.buttonText
+        case 15: return data.priceAnchorSlide?.buttonText
         default: return nil
         }
     }
 
     private func secondaryLabel(_ step: Int) -> String? {
         switch step {
-        case 12: return data.reviewPromptSlide?.buttonTextAlt
-        case 13: return data.notifPrimingSlide?.buttonTextAlt
+        case 12: return data.notifPrimingSlide?.buttonTextAlt
         default: return nil
         }
     }

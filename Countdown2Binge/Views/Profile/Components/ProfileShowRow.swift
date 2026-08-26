@@ -32,7 +32,10 @@ struct ProfileShowRow: View {
         Button(action: onTap) {
             HStack(spacing: 13) {
                 // Poster
-                PosterView(url: posterURL, width: 42, cornerRadius: 7)
+                // Explicit 2:3 pair. With only a width set, the height came
+                // from whatever the row proposed and the poster rendered
+                // squeezed — this pins the real poster ratio.
+                PosterView(url: posterURL, width: 48, height: 72, cornerRadius: 7)
                     .grayscale(isSynced ? 0 : 0.6)
                     .brightness(isSynced ? 0 : -0.35)
 

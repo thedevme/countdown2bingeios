@@ -205,13 +205,18 @@ struct PaywallView: View {
                         .tracking(0.5)
                         .padding(.top, 8)
 
-                    // Footer links
+                    // Footer links.
+                    // Terms and Privacy MUST open real pages: App Store guideline
+                    // 3.1.2(c) requires a *functional* link to both from inside
+                    // any screen selling an auto-renewable subscription. These
+                    // were empty-action buttons and the app was rejected for it.
+                    // Same URLs the Settings screen links to.
                     HStack(spacing: 16) {
                         Button("RESTORE") { handleRestore() }
                         Text("·").foregroundColor(.c2bMuted)
-                        Button("TERMS") { }
+                        Link("TERMS", destination: URL(string: "https://countdown2binge.app/terms")!)
                         Text("·").foregroundColor(.c2bMuted)
-                        Button("PRIVACY") { }
+                        Link("PRIVACY", destination: URL(string: "https://countdown2binge.app/privacy")!)
                     }
                     .font(.custom(.jetbrains.regular, size: 10))
                     .foregroundColor(.c2bMuted)

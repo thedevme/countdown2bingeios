@@ -31,6 +31,21 @@ final class NotificationService: ObservableObject {
         isAuthorized = settings.authorizationStatus == .authorized
     }
 
+    /// Ask the system directly instead of trusting `isAuthorized`.
+    ///
+    /// `isAuthorized` is a cached @Published flag seeded once in `init` and
+    /// refreshed only after `requestAuthorization()`. Anything that gates on it
+    /// can therefore read a stale `false` — the user is authorized, the flag
+    /// hasn't caught up, and scheduling is skipped with no error. Scheduling
+    /// paths must use this instead.
+    ///
+    /// Provisional counts: those notifications are delivered, just quietly.
+    func currentlyAuthorized() async -> Bool {
+        let settings = await center.notificationSettings()
+        return settings.authorizationStatus == .authorized
+            || settings.authorizationStatus == .provisional
+    }
+
     func requestAuthorization() async -> Bool {
         do {
             let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])

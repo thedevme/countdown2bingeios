@@ -142,7 +142,12 @@ struct MyListLandscapeView: View {
                     // catching up), falling back to the detail view's own default.
                     initialSeason: series.earliestUnwatchedSeason?.seasonNumber,
                     onDismiss: { navigationPath.removeLast() },
-                    onUnfollow: { try? seriesManager.unfollow(id: series.id) }
+                    onUnfollow: {
+                        // Same detail screen as the timeline's — wait for the
+                        // iCloud delete rather than firing and hoping.
+                        let id = series.id
+                        Task { try? await seriesManager.unfollowAwaitingCloud(id: id) }
+                    }
                 )
             }
         }

@@ -19,6 +19,7 @@ struct FollowedShowDetail: View {
     @State private var showUnfollowConfirmation = false
     @State private var selectedTab: FollowedDetailTab = .seasonInfo
     @State private var isArchived: Bool = false
+    @State private var showAlerts = false
 
     // Data for Show Info tab (fetched on appear)
     @State private var cast: [TMDBCastMember] = []
@@ -37,6 +38,13 @@ struct FollowedShowDetail: View {
     // Spinoff count from stored data (set when show was followed)
     private var spinoffCount: Int {
         series.spinoffCount
+    }
+
+    /// Spin-offs are a premium feature, same as on the unfollowed detail view.
+    /// The tab is hidden outright rather than shown locked — a followed show is
+    /// somewhere the user already lives, and a dead tab there reads as broken.
+    private var canShowSpinoffs: Bool {
+        PremiumManager.shared.canViewSpinoffs && spinoffCount > 0
     }
 
     // Franchise data for displaying spinoffs tab content
@@ -67,7 +75,7 @@ struct FollowedShowDetail: View {
                         // MARK: - Segmented Tab Bar
                         FollowedDetailTabBar(
                             selectedTab: $selectedTab,
-                            showSpinoffs: spinoffCount > 0
+                            showSpinoffs: canShowSpinoffs
                         )
                         .padding(.top, 18)
                         .padding(.bottom, 16)
@@ -97,11 +105,15 @@ struct FollowedShowDetail: View {
                             )
 
                         case .spinoffs:
-                            ShowDetailSpinoffsSection(
-                                show: show,
-                                franchise: franchise,
-                                onSpinoffTap: onSpinoffTap
-                            )
+                            // Reachable only while the tab is visible; the guard
+                            // covers a downgrade landing mid-view.
+                            if canShowSpinoffs {
+                                ShowDetailSpinoffsSection(
+                                    show: show,
+                                    franchise: franchise,
+                                    onSpinoffTap: onSpinoffTap
+                                )
+                            }
                         }
 
                         // Unfollow — full-width destructive action at the page bottom
@@ -120,6 +132,21 @@ struct FollowedShowDetail: View {
                         }
                         .buttonStyle(.plain)
                         .padding(.top, 36)
+                        // Attached to the button, not the page. iOS 26 anchors a
+                        // confirmation dialog to the view it is attached to, so
+                        // hanging it off the outer ZStack floated it up by the
+                        // toolbar with a tail pointing at nothing.
+                        .confirmationDialog(
+                            String(localized: "alert_unfollow \(series.name)"),
+                            isPresented: $showUnfollowConfirmation,
+                            titleVisibility: .visible
+                        ) {
+                            Button(String(localized: "button_unfollow"), role: .destructive) {
+                                onUnfollow()
+                                onDismiss()
+                            }
+                            Button(String(localized: "button_cancel"), role: .cancel) {}
+                        }
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 20)
@@ -139,6 +166,23 @@ struct FollowedShowDetail: View {
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
         .toolbar {
+            // Alerts bell — premium only, like every other notification
+            // surface. Free users get no notifications, so there is nothing
+            // for this sheet to show them.
+            if PremiumManager.shared.isPremium {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAlerts = true
+                    } label: {
+                        Image(systemName: series.notificationsActive ? "bell.fill" : "bell.slash.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(series.notificationsActive ? .c2bTealBright : .c2bMuted)
+                    }
+                }
+            }
+
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     // Watch Now
@@ -177,22 +221,19 @@ struct FollowedShowDetail: View {
             }
             .sharedBackgroundVisibility(.hidden)
         }
-        .confirmationDialog(
-            String(localized: "alert_unfollow \(series.name)"),
-            isPresented: $showUnfollowConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button(String(localized: "button_unfollow"), role: .destructive) {
-                onUnfollow()
-                onDismiss()
-            }
-            Button(String(localized: "button_cancel"), role: .cancel) {}
+        .sheet(isPresented: $showAlerts) {
+            ShowAlertsSheet(series: series, onDismiss: { showAlerts = false })
         }
         .task {
             await loadShowInfo()
         }
         .onAppear {
             loadArchiveState()
+            // Premium can lapse while this view is on screen; don't strand the
+            // user on a tab that no longer has a bar entry or any content.
+            if selectedTab == .spinoffs, !canShowSpinoffs {
+                selectedTab = .seasonInfo
+            }
         }
     }
 

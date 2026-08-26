@@ -48,7 +48,8 @@ struct ProfileScreen: View {
 
                         Spacer()
 
-                        // Share button
+                        // Share button — premium only, same as the card's.
+                        if isPremium {
                         Button(action: { showShareSheet = true }) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 16, weight: .medium))
@@ -60,6 +61,7 @@ struct ProfileScreen: View {
                                     Circle()
                                         .stroke(Color.white.opacity(0.12), lineWidth: 1)
                                 )
+                        }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -152,7 +154,12 @@ struct ProfileScreen: View {
                 EditProfileScreen(isPremium: isPremium)
             }
             .overlay {
-                if showShareSheet {
+                // Premium only, checked at the presentation rather than only on
+                // the buttons: both entry points are already gated, but nothing
+                // stopped the sheet itself from appearing if the flag were set
+                // any other way. Sharing a lineup is a paid feature outright —
+                // there is no free version of it.
+                if showShareSheet, isPremium {
                     LineupShareSheet(
                         profile: profile,
                         shows: followedShows,

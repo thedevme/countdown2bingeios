@@ -19,22 +19,9 @@ struct ShowDetailView: View {
     let onPlayTap: () -> Void
     let onTimelineTap: () -> Void
     let onRelatedTap: (TMDBShowSummary) -> Void
-    let onSpinoffTap: (Int) -> Void  // TMDB ID of spinoff
     let onDismiss: () -> Void
 
     @State private var selectedSeason: Int
-    @State private var selectedTab: ShowDetailTab = .episodes
-
-    // Franchise data for spinoffs
-    private var franchise: Franchise? {
-        let result = FranchiseService.shared.franchise(forShowId: show.id)
-        print("DEBUG ShowDetail: Looking up franchise for show.id=\(show.id) (\(show.name)), found: \(result?.localizedName() ?? "nil")")
-        return result
-    }
-
-    private var spinoffCount: Int {
-        franchise?.spinoffs.count ?? 0
-    }
 
     init(
         show: ShowData,
@@ -47,7 +34,6 @@ struct ShowDetailView: View {
         onPlayTap: @escaping () -> Void = {},
         onTimelineTap: @escaping () -> Void = {},
         onRelatedTap: @escaping (TMDBShowSummary) -> Void = { _ in },
-        onSpinoffTap: @escaping (Int) -> Void = { _ in },
         onDismiss: @escaping () -> Void
     ) {
         self.show = show
@@ -60,7 +46,6 @@ struct ShowDetailView: View {
         self.onPlayTap = onPlayTap
         self.onTimelineTap = onTimelineTap
         self.onRelatedTap = onRelatedTap
-        self.onSpinoffTap = onSpinoffTap
         self.onDismiss = onDismiss
         // visibleSeasons, not numberOfSeasons: TMDB counts the empty
         // placeholder it creates the moment a new season is ordered.
@@ -139,27 +124,6 @@ struct ShowDetailView: View {
                             episodeCount: show.currentSeason?.episodeCount ?? 8
                         )
                         .padding(.top, 12)
-
-                        // Episodes / Spin-offs Tab Switcher (Premium feature)
-                        if PremiumManager.shared.canViewSpinoffs && spinoffCount > 0 {
-                            ShowDetailTabSwitcher(
-                                selectedTab: $selectedTab,
-                                showCatchUp: false,
-                                showSpinoffs: true,
-                                spinoffCount: spinoffCount
-                            )
-                            .padding(.top, 26)
-
-                            // Tab Content
-                            if selectedTab == .spinoffs {
-                                ShowDetailSpinoffsSection(
-                                    show: show,
-                                    franchise: franchise,
-                                    onSpinoffTap: onSpinoffTap
-                                )
-                            }
-                            // Episodes tab content would go here (episode tracker)
-                        }
 
                         // Trailers & Previews
                         ShowDetailTrailersSection(videos: videos)

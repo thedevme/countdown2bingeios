@@ -61,6 +61,9 @@ struct SettingsRowChevron: View {
                     }
                 }
             )
+            // Whole row is the tap target — without this the gap between
+            // the title and the chevron isn't hit-testable under .plain.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -171,6 +174,9 @@ struct SettingsRowAction: View {
                     }
                 }
             )
+            // Whole row is the tap target — without this the gap between
+            // the title and the chevron isn't hit-testable under .plain.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -203,6 +209,9 @@ struct SettingsRowDanger: View {
                     }
                 }
             )
+            // Whole row is the tap target — without this the gap between
+            // the title and the chevron isn't hit-testable under .plain.
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

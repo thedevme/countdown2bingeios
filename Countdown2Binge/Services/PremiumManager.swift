@@ -12,12 +12,27 @@ import RevenueCat
 final class PremiumManager {
     static let shared = PremiumManager()
 
+    /// Live entitlement feed from RevenueCat. Held so it can be cancelled and
+    /// restarted, and so it isn't torn down by ARC.
+    private var customerInfoTask: Task<Void, Never>?
+
+    /// Purchases.configure() has run. RevenueCat traps if `Purchases.shared` is
+    /// touched before that, so every entry point goes through
+    /// `ensureConfigured()` rather than assuming launch got there first.
+    private var isConfigured = false
+
     // MARK: - TestFlight Detection
 
-    /// Returns true if the app is running from TestFlight (sandbox receipt)
-    static var isTestFlight: Bool {
+    /// True when the build carries a sandbox receipt.
+    ///
+    /// ⚠️ This does NOT mean "TestFlight". App Review builds carry a sandbox
+    /// receipt as well, and so does any build a reviewer runs. There is no API
+    /// that separates the two — both are sandbox. Treat this as "not the App
+    /// Store production environment", nothing more. NEVER grant entitlements
+    /// from it — premium comes from RevenueCat and nowhere else.
+    static var hasSandboxReceipt: Bool {
         #if DEBUG
-        return false // Not TestFlight in debug builds
+        return false
         #else
         guard let receiptURL = Bundle.main.appStoreReceiptURL else { return false }
         return receiptURL.lastPathComponent == "sandboxReceipt"
@@ -54,35 +69,6 @@ final class PremiumManager {
 
     /// Number of shows when grace period started
     private(set) var gracePeriodShowCount: Int = 0
-
-    #if DEBUG
-    private static let debugPremiumKey = "PremiumManager.debugPremiumOverride"
-
-    /// Debug override to simulate premium status (DEBUG builds only)
-    /// Persisted to UserDefaults so it survives app relaunch
-    var debugPremiumOverride: Bool = UserDefaults.standard.bool(forKey: debugPremiumKey) {
-        didSet {
-            UserDefaults.standard.set(debugPremiumOverride, forKey: Self.debugPremiumKey)
-            if debugPremiumOverride {
-                isPremium = true
-                didDowngradeFromPremium = false
-                print("PremiumManager: DEBUG - Premium enabled via override")
-            } else {
-                // When toggled off, simulate downgrade
-                let wasPremium = isPremium
-                isPremium = false
-                if wasPremium {
-                    didDowngradeFromPremium = true
-                    print("PremiumManager: DEBUG - Simulated downgrade from premium")
-                }
-                print("PremiumManager: DEBUG - Premium disabled, checking real entitlements...")
-                Task {
-                    await checkEntitlements()
-                }
-            }
-        }
-    }
-    #endif
 
     /// Days remaining in trial
     var trialDaysRemaining: Int? {
@@ -130,18 +116,11 @@ final class PremiumManager {
     // MARK: - Initialization
 
     private init() {
-        #if DEBUG
-        // Auto-enable premium for DEBUG builds (simulator)
-        isPremium = true
-        print("PremiumManager: DEBUG build - Premium auto-enabled")
-        #endif
-
-        // Auto-enable premium for TestFlight builds
-        if Self.isTestFlight {
-            isPremium = true
-            isBetaTester = true
-            print("PremiumManager: TestFlight build detected - Premium auto-enabled")
-        }
+        // Informational only. Premium is NEVER granted from the receipt type:
+        // App Review runs on a sandbox receipt just like TestFlight, so doing
+        // that handed reviewers a fully unlocked app and they never saw the
+        // free tier or a working paywall.
+        isBetaTester = Self.hasSandboxReceipt
     }
 
     // MARK: - Show Limit
@@ -176,29 +155,22 @@ final class PremiumManager {
             return
         }
 
-        #if DEBUG
-        Purchases.logLevel = .debug
-        #endif
-
+        guard !isConfigured else { return }
         Purchases.configure(withAPIKey: apiKey)
+        isConfigured = true
+
         await checkEntitlements()
+        startListeningForEntitlementChanges()
+
     }
 
     // MARK: - Entitlement Checking
 
     /// Check current entitlements and update state
     func checkEntitlements() async {
-        #if DEBUG
-        // Skip entitlement check for DEBUG builds - always premium
-        return
-        #else
-        // Skip entitlement check for TestFlight - premium is always enabled
-        if Self.isTestFlight {
-            return
-        }
-
         let apiKey = Self.apiKey
         guard !apiKey.isEmpty else { return }
+        guard isConfigured else { return }   // configure() calls us right after it sets this
 
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
@@ -206,7 +178,39 @@ final class PremiumManager {
         } catch {
             print("PremiumManager: Failed to check entitlements - \(error)")
         }
-        #endif
+    }
+
+    /// Configure on demand. Safe to call from anywhere, any number of times —
+    /// removes the ordering dependency between app launch and the paywall.
+    private func ensureConfigured() async {
+        guard !isConfigured else { return }
+        await configure()
+    }
+
+    /// Apply entitlement changes as RevenueCat reports them.
+    ///
+    /// Without this, `isPremium` was only ever computed at launch: a trial that
+    /// expired, a cancellation, a refund, or a purchase made on another device
+    /// wouldn't register until the user force-quit and relaunched — so someone
+    /// could keep premium they no longer had, or pay and not receive it.
+    ///
+    /// `customerInfoStream` yields the current value immediately and then every
+    /// subsequent change, including renewals and expiries.
+    private func startListeningForEntitlementChanges() {
+        customerInfoTask?.cancel()
+        customerInfoTask = Task { [weak self] in
+            for await info in Purchases.shared.customerInfoStream {
+                guard let self else { return }
+                self.updateState(from: info)
+            }
+        }
+    }
+
+    /// Re-ask RevenueCat for the truth. Call when the app returns to the
+    /// foreground: a subscription can lapse while the app is backgrounded, and
+    /// the stream may not have been running to catch it.
+    func refreshEntitlements() async {
+        await checkEntitlements()
     }
 
     /// Update internal state from CustomerInfo
@@ -246,7 +250,8 @@ final class PremiumManager {
     /// Fetch available offerings from RevenueCat
     /// - Returns: Available offerings
     func getOfferings() async throws -> Offerings {
-        try await Purchases.shared.offerings()
+        await ensureConfigured()
+        return try await Purchases.shared.offerings()
     }
 
     // MARK: - Purchase
@@ -255,6 +260,7 @@ final class PremiumManager {
     /// - Parameter package: The package to purchase
     /// - Returns: `true` if purchase completed, `false` if user cancelled
     func purchase(package: Package) async throws -> Bool {
+        await ensureConfigured()
         print("PremiumManager: Starting purchase for \(package.identifier)")
         do {
             let result = try await Purchases.shared.purchase(package: package)
@@ -278,6 +284,7 @@ final class PremiumManager {
 
     /// Restore previous purchases
     func restorePurchases() async throws {
+        await ensureConfigured()
         let customerInfo = try await Purchases.shared.restorePurchases()
         updateState(from: customerInfo)
     }

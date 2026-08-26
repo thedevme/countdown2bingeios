@@ -18,15 +18,21 @@ import CloudKit
 
 // MARK: - Test Fixtures
 
-/// A fixed reference date for all tests. All dates are relative to this.
+/// Reference point for every date in this file. Deliberately the REAL clock,
+/// not a frozen date.
+///
+/// These are integration tests over SwiftData models, and those models' air-date
+/// properties go through `BingeEngine.hasAired(airDate:now:)` with `now`
+/// defaulting to `Date()` — the real today. A frozen reference silently rots:
+/// it was 2026-08-15, so by late August "airs in 5 days" had become a date in
+/// the past, episodes counted as aired, and three tests failed for reasons that
+/// looked like engine bugs and weren't.
+///
+/// Anchored to noon so a test that shifts by whole days can't trip over a
+/// daylight-saving boundary.
 private let testNow: Date = {
-    var components = DateComponents()
-    components.year = 2026
-    components.month = 8
-    components.day = 15
-    components.hour = 12
-    components.minute = 0
-    return Calendar.current.date(from: components)!
+    let now = Date()
+    return Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: now) ?? now
 }()
 
 /// Helper to create a date relative to the reference date.

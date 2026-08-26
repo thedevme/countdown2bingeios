@@ -578,6 +578,35 @@
 "share_until_premiere" = "Hasta el estreno";
 "share_release_pending" = "Fecha de estreno pendiente";
 "share_season_complete" = "Temporada completa";
+"share_stat_now" = "YA";
+"share_stat_tbd" = "POR DEFINIR";
+"share_post_text" = "Texto de la publicación";
+"share_copy" = "Copiar";
+"share_copied" = "Copiado";
+"share_post_waiting" = "Sigo esperando.";
+"share_post_complete" = "Temporada completa.";
+"share_post_just_binged" = "Recién maratoneada.";
+"share_post_ready" = "Lista para maratonear.";
+"share_post_pending" = "Fecha de estreno pendiente.";
+"share_post_season %@" = "Temporada %@";
+"share_post_days %lld" = "%lld días para maratonear.";
+"share_tiktok" = "TikTok";
+"share_x" = "X";
+"share_status_pasteboard" = "Tarjeta guardada en Fotos · texto copiado — pégalo en la publicación.";
+"share_status_saved" = "Tarjeta guardada en Fotos. Esa app no está instalada.";
+"share_status_photos_denied" = "El acceso a Fotos está desactivado y la tarjeta no se puede guardar. Actívalo en Ajustes.";
+"share_status_no_messages" = "Este dispositivo no puede enviar mensajes.";
+"share_status_failed" = "No se pudo crear la tarjeta. Inténtalo de nuevo.";
+"share_saved_title" = "Guardado en Fotos";
+"share_saved_body %@" = "La tarjeta está en tu fototeca y el texto está copiado. Abre %@ y añádelos a tu publicación.";
+"share_open_app %@" = "Abrir %@";
+"share_back_to_destinations" = "Elegir otro destino";
+"share_status_saved_only" = "Guardado en Fotos. El texto está en el portapapeles.";
+"share_photos_app" = "Fotos";
+"share_save_to_photos" = "Guardar en Fotos";
+"share_status_paste_in_x" = "Se abrió X. La tarjeta está en el portapapeles: mantén pulsado en el editor y pégala.";
+"share_saved_body_copy %@" = "La tarjeta está en tu fototeca. Copia el texto abajo, luego abre %@ y publica.";
+"share_button" = "Compartir";
 "share_messages" = "Mensajes";
 "share_instagram" = "Instagram";
 "share_copy_link" = "Copiar Enlace";
@@ -1280,3 +1309,50 @@
 "settings_import_title" = "Importar series";
 "settings_import_subtitle" = "Pega una lista y añádelas todas de una vez";
 "settings_import_premium" = "Premium · pega una lista y añádelas todas de una vez";
+
+/* Follow digest */
+"digest_title" = "Añadidas a tu timeline";
+"digest_body %@" = "Ahora sigues %@.";
+"digest_body_more %@ %lld" = "Ahora sigues %@ y %lld más.";
+"settings_premium_locked" = "Premium — mejora para cambiar";
+"account_premium" = "PREMIUM";
+
+/* Notification copy — delivered text */
+"notif_finale_title" = "El final se acerca";
+"notif_bingeready_title" = "Listo para maratón 🍿";
+"notif_newseason_title" = "Nueva temporada anunciada";
+"notif_premiere_body %@" = "%@ se estrena hoy. El primer episodio ya está disponible.";
+"notif_finale_body %@" = "El final de %@ se acerca — el último episodio antes de poder verla entera.";
+"notif_bingeready_body %@" = "%@ está completa. De principio a fin, cuando quieras.";
+"notif_newseason_body %@ %lld" = "La temporada %2$lld de %1$@ es oficial. Empezamos la cuenta atrás.";
+
+/* Show alerts sheet */
+"alerts_sheet_title" = "TUS AVISOS";
+"alerts_sheet_title_edit" = "EDITAR AVISOS";
+"alerts_sheet_count %lld %lld" = "%lld de %lld activos";
+"alerts_section_this_show %@" = "Solo %@";
+"alerts_edit_footnote" = "Desactivarlo aquí afecta solo a esta serie. Los valores globales están en Ajustes.";
+"alerts_button_edit" = "Editar avisos";
+"alerts_button_done" = "Listo";
+"alert_badge_new_season" = "Nueva temporada detectada";
+"alert_badge_premiere" = "Estreno de temporada";
+"alert_badge_finale" = "Recordatorio del final";
+"alert_badge_binge_ready" = "Listo para maratón";
+"alert_status_sent" = "Ya enviado";
+"alert_status_awaiting" = "Sin fecha";
+"alert_status_off" = "Desactivado";
+"alert_note_sent" = "Ya enviado";
+"alert_note_awaiting" = "Aún sin fecha anunciada";
+"alert_note_off" = "Desactivado para esta serie";
+
+/* Rating confirm prompt */
+"review_prompt_title" = "¿Te gusta Countdown2Binge?";
+"review_prompt_message" = "Una valoración ayuda a que otros la encuentren.";
+"review_prompt_rate" = "Valorar la app";
+"review_prompt_later" = "Ahora no";
+
+/* Free-tier show limit sheet */
+"limit_title %lld" = "Ya tienes %lld series";
+"limit_body %lld" = "El plan gratuito sigue hasta %lld series a la vez. Deja de seguir una para hacer sitio, o pásate a Premium para tener series ilimitadas, avisos y sincronización.";
+"limit_upgrade" = "Hazte Premium";
+"limit_not_now" = "Ahora no";

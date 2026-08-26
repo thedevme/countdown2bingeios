@@ -182,7 +182,11 @@ struct MyListLandscapeCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             markAllButton
-            bellButton
+            // Notifications are premium-only, so a free user has no bell to
+            // toggle — showing one advertises something that never fires.
+            if PremiumManager.shared.isPremium {
+                bellButton
+            }
         }
     }
 

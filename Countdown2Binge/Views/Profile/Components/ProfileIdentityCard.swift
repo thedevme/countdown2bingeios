@@ -47,7 +47,10 @@ struct ProfileIdentityCard: View {
                     .padding(.top, 10)
             }
 
-            // Action buttons
+            // Action buttons — premium only. Editing your profile and sharing
+            // your lineup are paid features, so a free user shouldn't be shown
+            // controls that lead nowhere.
+            if isPremium {
             HStack(spacing: 10) {
                 Button(action: onEditTap) {
                     Text("profile_edit_button")
@@ -78,6 +81,7 @@ struct ProfileIdentityCard: View {
                 }
             }
             .padding(.top, 16)
+            }
         }
         .padding(18)
         .frame(maxWidth: .infinity)

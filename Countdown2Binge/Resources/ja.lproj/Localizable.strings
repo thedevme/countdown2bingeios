@@ -578,6 +578,35 @@
 "share_until_premiere" = "初回放送まで";
 "share_release_pending" = "配信日未定";
 "share_season_complete" = "シーズン完結";
+"share_stat_now" = "今すぐ";
+"share_stat_tbd" = "未定";
+"share_post_text" = "投稿テキスト";
+"share_copy" = "コピー";
+"share_copied" = "コピー済み";
+"share_post_waiting" = "まだ待機中。";
+"share_post_complete" = "シーズン完結。";
+"share_post_just_binged" = "一気見した。";
+"share_post_ready" = "今すぐ一気見できる。";
+"share_post_pending" = "配信日は未定。";
+"share_post_season %@" = "シーズン%@";
+"share_post_days %lld" = "一気見まであと%lld日。";
+"share_tiktok" = "TikTok";
+"share_x" = "X";
+"share_status_pasteboard" = "カードを写真に保存 · キャプションをコピーしました — 投稿に貼り付けてください。";
+"share_status_saved" = "カードを写真に保存しました。そのアプリは未インストールです。";
+"share_status_photos_denied" = "写真へのアクセスがオフのため保存できません。設定でオンにしてください。";
+"share_status_no_messages" = "このデバイスではメッセージを送信できません。";
+"share_status_failed" = "カードを作成できませんでした。もう一度お試しください。";
+"share_saved_title" = "写真に保存しました";
+"share_saved_body %@" = "カードはライブラリに、キャプションはコピー済みです。%@を開いて投稿に追加してください。";
+"share_open_app %@" = "%@を開く";
+"share_back_to_destinations" = "別の送信先を選ぶ";
+"share_status_saved_only" = "写真に保存しました。キャプションはクリップボードにあります。";
+"share_photos_app" = "写真";
+"share_save_to_photos" = "写真に保存";
+"share_status_paste_in_x" = "Xを開きました。カードはクリップボードにあります。作成画面で長押しして貼り付けてください。";
+"share_saved_body_copy %@" = "カードはライブラリにあります。下のキャプションをコピーして、%@ を開いて投稿してください。";
+"share_button" = "共有";
 "share_messages" = "メッセージ";
 "share_instagram" = "Instagram";
 "share_copy_link" = "リンクをコピー";
@@ -1282,3 +1311,50 @@
 "settings_import_title" = "作品をインポート";
 "settings_import_subtitle" = "リストを貼り付けて一括追加";
 "settings_import_premium" = "Premium · リストを貼り付けて一括追加";
+
+/* Follow digest */
+"digest_title" = "タイムラインに追加しました";
+"digest_body %@" = "%@ をフォローしました。";
+"digest_body_more %@ %lld" = "%@ ほか %lld 作品をフォローしました。";
+"settings_premium_locked" = "Premium — 変更するにはアップグレード";
+"account_premium" = "PREMIUM";
+
+/* Notification copy — delivered text */
+"notif_finale_title" = "最終話が近づいています";
+"notif_bingeready_title" = "一気見の準備完了 🍿";
+"notif_newseason_title" = "新シーズンが発表されました";
+"notif_premiere_body %@" = "%@ が本日放送開始。第1話が公開されました。";
+"notif_finale_body %@" = "%@ の最終話がまもなく — 一気見できるようになる前の最後の1話です。";
+"notif_bingeready_body %@" = "%@ が全話公開されました。好きなときに最初から最後まで。";
+"notif_newseason_body %@ %lld" = "%1$@ シーズン%2$lld が決定。ここからカウントダウンします。";
+
+/* Show alerts sheet */
+"alerts_sheet_title" = "通知一覧";
+"alerts_sheet_title_edit" = "通知を編集";
+"alerts_sheet_count %lld %lld" = "%lld / %lld 件オン";
+"alerts_section_this_show %@" = "%@ のみ";
+"alerts_edit_footnote" = "ここでオフにするとこの作品にのみ適用されます。全体の設定は「設定」から。";
+"alerts_button_edit" = "通知を編集";
+"alerts_button_done" = "完了";
+"alert_badge_new_season" = "新シーズン検出";
+"alert_badge_premiere" = "シーズン開始";
+"alert_badge_finale" = "最終話リマインダー";
+"alert_badge_binge_ready" = "一気見の準備完了";
+"alert_status_sent" = "送信済み";
+"alert_status_awaiting" = "日付未定";
+"alert_status_off" = "オフ";
+"alert_note_sent" = "送信済み";
+"alert_note_awaiting" = "まだ日付が発表されていません";
+"alert_note_off" = "この作品ではオフ";
+
+/* Rating confirm prompt */
+"review_prompt_title" = "Countdown2Binge はいかがですか？";
+"review_prompt_message" = "評価すると他の人が見つけやすくなります。";
+"review_prompt_rate" = "アプリを評価";
+"review_prompt_later" = "後で";
+
+/* Free-tier show limit sheet */
+"limit_title %lld" = "%lld 作品に達しました";
+"limit_body %lld" = "無料プランで同時に追跡できるのは %lld 作品までです。1つフォローを解除するか、Premium で無制限・通知・同期をご利用ください。";
+"limit_upgrade" = "Premium にする";
+"limit_not_now" = "後で";

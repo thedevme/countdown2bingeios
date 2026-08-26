@@ -91,6 +91,7 @@ private struct RelatedShowCard: View {
 
 struct ShowDetailRelatedUpgradePrompt: View {
     @State private var showPaywall = false
+    @State private var selectedPlan = "monthly"
 
     var body: some View {
         VStack(spacing: 12) {
@@ -170,5 +171,15 @@ struct ShowDetailRelatedUpgradePrompt: View {
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
         .padding(.top, 22)
+        // The button set `showPaywall = true` and nothing was bound to it, so
+        // "Unlock Premium" did nothing at all. Same presentation as Settings.
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(
+                selectedPlan: $selectedPlan,
+                onDismiss: { showPaywall = false },
+                onContinueFree: nil,
+                showContinueFree: false
+            )
+        }
     }
 }

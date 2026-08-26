@@ -10,6 +10,11 @@ import SwiftUI
 struct SettingsAccountCard: View {
     let userName: String
     let isPremium: Bool
+    /// Premium *because of an active trial*, not a completed purchase.
+    /// Without this the card told every premium user they were on a free
+    /// trial — misleading for someone who actually paid, and alarming for
+    /// anyone who picked the free plan.
+    var isInTrial: Bool = false
     var onTap: (() -> Void)? = nil
 
     private var initials: String {
@@ -18,6 +23,11 @@ struct SettingsAccountCard: View {
             return String(parts[0].prefix(1) + parts[1].prefix(1)).uppercased()
         }
         return String(userName.prefix(2)).uppercased()
+    }
+
+    private var planLabel: LocalizedStringKey {
+        guard isPremium else { return "account_free_plan" }
+        return isInTrial ? "account_premium_trial" : "account_premium"
     }
 
     var body: some View {
@@ -54,7 +64,7 @@ struct SettingsAccountCard: View {
                             .font(.system(size: 9))
                             .foregroundColor(.c2bTealBright)
 
-                        Text(isPremium ? "account_premium_trial" : "account_free_plan")
+                        Text(planLabel)
                             .font(.custom(.jetbrains.regular, size: 9))
                             .tracking(0.9)
                             .foregroundColor(.c2bTealBright)

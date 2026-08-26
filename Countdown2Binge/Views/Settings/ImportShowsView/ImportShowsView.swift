@@ -19,16 +19,19 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 
 struct ImportShowsView: View {
     let onDismiss: () -> Void
 
     @Environment(SeriesManager.self) private var seriesManager
+    @Environment(\.requestReview) private var requestReview
 
     @State private var raw: String = ""
     @State private var items: [Item] = []
     @State private var isRunning = false
     @State private var hasRun = false
+    @State private var showReviewConfirm = false
 
     /// Concurrent lookups in flight. Enough to feel instant on a long paste,
     /// low enough that TMDB doesn't start refusing us.
@@ -94,6 +97,17 @@ struct ImportShowsView: View {
         }
         .background(Color.c2bBackground)
         .navigationBarBackButtonHidden(true)
+        // Same confirm step as everywhere else — "Rate" is the one signal we
+        // own, and it retires every future prompt.
+        .alert(String(localized: "review_prompt_title"), isPresented: $showReviewConfirm) {
+            Button(String(localized: "review_prompt_rate")) {
+                ReviewPrompt.markRated()
+                requestReview()
+            }
+            Button(String(localized: "review_prompt_later"), role: .cancel) { }
+        } message: {
+            Text(String(localized: "review_prompt_message"))
+        }
     }
 
     // MARK: - Header
@@ -306,6 +320,15 @@ struct ImportShowsView: View {
         }
 
         isRunning = false
+
+        // A finished import is a good moment to ask: the user just got a pile of
+        // shows in one action and can see it worked. Its own one-time trigger,
+        // separate from the search cadence — a bulk import never shifts the
+        // 1/5/10 counter, and search follows never consume this ask.
+        if addedCount > 0, ReviewPrompt.registerBulkImportAndShouldAsk() {
+            try? await Task.sleep(for: .seconds(1.2))
+            showReviewConfirm = true
+        }
     }
 
     /// Search, pick a plausible match, follow. Any failure settles this row
@@ -326,7 +349,7 @@ struct ImportShowsView: View {
             }
             let match = response.results[index]
 
-            let result = try await seriesManager.follow(id: match.id)
+            let result = try await seriesManager.follow(id: match.id, source: .bulkImport)
             switch result {
             case .alreadyFollowing(let series):
                 return .alreadyFollowing(matchedTitle: series.name)

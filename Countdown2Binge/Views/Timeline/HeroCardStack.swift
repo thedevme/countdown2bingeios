@@ -46,8 +46,12 @@ struct HeroCardStack: View {
     var body: some View {
         ZStack {
             // Card Stack (limited to 3)
-            ForEach(0..<visibleShows.count, id: \.self) { index in
-                let showTuple = visibleShows[index]
+            // Keyed on the show, not the position. With index identity a data
+            // refresh that re-sorts the airing list hands slot N a different
+            // show, and any @State inside the card (image loaders especially)
+            // carries over to it. Keying on id means SwiftUI moves the card
+            // with its show instead of reassigning content to a slot.
+            ForEach(Array(visibleShows.enumerated()), id: \.element.show.id) { index, showTuple in
                 let position = relativePosition(for: index)
                 let absPosition = abs(position)
 

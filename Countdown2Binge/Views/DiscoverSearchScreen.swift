@@ -9,6 +9,8 @@ struct SearchScreen: View {
     @State private var viewModel = DiscoverViewModel()
     @State private var navigationPath = NavigationPath()
     @State private var showPaywall: Bool = false
+    /// Explains WHY the follow was refused, before any sales page.
+    @State private var showLimitSheet: Bool = false
     @State private var selectedPlan: String = "yearly"
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
@@ -212,8 +214,12 @@ struct SearchScreen: View {
                         await viewModel.handleAddShowDone(lastWatchedSeason: lastWatchedSeason)
                     }
 
-                    // Show notification onboarding if this is the first follow
-                    if !notificationSettingsStore.hasCompletedOnboarding {
+                    // First follow — but only for someone who will actually
+                    // receive notifications. Free users get every alert skipped
+                    // at scheduling time, so asking them to pick which ones they
+                    // want promises something the app won't deliver.
+                    if PremiumManager.shared.canUseNotifications,
+                       !notificationSettingsStore.hasCompletedOnboarding {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             showNotificationOnboarding = true
                         }
@@ -222,7 +228,9 @@ struct SearchScreen: View {
             )
         }
         .overlay {
-            if showNotificationOnboarding {
+            // Re-checked at render: premium can lapse between the follow and
+            // the half-second delay above.
+            if showNotificationOnboarding, PremiumManager.shared.canUseNotifications {
                 NotificationOnboardingOverlay(onSave: {
                     showNotificationOnboarding = false
                 })
@@ -233,9 +241,29 @@ struct SearchScreen: View {
         .animation(.easeInOut(duration: 0.25), value: showNotificationOnboarding)
         .onChange(of: viewModel.showPremiumUpgrade) { _, show in
             if show {
-                showPaywall = true
+                // Explain the block first. The paywall is one tap further on —
+                // throwing it up unprompted left users with no idea why their
+                // Follow tap did nothing.
+                showLimitSheet = true
                 viewModel.showPremiumUpgrade = false
             }
+        }
+        .sheet(isPresented: $showLimitSheet) {
+            ShowLimitSheet(
+                limit: PremiumManager.shared.showLimit,
+                posterURLs: seriesManager.allSeries()
+                    .sorted { $0.dateAdded < $1.dateAdded }
+                    .map(\.posterURL),
+                onUpgrade: {
+                    showLimitSheet = false
+                    // Let the first sheet finish dismissing before presenting
+                    // the next, or the paywall never appears.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        showPaywall = true
+                    }
+                },
+                onDismiss: { showLimitSheet = false }
+            )
         }
         .onChange(of: viewModel.showGracePeriodBlock) { _, show in
             if show {

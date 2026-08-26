@@ -86,13 +86,20 @@ final class NotificationPlannerTests: XCTestCase {
 
     // MARK: - Test 3: Finale timing = 1 week before → plan at (finaleDate - 7 days)
 
-    func test_3_finaleTimingOneWeekBefore_planAtCorrectDate() {
+    /// `finaleTiming` is deliberately NOT applied by the planner. Subtracting
+    /// days put the alert out before the episode existed, and the pair
+    /// (finale, then binge-ready 24h later) only reads correctly when the
+    /// first lands on the day itself.
+    ///
+    /// This test used to assert finale - 7 days. It now asserts the opposite,
+    /// on purpose: whatever `finaleTiming` says, the plan is ON the finale.
+    /// If someone re-applies the offset, this fails.
+    func test_3_finaleTimingIsIgnored_planStaysOnFinaleDate() {
         // Arrange
-        let finaleDate = date(daysFromNow: 60)  // March 2, 2025
-        let expectedReminderDate = date(daysFromNow: 53)  // finaleDate - 7 days
+        let finaleDate = date(daysFromNow: 60)
         let dateInfo = makeDateInfo(finaleDate: finaleDate)
         var settings = allEnabled
-        settings.finaleTiming = .oneWeekBefore
+        settings.finaleTiming = .oneWeekBefore   // must have no effect
 
         // Act
         let plans = planNotifications(dates: dateInfo, settings: settings, now: fixedNow)
@@ -101,8 +108,8 @@ final class NotificationPlannerTests: XCTestCase {
         let finalePlan = plans.first { $0.type == .finale }
         XCTAssertNotNil(finalePlan, "Should have a finale plan")
         XCTAssertTrue(
-            Calendar.current.isDate(finalePlan!.fireDate, inSameDayAs: expectedReminderDate),
-            "Finale reminder should be 7 days before finale"
+            Calendar.current.isDate(finalePlan!.fireDate, inSameDayAs: finaleDate),
+            "Finale reminder fires ON the finale date regardless of finaleTiming"
         )
     }
 
@@ -127,24 +134,46 @@ final class NotificationPlannerTests: XCTestCase {
         )
     }
 
-    // MARK: - Test 5: Binge Ready enabled → plan at (finaleDate + grace window)
+    // MARK: - Test 5: Binge Ready enabled → plan at (finaleDate + delay)
 
-    func test_5_bingeReadyEnabled_planAtFinaleePlusGrace() {
+    /// The delay was 2 days and is now 1 (24h after the finale). The parameter
+    /// was renamed with it: `graceWindowDays` -> `bingeReadyDelayDays`.
+    /// This asserts the shipped rule, and pins the DEFAULT rather than passing
+    /// a value in — passing 2 is what let the old expectation survive a change
+    /// to the default.
+    func test_5_bingeReadyEnabled_planAtFinalePlusDelay() {
         // Arrange
         let finaleDate = date(daysFromNow: 60)
-        let expectedBingeDate = date(daysFromNow: 62)  // finaleDate + 2 days (default grace)
+        let expectedBingeDate = date(daysFromNow: 61)  // finaleDate + 1 day (24h)
         let dateInfo = makeDateInfo(finaleDate: finaleDate)
         let settings = allEnabled
 
-        // Act
-        let plans = planNotifications(dates: dateInfo, settings: settings, now: fixedNow, graceWindowDays: 2)
+        // Act — no explicit delay, so a change to the default breaks this test.
+        let plans = planNotifications(dates: dateInfo, settings: settings, now: fixedNow)
 
         // Assert
         let bingePlan = plans.first { $0.type == .bingeReady }
         XCTAssertNotNil(bingePlan, "Should have a binge-ready plan")
         XCTAssertTrue(
             Calendar.current.isDate(bingePlan!.fireDate, inSameDayAs: expectedBingeDate),
-            "Binge-ready should be at finaleDate + grace window"
+            "Binge-ready should be 24h after the finale"
+        )
+    }
+
+    /// An explicit delay must still be honoured.
+    func test_5b_bingeReadyRespectsExplicitDelay() {
+        let finaleDate = date(daysFromNow: 60)
+        let dateInfo = makeDateInfo(finaleDate: finaleDate)
+
+        let plans = planNotifications(
+            dates: dateInfo, settings: allEnabled, now: fixedNow, bingeReadyDelayDays: 3
+        )
+
+        let bingePlan = plans.first { $0.type == .bingeReady }
+        XCTAssertNotNil(bingePlan)
+        XCTAssertTrue(
+            Calendar.current.isDate(bingePlan!.fireDate, inSameDayAs: date(daysFromNow: 63)),
+            "An explicit delay of 3 should fire 3 days after the finale"
         )
     }
 

@@ -195,36 +195,28 @@ struct ContentView: View {
                 checkForDowngrade()
             }
         }
+        // RevenueCat resolves entitlements after launch, so re-check when the
+        // answer lands as well as on first appearance.
+        .onChange(of: PremiumManager.shared.isPremium) { _, _ in
+            checkForDowngrade()
+        }
+        .task {
+            checkForDowngrade()
+        }
     }
 
     // MARK: - Downgrade & Grace Period Check
 
     private func checkForDowngrade() {
-        guard PremiumManager.shared.didDowngradeFromPremium else { return }
+        // Two separate questions, two separate owners.
+        //
+        // 1. Premium or free — RevenueCat's answer, and only RevenueCat's.
+        guard !PremiumManager.shared.isPremium else { return }
 
-        let followedCount = seriesManager.allSeries().count
-
-        if followedCount > 3 {
-            // Check if already in grace period
-            if PremiumManager.shared.isInGracePeriod {
-                // Check if expired
-                if PremiumManager.shared.isGracePeriodExpired {
-                    showDowngradeModal = true
-                }
-                // Otherwise, banner will show - no modal yet
-            } else {
-                // Start grace period
-                Task {
-                    await PremiumManager.shared.startGracePeriod(showCount: followedCount)
-                }
-            }
-        } else {
-            // At or below limit, clear everything
-            PremiumManager.shared.didDowngradeFromPremium = false
-            Task {
-                await PremiumManager.shared.clearGracePeriod()
-            }
-        }
+        // 2. Over the limit — ours. RevenueCat knows nothing about how many
+        //    shows are followed. `showLimit` is used rather than a bare 3 only
+        //    so the free cap lives in one place.
+        showDowngradeModal = seriesManager.allSeries().count > PremiumManager.shared.showLimit
     }
 
     private func checkGracePeriodExpiry() {
@@ -240,7 +232,10 @@ struct ContentView: View {
         // Follow each show through SeriesManager (the single write funnel)
         for show in shows {
             do {
-                _ = try await seriesManager.follow(id: show.id)
+                // .onboarding: these must not advance the review-prompt
+                // counter — asking for a rating during onboarding is a 5.6.3
+                // rejection (and was one).
+                _ = try await seriesManager.follow(id: show.id, source: .onboarding)
                 print("DEBUG: Followed show \(show.name)")
             } catch {
                 print("Error following show \(show.name): \(error)")

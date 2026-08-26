@@ -20,6 +20,7 @@ final class CloudSettingsStore {
     private enum Keys {
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
         static let hasSeenWalkthrough = "hasSeenWalkthrough"
+        static let hasRatedApp = "hasRatedApp"
     }
 
     // MARK: - Properties
@@ -42,6 +43,17 @@ final class CloudSettingsStore {
         }
     }
 
+    /// The user accepted a rating prompt. In iCloud alongside the onboarding
+    /// flags so a reinstall — or a second device — never asks them again.
+    /// Deliberately not reset by `resetOnboarding()`: rating is a one-time
+    /// courtesy, not part of the first-run flow.
+    var hasRatedApp: Bool {
+        didSet {
+            store.set(hasRatedApp, forKey: Keys.hasRatedApp)
+            store.synchronize()
+        }
+    }
+
     // MARK: - Init
 
     private init() {
@@ -49,6 +61,7 @@ final class CloudSettingsStore {
         store.synchronize()
         hasCompletedOnboarding = store.bool(forKey: Keys.hasCompletedOnboarding)
         hasSeenWalkthrough = store.bool(forKey: Keys.hasSeenWalkthrough)
+        hasRatedApp = store.bool(forKey: Keys.hasRatedApp)
 
         // Reflect changes made on other devices back into the observable mirrors.
         NotificationCenter.default.addObserver(
@@ -68,6 +81,8 @@ final class CloudSettingsStore {
         if completed != hasCompletedOnboarding { hasCompletedOnboarding = completed }
         let seen = store.bool(forKey: Keys.hasSeenWalkthrough)
         if seen != hasSeenWalkthrough { hasSeenWalkthrough = seen }
+        let rated = store.bool(forKey: Keys.hasRatedApp)
+        if rated != hasRatedApp { hasRatedApp = rated }
     }
 
     // MARK: - Reset

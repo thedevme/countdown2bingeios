@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 import BackgroundTasks
+import StoreKit
+import TikTokOpenSDKCore
 
 @main
 struct Countdown2BingeApp: App {
@@ -46,6 +48,18 @@ struct Countdown2BingeApp: App {
         WindowGroup {
             ContentView()
                 .environment(seriesManager)
+                // requestReview is a SwiftUI environment action, so a service
+                // can't call it — SeriesManager raises a flag and we ask here.
+                .modifier(ReviewPromptModifier(seriesManager: seriesManager))
+                // TikTok Share Kit calls back through the registered URL
+                // scheme; the universal-link form is what a redirectURI uses.
+                // Both are no-ops until TikTokConfig is filled in.
+                .onOpenURL { url in
+                    _ = TikTokURLHandler.handleOpenURL(url)
+                }
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    _ = TikTokURLHandler.handleOpenURL(activity.webpageURL)
+                }
                 .onAppear {
                     if !hasLaunched {
                         print("🎬 Craig's Countdown2Binge Debug Mode")
@@ -55,6 +69,9 @@ struct Countdown2BingeApp: App {
                             await PremiumManager.shared.loadGracePeriodState()
                             await FranchiseService.shared.fetchFranchises()
                             await seriesManager.refreshAll()
+                            // 0. Finish any unfollow whose cloud delete never
+                            //    landed — before restore, or it pulls them back.
+                            await seriesManager.flushPendingCloudUnfollows()
                             // 1. Restore shows from iCloud (for reinstalls)
                             await seriesManager.restoreShowsFromCloud()
                             // 2. Restore and merge watch progress from iCloud
@@ -69,6 +86,16 @@ struct Countdown2BingeApp: App {
         .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
             case .active:
+                Task { @MainActor in
+                    // A subscription can lapse or be purchased elsewhere while
+                    // we're backgrounded — re-ask rather than trust launch state.
+                    await PremiumManager.shared.refreshEntitlements()
+                }
+                Task { @MainActor in
+                    // Back in the app: drop any pending "shows added" digest,
+                    // and clear the record if one was delivered while away.
+                    await FollowDigest.shared.appDidBecomeActive()
+                }
                 if hasLaunched {
                     Task { @MainActor in
                         await seriesManager.refreshAll()
@@ -77,6 +104,11 @@ struct Countdown2BingeApp: App {
             case .background:
                 // Schedule background refresh when app enters background
                 scheduleBackgroundRefresh()
+
+                // Leaving the app starts the 20-minute digest clock.
+                Task { @MainActor in
+                    await FollowDigest.shared.appDidEnterBackground()
+                }
             case .inactive:
                 break
             @unknown default:
@@ -131,5 +163,41 @@ struct Countdown2BingeApp: App {
         await seriesManager.refreshAll(force: false)
 
         print("🌙 Background refresh completed")
+    }
+}
+
+
+// MARK: - Review Prompt
+
+/// Watches `SeriesManager.pendingReviewRequest` and asks for a rating when it
+/// flips. The cadence itself lives in `ReviewPrompt` (1st, 5th, 10th …).
+private struct ReviewPromptModifier: ViewModifier {
+    let seriesManager: SeriesManager
+    @Environment(\.requestReview) private var requestReview
+    @State private var showConfirm = false
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: seriesManager.pendingReviewRequest) { _, pending in
+                guard pending else { return }
+                seriesManager.pendingReviewRequest = false
+                // Let the follow's own UI (sheets, add-time prompt) settle first.
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(1.2))
+                    showConfirm = true
+                }
+            }
+            // Our own confirm step. Apple's sheet reports nothing back, so this
+            // is the only moment we can observe — tapping Rate marks the user
+            // as done and no trigger ever fires again.
+            .alert(String(localized: "review_prompt_title"), isPresented: $showConfirm) {
+                Button(String(localized: "review_prompt_rate")) {
+                    ReviewPrompt.markRated()
+                    requestReview()
+                }
+                Button(String(localized: "review_prompt_later"), role: .cancel) { }
+            } message: {
+                Text(String(localized: "review_prompt_message"))
+            }
     }
 }

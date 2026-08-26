@@ -183,7 +183,11 @@ struct TimelineScreen: View {
                     series: series,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
-                        try? seriesManager.unfollow(id: series.id)
+                        // Button behind a confirmation dialog — it can afford to
+                        // wait for iCloud to confirm the delete rather than
+                        // firing and hoping.
+                        let id = series.id
+                        Task { try? await seriesManager.unfollowAwaitingCloud(id: id) }
                     }
                 )
             }
@@ -391,7 +395,9 @@ struct TimelineHeader: View {
 
                 Spacer()
 
-                // Notifications Button
+                // Notifications Button — premium only, same reason as the
+                // My List bells: free users get no notifications at all.
+                if PremiumManager.shared.isPremium {
                 Button(action: onBellTap) {
                     Image(systemName: "bell")
                         .font(.system(size: 18, weight: .regular))
@@ -403,6 +409,7 @@ struct TimelineHeader: View {
                             Circle()
                                 .stroke(Color.white.opacity(0.1), lineWidth: 1)
                         )
+                }
                 }
 
                 // Info Button (launches walkthrough)

@@ -24,6 +24,19 @@
 		<string>nl</string>
 		<string>th</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>tiktok</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>awaamb61lpsdlx76</string>
+			</array>
+		</dict>
+	</array>
+	<key>TikTokClientKey</key>
+	<string>awaamb61lpsdlx76</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>netflix</string>
@@ -36,7 +49,19 @@
 		<string>starz</string>
 		<string>showtime</string>
 		<string>amcplus</string>
+		<string>instagram-stories</string>
+		<string>instagram</string>
+		<string>snssdk1233</string>
+		<string>snssdk1180</string>
+		<string>tiktoksharesdk</string>
+		<string>tiktokopensdk</string>
+		<string>tiktok</string>
+		<string>twitter</string>
+		<string>x</string>
+		<string>photos-redirect</string>
 	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Countdown2Binge saves your binge card to Photos so you can post it to Instagram, TikTok or X.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Oswald-Bold.ttf</string>

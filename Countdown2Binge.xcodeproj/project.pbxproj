@@ -14,6 +14,9 @@
 		4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4602CAF33014EB59001185C9 /* YouTubePlayerKit */; };
 		4602DC9130245AF3001185C9 /* UserSpec in Frameworks */ = {isa = PBXBuildFile; productRef = 4602DC9030245AF3001185C9 /* UserSpec */; };
 		4602DCB43025880B001185C9 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4602DCB33025880B001185C9 /* NukeUI */; };
+		469C39E2303EF5830012C456 /* TikTokOpenAuthSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E1303EF5830012C456 /* TikTokOpenAuthSDK */; };
+		469C39E4303EF5830012C456 /* TikTokOpenSDKCore in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E3303EF5830012C456 /* TikTokOpenSDKCore */; };
+		469C39E6303EF5830012C456 /* TikTokOpenShareSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E5303EF5830012C456 /* TikTokOpenShareSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,7 +82,10 @@
 				4602CAB730114363001185C9 /* ReceiptParser in Frameworks */,
 				4602CAF43014EB59001185C9 /* YouTubePlayerKit in Frameworks */,
 				4602DCB43025880B001185C9 /* NukeUI in Frameworks */,
+				469C39E4303EF5830012C456 /* TikTokOpenSDKCore in Frameworks */,
+				469C39E2303EF5830012C456 /* TikTokOpenAuthSDK in Frameworks */,
 				4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */,
+				469C39E6303EF5830012C456 /* TikTokOpenShareSDK in Frameworks */,
 				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,9 +135,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 46AEA13E300005C500F05C7B /* Build configuration list for PBXNativeTarget "Countdown2Binge" */;
 			buildPhases = (
+				46AEA900PREMIUMGATE0001 /* Premium Gate Audit */,
 				46AEA117300005C300F05C7B /* Sources */,
 				46AEA118300005C300F05C7B /* Frameworks */,
 				46AEA119300005C300F05C7B /* Resources */,
+				46AEA901UNITTESTS00001 /* Unit Tests (Release) */,
 			);
 			buildRules = (
 			);
@@ -148,6 +156,9 @@
 				4602CAC830114F62001185C9 /* FirebaseDatabase */,
 				4602CAF33014EB59001185C9 /* YouTubePlayerKit */,
 				4602DCB33025880B001185C9 /* NukeUI */,
+				469C39E1303EF5830012C456 /* TikTokOpenAuthSDK */,
+				469C39E3303EF5830012C456 /* TikTokOpenSDKCore */,
+				469C39E5303EF5830012C456 /* TikTokOpenShareSDK */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -252,6 +263,7 @@
 				4602CAF23014EB59001185C9 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
 				4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */,
 				4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */,
+				469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -288,6 +300,47 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		46AEA901UNITTESTS00001 /* Unit Tests (Release) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Unit Tests (Release)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/Scripts/run-tests.sh\"\n";
+		};
+		46AEA900PREMIUMGATE0001 /* Premium Gate Audit */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Premium Gate Audit";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/Scripts/premium-gate-audit.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		46AEA117300005C300F05C7B /* Sources */ = {
@@ -365,7 +418,7 @@
 				DEVELOPMENT_TEAM = 6HL93MZ6Z9;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -429,7 +482,7 @@
 				DEVELOPMENT_TEAM = 6HL93MZ6Z9;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -455,7 +508,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Countdown2Binge/Countdown2Binge.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = BCKVL9BZPW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -467,7 +520,6 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -496,7 +548,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Countdown2Binge/Countdown2Binge.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = BCKVL9BZPW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -508,7 +560,6 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -543,11 +594,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.designtoswiftui.Countdown2BingeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Countdown2Binge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Countdown2Binge";
 			};
 			name = Debug;
@@ -565,11 +618,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.designtoswiftui.Countdown2BingeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Countdown2Binge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Countdown2Binge";
 			};
 			name = Release;
@@ -585,11 +640,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.designtoswiftui.Countdown2BingeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = Countdown2Binge;
 			};
 			name = Debug;
@@ -605,11 +662,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.designtoswiftui.Countdown2BingeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = Countdown2Binge;
 			};
 			name = Release;
@@ -696,6 +755,14 @@
 				minimumVersion = 13.0.6;
 			};
 		};
+		469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tiktok/tiktok-opensdk-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -733,6 +800,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = NukeUI;
+		};
+		469C39E1303EF5830012C456 /* TikTokOpenAuthSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */;
+			productName = TikTokOpenAuthSDK;
+		};
+		469C39E3303EF5830012C456 /* TikTokOpenSDKCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */;
+			productName = TikTokOpenSDKCore;
+		};
+		469C39E5303EF5830012C456 /* TikTokOpenShareSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */;
+			productName = TikTokOpenShareSDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

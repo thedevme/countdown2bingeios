@@ -578,6 +578,35 @@
 "share_until_premiere" = "Avant la premiere";
 "share_release_pending" = "Date de sortie en attente";
 "share_season_complete" = "Saison terminee";
+"share_stat_now" = "MAINTENANT";
+"share_stat_tbd" = "À VENIR";
+"share_post_text" = "Texte du post";
+"share_copy" = "Copier";
+"share_copied" = "Copié";
+"share_post_waiting" = "Toujours en attente.";
+"share_post_complete" = "Saison complète.";
+"share_post_just_binged" = "Je viens de tout regarder.";
+"share_post_ready" = "Prêt à binger.";
+"share_post_pending" = "Date de sortie à venir.";
+"share_post_season %@" = "Saison %@";
+"share_post_days %lld" = "%lld jours avant le binge.";
+"share_tiktok" = "TikTok";
+"share_x" = "X";
+"share_status_pasteboard" = "Carte enregistrée dans Photos · légende copiée — collez-la dans le post.";
+"share_status_saved" = "Carte enregistrée dans Photos. Cette app n'est pas installée.";
+"share_status_photos_denied" = "L'accès à Photos est désactivé, la carte ne peut pas être enregistrée. Activez-le dans Réglages.";
+"share_status_no_messages" = "Cet appareil ne peut pas envoyer de messages.";
+"share_status_failed" = "Impossible de créer la carte. Réessayez.";
+"share_saved_title" = "Enregistré dans Photos";
+"share_saved_body %@" = "La carte est dans votre photothèque et la légende est copiée. Ouvrez %@ et ajoutez-les à votre post.";
+"share_open_app %@" = "Ouvrir %@";
+"share_back_to_destinations" = "Choisir une autre destination";
+"share_status_saved_only" = "Enregistré dans Photos. La légende est dans le presse-papiers.";
+"share_photos_app" = "Photos";
+"share_save_to_photos" = "Enregistrer dans Photos";
+"share_status_paste_in_x" = "X est ouvert. La carte est dans le presse-papiers — appuyez longuement dans l'éditeur et collez-la.";
+"share_saved_body_copy %@" = "La carte est dans votre photothèque. Copiez la légende ci-dessous, puis ouvrez %@ et publiez.";
+"share_button" = "Partager";
 "share_messages" = "Messages";
 "share_instagram" = "Instagram";
 "share_copy_link" = "Copier le lien";
@@ -1282,3 +1311,50 @@
 "settings_import_title" = "Importer des séries";
 "settings_import_subtitle" = "Collez une liste et ajoutez-les toutes d'un coup";
 "settings_import_premium" = "Premium · collez une liste et ajoutez-les toutes d'un coup";
+
+/* Follow digest */
+"digest_title" = "Ajoutées à votre timeline";
+"digest_body %@" = "Vous suivez maintenant %@.";
+"digest_body_more %@ %lld" = "Vous suivez maintenant %@ et %lld autres.";
+"settings_premium_locked" = "Premium — passez à Premium pour modifier";
+"account_premium" = "PREMIUM";
+
+/* Notification copy — delivered text */
+"notif_finale_title" = "La finale approche";
+"notif_bingeready_title" = "Prêt à binge-watcher 🍿";
+"notif_newseason_title" = "Nouvelle saison annoncée";
+"notif_premiere_body %@" = "%@ sort aujourd'hui. Le premier épisode est disponible.";
+"notif_finale_body %@" = "La finale de %@ approche — dernier épisode avant de tout enchaîner.";
+"notif_bingeready_body %@" = "%@ est complète. Du début à la fin, quand vous voulez.";
+"notif_newseason_body %@ %lld" = "La saison %2$lld de %1$@ est officielle. Le compte à rebours commence.";
+
+/* Show alerts sheet */
+"alerts_sheet_title" = "VOS ALERTES";
+"alerts_sheet_title_edit" = "MODIFIER LES ALERTES";
+"alerts_sheet_count %lld %lld" = "%lld sur %lld activées";
+"alerts_section_this_show %@" = "%@ uniquement";
+"alerts_edit_footnote" = "La désactivation ne concerne que cette série. Les réglages globaux sont dans Réglages.";
+"alerts_button_edit" = "Modifier les alertes";
+"alerts_button_done" = "Terminé";
+"alert_badge_new_season" = "Nouvelle saison détectée";
+"alert_badge_premiere" = "Première de saison";
+"alert_badge_finale" = "Rappel de finale";
+"alert_badge_binge_ready" = "Prêt à binge-watcher";
+"alert_status_sent" = "Déjà envoyé";
+"alert_status_awaiting" = "Date à venir";
+"alert_status_off" = "Désactivé";
+"alert_note_sent" = "Déjà envoyé";
+"alert_note_awaiting" = "Aucune date annoncée";
+"alert_note_off" = "Désactivé pour cette série";
+
+/* Rating confirm prompt */
+"review_prompt_title" = "Vous aimez Countdown2Binge ?";
+"review_prompt_message" = "Une note aide les autres à la découvrir.";
+"review_prompt_rate" = "Noter l'app";
+"review_prompt_later" = "Plus tard";
+
+/* Free-tier show limit sheet */
+"limit_title %lld" = "Vous suivez déjà %lld séries";
+"limit_body %lld" = "Le plan gratuit suit jusqu'à %lld séries à la fois. Arrêtez d'en suivre une pour faire de la place, ou passez à Premium pour des séries illimitées, des alertes et la synchro.";
+"limit_upgrade" = "Passer à Premium";
+"limit_not_now" = "Plus tard";

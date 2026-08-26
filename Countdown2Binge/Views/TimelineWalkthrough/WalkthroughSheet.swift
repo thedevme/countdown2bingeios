@@ -194,7 +194,13 @@ struct WalkthroughSheet: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 780)
+        // Cap, not a fixed size. This was a hard `height: 780`, which is taller
+        // than the usable area on shorter iPhones and on iPad compatibility
+        // mode. The sheet is bottom-anchored, so anything over the screen
+        // height pushed the CTA off the bottom edge with no way to scroll to
+        // it — the tour became impossible to advance. App Review hit exactly
+        // that. Never reintroduce a fixed height here.
+        .frame(maxHeight: 780)
         .background(Color(hex: "#0c0c0e"))
         .clipShape(
             UnevenRoundedRectangle(

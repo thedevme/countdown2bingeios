@@ -158,17 +158,50 @@ final class SeriesManager {
 
     // MARK: - Follow (the ONLY creation path)
 
+    /// Where a follow came from. Only `.user` — a deliberate in-app follow from
+    /// search — counts toward the review prompt.
+    ///
+    /// `.bulkImport` is one decision, not twelve. `.onboarding` must never
+    /// count: App Store guideline 5.6.3 forbids asking for a rating during
+    /// onboarding, and an app was already rejected for exactly that.
+    enum FollowSource {
+        case user
+        case bulkImport
+        case onboarding
+    }
+
+    /// Set when a follow lands on a review-prompt point. The root view watches
+    /// this and calls `requestReview` — an env action a service can't invoke.
+    var pendingReviewRequest = false
+
     /// Follow a show we already have full ShowData for.
     /// Returns the result so the UI can prompt the add-time question when the
     /// show enters already-complete (back-catalog like Landman).
     @discardableResult
-    func follow(showData show: ShowData) throws -> FollowResult {
+    func follow(showData show: ShowData, source: FollowSource = .user) throws -> FollowResult {
         // Idempotent: if already followed, just refresh metadata.
         if let existing = series(id: show.id) {
             SeriesMapper.update(existing, from: show, in: context)
             try context.save()
+
+            // Re-follow still has to schedule. This branch is reached whenever
+            // the row already exists — including a remove-then-re-add where the
+            // delete hasn't fully propagated — and it used to return without
+            // ever scheduling, leaving the show silently untracked for alerts.
+            let existingId = existing.id
+            launchBackgroundTask { [container] in
+                let bgContext = ModelContext(container)
+                let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.id == existingId })
+                guard let series = try? bgContext.fetch(descriptor).first else { return }
+                await self.scheduleNotificationsForShow(series, now: Date())
+            }
+
             return .alreadyFollowing(existing)
         }
+
+        // Followed again — it's no longer unfollowed, so drop any tombstone or
+        // restore would refuse to ever see this show again.
+        UnfollowTombstones.forget(show.id)
 
         let newSeries = SeriesMapper.makeSeries(from: show, in: context)
         newSeries.lastRefreshedAt = .now
@@ -206,6 +239,15 @@ final class SeriesManager {
             await self.scheduleNotificationsForShow(series, now: Date())
         }
 
+        // Record for the "here's what you added" digest — it's sent once the
+        // user leaves the app, not per show. See FollowDigest.
+        FollowDigest.shared.record(showName: newSeries.name)
+
+        // Review prompt cadence (1st, 5th, 10th …), user-initiated follows only.
+        if source == .user, ReviewPrompt.registerFollowAndShouldAsk() {
+            pendingReviewRequest = true
+        }
+
         // Decide whether to prompt the add-time watched question.
         let prompt = addTimeWatchedPrompt(for: newSeries)
         return .followed(newSeries, addTimePrompt: prompt)
@@ -213,10 +255,10 @@ final class SeriesManager {
 
     /// Follow by TMDB id — fetches full details first, then follows.
     @discardableResult
-    func follow(id: Int) async throws -> FollowResult {
+    func follow(id: Int, source: FollowSource = .user) async throws -> FollowResult {
         if let existing = series(id: id) { return .alreadyFollowing(existing) }
         let show = try await tmdb.getShowDetails(id: id)
-        return try follow(showData: show)
+        return try follow(showData: show, source: source)
     }
 
     // MARK: - Unfollow (the ONLY deletion path)
@@ -230,8 +272,93 @@ final class SeriesManager {
             await self.cancelNotificationsForShow(showId)
         }
 
+        // Drop it from the pending "shows added" digest, or that notification
+        // announces a show the user just removed.
+        FollowDigest.shared.forget(showName: s.name)
+
+        // Tombstone FIRST, synchronously, before anything else. If the app dies
+        // between here and the CloudKit delete, restore still refuses to bring
+        // this show back — the user's intent is recorded before any of the work.
+        UnfollowTombstones.add(showId)
+
+        // Remove it from iCloud too, or restoreShowsFromCloud() pulls it back
+        // on the next launch and the unfollow silently undoes itself.
+        //
+        // Deliberately NOT routed through unsyncShowFromCloud(): that fetches
+        // the Series first, and by the time this task runs the local row is
+        // gone, so it would return without deleting anything. The CloudKit
+        // record is keyed on the TMDB id, which is all we need.
+        //
+        // Not premium-gated. R9 gates what we PUSH to iCloud, not cleanup — and
+        // a show synced before a downgrade still has to be removable.
+        //
+        // Attempted unconditionally rather than only when `isSynced`: restore
+        // skips shows already followed locally without setting that flag, so a
+        // record can exist in iCloud while the local flag says otherwise.
+        // Deleting a record that isn't there is a harmless no-op; leaving one
+        // behind resurrects the show on next launch.
+        launchBackgroundTask { [weak self] in
+            await self?.deleteFromCloud(showId)
+        }
+
         context.delete(s)               // cascades to seasons/episodes
         try context.save()
+
+        // Drop the archive flag. It lives in UserDefaults keyed by show id, so
+        // without this a re-followed show would come back silently archived.
+        var archived = Set(UserDefaults.standard.array(forKey: "archivedShowIds") as? [Int] ?? [])
+        if archived.remove(showId) != nil {
+            UserDefaults.standard.set(Array(archived), forKey: "archivedShowIds")
+        }
+
+        // Rewrite watch progress in iCloud. It's stored as one record holding
+        // every watched-episode key, derived from the local library — so
+        // re-syncing after the delete is what actually removes this show's
+        // keys. Skip it and the cloud keeps progress for a show you no longer
+        // follow, which comes back down on the next restore.
+        syncWatchProgressToCloud()
+    }
+
+    /// Unfollow, waiting for iCloud to confirm the record is gone.
+    ///
+    /// Use this from anywhere that can afford to wait — the Unfollow button on
+    /// show detail sits behind a confirmation dialog, so a brief spinner is
+    /// fine and it means the user sees the delete actually land.
+    ///
+    /// The local delete still happens either way: if iCloud is unreachable the
+    /// show is unfollowed regardless, and the tombstone keeps restore from
+    /// bringing it back until the delete succeeds.
+    func unfollowAwaitingCloud(id: Int) async throws {
+        guard series(id: id) != nil else { return }
+        UnfollowTombstones.add(id)
+        await deleteFromCloud(id)
+        try unfollow(id: id)
+    }
+
+    /// Delete one show's iCloud record. Clears its tombstone on success; leaves
+    /// it in place on failure so launch can retry.
+    private func deleteFromCloud(_ showId: Int) async {
+        guard await cloudKit.isAvailable else { return }
+        do {
+            try await cloudKit.deleteFollowedShow(tmdbId: showId)
+            UnfollowTombstones.clear(showId)
+            print("☁️ ✓ Removed from cloud on unfollow: \(showId)")
+        } catch {
+            // Stays tombstoned; retried on next launch.
+            print("☁️ ❌ Failed to remove \(showId) from cloud on unfollow: \(error)")
+        }
+    }
+
+    /// Retry any cloud deletes that never landed. Called at launch, before
+    /// restore, so a pending unfollow is finished before anything is pulled
+    /// back down.
+    func flushPendingCloudUnfollows() async {
+        let pending = UnfollowTombstones.ids
+        guard !pending.isEmpty else { return }
+        print("☁️ Retrying \(pending.count) pending cloud unfollow(s)")
+        for id in pending {
+            await deleteFromCloud(id)
+        }
     }
 
     // MARK: - Cleanup
@@ -573,8 +700,10 @@ final class SeriesManager {
             return
         }
 
-        // Check notification authorization
-        guard NotificationService.shared.isAuthorized else {
+        // Check notification authorization — asked of the system, not read from
+        // the cached flag, which can still be false long after the user granted
+        // permission and would silently skip scheduling.
+        guard await NotificationService.shared.currentlyAuthorized() else {
             logNotif("⛔️ skip \(series.name): OS notifications not authorized")
             return
         }
@@ -613,8 +742,9 @@ final class SeriesManager {
         // Premium gate
         guard PremiumManager.shared.isPremium else { return }
 
-        // Check notification authorization
-        guard NotificationService.shared.isAuthorized else { return }
+        // Check notification authorization (asked of the system — see
+        // currentlyAuthorized(); the cached flag goes stale and silently skips).
+        guard await NotificationService.shared.currentlyAuthorized() else { return }
 
         // Per-show setting (defaults to on when the show has no stored prefs).
         let settings = series(id: seriesId)?.notificationSettings ?? .default
@@ -812,6 +942,13 @@ final class SeriesManager {
 
     /// Merge local and cloud watch progress (handles conflicts by keeping watched state)
     func mergeWatchProgressWithCloud() async {
+        // R9: sync is premium-gated. Without this a free user restored,
+        // merged and pushed to iCloud on every launch.
+        guard PremiumManager.shared.canUseCloudSync else {
+            print("☁️ skip: not premium")
+            return
+        }
+
         print("☁️ ═══════════════════════════════════════════")
         print("☁️ iCloud MERGE - Starting bidirectional sync")
         print("☁️ ═══════════════════════════════════════════")
@@ -894,6 +1031,13 @@ final class SeriesManager {
 
     /// Sync all followed shows to iCloud (called when user becomes premium)
     func syncAllShowsToCloud() async {
+        // R9: sync is premium-gated. Without this a free user restored,
+        // merged and pushed to iCloud on every launch.
+        guard PremiumManager.shared.canUseCloudSync else {
+            print("☁️ skip: not premium")
+            return
+        }
+
         guard await cloudKit.isAvailable else {
             print("☁️ ⚠️ iCloud not available")
             return
@@ -967,6 +1111,13 @@ final class SeriesManager {
     /// Restore followed shows from iCloud (call on fresh install/reinstall)
     /// This fetches show IDs from CloudKit and re-follows them from TMDB
     func restoreShowsFromCloud() async {
+        // R9: sync is premium-gated. Without this a free user restored,
+        // merged and pushed to iCloud on every launch.
+        guard PremiumManager.shared.canUseCloudSync else {
+            print("☁️ skip: not premium")
+            return
+        }
+
         guard await cloudKit.isAvailable else {
             print("☁️ ⚠️ iCloud not available for restore")
             return
@@ -992,6 +1143,13 @@ final class SeriesManager {
 
             for record in cloudRecords {
                 guard let tmdbId = record.tmdbId else { continue }
+
+                // Unfollowed locally but still in iCloud — the delete hasn't
+                // landed yet. Never restore it, and retry the delete below.
+                if UnfollowTombstones.contains(tmdbId) {
+                    print("☁️ ⏭ Skipping tombstoned show \(tmdbId)")
+                    continue
+                }
 
                 // Skip if already following locally
                 if isFollowing(id: tmdbId) {

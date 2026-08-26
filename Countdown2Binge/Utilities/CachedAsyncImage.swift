@@ -34,7 +34,19 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
         return ImageCache.shared.get(for: url)
     }
 
+    /// The loaded image, but only if it belongs to the url currently being
+    /// rendered — otherwise a recycled view would show the previous show's
+    /// artwork for the frame before `.task(id:)` gets a chance to clear it.
+    private var imageMatchingCurrentURL: UIImage? {
+        guard let url, loadedURL == url else { return nil }
+        return loadedImage
+    }
+
     @State private var loadedImage: UIImage?
+    /// Which url `loadedImage` belongs to. @State survives this view being
+    /// recycled onto a different url, so the image is only ever trusted when
+    /// it provably matches the url being asked for right now.
+    @State private var loadedURL: URL?
 
     init(
         url: URL?,
@@ -51,7 +63,7 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
             // Demo images take priority
             if let image = demoImage {
                 content(Image(uiImage: image))
-            } else if let image = cachedImage ?? loadedImage {
+            } else if let image = cachedImage ?? imageMatchingCurrentURL {
                 content(Image(uiImage: image))
             } else {
                 placeholder()
@@ -67,19 +79,29 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     }
 
     private func loadImage() async {
-        guard let url = url else { return }
+        guard let url = url else {
+            loadedImage = nil
+            loadedURL = nil
+            return
+        }
 
         // Don't fetch demo images from network
         if url.absoluteString.hasPrefix("demo://") { return }
 
+        // SwiftUI recycles this view onto a different url (a card stack reusing
+        // its slots, a grid cell scrolling). `loadedImage` is @State and
+        // survives that, so it still holds the PREVIOUS url's image — drop it
+        // before it can be rendered against the new one. Without this the view
+        // shows one show's artwork over another's.
+        loadedImage = nil
+        loadedURL = nil
+
         // Check cache first (might have been loaded by another view)
         if let cached = ImageCache.shared.get(for: url) {
             self.loadedImage = cached
+            self.loadedURL = url
             return
         }
-
-        // Already have this image loaded
-        if loadedImage != nil { return }
 
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
@@ -90,6 +112,7 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
             if let uiImage = UIImage(data: data) {
                 ImageCache.shared.set(uiImage, for: url)
                 self.loadedImage = uiImage
+                self.loadedURL = url
             }
         } catch is CancellationError {
             // Task was cancelled (view scrolled away) - this is normal, don't log

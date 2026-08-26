@@ -578,6 +578,35 @@
 "share_until_premiere" = "Bis zur Premiere";
 "share_release_pending" = "Veroeffentlichungsdatum ausstehend";
 "share_season_complete" = "Staffel abgeschlossen";
+"share_stat_now" = "JETZT";
+"share_stat_tbd" = "OFFEN";
+"share_post_text" = "Beitragstext";
+"share_copy" = "Kopieren";
+"share_copied" = "Kopiert";
+"share_post_waiting" = "Warte noch.";
+"share_post_complete" = "Staffel komplett.";
+"share_post_just_binged" = "Gerade durchgebingt.";
+"share_post_ready" = "Jetzt bereit zum Bingen.";
+"share_post_pending" = "Starttermin offen.";
+"share_post_season %@" = "Staffel %@";
+"share_post_days %lld" = "Noch %lld Tage bis zum Bingen.";
+"share_tiktok" = "TikTok";
+"share_x" = "X";
+"share_status_pasteboard" = "Karte in Fotos gesichert · Text kopiert — im Beitrag einfügen.";
+"share_status_saved" = "Karte in Fotos gesichert. Diese App ist nicht installiert.";
+"share_status_photos_denied" = "Fotozugriff ist deaktiviert, die Karte kann nicht gesichert werden. In den Einstellungen aktivieren.";
+"share_status_no_messages" = "Dieses Gerät kann keine Nachrichten senden.";
+"share_status_failed" = "Karte konnte nicht erstellt werden. Bitte erneut versuchen.";
+"share_saved_title" = "In Fotos gesichert";
+"share_saved_body %@" = "Die Karte ist in deiner Mediathek, der Text ist kopiert. Öffne %@ und füge beides in deinen Beitrag ein.";
+"share_open_app %@" = "%@ öffnen";
+"share_back_to_destinations" = "Anderes Ziel wählen";
+"share_status_saved_only" = "In Fotos gesichert. Der Text liegt in der Zwischenablage.";
+"share_photos_app" = "Fotos";
+"share_save_to_photos" = "In Fotos sichern";
+"share_status_paste_in_x" = "X geöffnet. Die Karte liegt in der Zwischenablage — im Editor lange drücken und einfügen.";
+"share_saved_body_copy %@" = "Die Karte ist in deiner Mediathek. Kopiere unten den Text, öffne dann %@ und poste.";
+"share_button" = "Teilen";
 "share_messages" = "Nachrichten";
 "share_instagram" = "Instagram";
 "share_copy_link" = "Link kopieren";
@@ -1282,3 +1311,50 @@
 "settings_import_title" = "Serien importieren";
 "settings_import_subtitle" = "Liste einfügen und alle auf einmal hinzufügen";
 "settings_import_premium" = "Premium · Liste einfügen und alle auf einmal hinzufügen";
+
+/* Follow digest */
+"digest_title" = "Zu deiner Timeline hinzugefügt";
+"digest_body %@" = "Du folgst jetzt %@.";
+"digest_body_more %@ %lld" = "Du folgst jetzt %@ und %lld weiteren.";
+"settings_premium_locked" = "Premium — zum Ändern upgraden";
+"account_premium" = "PREMIUM";
+
+/* Notification copy — delivered text */
+"notif_finale_title" = "Das Finale steht bevor";
+"notif_bingeready_title" = "Bereit zum Bingen 🍿";
+"notif_newseason_title" = "Neue Staffel angekündigt";
+"notif_premiere_body %@" = "%@ startet heute. Die erste Folge ist da.";
+"notif_finale_body %@" = "Das Finale von %@ kommt bald — die letzte Folge vor dem Binge.";
+"notif_bingeready_body %@" = "%@ ist komplett. Von Anfang bis Ende, wann immer du willst.";
+"notif_newseason_body %@ %lld" = "Staffel %2$lld von %1$@ ist offiziell. Wir zählen ab jetzt runter.";
+
+/* Show alerts sheet */
+"alerts_sheet_title" = "DEINE HINWEISE";
+"alerts_sheet_title_edit" = "HINWEISE BEARBEITEN";
+"alerts_sheet_count %lld %lld" = "%lld von %lld aktiv";
+"alerts_section_this_show %@" = "Nur %@";
+"alerts_edit_footnote" = "Das Ausschalten gilt nur für diese Serie. Globale Vorgaben stehen in den Einstellungen.";
+"alerts_button_edit" = "Hinweise bearbeiten";
+"alerts_button_done" = "Fertig";
+"alert_badge_new_season" = "Neue Staffel erkannt";
+"alert_badge_premiere" = "Staffelpremiere";
+"alert_badge_finale" = "Finale-Erinnerung";
+"alert_badge_binge_ready" = "Bereit zum Bingen";
+"alert_status_sent" = "Bereits gesendet";
+"alert_status_awaiting" = "Datum offen";
+"alert_status_off" = "Deaktiviert";
+"alert_note_sent" = "Bereits gesendet";
+"alert_note_awaiting" = "Noch kein Datum bekannt";
+"alert_note_off" = "Für diese Serie deaktiviert";
+
+/* Rating confirm prompt */
+"review_prompt_title" = "Gefällt dir Countdown2Binge?";
+"review_prompt_message" = "Eine Bewertung hilft anderen, die App zu finden.";
+"review_prompt_rate" = "App bewerten";
+"review_prompt_later" = "Jetzt nicht";
+
+/* Free-tier show limit sheet */
+"limit_title %lld" = "Das sind deine %lld Serien";
+"limit_body %lld" = "Der kostenlose Plan verfolgt bis zu %lld Serien gleichzeitig. Entfolge einer, um Platz zu schaffen, oder hol dir Premium für unbegrenzte Serien, Hinweise und Sync.";
+"limit_upgrade" = "Premium holen";
+"limit_not_now" = "Jetzt nicht";

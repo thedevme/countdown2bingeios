@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import RevenueCat
-
 /// Sync eligibility state for iCloud sync
 enum SyncEligibility {
     case eligible
@@ -28,9 +27,6 @@ struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showNotifications = false
     @State private var showPaywall = false
-    #if DEBUG
-    @State private var showPaywallPreview = false
-    #endif
     @State private var showProfile = false
     @State private var selectedPlan = "monthly"
     @State private var isPurchasing = false
@@ -68,25 +64,6 @@ struct SettingsScreen: View {
                         .foregroundColor(.white)
                         .padding(.bottom, 18)
 
-                    // Account Card
-                    SettingsAccountCard(
-                        userName: profile.name,
-                        isPremium: isPremium,
-                        onTap: { showProfile = true }
-                    )
-
-                    // Alerts Group
-                    SettingsGroup(label: String(localized: "settings_group_alerts")) {
-                        SettingsRowChevron(
-                            icon: "bell.fill",
-                            iconColor: .c2bTealBright,
-                            title: String(localized: "settings_notifications"),
-                            subtitle: isPremium ? String(localized: "settings_alerts_advanced") : String(localized: "settings_alerts_basic"),
-                            isLast: true,
-                            action: { showNotifications = true }
-                        )
-                    }
-
                     // Premium CTA (free users only)
                     if !isPremium {
                         SettingsPremiumCTA {
@@ -94,149 +71,101 @@ struct SettingsScreen: View {
                         }
                     }
 
-                    // Library Group — bulk import is a premium feature; the
-                    // free tier caps at 3 shows, so there's nothing to import.
-                    SettingsGroup(label: String(localized: "settings_group_library")) {
-                        SettingsRowChevron(
-                            icon: "square.and.arrow.down",
-                            title: String(localized: "settings_import_title"),
-                            subtitle: isPremium
-                                ? String(localized: "settings_import_subtitle")
-                                : String(localized: "settings_import_premium"),
-                            isLast: true,
-                            action: {
-                                if isPremium { showImport = true } else { showPaywall = true }
+                    // Free users see nothing they can't use: no profile,
+                    // no alerts, no library, no preferences, no sync. Just the
+                    // upgrade CTA and About. Bouncing every row to a paywall was
+                    // noisier than simply not showing them.
+                    if isPremium {
+                        // Account Card
+                        SettingsAccountCard(
+                            userName: profile.name,
+                            isPremium: isPremium,
+                            isInTrial: PremiumManager.shared.isInTrial,
+                            onTap: {
+                                showProfile = true
                             }
                         )
-                    }
 
-                    // Preferences Group
-                    SettingsGroup(label: String(localized: "settings_group_preferences")) {
-                        SettingsRowChevron(
-                            icon: "tv",
-                            title: String(localized: "settings_streaming_services"),
-                            subtitle: "Netflix, Max, Prime, Hulu, Apple TV+",
-                            action: { }
-                        )
-
-                        SettingsRowChevron(
-                            icon: "moon.fill",
-                            title: String(localized: "settings_appearance"),
-                            subtitle: String(localized: "settings_dark"),
-                            action: { }
-                        )
-
-                        SettingsRowChevron(
-                            icon: "slider.horizontal.3",
-                            title: String(localized: "settings_taste_title"),
-                            subtitle: tastePrefsSubtitle,
-                            isLast: true,
-                            action: { showTastePrefs = true }
-                        )
-                    }
-
-                    // Cloud Sync Group (all users)
-                    SettingsGroup(label: String(localized: "settings_cloud_sync")) {
-                        SettingsRowChevron(
-                            icon: iCloudAvailable && isPremium ? "icloud.fill" : "icloud",
-                            iconColor: iCloudAvailable && isPremium ? .c2bTeal : .c2bMuted,
-                            title: iCloudAvailable && isPremium
-                                ? String(localized: "settings_sync_now")
-                                : String(localized: "settings_icloud_unavailable"),
-                            subtitle: cloudSyncSubtitle,
-                            isLast: true,
-                            action: { showCloudSync = true }
-                        )
-                    }
-                    .task {
-                        await checkiCloudStatus()
-                    }
-
-                    // Account Group
-                    SettingsGroup(label: String(localized: "settings_group_account")) {
-                        SettingsRowChevron(
-                            icon: "person.fill",
-                            title: String(localized: "settings_manage_account"),
-                            action: { }
-                        )
-
-                        SettingsRowChevron(
-                            icon: "questionmark.circle",
-                            title: String(localized: "settings_help_feedback"),
-                            isLast: true,
-                            action: { }
-                        )
-                    }
-
-                    // Developer / Reset Group
-                    SettingsGroup(label: String(localized: "settings_group_developer")) {
-                        #if DEBUG
-                        SettingsRowToggle(
-                            icon: "star.fill",
-                            iconColor: .yellow,
-                            title: String(localized: "settings_debug_premium"),
-                            subtitle: PremiumManager.shared.debugPremiumOverride ? String(localized: "settings_enabled") : String(localized: "settings_disabled"),
-                            isOn: Binding(
-                                get: { PremiumManager.shared.debugPremiumOverride },
-                                set: { PremiumManager.shared.debugPremiumOverride = $0 }
+                        // Alerts Group
+                        SettingsGroup(label: String(localized: "settings_group_alerts")) {
+                            SettingsRowChevron(
+                                icon: "bell.fill",
+                                iconColor: .c2bTealBright,
+                                title: String(localized: "settings_notifications"),
+                                subtitle: String(localized: "settings_alerts_advanced"),
+                                isLast: true,
+                                // Premium-gated: free users get no notifications at
+                                // all (see scheduleNotificationsForShow), so letting
+                                // them configure alerts promises something we never
+                                // deliver.
+                                action: {
+                                    showNotifications = true
+                                }
                             )
-                        )
+                        }
 
-                        // Pending Section Toggle - Only works in Simulator
-                        SettingsRowToggle(
-                            icon: "clock.badge.questionmark",
-                            iconColor: .c2bYellow,
-                            title: "Show Mock Pending",
-                            subtitle: DebugSettings.shared.isRunningInSimulator
-                                ? (DebugSettings.shared.showMockPendingSection ? "Showing mock data" : "Hidden")
-                                : "Simulator only",
-                            isOn: Binding(
-                                get: { DebugSettings.shared.showMockPendingSection },
-                                set: { DebugSettings.shared.showMockPendingSection = $0 }
-                            ),
-                            disabled: !DebugSettings.shared.isRunningInSimulator
-                        )
 
-                        // Preview Onboarding Paywall
-                        SettingsRowAction(
-                            icon: "creditcard",
-                            iconColor: .c2bTeal,
-                            title: "Preview Paywall",
-                            subtitle: "View onboarding paywall screen",
-                            action: { showPaywallPreview = true }
-                        )
-                        #endif
+                        // Library Group — bulk import is a premium feature; the
+                        // free tier caps at 3 shows, so there's nothing to import.
+                        SettingsGroup(label: String(localized: "settings_group_library")) {
+                            SettingsRowChevron(
+                                icon: "square.and.arrow.down",
+                                title: String(localized: "settings_import_title"),
+                                subtitle: String(localized: "settings_import_subtitle"),
+                                isLast: true,
+                                action: {
+                                    showImport = true
+                                }
+                            )
+                        }
 
-                        SettingsRowAction(
-                            icon: "arrow.counterclockwise",
-                            iconColor: .c2bMuted,
-                            title: String(localized: "settings_reset_onboarding"),
-                            subtitle: cloudSettings.hasCompletedOnboarding ? String(localized: "settings_completed") : String(localized: "settings_not_completed"),
-                            action: {
-                                cloudSettings.hasCompletedOnboarding = false
-                            }
-                        )
+                        // Preferences Group
+                        SettingsGroup(label: String(localized: "settings_group_preferences")) {
+                            // Premium-gated: what a free user gets recommended isn't
+                            // theirs to tune. Free taps land on the paywall.
+                            SettingsRowChevron(
+                                icon: "tv",
+                                title: String(localized: "settings_streaming_services"),
+                                subtitle: "Netflix, Max, Prime, Hulu, Apple TV+",
+                                action: { }
+                            )
 
-                        SettingsRowAction(
-                            icon: "play.circle",
-                            iconColor: .c2bMuted,
-                            title: String(localized: "settings_reset_walkthrough"),
-                            subtitle: cloudSettings.hasSeenWalkthrough ? String(localized: "settings_seen") : String(localized: "settings_not_seen"),
-                            action: {
-                                cloudSettings.hasSeenWalkthrough = false
-                            }
-                        )
+                            SettingsRowChevron(
+                                icon: "moon.fill",
+                                title: String(localized: "settings_appearance"),
+                                subtitle: String(localized: "settings_dark"),
+                                action: { }
+                            )
 
-                        SettingsRowAction(
-                            icon: "arrow.trianglehead.2.clockwise.rotate.90",
-                            iconColor: .c2bTeal,
-                            title: String(localized: "settings_refresh_discover"),
-                            subtitle: isRefreshingDiscover ? String(localized: "settings_refreshing") : String(localized: "settings_reload_data"),
-                            isLast: true,
-                            action: {
-                                Task { await refreshDiscoverCache() }
-                            }
-                        )
+                            SettingsRowChevron(
+                                icon: "slider.horizontal.3",
+                                title: String(localized: "settings_taste_title"),
+                                subtitle: tastePrefsSubtitle,
+                                isLast: true,
+                                action: {
+                                    showTastePrefs = true
+                                }
+                            )
+                        }
+
+                        // Cloud Sync Group — premium only (sync IS the paid feature, R9)
+                        SettingsGroup(label: String(localized: "settings_cloud_sync")) {
+                            SettingsRowChevron(
+                                icon: iCloudAvailable && isPremium ? "icloud.fill" : "icloud",
+                                iconColor: iCloudAvailable && isPremium ? .c2bTeal : .c2bMuted,
+                                title: iCloudAvailable && isPremium
+                                    ? String(localized: "settings_sync_now")
+                                    : String(localized: "settings_icloud_unavailable"),
+                                subtitle: cloudSyncSubtitle,
+                                isLast: true,
+                                action: {
+                                    showCloudSync = true
+                                }
+                            )
+                        }
+                        .task {
+                            await checkiCloudStatus()
+                        }
                     }
 
                     // About Group
@@ -264,15 +193,7 @@ struct SettingsScreen: View {
                         }
                     }
 
-                    // Sign Out Group
-                    SettingsGroup {
-                        SettingsRowDanger(
-                            title: String(localized: "button_sign_out"),
-                            isLast: true,
-                            action: { }
-                        )
-                    }
-
+                    // Developer tools — Debug builds only, compiled out of Release.
                     // Version
                     Text(String(localized: "app_version \("V1.0")"))
                         .font(.custom(.jetbrains.regular, size: 8.5))
@@ -302,23 +223,24 @@ struct SettingsScreen: View {
                 TastePreferencesEditorView()
             }
             .sheet(isPresented: $showPaywall) {
-//                PaywallView(
-//                    selectedPlan: $selectedPlan,
-//                    onDismiss: { showPaywall = false },
-//                    onContinueFree: nil,
-//                    showContinueFree: false
-//                )
+                PaywallView(
+                    selectedPlan: $selectedPlan,
+                    onDismiss: { showPaywall = false },
+                    onContinueFree: nil,
+                    showContinueFree: false
+                )
             }
-            #if DEBUG
-            .sheet(isPresented: $showPaywallPreview) {
-//                PaywallView(
-//                    selectedPlan: $selectedPlan,
-//                    onDismiss: { showPaywallPreview = false },
-//                    onContinueFree: nil,
-//                    showContinueFree: false
-//                )
-            }
-            #endif
+            // Paywall preview — commented out; uncomment with its @State above.
+            // #if DEBUG
+            // .sheet(isPresented: $showPaywallPreview) {
+            //     PaywallView(
+            //         selectedPlan: $selectedPlan,
+            //         onDismiss: { showPaywallPreview = false },
+            //         onContinueFree: nil,
+            //         showContinueFree: false
+            //     )
+            // }
+            // #endif
             .overlay {
                 if showNotifications {
                     NotificationSettingsOverlay(onDismiss: {

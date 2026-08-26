@@ -31,10 +31,6 @@ struct CloudSyncView: View {
         effectivePremium ? allSeries.filter { $0.isSynced } : allSeries
     }
 
-    #if DEBUG
-    @State private var previewAsPremium = true
-    #endif
-
     var body: some View {
         ZStack {
             ScrollView {
@@ -43,13 +39,6 @@ struct CloudSyncView: View {
                     header
                         .padding(.top, 20)
                         .padding(.bottom, 16)
-
-                    #if DEBUG
-                    // Debug toggle
-                    debugToggle
-                        .padding(.horizontal, C2BLayout.horizontalPadding)
-                        .padding(.bottom, 16)
-                    #endif
 
                     // Status card
                     CloudSyncStatusCard(
@@ -87,6 +76,25 @@ struct CloudSyncView: View {
                     )
                     .padding(.horizontal, C2BLayout.horizontalPadding)
                     .padding(.bottom, 24)
+                    // Anchored to the grid holding the X buttons, not the
+                    // ScrollView — iOS 26 places the bubble against the frame
+                    // of whatever the dialog is attached to.
+                    .confirmationDialog(
+                        "Remove from iCloud?",
+                        isPresented: Binding(
+                            get: { pendingRemoval != nil },
+                            set: { if !$0 { pendingRemoval = nil } }
+                        ),
+                        titleVisibility: .visible,
+                        presenting: pendingRemoval
+                    ) { series in
+                        Button("Remove from Follow List", role: .destructive) {
+                            removeAndUnfollow(series)
+                        }
+                        Button("Cancel", role: .cancel) { pendingRemoval = nil }
+                    } message: { series in
+                        Text("\(series.name) will be removed from your follow list on every device.")
+                    }
 
                     // Footer text
                     footerText
@@ -107,22 +115,6 @@ struct CloudSyncView: View {
             .onAppear {
                 viewModel.configure(premiumManager: premiumManager)
             }
-            .confirmationDialog(
-                "Remove from iCloud?",
-                isPresented: Binding(
-                    get: { pendingRemoval != nil },
-                    set: { if !$0 { pendingRemoval = nil } }
-                ),
-                titleVisibility: .visible,
-                presenting: pendingRemoval
-            ) { series in
-                Button("Remove from Follow List", role: .destructive) {
-                    removeAndUnfollow(series)
-                }
-                Button("Cancel", role: .cancel) { pendingRemoval = nil }
-            } message: { series in
-                Text("\(series.name) will be removed from your follow list on every device.")
-            }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
     }
@@ -134,19 +126,16 @@ struct CloudSyncView: View {
         pendingRemoval = nil
         viewModel.exitEditMode()
         Task {
-            await seriesManager.unsyncShowFromCloud(seriesId: id)
-            try? seriesManager.unfollow(id: id)
+            // Waits for iCloud to confirm, and tombstones the id so restore
+            // can't hand the show back if the delete fails.
+            try? await seriesManager.unfollowAwaitingCloud(id: id)
         }
     }
 
     // MARK: - Effective Premium (respects debug toggle)
 
     private var effectivePremium: Bool {
-        #if DEBUG
-        return previewAsPremium
-        #else
         return premiumManager.isPremium
-        #endif
     }
 
     // MARK: - Header
@@ -178,31 +167,6 @@ struct CloudSyncView: View {
         }
         .padding(.horizontal, C2BLayout.horizontalPadding)
     }
-
-    // MARK: - Debug Toggle
-
-    #if DEBUG
-    private var debugToggle: some View {
-        HStack {
-            Text(previewAsPremium ? "PREVIEW AS PREMIUM" : "PREVIEW AS FREE")
-                .font(.custom(.jetbrains.regular, size: 9))
-                .foregroundColor(.white.opacity(0.5))
-                .tracking(0.5)
-
-            Spacer()
-
-            Toggle("", isOn: $previewAsPremium)
-                .labelsHidden()
-                .tint(.c2bTeal)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-        )
-    }
-    #endif
 
     // MARK: - Footer
 
