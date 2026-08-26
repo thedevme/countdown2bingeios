@@ -102,11 +102,7 @@ final class NotificationService: ObservableObject {
     // MARK: - Debug
 
     func listPendingNotifications() async {
-        let pending = await center.pendingNotificationRequests()
-        print("Pending notifications: \(pending.count)")
-        for request in pending {
-            print("  - \(request.identifier): \(request.content.title)")
-        }
+        _ = await center.pendingNotificationRequests()
     }
 
     #if DEBUG
@@ -116,7 +112,6 @@ final class NotificationService: ObservableObject {
         if !isAuthorized {
             let granted = await requestAuthorization()
             guard granted else {
-                print("DEBUG: Notification permission denied")
                 return
             }
         }
@@ -145,9 +140,7 @@ final class NotificationService: ObservableObject {
 
         do {
             try await center.add(request)
-            print("DEBUG: Test notification scheduled, fires in \(delaySeconds) seconds")
         } catch {
-            print("DEBUG: Failed to schedule test notification: \(error)")
         }
     }
 

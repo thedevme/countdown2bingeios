@@ -18,7 +18,6 @@ import os
 nonisolated func logNotif(_ message: String) {
     Logger(subsystem: "com.countdown2binge", category: "notifications")
         .log("\(message, privacy: .public)")
-    print("🔔[Notifications] \(message)")
 }
 
 // MARK: - Notification Types

@@ -35,7 +35,6 @@ struct CircleXButton: View {
         Color.c2bBackground.ignoresSafeArea()
 
         CircleXButton {
-            print("X tapped")
         }
     }
 }

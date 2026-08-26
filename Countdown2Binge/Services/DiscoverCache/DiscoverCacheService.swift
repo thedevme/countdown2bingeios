@@ -44,18 +44,15 @@ final class DiscoverCacheService {
         let metadata = getOrCreateMetadata()
 
         if metadata.isStale {
-            print("DEBUG: Discover cache is stale, refreshing...")
             await refreshCache()
             metadata.markRefreshed()
             try? modelContext.save()
         } else {
-            print("DEBUG: Discover cache is fresh, last fetched: \(metadata.lastFetchDate?.description ?? "never")")
         }
     }
 
     /// Force refresh the cache
     func refreshCache() async {
-        print("DEBUG: Starting Discover cache refresh...")
 
         // Clear existing cache
         clearCache()
@@ -70,12 +67,7 @@ final class DiscoverCacheService {
         }
 
         try? modelContext.save()
-        print("DEBUG: Discover cache refresh complete")
 
-        // Log final counts
-        for bucket in DiscoverBucket.allCases {
-            print("DEBUG: \(bucket.displayTitle): \(bucketCounts[bucket] ?? 0) shows")
-        }
     }
 
     /// Get cached shows for a bucket, optionally filtered by network
@@ -127,7 +119,6 @@ final class DiscoverCacheService {
         let dateRange = bucket.dateRange
         let maxPagesPerNetwork = 10
 
-        print("DEBUG: Fetching shows for \(bucket.displayTitle)...")
 
         // Try each network until we have enough shows
         for network in networks {
@@ -184,13 +175,11 @@ final class DiscoverCacheService {
 
                     page += 1
                 } catch {
-                    print("DEBUG: Error fetching \(network.name) \(bucket.displayTitle) page \(page): \(error)")
                     break
                 }
             }
         }
 
-        print("DEBUG: \(bucket.displayTitle) has \(bucketCounts[bucket] ?? 0) shows")
     }
 
     private func cacheShow(_ summary: TMDBShowSummary, fullData: ShowData, network: NetworkDefinition, bucket: DiscoverBucket) {

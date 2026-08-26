@@ -27,7 +27,6 @@ final class SoundManager {
 
     private func preloadSounds() {
         guard let url = Bundle.main.url(forResource: "cardswipe", withExtension: "wav") else {
-            print("Sound file not found")
             return
         }
 
@@ -36,7 +35,6 @@ final class SoundManager {
             cardSwipePlayer?.volume = 0.3
             cardSwipePlayer?.prepareToPlay()
         } catch {
-            print("Failed to load sound: \(error)")
         }
     }
 

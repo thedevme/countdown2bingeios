@@ -65,7 +65,6 @@ struct CloudSyncUpsellCard: View {
         Color.c2bBackground.ignoresSafeArea()
 
         CloudSyncUpsellCard {
-            print("Upsell tapped")
         }
         .padding()
     }

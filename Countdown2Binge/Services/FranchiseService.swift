@@ -39,7 +39,6 @@ final class FranchiseService {
         franchises = loadBundledFranchises()
         buildLookupMap()
         isLoaded = true
-        print("FranchiseService: Loaded \(franchises.count) franchises")
     }
 
     /// Get franchise for a show (O(1) lookup)
@@ -74,24 +73,19 @@ final class FranchiseService {
         for franchise in franchises {
             // Map parent show
             showToFranchise[franchise.parentShow.tmdbId] = franchise
-            print("FranchiseService: Mapped \(franchise.parentShow.title) (ID: \(franchise.parentShow.tmdbId)) -> \(franchise.localizedName())")
 
             // Map all spinoffs
             for spinoff in franchise.spinoffs {
                 showToFranchise[spinoff.tmdbId] = franchise
-                print("FranchiseService: Mapped \(spinoff.title) (ID: \(spinoff.tmdbId)) -> \(franchise.localizedName())")
             }
         }
 
-        print("FranchiseService: Built lookup map with \(showToFranchise.count) entries")
-        print("FranchiseService: All mapped IDs: \(Array(showToFranchise.keys).sorted())")
     }
 
     /// Load franchises from bundled JSON file
     private func loadBundledFranchises() -> [Franchise] {
         guard let url = Bundle.main.url(forResource: "Franchises", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
-            print("FranchiseService: No bundled Franchises.json found, using built-in data")
             return builtInFranchises()
         }
 
@@ -100,7 +94,6 @@ final class FranchiseService {
             let container = try decoder.decode(FranchiseContainer.self, from: data)
             return container.franchises
         } catch {
-            print("FranchiseService: Failed to decode Franchises.json - \(error)")
             return builtInFranchises()
         }
     }

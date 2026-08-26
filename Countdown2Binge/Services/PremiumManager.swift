@@ -151,11 +151,16 @@ final class PremiumManager {
     func configure() async {
         let apiKey = Self.apiKey
         guard !apiKey.isEmpty else {
-            print("PremiumManager: RevenueCat API key not configured")
             return
         }
 
         guard !isConfigured else { return }
+
+        // Silence RevenueCat's own logger. It defaults to verbose and prints a
+        // wall of "DEBUG: ..." — every API request, cache decision and product
+        // fetch — which is not ours and does not go away by deleting our own
+        // print calls. `.error` still surfaces real failures.
+        Purchases.logLevel = .error
         Purchases.configure(withAPIKey: apiKey)
         isConfigured = true
 
@@ -176,7 +181,6 @@ final class PremiumManager {
             let customerInfo = try await Purchases.shared.customerInfo()
             updateState(from: customerInfo)
         } catch {
-            print("PremiumManager: Failed to check entitlements - \(error)")
         }
     }
 
@@ -223,14 +227,12 @@ final class PremiumManager {
         if isPremium && isInGracePeriod {
             Task {
                 await clearGracePeriod()
-                print("PremiumManager: Grace period cleared - user re-subscribed")
             }
         }
 
         // Detect downgrade from premium to free
         if wasPremium && !isPremium {
             didDowngradeFromPremium = true
-            print("PremiumManager: Detected downgrade from premium to free")
         }
 
         // Check trial status
@@ -261,21 +263,16 @@ final class PremiumManager {
     /// - Returns: `true` if purchase completed, `false` if user cancelled
     func purchase(package: Package) async throws -> Bool {
         await ensureConfigured()
-        print("PremiumManager: Starting purchase for \(package.identifier)")
         do {
             let result = try await Purchases.shared.purchase(package: package)
-            print("PremiumManager: Purchase result - userCancelled: \(result.userCancelled)")
 
             if result.userCancelled {
-                print("PremiumManager: User cancelled purchase")
                 return false
             }
 
             updateState(from: result.customerInfo)
-            print("PremiumManager: Purchase successful! isPremium: \(isPremium)")
             return true
         } catch {
-            print("PremiumManager: Purchase failed - \(error)")
             throw error
         }
     }
@@ -302,7 +299,6 @@ final class PremiumManager {
         gracePeriodShowCount = showCount
         isInGracePeriod = true
 
-        print("PremiumManager: Started 3-day grace period (expires: \(expiry), shows: \(showCount))")
 
         // Persist to CloudKit
         do {
@@ -312,7 +308,6 @@ final class PremiumManager {
                 premiumShowCount: showCount
             )
         } catch {
-            print("PremiumManager: Failed to save grace period to CloudKit - \(error)")
         }
     }
 
@@ -324,13 +319,11 @@ final class PremiumManager {
         isInGracePeriod = false
         didDowngradeFromPremium = false
 
-        print("PremiumManager: Cleared grace period")
 
         // Clear from CloudKit
         do {
             try await CloudKitManager.shared.clearGracePeriod()
         } catch {
-            print("PremiumManager: Failed to clear grace period from CloudKit - \(error)")
         }
     }
 
@@ -347,16 +340,13 @@ final class PremiumManager {
                 // Check if still active or expired
                 if Date() < expiry {
                     isInGracePeriod = true
-                    print("PremiumManager: Loaded active grace period (expires: \(expiry))")
                 } else {
                     // Grace period expired - keep data but mark as expired
                     // ContentView will show the removal modal
                     isInGracePeriod = true
-                    print("PremiumManager: Loaded expired grace period")
                 }
             }
         } catch {
-            print("PremiumManager: Failed to load grace period state - \(error)")
         }
     }
 }

@@ -268,7 +268,6 @@ struct FollowedShowDetail: View {
             cast = credits.cast
             videos = fetchedVideos
         } catch {
-            print("Failed to load show info: \(error)")
         }
 
         isLoadingShowInfo = false

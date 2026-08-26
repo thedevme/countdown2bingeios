@@ -16,7 +16,11 @@ struct ProfileScreen: View {
     let isPremium: Bool
 
     private var profile: UserProfile { ProfileManager.shared.profile }
-    private var followedShows: [Series] { seriesManager.allSeries() }
+
+    /// R4: views read SwiftData through @Query. This was a computed property
+    /// calling `seriesManager.allSeries()`, which issued a fresh fetch on every
+    /// body evaluation — and a body re-evaluates constantly.
+    @Query(sort: \Series.dateAdded, order: .reverse) private var followedShows: [Series]
     @State private var showEditProfile = false
     @State private var showShareSheet = false
     @State private var navigationPath = NavigationPath()

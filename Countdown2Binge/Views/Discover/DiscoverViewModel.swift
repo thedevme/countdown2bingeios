@@ -71,6 +71,11 @@ final class DiscoverViewModel {
 
     // Trending pagination state
     private var trendingCurrentPage = 0
+    /// When the trending list was last loaded, and for which taste query.
+    /// Both are needed: time alone would serve results for streaming services
+    /// the user just turned off.
+    private var trendingLoadedAt: Date?
+    private var loadedTrendingQueryKey: String?
     private var trendingTotalPages = 0
     private(set) var isLoadingMoreTrending = false
     /// The relaxation level that produced the current trending page, so "load
@@ -158,8 +163,29 @@ final class DiscoverViewModel {
 
     // MARK: - Public API
 
-    func loadTrendingShows() async {
+    /// How long a loaded trending list stays good. Re-running the relaxation
+    /// ladder on every appearance meant a network round-trip each time the
+    /// search screen was opened, even when returning to it seconds later.
+    private static let trendingFreshness: TimeInterval = 15 * 60
+
+    func loadTrendingShows(force: Bool = false) async {
         guard !isLoading else { return }
+
+        // Already have results, still fresh, and the taste query hasn't changed.
+        // The query is part of the key because changing streaming services or
+        // genres must invalidate immediately — a stale list would silently show
+        // shows the user can't stream.
+        let queryKey = DiscoverQueryBuilder.cacheKey(
+            for: TastePreferencesStore.shared.preferences.discoverQuery(page: 1),
+            relaxation: .full
+        )
+        if !force,
+           !trendingShows.isEmpty,
+           queryKey == loadedTrendingQueryKey,
+           let loadedAt = trendingLoadedAt,
+           Date().timeIntervalSince(loadedAt) < Self.trendingFreshness {
+            return
+        }
 
         isLoading = true
         error = nil
@@ -176,6 +202,8 @@ final class DiscoverViewModel {
                 let shows = response.results.map { $0.toShowSummary() }
                 if shows.count >= 10 || index == ladder.count - 1 {
                     trendingShows = shows
+                    trendingLoadedAt = Date()
+                    loadedTrendingQueryKey = queryKey
                     trendingCurrentPage = 1
                     trendingTotalPages = response.totalPages
                     trendingRelaxation = level
@@ -183,7 +211,6 @@ final class DiscoverViewModel {
                 }
             } catch {
                 self.error = String(localized: "error_load_trending")
-                print("Error loading trending shows: \(error)")
                 break
             }
         }
@@ -211,7 +238,6 @@ final class DiscoverViewModel {
             trendingShows.append(contentsOf: newShows)
             trendingCurrentPage = nextPage
         } catch {
-            print("Error loading more trending shows: \(error)")
         }
 
         isLoadingMoreTrending = false
@@ -233,7 +259,6 @@ final class DiscoverViewModel {
             if searchText == query {
                 searchResults = []
             }
-            print("Error searching shows: \(error)")
         }
     }
 
@@ -250,7 +275,6 @@ final class DiscoverViewModel {
                 try seriesManager.unfollow(id: show.id)
                 followedShowIds.remove(show.id)
             } catch {
-                print("Error unfollowing show: \(error)")
             }
         } else {
             // Check grace period first - user must choose shows before following new ones
@@ -270,7 +294,6 @@ final class DiscoverViewModel {
                 let fullShowData = try await tmdbService.getShowDetails(id: show.id)
                 pendingFollowShow = fullShowData
             } catch {
-                print("Error fetching show details: \(error)")
             }
         }
     }
@@ -299,7 +322,6 @@ final class DiscoverViewModel {
                 )
             }
         } catch {
-            print("Error following show: \(error)")
         }
 
         clearPendingFollow()
@@ -343,7 +365,6 @@ final class DiscoverViewModel {
                 selectedShowRecommendations = recommendations
             }
         } catch {
-            print("Error loading show details: \(error)")
             // Create minimal ShowData from summary as fallback
             selectedShowData = ShowData(
                 id: summary.id,
@@ -497,7 +518,6 @@ final class DiscoverViewModel {
             genreCurrentPage[genreId] = 1
             genreTotalPages[genreId] = response.totalPages
         } catch {
-            print("Error loading shows for genre \(genreId): \(error)")
             genreShows[genreId] = []
         }
 
@@ -534,7 +554,6 @@ final class DiscoverViewModel {
 
             genreCurrentPage[genreId] = nextPage
         } catch {
-            print("Error loading more shows for genre \(genreId): \(error)")
         }
 
         isLoadingMoreGenre = false
@@ -549,7 +568,6 @@ final class DiscoverViewModel {
                     let response = try await tmdbService.getShowsByGenre(genreIds: [genre.id], page: 1)
                     genreShows[genre.id] = response.results.map { $0.toShowSummary() }
                 } catch {
-                    print("Error loading \(genre.name): \(error)")
                 }
             }
         }
@@ -581,7 +599,6 @@ final class DiscoverViewModel {
                     let shows = Array(response.results.prefix(10))
                     networkShows[network.id] = shows.map { $0.toShowSummary() }
                 } catch {
-                    print("Error loading \(network.name): \(error)")
                 }
             }
         }

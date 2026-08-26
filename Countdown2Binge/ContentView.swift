@@ -91,7 +91,6 @@ struct ContentView: View {
                 OnboardingFlow(
                     isPresented: $showOnboarding,
                     onComplete: { plan, shows in
-                        print("ContentView: Received \(shows.count) shows to save")
                         selectedPlan = plan
                         followedShows = shows
                         followedShowNames = shows.map { $0.name }
@@ -216,7 +215,7 @@ struct ContentView: View {
         // 2. Over the limit — ours. RevenueCat knows nothing about how many
         //    shows are followed. `showLimit` is used rather than a bare 3 only
         //    so the free cap lives in one place.
-        showDowngradeModal = seriesManager.allSeries().count > PremiumManager.shared.showLimit
+        showDowngradeModal = seriesManager.followedCount() > PremiumManager.shared.showLimit
     }
 
     private func checkGracePeriodExpiry() {
@@ -236,15 +235,12 @@ struct ContentView: View {
                 // counter — asking for a rating during onboarding is a 5.6.3
                 // rejection (and was one).
                 _ = try await seriesManager.follow(id: show.id, source: .onboarding)
-                print("DEBUG: Followed show \(show.name)")
             } catch {
-                print("Error following show \(show.name): \(error)")
             }
         }
 
         // Trigger timeline refresh
         timelineRefreshTrigger = UUID()
-        print("DEBUG: Triggered timeline refresh after saving \(shows.count) shows")
     }
 
     // MARK: - Tab Bar Appearance
@@ -348,7 +344,6 @@ struct SettingsPlaceholder: View {
                 OnboardingFlow(
                     isPresented: $showOnboarding,
                     onComplete: { plan, shows in
-                        print("Completed with plan: \(plan), shows: \(shows.map { $0.name })")
                     }
                 )
             }

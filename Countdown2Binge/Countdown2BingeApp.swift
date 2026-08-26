@@ -62,22 +62,35 @@ struct Countdown2BingeApp: App {
                 }
                 .onAppear {
                     if !hasLaunched {
-                        print("🎬 Craig's Countdown2Binge Debug Mode")
                         hasLaunched = true
+                        // Launch work, split by what actually depends on what.
+                        // This used to be eight awaits in a single chain, so
+                        // the last one waited on RevenueCat, a JSON load, every
+                        // TMDB refresh and three CloudKit round-trips in turn.
+                        //
+                        // Entitlements first and on their own: everything
+                        // premium-gated below reads `isPremium`, and asking
+                        // after the fact meant the first launch answered "free".
                         Task {
                             await PremiumManager.shared.configure()
                             await PremiumManager.shared.loadGracePeriodState()
-                            await FranchiseService.shared.fetchFranchises()
-                            await seriesManager.refreshAll()
-                            // 0. Finish any unfollow whose cloud delete never
-                            //    landed — before restore, or it pulls them back.
+
+                            // The cloud chain IS order-dependent and stays serial:
+                            // a pending unfollow must be flushed before restore,
+                            // or restore pulls the show straight back.
                             await seriesManager.flushPendingCloudUnfollows()
-                            // 1. Restore shows from iCloud (for reinstalls)
                             await seriesManager.restoreShowsFromCloud()
-                            // 2. Restore and merge watch progress from iCloud
                             await seriesManager.mergeWatchProgressWithCloud()
-                            // 3. Sync all followed shows to iCloud (marks them as synced)
                             await seriesManager.syncAllShowsToCloud()
+                        }
+
+                        // Independent of entitlements and of each other — no
+                        // reason for either to sit behind the cloud chain.
+                        Task {
+                            await FranchiseService.shared.fetchFranchises()
+                        }
+                        Task {
+                            await seriesManager.refreshAll()
                         }
                     }
                 }
@@ -144,25 +157,19 @@ struct Countdown2BingeApp: App {
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("📅 Background refresh scheduled")
         } catch BGTaskScheduler.Error.unavailable {
-            print("⚠️ Background refresh unavailable on this device")
         } catch BGTaskScheduler.Error.tooManyPendingTaskRequests {
-            print("⚠️ Too many pending background tasks")
         } catch {
-            print("⚠️ Could not schedule background refresh: \(error)")
         }
     }
 
     /// Perform background refresh — reuses the tested foreground path.
     /// Calling a @MainActor async function automatically hops to the main actor.
     private func performBackgroundRefresh() async {
-        print("🌙 Background refresh starting")
 
         // refreshAll is @MainActor async — Swift automatically hops actors on the call
         await seriesManager.refreshAll(force: false)
 
-        print("🌙 Background refresh completed")
     }
 }
 

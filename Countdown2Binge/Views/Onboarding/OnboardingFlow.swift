@@ -338,7 +338,6 @@ struct OnboardingFlow: View {
         @State private var show = true
         var body: some View {
             OnboardingFlow(isPresented: $show) { plan, shows in
-                print("plan=\(plan) shows=\(shows.count)")
             }
             .preferredColorScheme(.dark)
         }

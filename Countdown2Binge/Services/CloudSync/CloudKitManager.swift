@@ -56,10 +56,8 @@ final class CloudKitManager: CloudSyncing {
             do {
                 let status = try await container.accountStatus()
                 let available = status == .available
-                print("CloudKitManager: Account status = \(status.rawValue), available = \(available)")
                 return available
             } catch {
-                print("CloudKitManager: Failed to check account status - \(error)")
                 return false
             }
         }
@@ -110,10 +108,8 @@ final class CloudKitManager: CloudSyncing {
                 switch result {
                 case .success:
                     let name = savedRecordName ?? recordID.recordName
-                    print("CloudKitManager: Saved show \(tmdbId) with recordName: \(name)")
                     continuation.resume(returning: name)
                 case .failure(let error):
-                    print("CloudKitManager: Failed to save show \(tmdbId) - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -127,7 +123,6 @@ final class CloudKitManager: CloudSyncing {
     func deleteFollowedShow(tmdbId: Int) async throws {
         let recordID = CKRecord.ID(recordName: "show_\(tmdbId)")
         try await privateDB.deleteRecord(withID: recordID)
-        print("CloudKitManager: Deleted show \(tmdbId)")
     }
 
     /// Delete a followed show by record name
@@ -135,7 +130,6 @@ final class CloudKitManager: CloudSyncing {
     func deleteFollowedShow(recordName: String) async throws {
         let recordID = CKRecord.ID(recordName: recordName)
         try await privateDB.deleteRecord(withID: recordID)
-        print("CloudKitManager: Deleted record \(recordName)")
     }
 
     /// Fetch all followed shows from CloudKit
@@ -171,7 +165,6 @@ final class CloudKitManager: CloudSyncing {
             return date1 > date2
         }
 
-        print("CloudKitManager: Fetched \(allRecords.count) shows from CloudKit")
         return allRecords
     }
 
@@ -219,10 +212,8 @@ final class CloudKitManager: CloudSyncing {
             modifyOperation.modifyRecordsResultBlock = { result in
                 switch result {
                 case .success:
-                    print("CloudKitManager: Batch saved \(savedNames.count) shows")
                     continuation.resume(returning: savedNames)
                 case .failure(let error):
-                    print("CloudKitManager: Batch save failed - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -244,10 +235,8 @@ final class CloudKitManager: CloudSyncing {
             modifyOperation.modifyRecordsResultBlock = { result in
                 switch result {
                 case .success:
-                    print("CloudKitManager: Batch deleted \(tmdbIds.count) shows")
                     continuation.resume()
                 case .failure(let error):
-                    print("CloudKitManager: Batch delete failed - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -282,10 +271,8 @@ final class CloudKitManager: CloudSyncing {
             operation.modifyRecordsResultBlock = { result in
                 switch result {
                 case .success:
-                    print("CloudKitManager: Saved watch progress with \(watchedEpisodeKeys.count) episodes")
                     continuation.resume(returning: recordID.recordName)
                 case .failure(let error):
-                    print("CloudKitManager: Failed to save watch progress - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -315,7 +302,6 @@ final class CloudKitManager: CloudSyncing {
         let recordID = CKRecord.ID(recordName: "watch_progress_all")
         do {
             try await privateDB.deleteRecord(withID: recordID)
-            print("CloudKitManager: Deleted all watch progress")
         } catch let error as CKError where error.code == .unknownItem {
             // Record didn't exist, that's fine
         }
@@ -334,7 +320,6 @@ final class CloudKitManager: CloudSyncing {
         recordIDs.append(CKRecord.ID(recordName: "watch_progress_all"))
 
         guard !recordIDs.isEmpty else {
-            print("CloudKitManager: No data to delete")
             return
         }
 
@@ -344,10 +329,8 @@ final class CloudKitManager: CloudSyncing {
             modifyOperation.modifyRecordsResultBlock = { result in
                 switch result {
                 case .success:
-                    print("CloudKitManager: Deleted all \(recordIDs.count) records")
                     continuation.resume()
                 case .failure(let error):
-                    print("CloudKitManager: Delete all failed - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -390,10 +373,8 @@ final class CloudKitManager: CloudSyncing {
             operation.modifyRecordsResultBlock = { result in
                 switch result {
                 case .success:
-                    print("CloudKitManager: Saved user settings (grace period expiry: \(String(describing: gracePeriodExpiry)))")
                     continuation.resume()
                 case .failure(let error):
-                    print("CloudKitManager: Failed to save user settings - \(error)")
                     continuation.resume(throwing: error)
                 }
             }
@@ -415,10 +396,8 @@ final class CloudKitManager: CloudSyncing {
             let expiry = record[FieldKey.gracePeriodExpiry] as? Date
             let startedAt = record[FieldKey.gracePeriodStartedAt] as? Date
             let showCount = record[FieldKey.premiumShowCount] as? Int
-            print("CloudKitManager: Fetched user settings (grace period expiry: \(String(describing: expiry)))")
             return (expiry, startedAt, showCount)
         } catch let error as CKError where error.code == .unknownItem {
-            print("CloudKitManager: No user settings found")
             return (nil, nil, nil)
         }
     }
@@ -428,10 +407,8 @@ final class CloudKitManager: CloudSyncing {
         let recordID = CKRecord.ID(recordName: "user_settings")
         do {
             try await privateDB.deleteRecord(withID: recordID)
-            print("CloudKitManager: Cleared grace period (deleted user_settings record)")
         } catch let error as CKError where error.code == .unknownItem {
             // Record didn't exist, that's fine
-            print("CloudKitManager: No grace period to clear")
         }
     }
 
@@ -444,7 +421,6 @@ final class CloudKitManager: CloudSyncing {
         // Check if subscription already exists
         do {
             _ = try await privateDB.subscription(for: subscriptionID)
-            print("CloudKitManager: Subscription already exists")
             return
         } catch let error as CKError where error.code == .unknownItem {
             // Subscription doesn't exist, create it
@@ -462,7 +438,6 @@ final class CloudKitManager: CloudSyncing {
         subscription.notificationInfo = notificationInfo
 
         try await privateDB.save(subscription)
-        print("CloudKitManager: Created subscription for followed shows changes")
     }
 }
 

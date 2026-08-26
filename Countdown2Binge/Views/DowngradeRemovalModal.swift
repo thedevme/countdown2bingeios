@@ -85,7 +85,6 @@ struct DowngradeRemovalModal: View {
             do {
                 try seriesManager.unfollow(id: tmdbId)
             } catch {
-                print("Error removing show \(tmdbId): \(error)")
             }
         }
 

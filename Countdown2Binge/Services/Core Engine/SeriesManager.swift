@@ -30,6 +30,11 @@ import SwiftData
 @Observable
 final class SeriesManager {
 
+    /// Concurrent TMDB fetches during a full refresh. Enough to stop launch
+    /// scaling with library size, low enough that TMDB doesn't rate-limit.
+    private static let maxConcurrentRefreshes = 6
+
+
     /// The container, kept alive for background Tasks that need their own context.
     private let container: ModelContainer
 
@@ -152,8 +157,10 @@ final class SeriesManager {
         return (try? context.fetch(descriptor)) ?? []
     }
 
+    /// Counted in the store, not by fetching every row and calling `.count`.
+    /// This is asked on every premium change and every follow attempt.
     func followedCount() -> Int {
-        allSeries().count
+        (try? context.fetchCount(FetchDescriptor<Series>())) ?? 0
     }
 
     // MARK: - Follow (the ONLY creation path)
@@ -342,10 +349,8 @@ final class SeriesManager {
         do {
             try await cloudKit.deleteFollowedShow(tmdbId: showId)
             UnfollowTombstones.clear(showId)
-            print("☁️ ✓ Removed from cloud on unfollow: \(showId)")
         } catch {
             // Stays tombstoned; retried on next launch.
-            print("☁️ ❌ Failed to remove \(showId) from cloud on unfollow: \(error)")
         }
     }
 
@@ -355,7 +360,6 @@ final class SeriesManager {
     func flushPendingCloudUnfollows() async {
         let pending = UnfollowTombstones.ids
         guard !pending.isEmpty else { return }
-        print("☁️ Retrying \(pending.count) pending cloud unfollow(s)")
         for id in pending {
             await deleteFromCloud(id)
         }
@@ -375,8 +379,7 @@ final class SeriesManager {
 
         // Delete duplicates (keep first, which is most recent due to sort order)
         var deletedCount = 0
-        for (id, duplicates) in byId where duplicates.count > 1 {
-            print("🧹 Cleaning up \(duplicates.count - 1) duplicate(s) for show ID \(id): \(duplicates.first?.name ?? "?")")
+        for (_, duplicates) in byId where duplicates.count > 1 {
             for dup in duplicates.dropFirst() {
                 context.delete(dup)
                 deletedCount += 1
@@ -385,7 +388,6 @@ final class SeriesManager {
 
         if deletedCount > 0 {
             try context.save()
-            print("🧹 Deleted \(deletedCount) duplicate Series entries")
         }
     }
 
@@ -582,19 +584,33 @@ final class SeriesManager {
     }
 
     func refresh(id: Int, force: Bool = false, now: Date = Date()) async {
-        guard let s = series(id: id) else { return }
+        guard isRefreshDue(id: id, force: force, now: now) else { return }
+        guard let show = try? await tmdb.getShowDetails(id: id) else { return }
+        await apply(show, to: id, now: now)
+    }
 
-        // State-based throttle: skip if not due (unless forced)
-        if !force, now < nextRefreshDue(for: s, now: now) {
-            return
-        }
+    /// Whether a show is due, without fetching anything.
+    ///
+    /// Split out so `refreshAll` can decide what to fetch BEFORE spending any
+    /// network calls, instead of awaiting every show in turn only to discover
+    /// most of them were throttled.
+    private func isRefreshDue(id: Int, force: Bool, now: Date) -> Bool {
+        guard let s = series(id: id) else { return false }
+        return force || now >= nextRefreshDue(for: s, now: now)
+    }
+
+    /// Everything after the network call: the SwiftData writes, the watched-state
+    /// correction, and notification scheduling. Stays on the main actor and runs
+    /// one show at a time — this is still the single write funnel (R3). Only the
+    /// fetch above is parallelised.
+    private func apply(_ show: ShowData, to id: Int, now: Date) async {
+        guard let s = series(id: id) else { return }
 
         // Snapshot old season numbers for new-season detection
         let oldSeasonNumbers = Set(s.regularSeasons.map { $0.seasonNumber })
         let seriesName = s.name
 
         do {
-            let show = try await tmdb.getShowDetails(id: id)
             SeriesMapper.update(s, from: show, in: context)
             s.lastRefreshedAt = now
 
@@ -642,13 +658,59 @@ final class SeriesManager {
     /// Checks Task.isCancelled between shows for graceful background-task expiration.
     /// `now` parameter for testability (defaults to current date).
     func refreshAll(force: Bool = false, now: Date = Date()) async {
-        for s in allSeries() {
-            // Check cancellation before each show (supports background task expiration)
-            guard !Task.isCancelled else {
-                print("🛑 Refresh cancelled by system")
-                return
+        // Only the shows actually due. Previously every followed show was
+        // awaited in turn and then usually thrown away by the throttle, so a
+        // large library paid a full serial pass on every launch and every
+        // foreground.
+        guard !Task.isCancelled else { return }
+
+        let due = allSeries()
+            .map(\.id)
+            .filter { isRefreshDue(id: $0, force: force, now: now) }
+        guard !due.isEmpty else { return }
+
+        // Fetch concurrently, capped. Sequential round-trips made launch scale
+        // linearly with library size; this makes it scale with the slowest few.
+        var fetched: [Int: ShowData] = [:]
+        await withTaskGroup(of: (Int, ShowData?).self) { group in
+            var next = 0
+
+            func addTask(_ index: Int) {
+                let id = due[index]
+                group.addTask { [tmdb] in
+                    // Checked inside the child too: a background task can be
+                    // expired by the system between spawning and running, and
+                    // the fetch is the expensive part worth skipping.
+                    guard !Task.isCancelled else { return (id, nil) }
+                    return (id, try? await tmdb.getShowDetails(id: id))
+                }
             }
-            await refresh(id: s.id, force: force, now: now)
+
+            // Re-checked before each spawn rather than only per completion —
+            // otherwise the whole first batch is in flight before cancellation
+            // is ever consulted.
+            while next < due.count && next < Self.maxConcurrentRefreshes {
+                guard !Task.isCancelled else { break }
+                addTask(next)
+                next += 1
+            }
+
+            for await (id, show) in group {
+                if Task.isCancelled { group.cancelAll(); break }
+                if let show { fetched[id] = show }
+                if next < due.count, !Task.isCancelled {
+                    addTask(next)
+                    next += 1
+                }
+            }
+        }
+
+        // Apply one at a time: SwiftData writes and notification scheduling are
+        // not safe to interleave, and this is the R3 write funnel.
+        for id in due {
+            guard !Task.isCancelled else { return }
+            guard let show = fetched[id] else { continue }
+            await apply(show, to: id, now: now)
         }
     }
 
@@ -812,7 +874,6 @@ final class SeriesManager {
     private func syncWatchProgressToCloud() {
         launchBackgroundTask { [container, cloudKit] in
             guard await cloudKit.isAvailable else {
-                print("☁️ iCloud: Not available, skipping sync")
                 return
             }
 
@@ -844,50 +905,30 @@ final class SeriesManager {
             }
 
             // Debug logging
-            print("☁️ ═══════════════════════════════════════════")
-            print("☁️ iCloud SYNC - Saving Watch Progress")
-            print("☁️ ═══════════════════════════════════════════")
 
             if showSummary.isEmpty {
-                print("☁️ No watched episodes to sync")
             } else {
-                for (name, counts) in showSummary.sorted(by: { $0.key < $1.key }) {
-                    let progress = counts.total > 0 ? Int((Double(counts.watched) / Double(counts.total)) * 100) : 0
-                    print("☁️ ✓ \(name): \(counts.watched)/\(counts.total) episodes (\(progress)%)")
-                }
-                print("☁️ ───────────────────────────────────────────")
-                print("☁️ Total: \(keys.count) watched episodes")
             }
 
             do {
                 try await cloudKit.saveAllWatchProgress(watchedEpisodeKeys: keys)
-                print("☁️ ✅ Successfully synced to iCloud")
             } catch {
-                print("☁️ ❌ Failed to sync: \(error)")
             }
-            print("☁️ ═══════════════════════════════════════════")
         }
     }
 
     /// Restore watch progress from iCloud (call on app launch)
     func restoreWatchProgressFromCloud() async {
         guard await cloudKit.isAvailable else {
-            print("☁️ iCloud: Not available, skipping restore")
             return
         }
 
-        print("☁️ ═══════════════════════════════════════════")
-        print("☁️ iCloud RESTORE - Fetching Watch Progress")
-        print("☁️ ═══════════════════════════════════════════")
 
         do {
             guard let cloudKeys = try await cloudKit.fetchAllWatchProgress() else {
-                print("☁️ No watch progress found in iCloud")
-                print("☁️ ═══════════════════════════════════════════")
                 return
             }
 
-            print("☁️ Found \(cloudKeys.count) watched episodes in iCloud")
 
             // Parse keys and apply to local data
             var restoredCount = 0
@@ -924,20 +965,10 @@ final class SeriesManager {
 
             if restoredCount > 0 {
                 try context.save()
-                    print("☁️ ───────────────────────────────────────────")
-                print("☁️ Restored episodes from iCloud:")
-                for (name, count) in restoredByShow.sorted(by: { $0.key < $1.key }) {
-                    print("☁️ ↓ \(name): +\(count) episodes")
-                }
-                print("☁️ ───────────────────────────────────────────")
-                print("☁️ ✅ Total restored: \(restoredCount) episodes")
             } else {
-                print("☁️ ✓ Local data already up to date")
             }
         } catch {
-            print("☁️ ❌ Failed to restore: \(error)")
         }
-        print("☁️ ═══════════════════════════════════════════")
     }
 
     /// Merge local and cloud watch progress (handles conflicts by keeping watched state)
@@ -945,17 +976,11 @@ final class SeriesManager {
         // R9: sync is premium-gated. Without this a free user restored,
         // merged and pushed to iCloud on every launch.
         guard PremiumManager.shared.canUseCloudSync else {
-            print("☁️ skip: not premium")
             return
         }
 
-        print("☁️ ═══════════════════════════════════════════")
-        print("☁️ iCloud MERGE - Starting bidirectional sync")
-        print("☁️ ═══════════════════════════════════════════")
 
         guard await cloudKit.isAvailable else {
-            print("☁️ ⚠️ iCloud not available - sign in via Settings")
-            print("☁️ ═══════════════════════════════════════════")
             return
         }
 
@@ -986,7 +1011,6 @@ final class SeriesManager {
 
         let tmdbId = bgSeries.id
         let followedAt = bgSeries.dateAdded
-        let name = bgSeries.name
 
         do {
             try await cloudKit.saveFollowedShow(tmdbId: tmdbId, followedAt: followedAt)
@@ -996,9 +1020,7 @@ final class SeriesManager {
                 mainSeries.isSynced = true
                 try? self.context.save()
             }
-            print("☁️ ✓ Synced show: \(name)")
         } catch {
-            print("☁️ ❌ Failed to sync show \(name): \(error)")
         }
     }
 
@@ -1013,7 +1035,6 @@ final class SeriesManager {
         guard let bgSeries = try? bgContext.fetch(descriptor).first else { return }
 
         let tmdbId = bgSeries.id
-        let name = bgSeries.name
 
         do {
             try await cloudKit.deleteFollowedShow(tmdbId: tmdbId)
@@ -1023,9 +1044,7 @@ final class SeriesManager {
                 mainSeries.isSynced = false
                 try? self.context.save()
             }
-            print("☁️ ✓ Removed from cloud: \(name)")
         } catch {
-            print("☁️ ❌ Failed to unsync show \(name): \(error)")
         }
     }
 
@@ -1034,48 +1053,45 @@ final class SeriesManager {
         // R9: sync is premium-gated. Without this a free user restored,
         // merged and pushed to iCloud on every launch.
         guard PremiumManager.shared.canUseCloudSync else {
-            print("☁️ skip: not premium")
             return
         }
 
         guard await cloudKit.isAvailable else {
-            print("☁️ ⚠️ iCloud not available")
             return
         }
 
-        print("☁️ ═══════════════════════════════════════════")
-        print("☁️ Syncing ALL shows to iCloud...")
-        print("☁️ ═══════════════════════════════════════════")
 
-        let shows = allSeries()
-        var syncedCount = 0
+        // Only what isn't already up there. This pushed EVERY followed show on
+        // every launch, re-saving unchanged records — a 30-show library meant 30
+        // CloudKit writes each time the app opened, for no change.
+        //
+        // `isSynced` is cleared whenever a show is followed or its cloud record
+        // is deleted, so a genuinely new or re-added show still syncs.
+        let pending = allSeries().filter { !$0.isSynced }
+        guard !pending.isEmpty else {
+            // Watch progress is a single record and still worth pushing.
+            syncWatchProgressToCloud()
+            return
+        }
 
-        for s in shows {
+        for s in pending {
             do {
                 try await cloudKit.saveFollowedShow(tmdbId: s.id, followedAt: s.dateAdded)
                 s.isSynced = true
-                syncedCount += 1
-                print("☁️ ✓ \(s.name)")
             } catch {
-                print("☁️ ❌ \(s.name): \(error.localizedDescription)")
+                // Leave isSynced false so the next launch retries this one.
             }
         }
 
         try? context.save()
         syncWatchProgressToCloud()
 
-        print("☁️ ───────────────────────────────────────────")
-        print("☁️ ✅ Synced \(syncedCount)/\(shows.count) shows")
-        print("☁️ ═══════════════════════════════════════════")
     }
 
     /// Remove all shows from iCloud (called when user loses premium)
     func unsyncAllShowsFromCloud() async {
         guard await cloudKit.isAvailable else { return }
 
-        print("☁️ ═══════════════════════════════════════════")
-        print("☁️ Removing ALL shows from iCloud...")
-        print("☁️ ═══════════════════════════════════════════")
 
         let shows = allSeries()
 
@@ -1093,17 +1109,18 @@ final class SeriesManager {
             // Also delete watch progress
             try await cloudKit.deleteAllWatchProgress()
 
-            print("☁️ ✅ Removed \(shows.count) shows from iCloud")
         } catch {
-            print("☁️ ❌ Failed to remove shows: \(error)")
         }
 
-        print("☁️ ═══════════════════════════════════════════")
     }
 
-    /// Count of synced shows
+    /// Count of synced shows.
+    ///
+    /// `isSynced` is a stored flag, not lifecycle state, so it is safe in a
+    /// #Predicate — R4 forbids BingeEngine there, not plain columns.
     var syncedShowCount: Int {
-        allSeries().filter { $0.isSynced }.count
+        let descriptor = FetchDescriptor<Series>(predicate: #Predicate { $0.isSynced })
+        return (try? context.fetchCount(descriptor)) ?? 0
     }
 
     // MARK: - Restore Shows from iCloud
@@ -1114,29 +1131,21 @@ final class SeriesManager {
         // R9: sync is premium-gated. Without this a free user restored,
         // merged and pushed to iCloud on every launch.
         guard PremiumManager.shared.canUseCloudSync else {
-            print("☁️ skip: not premium")
             return
         }
 
         guard await cloudKit.isAvailable else {
-            print("☁️ ⚠️ iCloud not available for restore")
             return
         }
 
-        print("☁️ ═══════════════════════════════════════════")
-        print("☁️ iCloud RESTORE - Fetching Followed Shows")
-        print("☁️ ═══════════════════════════════════════════")
 
         do {
             let cloudRecords = try await cloudKit.fetchAllFollowedShows()
 
             if cloudRecords.isEmpty {
-                print("☁️ No shows found in iCloud")
-                print("☁️ ═══════════════════════════════════════════")
                 return
             }
 
-            print("☁️ Found \(cloudRecords.count) shows in iCloud")
 
             var restoredCount = 0
             var failedCount = 0
@@ -1147,13 +1156,11 @@ final class SeriesManager {
                 // Unfollowed locally but still in iCloud — the delete hasn't
                 // landed yet. Never restore it, and retry the delete below.
                 if UnfollowTombstones.contains(tmdbId) {
-                    print("☁️ ⏭ Skipping tombstoned show \(tmdbId)")
                     continue
                 }
 
                 // Skip if already following locally
                 if isFollowing(id: tmdbId) {
-                    print("☁️ ✓ Already following ID \(tmdbId)")
                     continue
                 }
 
@@ -1167,26 +1174,19 @@ final class SeriesManager {
                         }
                         try? context.save()
                         restoredCount += 1
-                        print("☁️ ↓ Restored: \(series.name)")
                     }
                 } catch {
                     failedCount += 1
-                    print("☁️ ❌ Failed to restore ID \(tmdbId): \(error.localizedDescription)")
                 }
             }
 
-            print("☁️ ───────────────────────────────────────────")
             if restoredCount > 0 {
-                print("☁️ ✅ Restored \(restoredCount) shows from iCloud")
                 }
             if failedCount > 0 {
-                print("☁️ ⚠️ Failed to restore \(failedCount) shows")
             }
         } catch {
-            print("☁️ ❌ Failed to fetch shows from iCloud: \(error)")
         }
 
-        print("☁️ ═══════════════════════════════════════════")
     }
 }
 

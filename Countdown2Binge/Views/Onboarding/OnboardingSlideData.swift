@@ -144,14 +144,12 @@ final class OnboardingDataLoader {
     private func loadJSON() {
         guard let url = Bundle.main.url(forResource: "OnboardingSlides", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
-            print("OnboardingDataLoader: Failed to load OnboardingSlides.json")
             return
         }
 
         do {
             slidesJSON = try JSONDecoder().decode(OnboardingSlidesJSON.self, from: data)
         } catch {
-            print("OnboardingDataLoader: Failed to decode JSON - \(error)")
         }
     }
 
