@@ -210,7 +210,15 @@ struct ContentView: View {
         // Two separate questions, two separate owners.
         //
         // 1. Premium or free — RevenueCat's answer, and only RevenueCat's.
-        guard !PremiumManager.shared.isPremium else { return }
+        // This runs before RevenueCat has necessarily responded (e.g. the
+        // .task at launch fires while isPremium is still its false default),
+        // so a premature "not premium" read can set showDowngradeModal below.
+        // When a later, real check confirms premium, that must explicitly
+        // clear the modal here — just returning leaves it stuck open.
+        guard !PremiumManager.shared.isPremium else {
+            showDowngradeModal = false
+            return
+        }
 
         // 2. Over the limit — ours. RevenueCat knows nothing about how many
         //    shows are followed. `showLimit` is used rather than a bare 3 only
