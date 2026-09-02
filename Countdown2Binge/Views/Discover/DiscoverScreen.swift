@@ -282,8 +282,7 @@ struct DiscoverPaywallSheet: View {
         PaywallView(
             selectedPlan: $selectedPlan,
             onDismiss: onDismiss,
-            onContinueFree: nil,
-            showContinueFree: false
+            onContinueFree: nil
         )
     }
 }

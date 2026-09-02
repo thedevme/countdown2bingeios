@@ -2,7 +2,11 @@
 //  FranchiseService.swift
 //  Countdown2Binge
 //
-//  Fetches franchise data from Firebase and provides O(1) lookups.
+//  Provides O(1) franchise/spinoff lookups.
+//
+//  Data source: bundled Resources/Franchises.json, pending the API. The
+//  hardcoded `builtInFranchises()` is a last-resort fallback, not the source
+//  of truth — it covers 8 franchises where the JSON covers 29.
 //
 
 import Foundation
@@ -84,8 +88,13 @@ final class FranchiseService {
 
     /// Load franchises from bundled JSON file
     private func loadBundledFranchises() -> [Franchise] {
+        // Both failures below fall back to `builtInFranchises()`, which returns
+        // a plausible-looking 8 franchises. That is indistinguishable from the
+        // real feed working unless we say something, so both paths are loud:
+        // a JSON typo used to silently cost 21 franchises.
         guard let url = Bundle.main.url(forResource: "Franchises", withExtension: "json"),
               let data = try? Data(contentsOf: url) else {
+            assertionFailure("Franchises.json missing from bundle — falling back to built-in franchises")
             return builtInFranchises()
         }
 
@@ -94,6 +103,7 @@ final class FranchiseService {
             let container = try decoder.decode(FranchiseContainer.self, from: data)
             return container.franchises
         } catch {
+            assertionFailure("Franchises.json failed to decode (\(error)) — falling back to built-in franchises")
             return builtInFranchises()
         }
     }
@@ -228,8 +238,43 @@ final class FranchiseService {
 
 // MARK: - JSON Decoding Container
 
-private struct FranchiseContainer: Codable {
+/// The feed keys `franchises` by id — `{"franchises": {"breaking-bad": {...}}}`
+/// — so each `Franchise.id` comes from its key, not from a field in the object.
+private struct FranchiseContainer: Decodable {
     let franchises: [Franchise]
+
+    /// A franchise object as it appears on the wire: everything except `id`.
+    private struct Body: Decodable {
+        let franchiseName: [String: String]
+        let origin: String?
+        let parentShow: FranchiseShow
+        let spinoffs: [SpinoffShow]?
+        let watchOrder: WatchOrder?
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case franchises
+    }
+
+    init(from decoder: Decoder) throws {
+        let root = try decoder.container(keyedBy: CodingKeys.self)
+        let keyed = try root.decode([String: Body].self, forKey: .franchises)
+
+        franchises = keyed
+            .map { id, body in
+                Franchise(
+                    id: id,
+                    franchiseName: body.franchiseName,
+                    origin: body.origin,
+                    parentShow: body.parentShow,
+                    spinoffs: body.spinoffs ?? [],
+                    watchOrder: body.watchOrder
+                )
+            }
+            // Dictionary iteration order is not stable between runs; sort so
+            // the built map (and anything that ever lists franchises) is.
+            .sorted { $0.id < $1.id }
+    }
 }
 
 // MARK: - FranchiseResolving Conformance

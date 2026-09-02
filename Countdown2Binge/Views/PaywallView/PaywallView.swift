@@ -18,9 +18,6 @@ struct PaywallView: View {
     let onDismiss: () -> Void
     let onContinueFree: (() -> Void)?
 
-    /// Whether to show the "Continue with Free" option (onboarding) or just X to close (settings)
-    var showContinueFree: Bool = true
-
     /// Package identifiers mapped to plan IDs
     private let packageIds: [String: String] = [
         "monthly": "$rc_monthly",
@@ -124,19 +121,21 @@ struct PaywallView: View {
                                 )
                             }
 
-                            // Free — a real, selectable choice during onboarding.
-                            if showContinueFree {
-                                PlanCard(
-                                    id: "free",
-                                    name: "FREE",
-                                    price: "$0",
-                                    period: "",
-                                    subtitle: "TRACK 3 SHOWS · BASIC TIMELINE · NO ALERTS OR SYNC",
-                                    badge: nil,
-                                    isSelected: selectedPlan == "free",
-                                    onSelect: { selectedPlan = "free" }
-                                )
-                            }
+                            // Free — a real, selectable choice on EVERY paywall,
+                            // onboarding and in-app alike. Premium is never the
+                            // only way forward. When there is no onContinueFree
+                            // (the in-app sheets) the CTA falls through to
+                            // onDismiss, which returns to the app on free.
+                            PlanCard(
+                                id: "free",
+                                name: "FREE",
+                                price: "$0",
+                                period: "",
+                                subtitle: "TRACK 3 SHOWS · BASIC TIMELINE · NO ALERTS OR SYNC",
+                                badge: nil,
+                                isSelected: selectedPlan == "free",
+                                onSelect: { selectedPlan = "free" }
+                            )
                         }
                     }
                     .padding(.horizontal, 20)

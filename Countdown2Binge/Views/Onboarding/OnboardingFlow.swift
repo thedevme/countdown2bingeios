@@ -195,8 +195,7 @@ struct OnboardingFlow: View {
                     // X / dismiss: keep the purchased plan only if they actually
                     // bought; otherwise fall through to free (no premium without purchase).
                     onDismiss: { finish(PremiumManager.shared.isPremium ? selectedPlan : "free") },
-                    onContinueFree: { finish("free") },
-                    showContinueFree: true
+                    onContinueFree: { finish("free") }
                 )
             } else if step == walkthroughStep {
                 ZStack {

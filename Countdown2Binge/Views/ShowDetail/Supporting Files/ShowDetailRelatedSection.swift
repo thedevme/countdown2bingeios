@@ -177,8 +177,7 @@ struct ShowDetailRelatedUpgradePrompt: View {
             PaywallView(
                 selectedPlan: $selectedPlan,
                 onDismiss: { showPaywall = false },
-                onContinueFree: nil,
-                showContinueFree: false
+                onContinueFree: nil
             )
         }
     }

@@ -35,9 +35,22 @@ struct FollowedShowDetail: View {
         series.toShowData()
     }
 
-    // Spinoff count from stored data (set when show was followed)
+    /// Franchise data, resolved LIVE from FranchiseService rather than from the
+    /// Series snapshot. `series.relatedShowIds` is written once in a background
+    /// task at follow-time and guarded by `spinoffsResolved`, which is set even
+    /// when the lookup came back empty — so any show followed before the
+    /// franchise list covered it is stuck at spinoffCount 0 forever, with no
+    /// backfill path. Reading the service directly also keeps the tab and the
+    /// tab's contents (which already read it live) from disagreeing.
+    ///
+    /// Latched into @State because FranchiseService is not @Observable: the
+    /// launch fetch is async, and a plain computed property would not re-render
+    /// this view when it lands.
+    @State private var franchise: Franchise?
+
     private var spinoffCount: Int {
-        series.spinoffCount
+        guard let franchise else { return 0 }
+        return franchise.allTmdbIds.filter { $0 != series.id }.count
     }
 
     /// Spin-offs are a premium feature, same as on the unfollowed detail view.
@@ -45,11 +58,6 @@ struct FollowedShowDetail: View {
     /// somewhere the user already lives, and a dead tab there reads as broken.
     private var canShowSpinoffs: Bool {
         PremiumManager.shared.canViewSpinoffs && spinoffCount > 0
-    }
-
-    // Franchise data for displaying spinoffs tab content
-    private var franchise: Franchise? {
-        FranchiseService.shared.franchise(forShowId: series.id)
     }
 
     init(series: Series, initialSeason: Int? = nil, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
@@ -225,6 +233,10 @@ struct FollowedShowDetail: View {
             ShowAlertsSheet(series: series, onDismiss: { showAlerts = false })
         }
         .task {
+            // No-ops once loaded; covers a detail view opened before the
+            // launch-time fetch finished.
+            await FranchiseService.shared.fetchFranchises()
+            franchise = FranchiseService.shared.franchise(forShowId: series.id)
             await loadShowInfo()
         }
         .onAppear {

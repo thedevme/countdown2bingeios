@@ -226,8 +226,7 @@ struct SettingsScreen: View {
                 PaywallView(
                     selectedPlan: $selectedPlan,
                     onDismiss: { showPaywall = false },
-                    onContinueFree: nil,
-                    showContinueFree: false
+                    onContinueFree: nil
                 )
             }
             // Paywall preview — commented out; uncomment with its @State above.
@@ -236,8 +235,7 @@ struct SettingsScreen: View {
             //     PaywallView(
             //         selectedPlan: $selectedPlan,
             //         onDismiss: { showPaywallPreview = false },
-            //         onContinueFree: nil,
-            //         showContinueFree: false
+            //         onContinueFree: nil
             //     )
             // }
             // #endif
