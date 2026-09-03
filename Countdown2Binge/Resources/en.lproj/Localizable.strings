@@ -1444,3 +1444,35 @@
 "limit_body %lld" = "The free plan tracks up to %lld shows at once. Unfollow one to make room, or go Premium for unlimited shows, alerts and sync.";
 "limit_upgrade" = "Go Premium";
 "limit_not_now" = "Not now";
+
+"label_universe" = "Universe";
+"label_nothing_to_sequence" = "Nothing to Sequence";
+
+// MARK: - Franchise Catalog
+"franchise_era_before" = "Before";
+"franchise_era_main" = "The Main Series";
+"franchise_era_alongside" = "Alongside";
+"franchise_era_after" = "After";
+"franchise_relation_prequel" = "Prequel";
+"franchise_relation_companion" = "Spin-off";
+"franchise_relation_sequel" = "Sequel";
+"franchise_relation_main" = "Main Series";
+"franchise_status_announced" = "Announced";
+"franchise_status_development" = "In Development";
+"franchise_status_returning" = "Returning";
+
+// MARK: - Franchise Era Card
+"franchise_order_recommended" = "Recommended";
+"franchise_order_release" = "Release";
+"franchise_order_recommended_desc" = "Story order — prequels first, then the main series, then what follows.";
+"franchise_order_release_desc" = "The order they aired, oldest first.";
+"franchise_order_release_note" = "Eras are story order, so release numbers jump between groups rather than counting down the page.";
+"franchise_you_are_here" = "You are here";
+"franchise_hidden_count %lld" = "%lld hidden";
+"franchise_unlock_bar_title %lld" = "%lld more in this universe";
+"franchise_unlock_bar_subtitle" = "Premium names them and puts them in watch order.";
+"franchise_unlock" = "Unlock";
+"franchise_spinoffs_count %lld" = "%lld spin-offs";
+"franchise_entry_singular" = "1 entry";
+"franchise_entries_count %lld" = "%lld entries";
+"franchise_badge_premium_only" = "Premium feature only";

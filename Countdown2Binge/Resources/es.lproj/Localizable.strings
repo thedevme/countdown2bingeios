@@ -1356,3 +1356,35 @@
 "limit_body %lld" = "El plan gratuito sigue hasta %lld series a la vez. Deja de seguir una para hacer sitio, o pásate a Premium para tener series ilimitadas, avisos y sincronización.";
 "limit_upgrade" = "Hazte Premium";
 "limit_not_now" = "Ahora no";
+
+"label_universe" = "Universo";
+"label_nothing_to_sequence" = "Nada que Ordenar";
+
+// MARK: - Franchise Catalog
+"franchise_era_before" = "Antes";
+"franchise_era_main" = "La Serie Principal";
+"franchise_era_alongside" = "Junto a";
+"franchise_era_after" = "Después";
+"franchise_relation_prequel" = "Precuela";
+"franchise_relation_companion" = "Spin-off";
+"franchise_relation_sequel" = "Secuela";
+"franchise_relation_main" = "Serie Principal";
+"franchise_status_announced" = "Anunciado";
+"franchise_status_development" = "En Desarrollo";
+"franchise_status_returning" = "En Emisión";
+
+// MARK: - Franchise Era Card
+"franchise_order_recommended" = "Recomendado";
+"franchise_order_release" = "Estreno";
+"franchise_order_recommended_desc" = "Orden de la historia — primero las precuelas, luego la serie principal, luego lo que sigue.";
+"franchise_order_release_desc" = "El orden en que se estrenaron, del más antiguo al más reciente.";
+"franchise_order_release_note" = "Las épocas siguen el orden de la historia, así que los números de estreno saltan entre grupos en lugar de contar en orden por la página.";
+"franchise_you_are_here" = "Estás aquí";
+"franchise_hidden_count %lld" = "%lld ocultos";
+"franchise_unlock_bar_title %lld" = "%lld más en este universo";
+"franchise_unlock_bar_subtitle" = "Premium los nombra y los pone en orden de visualización.";
+"franchise_unlock" = "Desbloquear";
+"franchise_spinoffs_count %lld" = "%lld spin-offs";
+"franchise_entry_singular" = "1 entrada";
+"franchise_entries_count %lld" = "%lld entradas";
+"franchise_badge_premium_only" = "Solo función premium";

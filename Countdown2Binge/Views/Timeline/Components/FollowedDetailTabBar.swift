@@ -24,19 +24,10 @@ enum FollowedDetailTab: CaseIterable {
 
 struct FollowedDetailTabBar: View {
     @Binding var selectedTab: FollowedDetailTab
-    let showSpinoffs: Bool
-
-    private var visibleTabs: [FollowedDetailTab] {
-        if showSpinoffs {
-            return FollowedDetailTab.allCases
-        } else {
-            return [.seasonInfo, .showInfo]
-        }
-    }
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(visibleTabs, id: \.self) { tab in
+            ForEach(FollowedDetailTab.allCases, id: \.self) { tab in
                 let isSelected = selectedTab == tab
 
                 Button(action: { selectedTab = tab }) {
@@ -65,15 +56,8 @@ struct FollowedDetailTabBar: View {
 
 #Preview {
     VStack(spacing: 20) {
-        FollowedDetailTabBar(
-            selectedTab: .constant(.seasonInfo),
-            showSpinoffs: true
-        )
-
-        FollowedDetailTabBar(
-            selectedTab: .constant(.showInfo),
-            showSpinoffs: false
-        )
+        FollowedDetailTabBar(selectedTab: .constant(.seasonInfo))
+        FollowedDetailTabBar(selectedTab: .constant(.spinoffs))
     }
     .padding(.horizontal, 22)
     .background(Color.c2bBackground)

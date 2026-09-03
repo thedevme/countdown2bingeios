@@ -88,7 +88,11 @@ struct SeasonPlate: View {
 /// when positive — the AppKit/UIKit equivalent of `-webkit-text-stroke`.
 /// `strokeWidth` here is in points and converted to the percentage-of-font-size
 /// value the attribute expects.
-private struct StrokedText: UIViewRepresentable {
+///
+/// `internal`, not file-private: reused by the Spin-offs era card for its
+/// section/entry numerals, which need the exact same outline treatment.
+/// One implementation so the two can't drift apart.
+struct StrokedText: UIViewRepresentable {
     let text: String
     let fontName: String
     let fontSize: CGFloat

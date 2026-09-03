@@ -1358,3 +1358,35 @@
 "limit_body %lld" = "無料プランで同時に追跡できるのは %lld 作品までです。1つフォローを解除するか、Premium で無制限・通知・同期をご利用ください。";
 "limit_upgrade" = "Premium にする";
 "limit_not_now" = "後で";
+
+"label_universe" = "ユニバース";
+"label_nothing_to_sequence" = "並べるものなし";
+
+// MARK: - Franchise Catalog
+"franchise_era_before" = "前";
+"franchise_era_main" = "メインシリーズ";
+"franchise_era_alongside" = "同時期";
+"franchise_era_after" = "後";
+"franchise_relation_prequel" = "前日譚";
+"franchise_relation_companion" = "スピンオフ";
+"franchise_relation_sequel" = "続編";
+"franchise_relation_main" = "メインシリーズ";
+"franchise_status_announced" = "発表済み";
+"franchise_status_development" = "制作中";
+"franchise_status_returning" = "放送中";
+
+// MARK: - Franchise Era Card
+"franchise_order_recommended" = "おすすめ";
+"franchise_order_release" = "公開順";
+"franchise_order_recommended_desc" = "物語順 — 前日譚、メインシリーズ、その後に続く作品の順。";
+"franchise_order_release_desc" = "放送された順番（古い順）。";
+"franchise_order_release_note" = "エポックは物語順のため、公開順の番号はページを順に数えるのではなくグループ間で前後します。";
+"franchise_you_are_here" = "現在地";
+"franchise_hidden_count %lld" = "%lld件 非表示";
+"franchise_unlock_bar_title %lld" = "このユニバースにあと%lld件";
+"franchise_unlock_bar_subtitle" = "プレミアムでは名称と視聴順が表示されます。";
+"franchise_unlock" = "ロック解除";
+"franchise_spinoffs_count %lld" = "スピンオフ %lld件";
+"franchise_entry_singular" = "1件";
+"franchise_entries_count %lld" = "%lld件";
+"franchise_badge_premium_only" = "プレミアム限定機能";

@@ -1,0 +1,3838 @@
+{
+  "franchises": {
+    "breaking-bad": {
+      "franchiseName": {
+        "en": "Breaking Bad Universe",
+        "es": "Universo Breaking Bad",
+        "fr": "Univers Breaking Bad",
+        "de": "Breaking Bad Universum",
+        "pt": "Universo Breaking Bad",
+        "it": "Universo Breaking Bad",
+        "ja": "ブレイキング・バッド ユニバース",
+        "ko": "브레이킹 배드 유니버스",
+        "zh-Hans": "绝命毒师宇宙",
+        "ar": "عالم بريكنج باد"
+      },
+      "parentShow": {
+        "title": "Breaking Bad",
+        "tmdbId": 1396,
+        "years": "2008-2013"
+      },
+      "spinoffs": [
+        {
+          "title": "Better Call Saul",
+          "tmdbId": 60059,
+          "years": "2015-2022",
+          "type": "prequel",
+          "status": "ended"
+        },
+        {
+          "title": "Breaking Bad: Original Minisodes",
+          "tmdbId": 46648,
+          "years": "2009-2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Slippin' Jimmy",
+          "tmdbId": 197109,
+          "years": "2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "El Camino: A Breaking Bad Movie",
+          "tmdbId": 559969,
+          "years": "2019",
+          "type": "sequel",
+          "status": "released",
+          "mediaType": "movie"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Breaking Bad",
+            "note": {
+              "en": "Original series - watch first",
+              "es": "Serie original - ver primero",
+              "fr": "Série originale - regarder en premier",
+              "de": "Originalserie - zuerst ansehen",
+              "pt": "Série original - assistir primeiro",
+              "it": "Serie originale - guardare per prima",
+              "ja": "オリジナルシリーズ - 最初に視聴",
+              "ko": "오리지널 시리즈 - 먼저 시청",
+              "zh-Hans": "原创剧集 - 首先观看",
+              "ar": "المسلسل الأصلي - شاهده أولاً"
+            }
+          },
+          {
+            "title": "Better Call Saul",
+            "note": {
+              "en": "Prequel series",
+              "es": "Serie precuela",
+              "fr": "Série préquelle",
+              "de": "Prequel-Serie",
+              "pt": "Série prequela",
+              "it": "Serie prequel",
+              "ja": "前日譚シリーズ",
+              "ko": "프리퀄 시리즈",
+              "zh-Hans": "前传剧集",
+              "ar": "مسلسل تمهيدي"
+            }
+          },
+          {
+            "title": "El Camino",
+            "note": {
+              "en": "Movie sequel",
+              "es": "Película secuela",
+              "fr": "Film suite",
+              "de": "Film-Fortsetzung",
+              "pt": "Filme sequência",
+              "it": "Film sequel",
+              "ja": "続編映画",
+              "ko": "후속 영화",
+              "zh-Hans": "续集电影",
+              "ar": "فيلم تكملة"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Better Call Saul S1-S4",
+            "note": {
+              "en": "Set 6 years before Breaking Bad",
+              "es": "Ambientada 6 años antes de Breaking Bad",
+              "fr": "Se déroule 6 ans avant Breaking Bad",
+              "de": "Spielt 6 Jahre vor Breaking Bad",
+              "pt": "Passa-se 6 anos antes de Breaking Bad",
+              "it": "Ambientata 6 anni prima di Breaking Bad",
+              "ja": "ブレイキング・バッドの6年前が舞台",
+              "ko": "브레이킹 배드 6년 전 배경",
+              "zh-Hans": "设定在绝命毒师6年前",
+              "ar": "تدور أحداثها قبل 6 سنوات من بريكنج باد"
+            }
+          },
+          {
+            "title": "Breaking Bad",
+            "note": {
+              "en": "Main timeline",
+              "es": "Línea temporal principal",
+              "fr": "Chronologie principale",
+              "de": "Haupt-Zeitlinie",
+              "pt": "Linha do tempo principal",
+              "it": "Linea temporale principale",
+              "ja": "メインタイムライン",
+              "ko": "메인 타임라인",
+              "zh-Hans": "主时间线",
+              "ar": "الخط الزمني الرئيسي"
+            }
+          },
+          {
+            "title": "El Camino",
+            "note": {
+              "en": "Immediately after Breaking Bad finale",
+              "es": "Inmediatamente después del final de Breaking Bad",
+              "fr": "Immédiatement après la fin de Breaking Bad",
+              "de": "Direkt nach dem Breaking Bad Finale",
+              "pt": "Imediatamente após o final de Breaking Bad",
+              "it": "Subito dopo il finale di Breaking Bad",
+              "ja": "ブレイキング・バッド最終回直後",
+              "ko": "브레이킹 배드 피날레 직후",
+              "zh-Hans": "绝命毒师大结局之后",
+              "ar": "مباشرة بعد نهاية بريكنج باد"
+            }
+          },
+          {
+            "title": "Better Call Saul S5-S6",
+            "note": {
+              "en": "Overlaps with and continues past Breaking Bad",
+              "es": "Se superpone y continúa después de Breaking Bad",
+              "fr": "Chevauche et continue après Breaking Bad",
+              "de": "Überschneidet sich mit Breaking Bad und geht darüber hinaus",
+              "pt": "Sobrepõe-se e continua após Breaking Bad",
+              "it": "Si sovrappone e continua oltre Breaking Bad",
+              "ja": "ブレイキング・バッドと重なり、その後も続く",
+              "ko": "브레이킹 배드와 겹치며 그 이후까지 계속됨",
+              "zh-Hans": "与绝命毒师重叠并延续",
+              "ar": "يتداخل مع بريكنج باد ويستمر بعده"
+            }
+          }
+        ]
+      }
+    },
+    "game-of-thrones": {
+      "franchiseName": {
+        "en": "Game of Thrones Universe",
+        "es": "Universo Juego de Tronos",
+        "fr": "Univers Game of Thrones",
+        "de": "Game of Thrones Universum",
+        "pt": "Universo Game of Thrones",
+        "it": "Universo Game of Thrones",
+        "ja": "ゲーム・オブ・スローンズ ユニバース",
+        "ko": "왕좌의 게임 유니버스",
+        "zh-Hans": "权力的游戏宇宙",
+        "ar": "عالم صراع العروش"
+      },
+      "parentShow": {
+        "title": "Game of Thrones",
+        "tmdbId": 1399,
+        "years": "2011-2019"
+      },
+      "spinoffs": [
+        {
+          "title": "House of the Dragon",
+          "tmdbId": 94997,
+          "years": "2022-present",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "A Knight of the Seven Kingdoms",
+          "tmdbId": 224372,
+          "years": "2025",
+          "type": "prequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Game of Thrones",
+            "note": {
+              "en": "Original series",
+              "es": "Serie original",
+              "fr": "Série originale",
+              "de": "Originalserie",
+              "pt": "Série original",
+              "it": "Serie originale",
+              "ja": "オリジナルシリーズ",
+              "ko": "오리지널 시리즈",
+              "zh-Hans": "原创剧集",
+              "ar": "المسلسل الأصلي"
+            }
+          },
+          {
+            "title": "House of the Dragon",
+            "note": {
+              "en": "Prequel - 200 years before",
+              "es": "Precuela - 200 años antes",
+              "fr": "Préquelle - 200 ans avant",
+              "de": "Prequel - 200 Jahre vorher",
+              "pt": "Prequela - 200 anos antes",
+              "it": "Prequel - 200 anni prima",
+              "ja": "前日譚 - 200年前",
+              "ko": "프리퀄 - 200년 전",
+              "zh-Hans": "前传 - 200年前",
+              "ar": "قبل 200 سنة"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "A Knight of the Seven Kingdoms",
+            "note": {
+              "en": "Set 100 years before Game of Thrones",
+              "es": "Ambientada 100 años antes de Juego de Tronos",
+              "fr": "Se déroule 100 ans avant Game of Thrones",
+              "de": "Spielt 100 Jahre vor Game of Thrones",
+              "pt": "Passa-se 100 anos antes de Game of Thrones",
+              "it": "Ambientata 100 anni prima di Game of Thrones",
+              "ja": "ゲーム・オブ・スローンズの100年前",
+              "ko": "왕좌의 게임 100년 전",
+              "zh-Hans": "权力的游戏100年前",
+              "ar": "قبل 100 سنة من صراع العروش"
+            }
+          },
+          {
+            "title": "House of the Dragon",
+            "note": {
+              "en": "Set 200 years before",
+              "es": "Ambientada 200 años antes",
+              "fr": "Se déroule 200 ans avant",
+              "de": "Spielt 200 Jahre vorher",
+              "pt": "Passa-se 200 anos antes",
+              "it": "Ambientata 200 anni prima",
+              "ja": "200年前が舞台",
+              "ko": "200년 전 배경",
+              "zh-Hans": "200年前",
+              "ar": "قبل 200 سنة"
+            }
+          },
+          {
+            "title": "Game of Thrones",
+            "note": {
+              "en": "Main timeline",
+              "es": "Línea temporal principal",
+              "fr": "Chronologie principale",
+              "de": "Haupt-Zeitlinie",
+              "pt": "Linha do tempo principal",
+              "it": "Linea temporale principale",
+              "ja": "メインタイムライン",
+              "ko": "메인 타임라인",
+              "zh-Hans": "主时间线",
+              "ar": "الخط الزمني الرئيسي"
+            }
+          }
+        ]
+      }
+    },
+    "walking-dead": {
+      "franchiseName": {
+        "en": "The Walking Dead Universe",
+        "es": "Universo The Walking Dead",
+        "fr": "Univers The Walking Dead",
+        "de": "The Walking Dead Universum",
+        "pt": "Universo The Walking Dead",
+        "it": "Universo The Walking Dead",
+        "ja": "ウォーキング・デッド ユニバース",
+        "ko": "워킹 데드 유니버스",
+        "zh-Hans": "行尸走肉宇宙",
+        "ar": "عالم الموتى السائرون"
+      },
+      "parentShow": {
+        "title": "The Walking Dead",
+        "tmdbId": 1402,
+        "years": "2010-2022"
+      },
+      "spinoffs": [
+        {
+          "title": "Fear the Walking Dead",
+          "tmdbId": 62286,
+          "years": "2015-2023",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "The Walking Dead: World Beyond",
+          "tmdbId": 94305,
+          "years": "2020-2021",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Tales of the Walking Dead",
+          "tmdbId": 136248,
+          "years": "2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "The Walking Dead: Dead City",
+          "tmdbId": 194583,
+          "years": "2023-present",
+          "type": "sequel",
+          "status": "active"
+        },
+        {
+          "title": "The Walking Dead: Daryl Dixon",
+          "tmdbId": 211684,
+          "years": "2023-present",
+          "type": "sequel",
+          "status": "active"
+        },
+        {
+          "title": "The Walking Dead: The Ones Who Live",
+          "tmdbId": 206586,
+          "years": "2024",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Walking Dead",
+            "note": {
+              "en": "Original series",
+              "es": "Serie original",
+              "fr": "Série originale",
+              "de": "Originalserie",
+              "pt": "Série original",
+              "it": "Serie originale",
+              "ja": "オリジナルシリーズ",
+              "ko": "오리지널 시리즈",
+              "zh-Hans": "原创剧集",
+              "ar": "المسلسل الأصلي"
+            }
+          },
+          {
+            "title": "Fear the Walking Dead",
+            "note": {
+              "en": "Parallel timeline companion",
+              "es": "Compañera de línea temporal paralela",
+              "fr": "Compagnon chronologique parallèle",
+              "de": "Parallele Zeitlinie",
+              "pt": "Companheira de linha do tempo paralela",
+              "it": "Compagna cronologica parallela",
+              "ja": "並行タイムラインの姉妹作",
+              "ko": "평행 타임라인 동반작",
+              "zh-Hans": "平行时间线姐妹篇",
+              "ar": "رفيق الجدول الزمني الموازي"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Fear the Walking Dead S1-S3",
+            "note": {
+              "en": "Before and during TWD S1",
+              "es": "Antes y durante TWD temporada 1",
+              "fr": "Avant et pendant TWD S1",
+              "de": "Vor und während TWD S1",
+              "pt": "Antes e durante TWD T1",
+              "it": "Prima e durante TWD S1",
+              "ja": "TWD シーズン1の前と最中",
+              "ko": "TWD 시즌1 전과 중",
+              "zh-Hans": "TWD第1季之前和期间",
+              "ar": "قبل وأثناء الموسم الأول"
+            }
+          },
+          {
+            "title": "The Walking Dead",
+            "note": {
+              "en": "Main series",
+              "es": "Serie principal",
+              "fr": "Série principale",
+              "de": "Hauptserie",
+              "pt": "Série principal",
+              "it": "Serie principale",
+              "ja": "メインシリーズ",
+              "ko": "메인 시리즈",
+              "zh-Hans": "主剧集",
+              "ar": "المسلسل الرئيسي"
+            }
+          }
+        ]
+      }
+    },
+    "yellowstone": {
+      "franchiseName": {
+        "en": "Yellowstone Universe",
+        "es": "Universo Yellowstone",
+        "fr": "Univers Yellowstone",
+        "de": "Yellowstone Universum",
+        "pt": "Universo Yellowstone",
+        "it": "Universo Yellowstone",
+        "ja": "イエローストーン ユニバース",
+        "ko": "옐로스톤 유니버스",
+        "zh-Hans": "黄石宇宙",
+        "ar": "عالم يلوستون"
+      },
+      "parentShow": {
+        "title": "Yellowstone",
+        "tmdbId": 73586,
+        "years": "2018-present"
+      },
+      "spinoffs": [
+        {
+          "title": "1883",
+          "tmdbId": 118357,
+          "years": "2021-2022",
+          "type": "prequel",
+          "status": "ended"
+        },
+        {
+          "title": "1923",
+          "tmdbId": 157744,
+          "years": "2022-present",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "1944",
+          "tmdbId": 275188,
+          "years": "TBA",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "The Dutton Ranch",
+          "tmdbId": 299167,
+          "years": "TBA",
+          "type": "companion",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Yellowstone",
+            "note": {
+              "en": "Start here - modern day Duttons",
+              "es": "Comienza aquí - los Dutton modernos",
+              "fr": "Commencer ici - les Dutton modernes",
+              "de": "Hier starten - moderne Duttons",
+              "pt": "Comece aqui - os Duttons modernos",
+              "it": "Inizia qui - i Dutton moderni",
+              "ja": "ここから始める - 現代のダットン家",
+              "ko": "여기서 시작 - 현대의 더튼 가족",
+              "zh-Hans": "从这里开始 - 现代达顿家族",
+              "ar": "ابدأ هنا - عائلة داتون الحديثة"
+            }
+          },
+          {
+            "title": "1883",
+            "note": {
+              "en": "First generation Duttons",
+              "es": "Primera generación Dutton",
+              "fr": "Première génération Dutton",
+              "de": "Erste Generation Duttons",
+              "pt": "Primeira geração Dutton",
+              "it": "Prima generazione Dutton",
+              "ja": "初代ダットン家",
+              "ko": "1세대 더튼 가족",
+              "zh-Hans": "第一代达顿家族",
+              "ar": "الجيل الأول من داتون"
+            }
+          },
+          {
+            "title": "1923",
+            "note": {
+              "en": "Second generation during Prohibition",
+              "es": "Segunda generación durante la Prohibición",
+              "fr": "Deuxième génération pendant la Prohibition",
+              "de": "Zweite Generation während der Prohibition",
+              "pt": "Segunda geração durante a Lei Seca",
+              "it": "Seconda generazione durante il Proibizionismo",
+              "ja": "禁酒法時代の2代目",
+              "ko": "금주법 시대의 2세대",
+              "zh-Hans": "禁酒令时期的第二代",
+              "ar": "الجيل الثاني خلال الحظر"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "1883",
+            "note": {
+              "en": "Dutton family journey west",
+              "es": "Viaje de la familia Dutton al oeste",
+              "fr": "Voyage des Dutton vers l'ouest",
+              "de": "Dutton Familie Reise nach Westen",
+              "pt": "Jornada da família Dutton para o oeste",
+              "it": "Viaggio della famiglia Dutton verso ovest",
+              "ja": "ダットン家の西部への旅",
+              "ko": "더튼 가족의 서부 여행",
+              "zh-Hans": "达顿家族西行之旅",
+              "ar": "رحلة عائلة داتون غربًا"
+            }
+          },
+          {
+            "title": "1923",
+            "note": {
+              "en": "Depression and Prohibition era",
+              "es": "Era de la Depresión y Prohibición",
+              "fr": "Ère de la Dépression et Prohibition",
+              "de": "Depressions- und Prohibitionszeit",
+              "pt": "Era da Depressão e Lei Seca",
+              "it": "Era della Depressione e Proibizionismo",
+              "ja": "大恐慌と禁酒法時代",
+              "ko": "대공황과 금주법 시대",
+              "zh-Hans": "大萧条和禁酒令时代",
+              "ar": "عصر الكساد والحظر"
+            }
+          },
+          {
+            "title": "Yellowstone",
+            "note": {
+              "en": "Present day",
+              "es": "Época actual",
+              "fr": "Époque actuelle",
+              "de": "Gegenwart",
+              "pt": "Dias atuais",
+              "it": "Giorni nostri",
+              "ja": "現代",
+              "ko": "현재",
+              "zh-Hans": "现代",
+              "ar": "الوقت الحاضر"
+            }
+          }
+        ]
+      }
+    },
+    "star-wars": {
+      "franchiseName": {
+        "en": "Star Wars TV Universe",
+        "es": "Universo TV de Star Wars",
+        "fr": "Univers TV Star Wars",
+        "de": "Star Wars TV Universum",
+        "pt": "Universo TV Star Wars",
+        "it": "Universo TV Star Wars",
+        "ja": "スター・ウォーズ TVユニバース",
+        "ko": "스타워즈 TV 유니버스",
+        "zh-Hans": "星球大战电视宇宙",
+        "ar": "عالم حرب النجوم التلفزيوني"
+      },
+      "parentShow": {
+        "title": "The Mandalorian",
+        "tmdbId": 82856,
+        "years": "2019-present"
+      },
+      "spinoffs": [
+        {
+          "title": "The Book of Boba Fett",
+          "tmdbId": 115036,
+          "years": "2021-2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Ahsoka",
+          "tmdbId": 114461,
+          "years": "2023-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Skeleton Crew",
+          "tmdbId": 202879,
+          "years": "2024-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Andor",
+          "tmdbId": 83867,
+          "years": "2022-present",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "Obi-Wan Kenobi",
+          "tmdbId": 92830,
+          "years": "2022",
+          "type": "prequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Mandalorian",
+            "note": {
+              "en": "Start of interconnected Disney+ era",
+              "es": "Inicio de la era interconectada de Disney+",
+              "fr": "Début de l'ère interconnectée Disney+",
+              "de": "Beginn der vernetzten Disney+ Ära",
+              "pt": "Início da era interconectada Disney+",
+              "it": "Inizio dell'era interconnessa Disney+",
+              "ja": "Disney+相互接続時代の始まり",
+              "ko": "디즈니+ 상호연결 시대의 시작",
+              "zh-Hans": "迪士尼+互联时代的开始",
+              "ar": "بداية عصر ديزني+ المترابط"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Andor",
+            "note": {
+              "en": "5 years before A New Hope",
+              "es": "5 años antes de Una Nueva Esperanza",
+              "fr": "5 ans avant Un Nouvel Espoir",
+              "de": "5 Jahre vor Eine neue Hoffnung",
+              "pt": "5 anos antes de Uma Nova Esperança",
+              "it": "5 anni prima di Una nuova speranza",
+              "ja": "新たなる希望の5年前",
+              "ko": "새로운 희망 5년 전",
+              "zh-Hans": "新希望5年前",
+              "ar": "قبل 5 سنوات من أمل جديد"
+            }
+          },
+          {
+            "title": "Obi-Wan Kenobi",
+            "note": {
+              "en": "10 years after Revenge of the Sith",
+              "es": "10 años después de La Venganza de los Sith",
+              "fr": "10 ans après La Revanche des Sith",
+              "de": "10 Jahre nach Die Rache der Sith",
+              "pt": "10 anos depois de A Vingança dos Sith",
+              "it": "10 anni dopo La vendetta dei Sith",
+              "ja": "シスの復讐から10年後",
+              "ko": "시스의 복수 10년 후",
+              "zh-Hans": "西斯的复仇10年后",
+              "ar": "بعد 10 سنوات من انتقام السيث"
+            }
+          },
+          {
+            "title": "The Mandalorian",
+            "note": {
+              "en": "5 years after Return of the Jedi",
+              "es": "5 años después de El Retorno del Jedi",
+              "fr": "5 ans après Le Retour du Jedi",
+              "de": "5 Jahre nach Die Rückkehr der Jedi-Ritter",
+              "pt": "5 anos depois de O Retorno de Jedi",
+              "it": "5 anni dopo Il ritorno dello Jedi",
+              "ja": "ジェダイの帰還から5年後",
+              "ko": "제다이의 귀환 5년 후",
+              "zh-Hans": "绝地归来5年后",
+              "ar": "بعد 5 سنوات من عودة الجيداي"
+            }
+          }
+        ]
+      }
+    },
+    "ncis": {
+      "franchiseName": {
+        "en": "NCIS Franchise",
+        "es": "Franquicia NCIS",
+        "fr": "Franchise NCIS",
+        "de": "NCIS Franchise",
+        "pt": "Franquia NCIS",
+        "it": "Franchise NCIS",
+        "ja": "NCIS フランチャイズ",
+        "ko": "NCIS 프랜차이즈",
+        "zh-Hans": "NCIS 系列",
+        "ar": "سلسلة NCIS"
+      },
+      "parentShow": {
+        "title": "NCIS",
+        "tmdbId": 4614,
+        "years": "2003-present"
+      },
+      "spinoffs": [
+        {
+          "title": "NCIS: Los Angeles",
+          "tmdbId": 17610,
+          "years": "2009-2023",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "NCIS: New Orleans",
+          "tmdbId": 61387,
+          "years": "2014-2021",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "NCIS: Hawai'i",
+          "tmdbId": 124271,
+          "years": "2021-2024",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "NCIS: Sydney",
+          "tmdbId": 157950,
+          "years": "2023-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "NCIS: Origins",
+          "tmdbId": 243006,
+          "years": "2024-present",
+          "type": "prequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "NCIS",
+            "note": {
+              "en": "Original series - start here",
+              "es": "Serie original - comienza aquí",
+              "fr": "Série originale - commencer ici",
+              "de": "Originalserie - hier starten",
+              "pt": "Série original - comece aqui",
+              "it": "Serie originale - inizia qui",
+              "ja": "オリジナルシリーズ - ここから開始",
+              "ko": "오리지널 시리즈 - 여기서 시작",
+              "zh-Hans": "原创剧集 - 从这里开始",
+              "ar": "المسلسل الأصلي - ابدأ هنا"
+            }
+          },
+          {
+            "title": "NCIS: Los Angeles",
+            "note": {
+              "en": "West coast team",
+              "es": "Equipo de la costa oeste",
+              "fr": "Équipe de la côte ouest",
+              "de": "Westküsten-Team",
+              "pt": "Equipe da costa oeste",
+              "it": "Team della costa ovest",
+              "ja": "西海岸チーム",
+              "ko": "서부 해안 팀",
+              "zh-Hans": "西海岸团队",
+              "ar": "فريق الساحل الغربي"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "NCIS: Origins",
+            "note": {
+              "en": "Young Gibbs in 1991",
+              "es": "Joven Gibbs en 1991",
+              "fr": "Jeune Gibbs en 1991",
+              "de": "Junger Gibbs 1991",
+              "pt": "Jovem Gibbs em 1991",
+              "it": "Giovane Gibbs nel 1991",
+              "ja": "1991年の若きギブス",
+              "ko": "1991년 젊은 깁스",
+              "zh-Hans": "1991年年轻的吉布斯",
+              "ar": "غيبس الشاب في 1991"
+            }
+          },
+          {
+            "title": "NCIS",
+            "note": {
+              "en": "Main series from 2003",
+              "es": "Serie principal desde 2003",
+              "fr": "Série principale depuis 2003",
+              "de": "Hauptserie ab 2003",
+              "pt": "Série principal desde 2003",
+              "it": "Serie principale dal 2003",
+              "ja": "2003年からのメインシリーズ",
+              "ko": "2003년부터 메인 시리즈",
+              "zh-Hans": "2003年开始的主剧集",
+              "ar": "المسلسل الرئيسي من 2003"
+            }
+          }
+        ]
+      }
+    },
+    "one-chicago": {
+      "franchiseName": {
+        "en": "One Chicago Universe",
+        "es": "Universo One Chicago",
+        "fr": "Univers One Chicago",
+        "de": "One Chicago Universum",
+        "pt": "Universo One Chicago",
+        "it": "Universo One Chicago",
+        "ja": "ワン・シカゴ ユニバース",
+        "ko": "원 시카고 유니버스",
+        "zh-Hans": "芝加哥系列宇宙",
+        "ar": "عالم شيكاغو الواحد"
+      },
+      "parentShow": {
+        "title": "Chicago Fire",
+        "tmdbId": 44006,
+        "years": "2012-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Chicago P.D.",
+          "tmdbId": 58841,
+          "years": "2014-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Chicago Med",
+          "tmdbId": 62650,
+          "years": "2015-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Chicago Justice",
+          "tmdbId": 67993,
+          "years": "2017",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Chicago Fire",
+            "note": {
+              "en": "Original series - firefighters",
+              "es": "Serie original - bomberos",
+              "fr": "Série originale - pompiers",
+              "de": "Originalserie - Feuerwehr",
+              "pt": "Série original - bombeiros",
+              "it": "Serie originale - pompieri",
+              "ja": "オリジナルシリーズ - 消防士",
+              "ko": "오리지널 시리즈 - 소방관",
+              "zh-Hans": "原创剧集 - 消防员",
+              "ar": "المسلسل الأصلي - رجال الإطفاء"
+            }
+          },
+          {
+            "title": "Chicago P.D.",
+            "note": {
+              "en": "Police department",
+              "es": "Departamento de policía",
+              "fr": "Département de police",
+              "de": "Polizeiabteilung",
+              "pt": "Departamento de polícia",
+              "it": "Dipartimento di polizia",
+              "ja": "警察署",
+              "ko": "경찰서",
+              "zh-Hans": "警察局",
+              "ar": "قسم الشرطة"
+            }
+          },
+          {
+            "title": "Chicago Med",
+            "note": {
+              "en": "Hospital emergency",
+              "es": "Emergencias del hospital",
+              "fr": "Urgences hospitalières",
+              "de": "Krankenhaus-Notaufnahme",
+              "pt": "Emergência hospitalar",
+              "it": "Pronto soccorso",
+              "ja": "病院救急",
+              "ko": "병원 응급실",
+              "zh-Hans": "医院急诊室",
+              "ar": "طوارئ المستشفى"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "All series air simultaneously",
+            "note": {
+              "en": "Watch crossover episodes in airdate order",
+              "es": "Ver episodios crossover en orden de emisión",
+              "fr": "Regarder les crossovers par ordre de diffusion",
+              "de": "Crossover nach Ausstrahlungsdatum ansehen",
+              "pt": "Assistir crossovers na ordem de exibição",
+              "it": "Guardare i crossover in ordine di trasmissione",
+              "ja": "クロスオーバーは放送日順で視聴",
+              "ko": "크로스오버는 방영일 순서로 시청",
+              "zh-Hans": "按播出日期顺序观看联动集",
+              "ar": "شاهد حلقات التقاطع بترتيب البث"
+            }
+          }
+        ]
+      }
+    },
+    "greys-anatomy": {
+      "franchiseName": {
+        "en": "Grey's Anatomy Universe",
+        "es": "Universo Anatomía de Grey",
+        "fr": "Univers Grey's Anatomy",
+        "de": "Grey's Anatomy Universum",
+        "pt": "Universo Grey's Anatomy",
+        "it": "Universo Grey's Anatomy",
+        "ja": "グレイズ・アナトミー ユニバース",
+        "ko": "그레이 아나토미 유니버스",
+        "zh-Hans": "实习医生格蕾宇宙",
+        "ar": "عالم غريز أناتومي"
+      },
+      "parentShow": {
+        "title": "Grey's Anatomy",
+        "tmdbId": 1416,
+        "years": "2005-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Private Practice",
+          "tmdbId": 3172,
+          "years": "2007-2013",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Station 19",
+          "tmdbId": 76773,
+          "years": "2018-2024",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Grey's Anatomy",
+            "note": {
+              "en": "Original medical drama",
+              "es": "Drama médico original",
+              "fr": "Drame médical original",
+              "de": "Originales Krankenhausdrama",
+              "pt": "Drama médico original",
+              "it": "Medical drama originale",
+              "ja": "オリジナル医療ドラマ",
+              "ko": "오리지널 의학 드라마",
+              "zh-Hans": "原创医疗剧",
+              "ar": "الدراما الطبية الأصلية"
+            }
+          },
+          {
+            "title": "Private Practice",
+            "note": {
+              "en": "Addison's spinoff",
+              "es": "Spinoff de Addison",
+              "fr": "Spinoff d'Addison",
+              "de": "Addisons Spinoff",
+              "pt": "Spinoff da Addison",
+              "it": "Spinoff di Addison",
+              "ja": "アディソンのスピンオフ",
+              "ko": "애디슨의 스핀오프",
+              "zh-Hans": "艾迪森的衍生剧",
+              "ar": "مسلسل أديسون الفرعي"
+            }
+          },
+          {
+            "title": "Station 19",
+            "note": {
+              "en": "Seattle firefighters - frequent crossovers",
+              "es": "Bomberos de Seattle - crossovers frecuentes",
+              "fr": "Pompiers de Seattle - crossovers fréquents",
+              "de": "Seattle Feuerwehr - häufige Crossover",
+              "pt": "Bombeiros de Seattle - crossovers frequentes",
+              "it": "Pompieri di Seattle - crossover frequenti",
+              "ja": "シアトル消防士 - 頻繁なクロスオーバー",
+              "ko": "시애틀 소방관 - 빈번한 크로스오버",
+              "zh-Hans": "西雅图消防员 - 频繁联动",
+              "ar": "رجال إطفاء سياتل - تقاطعات متكررة"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Grey's Anatomy + Station 19",
+            "note": {
+              "en": "Watch crossover episodes together",
+              "es": "Ver episodios crossover juntos",
+              "fr": "Regarder les crossovers ensemble",
+              "de": "Crossover-Episoden zusammen ansehen",
+              "pt": "Assistir episódios crossover juntos",
+              "it": "Guardare insieme gli episodi crossover",
+              "ja": "クロスオーバーエピソードを一緒に視聴",
+              "ko": "크로스오버 에피소드 함께 시청",
+              "zh-Hans": "一起观看联动集",
+              "ar": "شاهد حلقات التقاطع معًا"
+            }
+          }
+        ]
+      }
+    },
+    "vampire-diaries": {
+      "franchiseName": {
+        "en": "The Vampire Diaries Universe",
+        "es": "Universo Crónicas Vampíricas",
+        "fr": "Univers Vampire Diaries",
+        "de": "Vampire Diaries Universum",
+        "pt": "Universo Diários do Vampiro",
+        "it": "Universo The Vampire Diaries",
+        "ja": "ヴァンパイア・ダイアリーズ ユニバース",
+        "ko": "뱀파이어 다이어리 유니버스",
+        "zh-Hans": "吸血鬼日记宇宙",
+        "ar": "عالم مذكرات مصاص الدماء"
+      },
+      "parentShow": {
+        "title": "The Vampire Diaries",
+        "tmdbId": 18165,
+        "years": "2009-2017"
+      },
+      "spinoffs": [
+        {
+          "title": "The Originals",
+          "tmdbId": 46896,
+          "years": "2013-2018",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Legacies",
+          "tmdbId": 79460,
+          "years": "2018-2022",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Vampire Diaries",
+            "note": {
+              "en": "Original series - start here",
+              "es": "Serie original - comienza aquí",
+              "fr": "Série originale - commencer ici",
+              "de": "Originalserie - hier starten",
+              "pt": "Série original - comece aqui",
+              "it": "Serie originale - inizia qui",
+              "ja": "オリジナルシリーズ - ここから開始",
+              "ko": "오리지널 시리즈 - 여기서 시작",
+              "zh-Hans": "原创剧集 - 从这里开始",
+              "ar": "المسلسل الأصلي - ابدأ هنا"
+            }
+          },
+          {
+            "title": "The Originals",
+            "note": {
+              "en": "Klaus and Mikaelson family",
+              "es": "Klaus y la familia Mikaelson",
+              "fr": "Klaus et la famille Mikaelson",
+              "de": "Klaus und die Mikaelson Familie",
+              "pt": "Klaus e a família Mikaelson",
+              "it": "Klaus e la famiglia Mikaelson",
+              "ja": "クラウスとミカエルソン一家",
+              "ko": "클라우스와 마이클슨 가족",
+              "zh-Hans": "克劳斯和米凯尔森家族",
+              "ar": "كلاوس وعائلة مايكلسون"
+            }
+          },
+          {
+            "title": "Legacies",
+            "note": {
+              "en": "Next generation at Salvatore School",
+              "es": "Nueva generación en la Escuela Salvatore",
+              "fr": "Nouvelle génération à l'école Salvatore",
+              "de": "Nächste Generation an der Salvatore Schule",
+              "pt": "Nova geração na Escola Salvatore",
+              "it": "Nuova generazione alla Scuola Salvatore",
+              "ja": "サルバトーレ学園の次世代",
+              "ko": "살바토레 학교의 다음 세대",
+              "zh-Hans": "萨尔瓦托学校的下一代",
+              "ar": "الجيل القادم في مدرسة سالفاتوري"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "The Vampire Diaries S1-4",
+            "note": {
+              "en": "Before The Originals",
+              "es": "Antes de The Originals",
+              "fr": "Avant The Originals",
+              "de": "Vor The Originals",
+              "pt": "Antes de The Originals",
+              "it": "Prima di The Originals",
+              "ja": "オリジナルズの前",
+              "ko": "오리지널스 이전",
+              "zh-Hans": "始祖家族之前",
+              "ar": "قبل الأصليين"
+            }
+          },
+          {
+            "title": "The Originals + TVD S5-8",
+            "note": {
+              "en": "Run concurrently",
+              "es": "Se emiten simultáneamente",
+              "fr": "Diffusés simultanément",
+              "de": "Laufen parallel",
+              "pt": "Exibidos simultaneamente",
+              "it": "Trasmessi contemporaneamente",
+              "ja": "同時進行",
+              "ko": "동시 진행",
+              "zh-Hans": "同时播出",
+              "ar": "يعرضان معًا"
+            }
+          },
+          {
+            "title": "Legacies",
+            "note": {
+              "en": "After both series end",
+              "es": "Después del final de ambas series",
+              "fr": "Après la fin des deux séries",
+              "de": "Nach Ende beider Serien",
+              "pt": "Após o fim de ambas as séries",
+              "it": "Dopo la fine di entrambe le serie",
+              "ja": "両シリーズ終了後",
+              "ko": "두 시리즈 종료 후",
+              "zh-Hans": "两部剧集结束后",
+              "ar": "بعد انتهاء كلا المسلسلين"
+            }
+          }
+        ]
+      }
+    },
+    "star-trek": {
+      "franchiseName": {
+        "en": "Star Trek Universe",
+        "es": "Universo Star Trek",
+        "fr": "Univers Star Trek",
+        "de": "Star-Trek-Universum",
+        "pt": "Universo Star Trek",
+        "it": "Universo Star Trek",
+        "ja": "スタートレック ユニバース",
+        "ko": "스타트렉 유니버스",
+        "zh-Hans": "星际迷航宇宙",
+        "ar": "عالم ستار تريك"
+      },
+      "parentShow": {
+        "title": "Star Trek: The Original Series",
+        "tmdbId": 253,
+        "years": "1966-1969"
+      },
+      "spinoffs": [
+        {
+          "title": "Star Trek: The Animated Series",
+          "tmdbId": 1992,
+          "years": "1973-1974",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: The Next Generation",
+          "tmdbId": 655,
+          "years": "1987-1994",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Deep Space Nine",
+          "tmdbId": 580,
+          "years": "1993-1999",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Voyager",
+          "tmdbId": 1855,
+          "years": "1995-2001",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Enterprise",
+          "tmdbId": 314,
+          "years": "2001-2005",
+          "type": "prequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Discovery",
+          "tmdbId": 67198,
+          "years": "2017-2024",
+          "type": "prequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Picard",
+          "tmdbId": 85949,
+          "years": "2020-2023",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Lower Decks",
+          "tmdbId": 85948,
+          "years": "2020-2024",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Prodigy",
+          "tmdbId": 106393,
+          "years": "2021-2024",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Star Trek: Strange New Worlds",
+          "tmdbId": 103516,
+          "years": "2022-present",
+          "type": "prequel",
+          "status": "returning"
+        },
+        {
+          "title": "Star Trek: Starfleet Academy",
+          "tmdbId": 223530,
+          "years": "2026-present",
+          "type": "sequel",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "csi": {
+      "franchiseName": {
+        "en": "CSI Franchise",
+        "es": "Franquicia CSI",
+        "fr": "Franchise CSI",
+        "de": "CSI Franchise",
+        "pt": "Franquia CSI",
+        "it": "Franchise CSI",
+        "ja": "CSI フランチャイズ",
+        "ko": "CSI 프랜차이즈",
+        "zh-Hans": "CSI 系列",
+        "ar": "سلسلة CSI"
+      },
+      "parentShow": {
+        "title": "CSI: Crime Scene Investigation",
+        "tmdbId": 1431,
+        "years": "2000-2015"
+      },
+      "spinoffs": [
+        {
+          "title": "CSI: Miami",
+          "tmdbId": 1620,
+          "years": "2002-2012",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "CSI: NY",
+          "tmdbId": 2458,
+          "years": "2004-2013",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "CSI: Cyber",
+          "tmdbId": 61811,
+          "years": "2015-2016",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "CSI: Vegas",
+          "tmdbId": 122194,
+          "years": "2021-2024",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "CSI: Crime Scene Investigation",
+            "note": {
+              "en": "Original Las Vegas team",
+              "es": "Equipo original de Las Vegas",
+              "fr": "Équipe originale de Las Vegas",
+              "de": "Original Las Vegas Team",
+              "pt": "Equipe original de Las Vegas",
+              "it": "Team originale di Las Vegas",
+              "ja": "オリジナル ラスベガスチーム",
+              "ko": "오리지널 라스베가스 팀",
+              "zh-Hans": "原创拉斯维加斯团队",
+              "ar": "فريق لاس فيغاس الأصلي"
+            }
+          },
+          {
+            "title": "CSI: Miami",
+            "note": {
+              "en": "Horatio Caine in Miami",
+              "es": "Horatio Caine en Miami",
+              "fr": "Horatio Caine à Miami",
+              "de": "Horatio Caine in Miami",
+              "pt": "Horatio Caine em Miami",
+              "it": "Horatio Caine a Miami",
+              "ja": "マイアミのホレイショ・ケイン",
+              "ko": "마이애미의 호레이쇼 케인",
+              "zh-Hans": "迈阿密的霍雷肖·凯恩",
+              "ar": "هوراشيو كين في ميامي"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "All original CSI shows",
+            "note": {
+              "en": "Contemporary settings - watch in any order",
+              "es": "Ambientación contemporánea - ver en cualquier orden",
+              "fr": "Cadres contemporains - regarder dans n'importe quel ordre",
+              "de": "Zeitgenössische Settings - in beliebiger Reihenfolge ansehen",
+              "pt": "Ambientações contemporâneas - assistir em qualquer ordem",
+              "it": "Ambientazioni contemporanee - guardare in qualsiasi ordine",
+              "ja": "現代設定 - どの順番でも視聴可",
+              "ko": "현대 배경 - 어떤 순서로든 시청 가능",
+              "zh-Hans": "当代背景 - 任意顺序观看",
+              "ar": "إعدادات معاصرة - شاهد بأي ترتيب"
+            }
+          },
+          {
+            "title": "CSI: Vegas",
+            "note": {
+              "en": "Revival series - watch after original CSI",
+              "es": "Serie de revival - ver después del CSI original",
+              "fr": "Série revival - regarder après CSI original",
+              "de": "Revival-Serie - nach Original-CSI ansehen",
+              "pt": "Série revival - assistir após CSI original",
+              "it": "Serie revival - guardare dopo CSI originale",
+              "ja": "リバイバルシリーズ - オリジナルCSI後に視聴",
+              "ko": "리바이벌 시리즈 - 오리지널 CSI 후에 시청",
+              "zh-Hans": "复兴系列 - 在原版CSI之后观看",
+              "ar": "سلسلة إحياء - شاهد بعد CSI الأصلي"
+            }
+          }
+        ]
+      }
+    },
+    "criminal-minds": {
+      "franchiseName": {
+        "en": "Criminal Minds Universe",
+        "es": "Universo Mentes Criminales",
+        "fr": "Univers Esprits Criminels",
+        "de": "Criminal Minds Universum",
+        "pt": "Universo Criminal Minds",
+        "it": "Universo Criminal Minds",
+        "ja": "クリミナル・マインド ユニバース",
+        "ko": "크리미널 마인드 유니버스",
+        "zh-Hans": "犯罪心理宇宙",
+        "ar": "عالم عقول إجرامية"
+      },
+      "parentShow": {
+        "title": "Criminal Minds",
+        "tmdbId": 4057,
+        "years": "2005-2020"
+      },
+      "spinoffs": [
+        {
+          "title": "Criminal Minds: Suspect Behavior",
+          "tmdbId": 32200,
+          "years": "2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Criminal Minds: Beyond Borders",
+          "tmdbId": 64481,
+          "years": "2016-2017",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Criminal Minds",
+            "note": {
+              "en": "Original BAU team - 15 seasons",
+              "es": "Equipo BAU original - 15 temporadas",
+              "fr": "Équipe BAU originale - 15 saisons",
+              "de": "Original BAU Team - 15 Staffeln",
+              "pt": "Equipe BAU original - 15 temporadas",
+              "it": "Team BAU originale - 15 stagioni",
+              "ja": "オリジナルBAUチーム - 15シーズン",
+              "ko": "오리지널 BAU 팀 - 15시즌",
+              "zh-Hans": "原创BAU团队 - 15季",
+              "ar": "فريق BAU الأصلي - 15 موسم"
+            }
+          },
+          {
+            "title": "Criminal Minds: Evolution",
+            "note": {
+              "en": "Revival on Paramount+",
+              "es": "Revival en Paramount+",
+              "fr": "Revival sur Paramount+",
+              "de": "Revival auf Paramount+",
+              "pt": "Revival na Paramount+",
+              "it": "Revival su Paramount+",
+              "ja": "Paramount+でのリバイバル",
+              "ko": "Paramount+의 리바이벌",
+              "zh-Hans": "Paramount+上的复兴",
+              "ar": "إحياء على Paramount+"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Criminal Minds (all 15 seasons)",
+            "note": {
+              "en": "Watch complete original run first",
+              "es": "Ver primero la serie original completa",
+              "fr": "Regarder d'abord la série originale complète",
+              "de": "Erst komplette Originalserie ansehen",
+              "pt": "Assistir primeiro a série original completa",
+              "it": "Guardare prima la serie originale completa",
+              "ja": "まずオリジナルシリーズ全体を視聴",
+              "ko": "먼저 오리지널 시리즈 전체를 시청",
+              "zh-Hans": "首先观看完整的原版系列",
+              "ar": "شاهد السلسلة الأصلية الكاملة أولاً"
+            }
+          },
+          {
+            "title": "Criminal Minds: Evolution",
+            "note": {
+              "en": "Continues the story",
+              "es": "Continúa la historia",
+              "fr": "Continue l'histoire",
+              "de": "Setzt die Geschichte fort",
+              "pt": "Continua a história",
+              "it": "Continua la storia",
+              "ja": "物語の続き",
+              "ko": "이야기의 계속",
+              "zh-Hans": "延续故事",
+              "ar": "يستمر في القصة"
+            }
+          }
+        ]
+      }
+    },
+    "arrowverse": {
+      "franchiseName": {
+        "en": "Arrowverse",
+        "es": "Arrowverso",
+        "fr": "Arrowverse",
+        "de": "Arrowverse",
+        "pt": "Arrowverso",
+        "it": "Arrowverse",
+        "ja": "アローバース",
+        "ko": "애로우버스",
+        "zh-Hans": "绿箭宇宙",
+        "ar": "أروفيرس"
+      },
+      "parentShow": {
+        "title": "Arrow",
+        "tmdbId": 1412,
+        "years": "2012-2020"
+      },
+      "spinoffs": [
+        {
+          "title": "The Flash",
+          "tmdbId": 60735,
+          "years": "2014-2023",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Supergirl",
+          "tmdbId": 62688,
+          "years": "2015-2021",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Legends of Tomorrow",
+          "tmdbId": 62643,
+          "years": "2016-2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Black Lightning",
+          "tmdbId": 71663,
+          "years": "2018-2021",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Batwoman",
+          "tmdbId": 89247,
+          "years": "2019-2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Superman & Lois",
+          "tmdbId": 95057,
+          "years": "2021-2024",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Arrow",
+            "note": {
+              "en": "Start here - the foundation",
+              "es": "Comienza aquí - la base",
+              "fr": "Commencer ici - la fondation",
+              "de": "Hier starten - das Fundament",
+              "pt": "Comece aqui - a base",
+              "it": "Inizia qui - la fondazione",
+              "ja": "ここから開始 - 基盤",
+              "ko": "여기서 시작 - 기초",
+              "zh-Hans": "从这里开始 - 基础",
+              "ar": "ابدأ هنا - الأساس"
+            }
+          },
+          {
+            "title": "The Flash",
+            "note": {
+              "en": "Barry Allen's story",
+              "es": "La historia de Barry Allen",
+              "fr": "L'histoire de Barry Allen",
+              "de": "Barry Allens Geschichte",
+              "pt": "A história de Barry Allen",
+              "it": "La storia di Barry Allen",
+              "ja": "バリー・アレンの物語",
+              "ko": "배리 앨런의 이야기",
+              "zh-Hans": "巴里·艾伦的故事",
+              "ar": "قصة باري ألين"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Follow crossover order",
+            "note": {
+              "en": "Use episode guides for Crisis events",
+              "es": "Usar guías de episodios para eventos Crisis",
+              "fr": "Utiliser les guides pour les événements Crisis",
+              "de": "Episodenguides für Crisis-Events nutzen",
+              "pt": "Usar guias para eventos Crisis",
+              "it": "Usare guide per eventi Crisis",
+              "ja": "クライシスイベントのエピソードガイドを使用",
+              "ko": "크라이시스 이벤트 에피소드 가이드 사용",
+              "zh-Hans": "使用危机事件剧集指南",
+              "ar": "استخدم أدلة الحلقات لأحداث Crisis"
+            }
+          }
+        ]
+      }
+    },
+    "cheers-frasier": {
+      "franchiseName": {
+        "en": "Cheers/Frasier Universe",
+        "es": "Universo Cheers/Frasier",
+        "fr": "Univers Cheers/Frasier",
+        "de": "Cheers/Frasier Universum",
+        "pt": "Universo Cheers/Frasier",
+        "it": "Universo Cheers/Frasier",
+        "ja": "チアーズ/フレイジャー ユニバース",
+        "ko": "치어스/프레이저 유니버스",
+        "zh-Hans": "干杯/弗雷泽宇宙",
+        "ar": "عالم تشيرز/فريزر"
+      },
+      "parentShow": {
+        "title": "Cheers",
+        "tmdbId": 141,
+        "years": "1982-1993"
+      },
+      "spinoffs": [
+        {
+          "title": "Frasier (Original)",
+          "tmdbId": 3452,
+          "years": "1993-2004",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Frasier (Revival)",
+          "tmdbId": 195241,
+          "years": "2023-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Cheers",
+            "note": {
+              "en": "Classic Boston bar sitcom",
+              "es": "Sitcom clásica del bar de Boston",
+              "fr": "Sitcom classique du bar de Boston",
+              "de": "Klassische Boston Bar Sitcom",
+              "pt": "Sitcom clássica do bar de Boston",
+              "it": "Sitcom classica del bar di Boston",
+              "ja": "クラシックなボストンバーシットコム",
+              "ko": "클래식 보스턴 바 시트콤",
+              "zh-Hans": "经典波士顿酒吧情景喜剧",
+              "ar": "مسلسل هزلي كلاسيكي عن حانة بوسطن"
+            }
+          },
+          {
+            "title": "Frasier (Original)",
+            "note": {
+              "en": "Frasier moves to Seattle",
+              "es": "Frasier se muda a Seattle",
+              "fr": "Frasier déménage à Seattle",
+              "de": "Frasier zieht nach Seattle",
+              "pt": "Frasier se muda para Seattle",
+              "it": "Frasier si trasferisce a Seattle",
+              "ja": "フレイジャーがシアトルへ引っ越し",
+              "ko": "프레이저가 시애틀로 이사",
+              "zh-Hans": "弗雷泽搬到西雅图",
+              "ar": "فريزر ينتقل إلى سياتل"
+            }
+          },
+          {
+            "title": "Frasier (Revival)",
+            "note": {
+              "en": "Frasier returns to Boston",
+              "es": "Frasier regresa a Boston",
+              "fr": "Frasier retourne à Boston",
+              "de": "Frasier kehrt nach Boston zurück",
+              "pt": "Frasier retorna a Boston",
+              "it": "Frasier torna a Boston",
+              "ja": "フレイジャーがボストンに帰還",
+              "ko": "프레이저가 보스턴으로 돌아옴",
+              "zh-Hans": "弗雷泽回到波士顿",
+              "ar": "فريزر يعود إلى بوسطن"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Cheers",
+            "note": {
+              "en": "1982-1993",
+              "es": "1982-1993",
+              "fr": "1982-1993",
+              "de": "1982-1993",
+              "pt": "1982-1993",
+              "it": "1982-1993",
+              "ja": "1982-1993",
+              "ko": "1982-1993",
+              "zh-Hans": "1982-1993",
+              "ar": "1982-1993"
+            }
+          },
+          {
+            "title": "Frasier (Original)",
+            "note": {
+              "en": "1993-2004",
+              "es": "1993-2004",
+              "fr": "1993-2004",
+              "de": "1993-2004",
+              "pt": "1993-2004",
+              "it": "1993-2004",
+              "ja": "1993-2004",
+              "ko": "1993-2004",
+              "zh-Hans": "1993-2004",
+              "ar": "1993-2004"
+            }
+          },
+          {
+            "title": "Frasier (Revival)",
+            "note": {
+              "en": "2023-present",
+              "es": "2023-presente",
+              "fr": "2023-présent",
+              "de": "2023-heute",
+              "pt": "2023-presente",
+              "it": "2023-presente",
+              "ja": "2023-現在",
+              "ko": "2023-현재",
+              "zh-Hans": "2023-至今",
+              "ar": "2023-الحاضر"
+            }
+          }
+        ]
+      }
+    },
+    "power": {
+      "franchiseName": {
+        "en": "Power Universe",
+        "es": "Universo Power",
+        "fr": "Univers Power",
+        "de": "Power Universum",
+        "pt": "Universo Power",
+        "it": "Universo Power",
+        "ja": "パワー ユニバース",
+        "ko": "파워 유니버스",
+        "zh-Hans": "权力宇宙",
+        "ar": "عالم باور"
+      },
+      "parentShow": {
+        "title": "Power",
+        "tmdbId": 54650,
+        "years": "2014-2020"
+      },
+      "spinoffs": [
+        {
+          "title": "Power Book II: Ghost",
+          "tmdbId": 97890,
+          "years": "2020-2024",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Power Book III: Raising Kanan",
+          "tmdbId": 124394,
+          "years": "2021-present",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "Power Book IV: Force",
+          "tmdbId": 119845,
+          "years": "2022-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Power",
+            "note": {
+              "en": "James Ghost St. Patrick story",
+              "es": "Historia de James Ghost St. Patrick",
+              "fr": "Histoire de James Ghost St. Patrick",
+              "de": "James Ghost St. Patrick Geschichte",
+              "pt": "História de James Ghost St. Patrick",
+              "it": "Storia di James Ghost St. Patrick",
+              "ja": "ジェームズ「ゴースト」セント・パトリックの物語",
+              "ko": "제임스 고스트 세인트 패트릭 이야기",
+              "zh-Hans": "詹姆斯·幽灵·圣帕特里克的故事",
+              "ar": "قصة جيمس غوست سانت باتريك"
+            }
+          },
+          {
+            "title": "Power Book II: Ghost",
+            "note": {
+              "en": "Tariq's story continues",
+              "es": "La historia de Tariq continúa",
+              "fr": "L'histoire de Tariq continue",
+              "de": "Tariqs Geschichte geht weiter",
+              "pt": "A história de Tariq continua",
+              "it": "La storia di Tariq continua",
+              "ja": "タリクの物語が続く",
+              "ko": "타리크의 이야기가 계속됨",
+              "zh-Hans": "塔里克的故事继续",
+              "ar": "قصة طارق تستمر"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Power Book III: Raising Kanan",
+            "note": {
+              "en": "Kanan's origin in the 1990s",
+              "es": "Origen de Kanan en los 1990s",
+              "fr": "Origines de Kanan dans les années 90",
+              "de": "Kanans Ursprung in den 1990ern",
+              "pt": "Origem de Kanan nos anos 90",
+              "it": "Origini di Kanan negli anni 90",
+              "ja": "1990年代のカナンの起源",
+              "ko": "1990년대 카난의 기원",
+              "zh-Hans": "1990年代卡南的起源",
+              "ar": "أصل كانان في التسعينيات"
+            }
+          },
+          {
+            "title": "Power",
+            "note": {
+              "en": "Main series",
+              "es": "Serie principal",
+              "fr": "Série principale",
+              "de": "Hauptserie",
+              "pt": "Série principal",
+              "it": "Serie principale",
+              "ja": "メインシリーズ",
+              "ko": "메인 시리즈",
+              "zh-Hans": "主剧集",
+              "ar": "المسلسل الرئيسي"
+            }
+          },
+          {
+            "title": "Power Book II + IV",
+            "note": {
+              "en": "After Power ends",
+              "es": "Después de que Power termina",
+              "fr": "Après la fin de Power",
+              "de": "Nach Ende von Power",
+              "pt": "Após o fim de Power",
+              "it": "Dopo la fine di Power",
+              "ja": "Power終了後",
+              "ko": "Power 종료 후",
+              "zh-Hans": "Power结束后",
+              "ar": "بعد انتهاء Power"
+            }
+          }
+        ]
+      }
+    },
+    "pretty-little-liars": {
+      "franchiseName": {
+        "en": "Pretty Little Liars Universe",
+        "es": "Universo Pretty Little Liars",
+        "fr": "Univers Pretty Little Liars",
+        "de": "Pretty Little Liars Universum",
+        "pt": "Universo Pretty Little Liars",
+        "it": "Universo Pretty Little Liars",
+        "ja": "プリティ・リトル・ライアーズ ユニバース",
+        "ko": "프리티 리틀 라이어스 유니버스",
+        "zh-Hans": "美少女的谎言宇宙",
+        "ar": "عالم كاذبات صغيرات جميلات"
+      },
+      "parentShow": {
+        "title": "Pretty Little Liars",
+        "tmdbId": 31917,
+        "years": "2010-2017"
+      },
+      "spinoffs": [
+        {
+          "title": "Ravenswood",
+          "tmdbId": 46958,
+          "years": "2013-2014",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Pretty Little Liars: The Perfectionists",
+          "tmdbId": 79863,
+          "years": "2019",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Pretty Little Liars: Original Sin",
+          "tmdbId": 110531,
+          "years": "2022-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Pretty Little Liars",
+            "note": {
+              "en": "Original mystery series",
+              "es": "Serie de misterio original",
+              "fr": "Série mystère originale",
+              "de": "Original Mystery-Serie",
+              "pt": "Série de mistério original",
+              "it": "Serie mystery originale",
+              "ja": "オリジナルミステリーシリーズ",
+              "ko": "오리지널 미스터리 시리즈",
+              "zh-Hans": "原创悬疑剧",
+              "ar": "مسلسل الغموض الأصلي"
+            }
+          },
+          {
+            "title": "Ravenswood",
+            "note": {
+              "en": "Supernatural spinoff",
+              "es": "Spinoff sobrenatural",
+              "fr": "Spinoff surnaturel",
+              "de": "Übernatürliches Spinoff",
+              "pt": "Spinoff sobrenatural",
+              "it": "Spinoff soprannaturale",
+              "ja": "超自然的スピンオフ",
+              "ko": "초자연적 스핀오프",
+              "zh-Hans": "超自然衍生剧",
+              "ar": "مسلسل فرعي خارق"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Pretty Little Liars + Ravenswood",
+            "note": {
+              "en": "Watch together during PLL S4",
+              "es": "Ver juntos durante PLL temporada 4",
+              "fr": "Regarder ensemble pendant PLL S4",
+              "de": "Zusammen während PLL S4 ansehen",
+              "pt": "Assistir juntos durante PLL T4",
+              "it": "Guardare insieme durante PLL S4",
+              "ja": "PLL S4中に一緒に視聴",
+              "ko": "PLL 시즌4 중 함께 시청",
+              "zh-Hans": "在PLL第4季期间一起观看",
+              "ar": "شاهد معًا خلال الموسم 4"
+            }
+          },
+          {
+            "title": "Original Sin / Summer School",
+            "note": {
+              "en": "New generation reboot",
+              "es": "Reinicio de nueva generación",
+              "fr": "Reboot nouvelle génération",
+              "de": "Reboot neue Generation",
+              "pt": "Reboot de nova geração",
+              "it": "Reboot nuova generazione",
+              "ja": "新世代リブート",
+              "ko": "새로운 세대 리부트",
+              "zh-Hans": "新一代重启",
+              "ar": "إعادة تشغيل جيل جديد"
+            }
+          }
+        ]
+      }
+    },
+    "the-boys": {
+      "franchiseName": {
+        "en": "The Boys Universe",
+        "es": "Universo The Boys",
+        "fr": "Univers The Boys",
+        "de": "The Boys Universum",
+        "pt": "Universo The Boys",
+        "it": "Universo The Boys",
+        "ja": "ザ・ボーイズ ユニバース",
+        "ko": "더 보이즈 유니버스",
+        "zh-Hans": "黑袍纠察队宇宙",
+        "ar": "عالم ذا بويز"
+      },
+      "parentShow": {
+        "title": "The Boys",
+        "tmdbId": 76479,
+        "years": "2019-present"
+      },
+      "spinoffs": [
+        {
+          "title": "The Boys Presents: Diabolical",
+          "tmdbId": 152483,
+          "years": "2022",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Gen V",
+          "tmdbId": 205715,
+          "years": "2023-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Vought Rising",
+          "tmdbId": 259878,
+          "years": "2025",
+          "type": "prequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Boys",
+            "note": {
+              "en": "Main series - dark superhero satire",
+              "es": "Serie principal - sátira oscura de superhéroes",
+              "fr": "Série principale - satire sombre de super-héros",
+              "de": "Hauptserie - dunkle Superhelden-Satire",
+              "pt": "Série principal - sátira sombria de super-heróis",
+              "it": "Serie principale - satira dark sui supereroi",
+              "ja": "メインシリーズ - ダークスーパーヒーロー風刺",
+              "ko": "메인 시리즈 - 다크 슈퍼히어로 풍자",
+              "zh-Hans": "主剧集 - 黑暗超级英雄讽刺剧",
+              "ar": "المسلسل الرئيسي - هجاء الأبطال الخارقين المظلم"
+            }
+          },
+          {
+            "title": "Gen V",
+            "note": {
+              "en": "College-aged supes at Godolkin University",
+              "es": "Supes universitarios en Universidad Godolkin",
+              "fr": "Supes étudiants à l'Université Godolkin",
+              "de": "College-Supes an der Godolkin Universität",
+              "pt": "Supers universitários na Universidade Godolkin",
+              "it": "Super universitari alla Godolkin University",
+              "ja": "ゴドルキン大学の大学生スープス",
+              "ko": "고돌킨 대학의 대학생 슈퍼",
+              "zh-Hans": "戈多尔金大学的大学超级英雄",
+              "ar": "أبطال خارقون في جامعة غودولكين"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Vought Rising",
+            "note": {
+              "en": "Origin story set in 1950s",
+              "es": "Historia de origen en los años 50",
+              "fr": "Histoire d'origine dans les années 50",
+              "de": "Ursprungsgeschichte in den 1950ern",
+              "pt": "História de origem nos anos 50",
+              "it": "Storia delle origini negli anni 50",
+              "ja": "1950年代を舞台にしたオリジンストーリー",
+              "ko": "1950년대 배경의 오리진 스토리",
+              "zh-Hans": "1950年代背景的起源故事",
+              "ar": "قصة الأصل في الخمسينيات"
+            }
+          },
+          {
+            "title": "The Boys S1-3 then Gen V S1",
+            "note": {
+              "en": "Gen V connects to The Boys S4",
+              "es": "Gen V conecta con The Boys T4",
+              "fr": "Gen V se connecte à The Boys S4",
+              "de": "Gen V verbindet sich mit The Boys S4",
+              "pt": "Gen V conecta com The Boys T4",
+              "it": "Gen V si collega a The Boys S4",
+              "ja": "Gen VはThe Boys S4に繋がる",
+              "ko": "Gen V는 The Boys 시즌4와 연결됨",
+              "zh-Hans": "Gen V与黑袍纠察队第4季相连",
+              "ar": "Gen V يتصل بالموسم 4"
+            }
+          }
+        ]
+      }
+    },
+    "suits": {
+      "franchiseName": {
+        "en": "Suits Universe",
+        "es": "Universo Suits",
+        "fr": "Univers Suits",
+        "de": "Suits Universum",
+        "pt": "Universo Suits",
+        "it": "Universo Suits",
+        "ja": "スーツ ユニバース",
+        "ko": "슈츠 유니버스",
+        "zh-Hans": "金装律师宇宙",
+        "ar": "عالم سوتس"
+      },
+      "parentShow": {
+        "title": "Suits",
+        "tmdbId": 37680,
+        "years": "2011-2019"
+      },
+      "spinoffs": [
+        {
+          "title": "Suits: L.A.",
+          "tmdbId": 259453,
+          "years": "2025-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Suits",
+            "note": {
+              "en": "Original NYC law drama",
+              "es": "Drama legal original de NYC",
+              "fr": "Drame juridique original de NYC",
+              "de": "Original NYC Anwaltsdrama",
+              "pt": "Drama jurídico original de NYC",
+              "it": "Legal drama originale di NYC",
+              "ja": "オリジナルNYC法律ドラマ",
+              "ko": "오리지널 NYC 법률 드라마",
+              "zh-Hans": "原创纽约法律剧",
+              "ar": "دراما قانونية أصلية من نيويورك"
+            }
+          },
+          {
+            "title": "Suits: L.A.",
+            "note": {
+              "en": "West coast expansion",
+              "es": "Expansión a la costa oeste",
+              "fr": "Expansion côte ouest",
+              "de": "Westküsten-Erweiterung",
+              "pt": "Expansão para a costa oeste",
+              "it": "Espansione sulla costa ovest",
+              "ja": "西海岸拡大",
+              "ko": "서부 해안 확장",
+              "zh-Hans": "西海岸扩展",
+              "ar": "توسع الساحل الغربي"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Suits",
+            "note": {
+              "en": "Watch all 9 seasons first",
+              "es": "Ver las 9 temporadas primero",
+              "fr": "Regarder les 9 saisons d'abord",
+              "de": "Erst alle 9 Staffeln ansehen",
+              "pt": "Assistir todas as 9 temporadas primeiro",
+              "it": "Guardare prima tutte le 9 stagioni",
+              "ja": "まず9シーズン全て視聴",
+              "ko": "먼저 9시즌 모두 시청",
+              "zh-Hans": "先看完全部9季",
+              "ar": "شاهد جميع المواسم التسعة أولاً"
+            }
+          },
+          {
+            "title": "Suits: L.A.",
+            "note": {
+              "en": "New setting, familiar faces",
+              "es": "Nuevo escenario, caras conocidas",
+              "fr": "Nouveau cadre, visages familiers",
+              "de": "Neues Setting, bekannte Gesichter",
+              "pt": "Novo cenário, rostos familiares",
+              "it": "Nuova ambientazione, volti familiari",
+              "ja": "新しい舞台、おなじみの顔",
+              "ko": "새로운 배경, 익숙한 얼굴들",
+              "zh-Hans": "新背景，熟悉的面孔",
+              "ar": "مكان جديد، وجوه مألوفة"
+            }
+          }
+        ]
+      }
+    },
+    "that-70s-90s-show": {
+      "franchiseName": {
+        "en": "That 70s/90s Show Universe",
+        "es": "Universo That 70s/90s Show",
+        "fr": "Univers That 70s/90s Show",
+        "de": "That 70s/90s Show Universum",
+        "pt": "Universo That 70s/90s Show",
+        "it": "Universo That 70s/90s Show",
+        "ja": "ザット70s/90sショー ユニバース",
+        "ko": "댓 70s/90s 쇼 유니버스",
+        "zh-Hans": "70年代/90年代秀宇宙",
+        "ar": "عالم مسلسل السبعينات/التسعينات"
+      },
+      "parentShow": {
+        "title": "That '70s Show",
+        "tmdbId": 52,
+        "years": "1998-2006"
+      },
+      "spinoffs": [
+        {
+          "title": "That '90s Show",
+          "tmdbId": 135959,
+          "years": "2023-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "That 70s Show",
+            "note": {
+              "en": "Original Point Place gang",
+              "es": "Pandilla original de Point Place",
+              "fr": "Gang original de Point Place",
+              "de": "Original Point Place Gang",
+              "pt": "Turma original de Point Place",
+              "it": "Gang originale di Point Place",
+              "ja": "オリジナルポイントプレイスの仲間",
+              "ko": "오리지널 포인트 플레이스 갱",
+              "zh-Hans": "原版波因特普雷斯帮派",
+              "ar": "عصابة بوينت بليس الأصلية"
+            }
+          },
+          {
+            "title": "That 90s Show",
+            "note": {
+              "en": "Next generation in the 1990s",
+              "es": "Nueva generación en los 1990s",
+              "fr": "Nouvelle génération dans les années 90",
+              "de": "Nächste Generation in den 1990ern",
+              "pt": "Nova geração nos anos 90",
+              "it": "Nuova generazione negli anni 90",
+              "ja": "1990年代の次世代",
+              "ko": "1990년대의 다음 세대",
+              "zh-Hans": "1990年代的下一代",
+              "ar": "الجيل القادم في التسعينيات"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "That 70s Show",
+            "note": {
+              "en": "Set 1976-1979",
+              "es": "Ambientada 1976-1979",
+              "fr": "Se déroule 1976-1979",
+              "de": "Spielt 1976-1979",
+              "pt": "Passa-se 1976-1979",
+              "it": "Ambientata 1976-1979",
+              "ja": "1976-1979年が舞台",
+              "ko": "1976-1979년 배경",
+              "zh-Hans": "1976-1979年背景",
+              "ar": "1976-1979"
+            }
+          },
+          {
+            "title": "That 90s Show",
+            "note": {
+              "en": "Set 1995",
+              "es": "Ambientada 1995",
+              "fr": "Se déroule 1995",
+              "de": "Spielt 1995",
+              "pt": "Passa-se 1995",
+              "it": "Ambientata 1995",
+              "ja": "1995年が舞台",
+              "ko": "1995년 배경",
+              "zh-Hans": "1995年背景",
+              "ar": "1995"
+            }
+          }
+        ]
+      }
+    },
+    "dexter": {
+      "franchiseName": {
+        "en": "Dexter Universe",
+        "es": "Universo Dexter",
+        "fr": "Univers Dexter",
+        "de": "Dexter Universum",
+        "pt": "Universo Dexter",
+        "it": "Universo Dexter",
+        "ja": "デクスター ユニバース",
+        "ko": "덱스터 유니버스",
+        "zh-Hans": "嗜血法医宇宙",
+        "ar": "عالم دكستر"
+      },
+      "parentShow": {
+        "title": "Dexter",
+        "tmdbId": 1405,
+        "years": "2006-2013"
+      },
+      "spinoffs": [
+        {
+          "title": "Dexter: New Blood",
+          "tmdbId": 131927,
+          "years": "2021-2022",
+          "type": "sequel",
+          "status": "ended"
+        },
+        {
+          "title": "Dexter: Original Sin",
+          "tmdbId": 219937,
+          "years": "2024-present",
+          "type": "prequel",
+          "status": "active"
+        },
+        {
+          "title": "Dexter: Resurrection",
+          "tmdbId": 259909,
+          "years": "2025",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Dexter",
+            "note": {
+              "en": "Original 8-season run",
+              "es": "Serie original de 8 temporadas",
+              "fr": "Série originale de 8 saisons",
+              "de": "Original 8-Staffeln-Lauf",
+              "pt": "Série original de 8 temporadas",
+              "it": "Serie originale di 8 stagioni",
+              "ja": "オリジナル8シーズン",
+              "ko": "오리지널 8시즌",
+              "zh-Hans": "原版8季",
+              "ar": "المسلسل الأصلي 8 مواسم"
+            }
+          },
+          {
+            "title": "Dexter: New Blood",
+            "note": {
+              "en": "10 years later revival",
+              "es": "Revival 10 años después",
+              "fr": "Revival 10 ans plus tard",
+              "de": "Revival 10 Jahre später",
+              "pt": "Revival 10 anos depois",
+              "it": "Revival 10 anni dopo",
+              "ja": "10年後のリバイバル",
+              "ko": "10년 후 리바이벌",
+              "zh-Hans": "10年后的复兴",
+              "ar": "إحياء بعد 10 سنوات"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Dexter: Original Sin",
+            "note": {
+              "en": "Young Dexter in 1991",
+              "es": "Joven Dexter en 1991",
+              "fr": "Jeune Dexter en 1991",
+              "de": "Junger Dexter 1991",
+              "pt": "Jovem Dexter em 1991",
+              "it": "Giovane Dexter nel 1991",
+              "ja": "1991年の若きデクスター",
+              "ko": "1991년 젊은 덱스터",
+              "zh-Hans": "1991年年轻的德克斯特",
+              "ar": "دكستر الشاب في 1991"
+            }
+          },
+          {
+            "title": "Dexter (S1-8)",
+            "note": {
+              "en": "Miami years",
+              "es": "Años en Miami",
+              "fr": "Années à Miami",
+              "de": "Miami Jahre",
+              "pt": "Anos em Miami",
+              "it": "Anni a Miami",
+              "ja": "マイアミ時代",
+              "ko": "마이애미 시절",
+              "zh-Hans": "迈阿密时期",
+              "ar": "سنوات ميامي"
+            }
+          },
+          {
+            "title": "Dexter: New Blood",
+            "note": {
+              "en": "Iron Lake, NY",
+              "es": "Iron Lake, NY",
+              "fr": "Iron Lake, NY",
+              "de": "Iron Lake, NY",
+              "pt": "Iron Lake, NY",
+              "it": "Iron Lake, NY",
+              "ja": "アイアンレイク、NY",
+              "ko": "아이언 레이크, NY",
+              "zh-Hans": "铁湖镇，纽约",
+              "ar": "آيرون ليك، نيويورك"
+            }
+          }
+        ]
+      }
+    },
+    "good-wife": {
+      "franchiseName": {
+        "en": "The Good Wife Universe",
+        "es": "Universo The Good Wife",
+        "fr": "Univers The Good Wife",
+        "de": "The Good Wife Universum",
+        "pt": "Universo The Good Wife",
+        "it": "Universo The Good Wife",
+        "ja": "グッド・ワイフ ユニバース",
+        "ko": "굿 와이프 유니버스",
+        "zh-Hans": "傲骨贤妻宇宙",
+        "ar": "عالم الزوجة الصالحة"
+      },
+      "parentShow": {
+        "title": "The Good Wife",
+        "tmdbId": 1435,
+        "years": "2009-2016"
+      },
+      "spinoffs": [
+        {
+          "title": "The Good Fight",
+          "tmdbId": 69158,
+          "years": "2017-2022",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Good Wife",
+            "note": {
+              "en": "Alicia Florrick's journey",
+              "es": "El viaje de Alicia Florrick",
+              "fr": "Le parcours d'Alicia Florrick",
+              "de": "Alicia Florricks Reise",
+              "pt": "A jornada de Alicia Florrick",
+              "it": "Il viaggio di Alicia Florrick",
+              "ja": "アリシア・フロリックの旅",
+              "ko": "앨리샤 플로릭의 여정",
+              "zh-Hans": "艾丽西亚·弗洛里克的旅程",
+              "ar": "رحلة أليسيا فلوريك"
+            }
+          },
+          {
+            "title": "The Good Fight",
+            "note": {
+              "en": "Diane Lockhart leads",
+              "es": "Diane Lockhart lidera",
+              "fr": "Diane Lockhart à la tête",
+              "de": "Diane Lockhart führt",
+              "pt": "Diane Lockhart lidera",
+              "it": "Diane Lockhart guida",
+              "ja": "ダイアン・ロックハートが主導",
+              "ko": "다이앤 록하트가 이끄는",
+              "zh-Hans": "黛安·洛克哈特领导",
+              "ar": "بقيادة ديان لوكهارت"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "The Good Wife",
+            "note": {
+              "en": "2009-2016 timeline",
+              "es": "Línea temporal 2009-2016",
+              "fr": "Chronologie 2009-2016",
+              "de": "Zeitlinie 2009-2016",
+              "pt": "Linha do tempo 2009-2016",
+              "it": "Timeline 2009-2016",
+              "ja": "2009-2016年のタイムライン",
+              "ko": "2009-2016 타임라인",
+              "zh-Hans": "2009-2016时间线",
+              "ar": "الخط الزمني 2009-2016"
+            }
+          },
+          {
+            "title": "The Good Fight",
+            "note": {
+              "en": "Continues immediately after",
+              "es": "Continúa inmediatamente después",
+              "fr": "Continue immédiatement après",
+              "de": "Setzt unmittelbar danach fort",
+              "pt": "Continua imediatamente depois",
+              "it": "Continua immediatamente dopo",
+              "ja": "直後に続く",
+              "ko": "바로 이어서 계속됨",
+              "zh-Hans": "紧接着继续",
+              "ar": "يستمر مباشرة بعد"
+            }
+          }
+        ]
+      }
+    },
+    "himym": {
+      "franchiseName": {
+        "en": "How I Met Your Mother Universe",
+        "es": "Universo Cómo Conocí a Tu Madre",
+        "fr": "Univers How I Met Your Mother",
+        "de": "How I Met Your Mother Universum",
+        "pt": "Universo How I Met Your Mother",
+        "it": "Universo How I Met Your Mother",
+        "ja": "ママと恋に落ちるまで ユニバース",
+        "ko": "내가 그녀를 만났을 때 유니버스",
+        "zh-Hans": "老爸老妈的浪漫史宇宙",
+        "ar": "عالم كيف قابلت أمك"
+      },
+      "parentShow": {
+        "title": "How I Met Your Mother",
+        "tmdbId": 1100,
+        "years": "2005-2014"
+      },
+      "spinoffs": [
+        {
+          "title": "How I Met Your Father",
+          "tmdbId": 124010,
+          "years": "2022-2024",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "How I Met Your Mother",
+            "note": {
+              "en": "Ted's story - 9 seasons",
+              "es": "Historia de Ted - 9 temporadas",
+              "fr": "L'histoire de Ted - 9 saisons",
+              "de": "Teds Geschichte - 9 Staffeln",
+              "pt": "História de Ted - 9 temporadas",
+              "it": "La storia di Ted - 9 stagioni",
+              "ja": "テッドの物語 - 9シーズン",
+              "ko": "테드의 이야기 - 9시즌",
+              "zh-Hans": "泰德的故事 - 9季",
+              "ar": "قصة تيد - 9 مواسم"
+            }
+          },
+          {
+            "title": "How I Met Your Father",
+            "note": {
+              "en": "Sophie's story - same universe",
+              "es": "Historia de Sophie - mismo universo",
+              "fr": "L'histoire de Sophie - même univers",
+              "de": "Sophies Geschichte - gleiches Universum",
+              "pt": "História de Sophie - mesmo universo",
+              "it": "La storia di Sophie - stesso universo",
+              "ja": "ソフィーの物語 - 同じユニバース",
+              "ko": "소피의 이야기 - 같은 유니버스",
+              "zh-Hans": "苏菲的故事 - 同一宇宙",
+              "ar": "قصة صوفي - نفس العالم"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "How I Met Your Mother",
+            "note": {
+              "en": "Set 2005-2030",
+              "es": "Ambientada 2005-2030",
+              "fr": "Se déroule 2005-2030",
+              "de": "Spielt 2005-2030",
+              "pt": "Passa-se 2005-2030",
+              "it": "Ambientata 2005-2030",
+              "ja": "2005-2030年が舞台",
+              "ko": "2005-2030년 배경",
+              "zh-Hans": "2005-2030年背景",
+              "ar": "2005-2030"
+            }
+          },
+          {
+            "title": "How I Met Your Father",
+            "note": {
+              "en": "Set 2022 onwards",
+              "es": "Ambientada desde 2022",
+              "fr": "Se déroule à partir de 2022",
+              "de": "Spielt ab 2022",
+              "pt": "Passa-se a partir de 2022",
+              "it": "Ambientata dal 2022",
+              "ja": "2022年以降が舞台",
+              "ko": "2022년 이후 배경",
+              "zh-Hans": "2022年以后背景",
+              "ar": "من 2022 فصاعداً"
+            }
+          }
+        ]
+      }
+    },
+    "cobra-kai": {
+      "franchiseName": {
+        "en": "Karate Kid/Cobra Kai Universe",
+        "es": "Universo Karate Kid/Cobra Kai",
+        "fr": "Univers Karate Kid/Cobra Kai",
+        "de": "Karate Kid/Cobra Kai Universum",
+        "pt": "Universo Karate Kid/Cobra Kai",
+        "it": "Universo Karate Kid/Cobra Kai",
+        "ja": "ベスト・キッド/コブラ会 ユニバース",
+        "ko": "베스트 키드/코브라 카이 유니버스",
+        "zh-Hans": "龙威小子/眼镜蛇会宇宙",
+        "ar": "عالم كاراتي كيد/كوبرا كاي"
+      },
+      "parentShow": {
+        "title": "Cobra Kai",
+        "tmdbId": 77169,
+        "years": "2018-2025"
+      },
+      "spinoffs": [
+        {
+          "title": "The Karate Kid",
+          "tmdbId": 1885,
+          "years": "1984",
+          "type": "prequel",
+          "status": "released",
+          "mediaType": "movie"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Cobra Kai",
+            "note": {
+              "en": "Sequel to original Karate Kid films",
+              "es": "Secuela de las películas originales de Karate Kid",
+              "fr": "Suite des films Karate Kid originaux",
+              "de": "Fortsetzung der Original Karate Kid Filme",
+              "pt": "Sequência dos filmes originais de Karate Kid",
+              "it": "Sequel dei film originali di Karate Kid",
+              "ja": "オリジナル・ベスト・キッド映画の続編",
+              "ko": "오리지널 베스트 키드 영화의 속편",
+              "zh-Hans": "原版龙威小子电影的续集",
+              "ar": "تكملة لأفلام كاراتي كيد الأصلية"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Watch Karate Kid films first",
+            "note": {
+              "en": "Karate Kid 1-3, then Cobra Kai",
+              "es": "Karate Kid 1-3, luego Cobra Kai",
+              "fr": "Karate Kid 1-3, puis Cobra Kai",
+              "de": "Karate Kid 1-3, dann Cobra Kai",
+              "pt": "Karate Kid 1-3, depois Cobra Kai",
+              "it": "Karate Kid 1-3, poi Cobra Kai",
+              "ja": "ベスト・キッド1-3、その後コブラ会",
+              "ko": "베스트 키드 1-3, 그 다음 코브라 카이",
+              "zh-Hans": "先看龙威小子1-3，然后眼镜蛇会",
+              "ar": "كاراتي كيد 1-3، ثم كوبرا كاي"
+            }
+          }
+        ]
+      }
+    },
+    "buffyverse": {
+      "franchiseName": {
+        "en": "Buffyverse",
+        "es": "Buffyverso",
+        "fr": "Buffyverse",
+        "de": "Buffyverse",
+        "pt": "Buffyverso",
+        "it": "Buffyverse",
+        "ja": "バフィーバース",
+        "ko": "버피버스",
+        "zh-Hans": "吸血鬼猎人巴菲宇宙",
+        "ar": "عالم بافي"
+      },
+      "parentShow": {
+        "title": "Buffy the Vampire Slayer",
+        "tmdbId": 95,
+        "years": "1997-2003"
+      },
+      "spinoffs": [
+        {
+          "title": "Angel",
+          "tmdbId": 2426,
+          "years": "1999-2004",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Buffy the Vampire Slayer",
+            "note": {
+              "en": "Original chosen one story",
+              "es": "Historia original de la elegida",
+              "fr": "Histoire originale de l'élue",
+              "de": "Original Auserwählte Geschichte",
+              "pt": "História original da escolhida",
+              "it": "Storia originale della prescelta",
+              "ja": "オリジナル選ばれし者の物語",
+              "ko": "오리지널 선택받은 자의 이야기",
+              "zh-Hans": "原版天选之人的故事",
+              "ar": "قصة المختارة الأصلية"
+            }
+          },
+          {
+            "title": "Angel",
+            "note": {
+              "en": "Vampire with a soul in LA",
+              "es": "Vampiro con alma en LA",
+              "fr": "Vampire avec une âme à LA",
+              "de": "Vampir mit Seele in LA",
+              "pt": "Vampiro com alma em LA",
+              "it": "Vampiro con anima a LA",
+              "ja": "LAの魂を持つ吸血鬼",
+              "ko": "LA의 영혼을 가진 뱀파이어",
+              "zh-Hans": "洛杉矶有灵魂的吸血鬼",
+              "ar": "مصاص دماء بروح في لوس أنجلوس"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Buffy S1-3",
+            "note": {
+              "en": "Sunnydale High years",
+              "es": "Años en Sunnydale High",
+              "fr": "Années au lycée Sunnydale",
+              "de": "Sunnydale High Jahre",
+              "pt": "Anos em Sunnydale High",
+              "it": "Anni alla Sunnydale High",
+              "ja": "サニーデール高校時代",
+              "ko": "서니데일 고등학교 시절",
+              "zh-Hans": "阳谷镇高中时期",
+              "ar": "سنوات ثانوية صنيديل"
+            }
+          },
+          {
+            "title": "Buffy S4-7 + Angel S1-5",
+            "note": {
+              "en": "Watch together - crossovers occur",
+              "es": "Ver juntos - hay crossovers",
+              "fr": "Regarder ensemble - crossovers",
+              "de": "Zusammen ansehen - Crossover",
+              "pt": "Assistir juntos - crossovers",
+              "it": "Guardare insieme - crossover",
+              "ja": "一緒に視聴 - クロスオーバーあり",
+              "ko": "함께 시청 - 크로스오버 있음",
+              "zh-Hans": "一起观看 - 有联动",
+              "ar": "شاهد معًا - تقاطعات"
+            }
+          }
+        ]
+      }
+    },
+    "24": {
+      "franchiseName": {
+        "en": "24 Universe",
+        "es": "Universo 24",
+        "fr": "Univers 24",
+        "de": "24 Universum",
+        "pt": "Universo 24",
+        "it": "Universo 24",
+        "ja": "24 ユニバース",
+        "ko": "24 유니버스",
+        "zh-Hans": "24宇宙",
+        "ar": "عالم 24"
+      },
+      "parentShow": {
+        "title": "24",
+        "tmdbId": 1973,
+        "years": "2001-2014"
+      },
+      "spinoffs": [
+        {
+          "title": "24: Legacy",
+          "tmdbId": 66789,
+          "years": "2017",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "24",
+            "note": {
+              "en": "Jack Bauer's 8 longest days",
+              "es": "Los 8 días más largos de Jack Bauer",
+              "fr": "Les 8 plus longs jours de Jack Bauer",
+              "de": "Jack Bauers 8 längste Tage",
+              "pt": "Os 8 dias mais longos de Jack Bauer",
+              "it": "Gli 8 giorni più lunghi di Jack Bauer",
+              "ja": "ジャック・バウアーの最も長い8日間",
+              "ko": "잭 바우어의 가장 긴 8일",
+              "zh-Hans": "杰克·鲍尔最漫长的8天",
+              "ar": "أطول 8 أيام لجاك باور"
+            }
+          },
+          {
+            "title": "24: Live Another Day",
+            "note": {
+              "en": "Jack returns in London",
+              "es": "Jack regresa en Londres",
+              "fr": "Jack revient à Londres",
+              "de": "Jack kehrt in London zurück",
+              "pt": "Jack retorna em Londres",
+              "it": "Jack torna a Londra",
+              "ja": "ジャックがロンドンで復帰",
+              "ko": "잭이 런던에서 돌아옴",
+              "zh-Hans": "杰克在伦敦归来",
+              "ar": "جاك يعود في لندن"
+            }
+          },
+          {
+            "title": "24: Legacy",
+            "note": {
+              "en": "New hero, same format",
+              "es": "Nuevo héroe, mismo formato",
+              "fr": "Nouveau héros, même format",
+              "de": "Neuer Held, gleiches Format",
+              "pt": "Novo herói, mesmo formato",
+              "it": "Nuovo eroe, stesso formato",
+              "ja": "新ヒーロー、同じフォーマット",
+              "ko": "새 영웅, 같은 포맷",
+              "zh-Hans": "新英雄，同样形式",
+              "ar": "بطل جديد، نفس الشكل"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "24 S1-8",
+            "note": {
+              "en": "Real-time seasons",
+              "es": "Temporadas en tiempo real",
+              "fr": "Saisons en temps réel",
+              "de": "Echtzeit-Staffeln",
+              "pt": "Temporadas em tempo real",
+              "it": "Stagioni in tempo reale",
+              "ja": "リアルタイムシーズン",
+              "ko": "실시간 시즌",
+              "zh-Hans": "实时季",
+              "ar": "مواسم في الوقت الفعلي"
+            }
+          },
+          {
+            "title": "24: Live Another Day",
+            "note": {
+              "en": "4 years after S8",
+              "es": "4 años después de la T8",
+              "fr": "4 ans après la S8",
+              "de": "4 Jahre nach S8",
+              "pt": "4 anos após a T8",
+              "it": "4 anni dopo la S8",
+              "ja": "S8の4年後",
+              "ko": "시즌8의 4년 후",
+              "zh-Hans": "第8季4年后",
+              "ar": "بعد 4 سنوات من الموسم 8"
+            }
+          },
+          {
+            "title": "24: Legacy",
+            "note": {
+              "en": "After Live Another Day",
+              "es": "Después de Live Another Day",
+              "fr": "Après Live Another Day",
+              "de": "Nach Live Another Day",
+              "pt": "Após Live Another Day",
+              "it": "Dopo Live Another Day",
+              "ja": "Live Another Day後",
+              "ko": "Live Another Day 이후",
+              "zh-Hans": "Live Another Day之后",
+              "ar": "بعد Live Another Day"
+            }
+          }
+        ]
+      }
+    },
+    "daredevil": {
+      "franchiseName": {
+        "en": "Marvel Netflix/Daredevil Universe",
+        "es": "Universo Marvel Netflix/Daredevil",
+        "fr": "Univers Marvel Netflix/Daredevil",
+        "de": "Marvel Netflix/Daredevil Universum",
+        "pt": "Universo Marvel Netflix/Daredevil",
+        "it": "Universo Marvel Netflix/Daredevil",
+        "ja": "マーベル Netflix/デアデビル ユニバース",
+        "ko": "마블 넷플릭스/데어데블 유니버스",
+        "zh-Hans": "漫威Netflix/超胆侠宇宙",
+        "ar": "عالم مارفل نتفليكس/ديرديفل"
+      },
+      "parentShow": {
+        "title": "Daredevil",
+        "tmdbId": 61889,
+        "years": "2015-2018"
+      },
+      "spinoffs": [
+        {
+          "title": "Jessica Jones",
+          "tmdbId": 38472,
+          "years": "2015-2019",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Luke Cage",
+          "tmdbId": 62126,
+          "years": "2016-2018",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Iron Fist",
+          "tmdbId": 62127,
+          "years": "2017-2018",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "The Defenders",
+          "tmdbId": 62285,
+          "years": "2017",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "The Punisher",
+          "tmdbId": 67178,
+          "years": "2017-2019",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Daredevil: Born Again",
+          "tmdbId": 202555,
+          "years": "2025-present",
+          "type": "sequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Daredevil S1",
+            "note": {
+              "en": "Start of the Defenders saga",
+              "es": "Inicio de la saga Defenders",
+              "fr": "Début de la saga Defenders",
+              "de": "Beginn der Defenders Saga",
+              "pt": "Início da saga Defenders",
+              "it": "Inizio della saga Defenders",
+              "ja": "ディフェンダーズサーガの始まり",
+              "ko": "디펜더스 사가의 시작",
+              "zh-Hans": "捍卫者联盟传奇的开始",
+              "ar": "بداية ملحمة المدافعين"
+            }
+          },
+          {
+            "title": "Jessica Jones S1",
+            "note": {
+              "en": "Dark noir investigation",
+              "es": "Investigación noir oscura",
+              "fr": "Enquête noir sombre",
+              "de": "Dunkle Noir-Ermittlung",
+              "pt": "Investigação noir sombria",
+              "it": "Investigazione noir oscura",
+              "ja": "ダークノワール調査",
+              "ko": "다크 누아르 수사",
+              "zh-Hans": "黑暗侦探调查",
+              "ar": "تحقيق نوار مظلم"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Follow Netflix release order",
+            "note": {
+              "en": "Leads to Defenders crossover",
+              "es": "Lleva al crossover de Defenders",
+              "fr": "Mène au crossover Defenders",
+              "de": "Führt zum Defenders Crossover",
+              "pt": "Leva ao crossover de Defenders",
+              "it": "Porta al crossover Defenders",
+              "ja": "ディフェンダーズクロスオーバーへ",
+              "ko": "디펜더스 크로스오버로 이어짐",
+              "zh-Hans": "通向捍卫者联盟联动",
+              "ar": "يؤدي إلى تقاطع المدافعين"
+            }
+          },
+          {
+            "title": "Daredevil: Born Again",
+            "note": {
+              "en": "MCU continuation",
+              "es": "Continuación MCU",
+              "fr": "Continuation MCU",
+              "de": "MCU Fortsetzung",
+              "pt": "Continuação MCU",
+              "it": "Continuazione MCU",
+              "ja": "MCU継続",
+              "ko": "MCU 계속",
+              "zh-Hans": "MCU延续",
+              "ar": "استمرار MCU"
+            }
+          }
+        ]
+      }
+    },
+    "money-heist": {
+      "franchiseName": {
+        "en": "Money Heist Universe",
+        "es": "Universo La Casa de Papel",
+        "fr": "Univers La Casa de Papel",
+        "de": "Haus des Geldes Universum",
+        "pt": "Universo La Casa de Papel",
+        "it": "Universo La Casa di Carta",
+        "ja": "ペーパー・ハウス ユニバース",
+        "ko": "종이의 집 유니버스",
+        "zh-Hans": "纸钞屋宇宙",
+        "ar": "عالم لا كاسا دي بابيل"
+      },
+      "parentShow": {
+        "title": "Money Heist",
+        "tmdbId": 71446,
+        "years": "2017-2021"
+      },
+      "spinoffs": [
+        {
+          "title": "Money Heist: Korea - Joint Economic Area",
+          "tmdbId": 112836,
+          "years": "2022-present",
+          "type": "companion",
+          "status": "active"
+        },
+        {
+          "title": "Berlin",
+          "tmdbId": 146176,
+          "years": "2023-present",
+          "type": "prequel",
+          "status": "active"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Money Heist",
+            "note": {
+              "en": "Original Spanish heist drama",
+              "es": "Drama de atracos español original",
+              "fr": "Drame de braquage espagnol original",
+              "de": "Originales spanisches Raubdrama",
+              "pt": "Drama de assalto espanhol original",
+              "it": "Drama di rapina spagnolo originale",
+              "ja": "オリジナルスペイン強盗ドラマ",
+              "ko": "오리지널 스페인 강도 드라마",
+              "zh-Hans": "原版西班牙抢劫剧",
+              "ar": "دراما السرقة الإسبانية الأصلية"
+            }
+          },
+          {
+            "title": "Berlin",
+            "note": {
+              "en": "Berlin's backstory",
+              "es": "Historia de fondo de Berlín",
+              "fr": "Passé de Berlin",
+              "de": "Berlins Vorgeschichte",
+              "pt": "História de Berlin",
+              "it": "Storia di Berlino",
+              "ja": "ベルリンの前日譚",
+              "ko": "베를린의 배경 이야기",
+              "zh-Hans": "柏林的背景故事",
+              "ar": "قصة خلفية برلين"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Berlin",
+            "note": {
+              "en": "Prequel heists",
+              "es": "Atracos previos",
+              "fr": "Braquages antérieurs",
+              "de": "Vorherige Raubzüge",
+              "pt": "Assaltos anteriores",
+              "it": "Rapine precedenti",
+              "ja": "前日譚の強盗",
+              "ko": "프리퀄 강도",
+              "zh-Hans": "前传抢劫",
+              "ar": "سرقات سابقة"
+            }
+          },
+          {
+            "title": "Money Heist",
+            "note": {
+              "en": "Main heists",
+              "es": "Atracos principales",
+              "fr": "Braquages principaux",
+              "de": "Haupt-Raubzüge",
+              "pt": "Assaltos principais",
+              "it": "Rapine principali",
+              "ja": "メイン強盗",
+              "ko": "메인 강도",
+              "zh-Hans": "主要抢劫",
+              "ar": "السرقات الرئيسية"
+            }
+          }
+        ]
+      }
+    },
+    "witcher": {
+      "franchiseName": {
+        "en": "The Witcher Universe",
+        "es": "Universo The Witcher",
+        "fr": "Univers The Witcher",
+        "de": "The Witcher Universum",
+        "pt": "Universo The Witcher",
+        "it": "Universo The Witcher",
+        "ja": "ウィッチャー ユニバース",
+        "ko": "위쳐 유니버스",
+        "zh-Hans": "猎魔人宇宙",
+        "ar": "عالم ذا ويتشر"
+      },
+      "parentShow": {
+        "title": "The Witcher",
+        "tmdbId": 71912,
+        "years": "2019-present"
+      },
+      "spinoffs": [
+        {
+          "title": "The Witcher: Blood Origin",
+          "tmdbId": 106541,
+          "years": "2022",
+          "type": "prequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "The Witcher",
+            "note": {
+              "en": "Geralt's adventures",
+              "es": "Aventuras de Geralt",
+              "fr": "Aventures de Geralt",
+              "de": "Geralts Abenteuer",
+              "pt": "Aventuras de Geralt",
+              "it": "Avventure di Geralt",
+              "ja": "ゲラルトの冒険",
+              "ko": "게롤트의 모험",
+              "zh-Hans": "杰洛特的冒险",
+              "ar": "مغامرات جيرالت"
+            }
+          },
+          {
+            "title": "The Witcher: Blood Origin",
+            "note": {
+              "en": "1200 years before main series",
+              "es": "1200 años antes de la serie principal",
+              "fr": "1200 ans avant la série principale",
+              "de": "1200 Jahre vor der Hauptserie",
+              "pt": "1200 anos antes da série principal",
+              "it": "1200 anni prima della serie principale",
+              "ja": "メインシリーズの1200年前",
+              "ko": "메인 시리즈 1200년 전",
+              "zh-Hans": "主剧集1200年前",
+              "ar": "قبل 1200 سنة من المسلسل الرئيسي"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "The Witcher: Blood Origin",
+            "note": {
+              "en": "The Conjunction of the Spheres",
+              "es": "La Conjunción de las Esferas",
+              "fr": "La Conjonction des Sphères",
+              "de": "Die Sphärenkonjunktion",
+              "pt": "A Conjunção das Esferas",
+              "it": "La Congiunzione delle Sfere",
+              "ja": "天球の合",
+              "ko": "천구의 결합",
+              "zh-Hans": "天球交汇",
+              "ar": "اقتران الكرات"
+            }
+          },
+          {
+            "title": "The Witcher",
+            "note": {
+              "en": "After monsters arrived",
+              "es": "Después de la llegada de los monstruos",
+              "fr": "Après l'arrivée des monstres",
+              "de": "Nach Ankunft der Monster",
+              "pt": "Depois que os monstros chegaram",
+              "it": "Dopo l'arrivo dei mostri",
+              "ja": "モンスター到来後",
+              "ko": "괴물 도착 후",
+              "zh-Hans": "怪物到来之后",
+              "ar": "بعد وصول الوحوش"
+            }
+          }
+        ]
+      }
+    },
+    "teen-wolf": {
+      "franchiseName": {
+        "en": "Teen Wolf Universe",
+        "es": "Universo Teen Wolf",
+        "fr": "Univers Teen Wolf",
+        "de": "Teen Wolf Universum",
+        "pt": "Universo Teen Wolf",
+        "it": "Universo Teen Wolf",
+        "ja": "ティーン・ウルフ ユニバース",
+        "ko": "틴 울프 유니버스",
+        "zh-Hans": "少狼宇宙",
+        "ar": "عالم تين وولف"
+      },
+      "parentShow": {
+        "title": "Teen Wolf",
+        "tmdbId": 34524,
+        "years": "2011-2017"
+      },
+      "spinoffs": [
+        {
+          "title": "Wolf Pack",
+          "tmdbId": 134865,
+          "years": "2023",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Teen Wolf: The Movie",
+          "tmdbId": 985939,
+          "years": "2023",
+          "type": "sequel",
+          "status": "released",
+          "mediaType": "movie"
+        }
+      ],
+      "watchOrder": {
+        "release": [
+          {
+            "title": "Teen Wolf",
+            "note": {
+              "en": "Scott McCall becomes a werewolf",
+              "es": "Scott McCall se convierte en hombre lobo",
+              "fr": "Scott McCall devient loup-garou",
+              "de": "Scott McCall wird Werwolf",
+              "pt": "Scott McCall se torna lobisomem",
+              "it": "Scott McCall diventa lupo mannaro",
+              "ja": "スコット・マッコールが狼男になる",
+              "ko": "스콧 맥콜이 늑대인간이 되다",
+              "zh-Hans": "斯科特·麦考尔变成狼人",
+              "ar": "سكوت ماكول يصبح مستذئب"
+            }
+          },
+          {
+            "title": "Teen Wolf: The Movie",
+            "note": {
+              "en": "Reunion movie",
+              "es": "Película de reunión",
+              "fr": "Film de retrouvailles",
+              "de": "Wiedersehensfilm",
+              "pt": "Filme de reunião",
+              "it": "Film reunion",
+              "ja": "再結集映画",
+              "ko": "리유니언 영화",
+              "zh-Hans": "重聚电影",
+              "ar": "فيلم لم الشمل"
+            }
+          }
+        ],
+        "chronological": [
+          {
+            "title": "Teen Wolf S1-6",
+            "note": {
+              "en": "High school through college",
+              "es": "Secundaria hasta universidad",
+              "fr": "Du lycée à l'université",
+              "de": "Highschool bis College",
+              "pt": "Ensino médio até faculdade",
+              "it": "Dal liceo all'università",
+              "ja": "高校から大学まで",
+              "ko": "고등학교부터 대학까지",
+              "zh-Hans": "从高中到大学",
+              "ar": "من الثانوية إلى الجامعة"
+            }
+          },
+          {
+            "title": "Teen Wolf: The Movie",
+            "note": {
+              "en": "Years later",
+              "es": "Años después",
+              "fr": "Des années plus tard",
+              "de": "Jahre später",
+              "pt": "Anos depois",
+              "it": "Anni dopo",
+              "ja": "数年後",
+              "ko": "수년 후",
+              "zh-Hans": "数年后",
+              "ar": "بعد سنوات"
+            }
+          }
+        ]
+      }
+    },
+    "law-order": {
+      "franchiseName": {
+        "en": "Law & Order Universe",
+        "es": "Universo Law & Order",
+        "fr": "Univers Law & Order",
+        "de": "Law-&-Order-Universum",
+        "pt": "Universo Law & Order",
+        "it": "Universo Law & Order",
+        "ja": "ロー&オーダー ユニバース",
+        "ko": "로 앤 오더 유니버스",
+        "zh-Hans": "法律与秩序宇宙",
+        "ar": "عالم لو أند أوردر"
+      },
+      "parentShow": {
+        "title": "Law & Order",
+        "tmdbId": 549,
+        "years": "1990-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Law & Order: Special Victims Unit",
+          "tmdbId": 2734,
+          "years": "1999-present",
+          "type": "companion",
+          "status": "returning"
+        },
+        {
+          "title": "Law & Order: Criminal Intent",
+          "tmdbId": 4601,
+          "years": "2001-2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Law & Order: Trial by Jury",
+          "tmdbId": 3357,
+          "years": "2005-2006",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Law & Order: LA",
+          "tmdbId": 32632,
+          "years": "2010-2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Law & Order True Crime",
+          "tmdbId": 72496,
+          "years": "2017-present",
+          "type": "companion",
+          "status": "returning"
+        },
+        {
+          "title": "Law & Order: Organized Crime",
+          "tmdbId": 106158,
+          "years": "2021-present",
+          "type": "companion",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "fbi": {
+      "franchiseName": {
+        "en": "FBI Universe",
+        "es": "Universo FBI",
+        "fr": "Univers FBI",
+        "de": "FBI-Universum",
+        "pt": "Universo FBI",
+        "it": "Universo FBI",
+        "ja": "FBI ユニバース",
+        "ko": "FBI 유니버스",
+        "zh-Hans": "FBI宇宙",
+        "ar": "عالم إف بي آي"
+      },
+      "parentShow": {
+        "title": "FBI",
+        "tmdbId": 80748,
+        "years": "2018-present"
+      },
+      "spinoffs": [
+        {
+          "title": "FBI: Most Wanted",
+          "tmdbId": 94372,
+          "years": "2020-2025",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "FBI: International",
+          "tmdbId": 121658,
+          "years": "2021-2025",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "nine-one-one": {
+      "franchiseName": {
+        "en": "9-1-1 Universe",
+        "es": "Universo 9-1-1",
+        "fr": "Univers 9-1-1",
+        "de": "9-1-1-Universum",
+        "pt": "Universo 9-1-1",
+        "it": "Universo 9-1-1",
+        "ja": "9-1-1 ユニバース",
+        "ko": "9-1-1 유니버스",
+        "zh-Hans": "9-1-1宇宙",
+        "ar": "عالم 9-1-1"
+      },
+      "parentShow": {
+        "title": "9-1-1",
+        "tmdbId": 75219,
+        "years": "2018-present"
+      },
+      "spinoffs": [
+        {
+          "title": "9-1-1: Lone Star",
+          "tmdbId": 89393,
+          "years": "2020-2025",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "9-1-1: Nashville",
+          "tmdbId": 284838,
+          "years": "2025-present",
+          "type": "companion",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "big-bang-theory": {
+      "franchiseName": {
+        "en": "The Big Bang Theory Universe",
+        "es": "Universo The Big Bang Theory",
+        "fr": "Univers The Big Bang Theory",
+        "de": "Big-Bang-Theory-Universum",
+        "pt": "Universo The Big Bang Theory",
+        "it": "Universo The Big Bang Theory",
+        "ja": "ビッグバン★セオリー ユニバース",
+        "ko": "빅뱅 이론 유니버스",
+        "zh-Hans": "生活大爆炸宇宙",
+        "ar": "عالم نظرية الانفجار العظيم"
+      },
+      "parentShow": {
+        "title": "The Big Bang Theory",
+        "tmdbId": 1418,
+        "years": "2007-2019"
+      },
+      "spinoffs": [
+        {
+          "title": "Young Sheldon",
+          "tmdbId": 71728,
+          "years": "2017-2024",
+          "type": "prequel",
+          "status": "ended"
+        },
+        {
+          "title": "Georgie & Mandy's First Marriage",
+          "tmdbId": 243875,
+          "years": "2024-present",
+          "type": "prequel",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "stargate": {
+      "franchiseName": {
+        "en": "Stargate Universe",
+        "es": "Universo Stargate",
+        "fr": "Univers Stargate",
+        "de": "Stargate-Universum",
+        "pt": "Universo Stargate",
+        "it": "Universo Stargate",
+        "ja": "スターゲイト ユニバース",
+        "ko": "스타게이트 유니버스",
+        "zh-Hans": "星际之门宇宙",
+        "ar": "عالم بوابة النجوم"
+      },
+      "parentShow": {
+        "title": "Stargate SG-1",
+        "tmdbId": 4629,
+        "years": "1997-2007"
+      },
+      "spinoffs": [
+        {
+          "title": "Stargate Atlantis",
+          "tmdbId": 2290,
+          "years": "2004-2009",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Stargate Universe",
+          "tmdbId": 5148,
+          "years": "2009-2011",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "doctor-who": {
+      "franchiseName": {
+        "en": "Whoniverse",
+        "es": "Whoniverse",
+        "fr": "Whoniverse",
+        "de": "Whoniverse",
+        "pt": "Whoniverse",
+        "it": "Whoniverse",
+        "ja": "フーニバース",
+        "ko": "후니버스",
+        "zh-Hans": "神秘博士宇宙",
+        "ar": "عالم دكتور هو"
+      },
+      "parentShow": {
+        "title": "Doctor Who",
+        "tmdbId": 57243,
+        "years": "2005-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Torchwood",
+          "tmdbId": 424,
+          "years": "2006-2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "The Sarah Jane Adventures",
+          "tmdbId": 203,
+          "years": "2007-2011",
+          "type": "companion",
+          "status": "ended"
+        },
+        {
+          "title": "Class",
+          "tmdbId": 68112,
+          "years": "2016",
+          "type": "companion",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "american-horror-story": {
+      "franchiseName": {
+        "en": "American Horror Story Universe",
+        "es": "Universo American Horror Story",
+        "fr": "Univers American Horror Story",
+        "de": "American-Horror-Story-Universum",
+        "pt": "Universo American Horror Story",
+        "it": "Universo American Horror Story",
+        "ja": "アメリカン・ホラー・ストーリー ユニバース",
+        "ko": "아메리칸 호러 스토리 유니버스",
+        "zh-Hans": "美国恐怖故事宇宙",
+        "ar": "عالم أميريكان هورور ستوري"
+      },
+      "parentShow": {
+        "title": "American Horror Story",
+        "tmdbId": 1413,
+        "years": "2011-present"
+      },
+      "spinoffs": [
+        {
+          "title": "American Horror Stories",
+          "tmdbId": 113036,
+          "years": "2021-present",
+          "type": "companion",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "squid-game": {
+      "franchiseName": {
+        "en": "Squid Game Universe",
+        "es": "Universo El juego del calamar",
+        "fr": "Univers Squid Game",
+        "de": "Squid-Game-Universum",
+        "pt": "Universo Round 6",
+        "it": "Universo Squid Game",
+        "ja": "イカゲーム ユニバース",
+        "ko": "오징어 게임 유니버스",
+        "zh-Hans": "鱿鱼游戏宇宙",
+        "ar": "عالم لعبة الحبار"
+      },
+      "parentShow": {
+        "title": "Squid Game",
+        "tmdbId": 93405,
+        "years": "2021-2025"
+      },
+      "spinoffs": [
+        {
+          "title": "Squid Game: The Challenge",
+          "tmdbId": 204082,
+          "years": "2023-present",
+          "type": "companion",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "sons-of-anarchy": {
+      "franchiseName": {
+        "en": "Sons of Anarchy Universe",
+        "es": "Universo Sons of Anarchy",
+        "fr": "Univers Sons of Anarchy",
+        "de": "Sons-of-Anarchy-Universum",
+        "pt": "Universo Sons of Anarchy",
+        "it": "Universo Sons of Anarchy",
+        "ja": "サンズ・オブ・アナーキー ユニバース",
+        "ko": "썬즈 오브 아나키 유니버스",
+        "zh-Hans": "混乱之子宇宙",
+        "ar": "عالم أبناء الفوضى"
+      },
+      "parentShow": {
+        "title": "Sons of Anarchy",
+        "tmdbId": 1409,
+        "years": "2008-2014"
+      },
+      "spinoffs": [
+        {
+          "title": "Mayans M.C.",
+          "tmdbId": 76231,
+          "years": "2018-2023",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "vikings": {
+      "franchiseName": {
+        "en": "Vikings Universe",
+        "es": "Universo Vikingos",
+        "fr": "Univers Vikings",
+        "de": "Vikings-Universum",
+        "pt": "Universo Vikings",
+        "it": "Universo Vikings",
+        "ja": "ヴァイキング ユニバース",
+        "ko": "바이킹스 유니버스",
+        "zh-Hans": "维京传奇宇宙",
+        "ar": "عالم الفايكنج"
+      },
+      "parentShow": {
+        "title": "Vikings",
+        "tmdbId": 44217,
+        "years": "2013-2020"
+      },
+      "spinoffs": [
+        {
+          "title": "Vikings: Valhalla",
+          "tmdbId": 116135,
+          "years": "2022-2024",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "sex-and-the-city": {
+      "franchiseName": {
+        "en": "Sex and the City Universe",
+        "es": "Universo Sexo en Nueva York",
+        "fr": "Univers Sex and the City",
+        "de": "Sex-and-the-City-Universum",
+        "pt": "Universo Sex and the City",
+        "it": "Universo Sex and the City",
+        "ja": "セックス・アンド・ザ・シティ ユニバース",
+        "ko": "섹스 앤 더 시티 유니버스",
+        "zh-Hans": "欲望都市宇宙",
+        "ar": "عالم سيكس أند ذا سيتي"
+      },
+      "parentShow": {
+        "title": "Sex and the City",
+        "tmdbId": 105,
+        "years": "1998-2004"
+      },
+      "spinoffs": [
+        {
+          "title": "And Just Like That…",
+          "tmdbId": 116450,
+          "years": "2021-2025",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "bridgerton": {
+      "franchiseName": {
+        "en": "Bridgerton Universe",
+        "es": "Universo Bridgerton",
+        "fr": "Univers La Chronique des Bridgerton",
+        "de": "Bridgerton-Universum",
+        "pt": "Universo Bridgerton",
+        "it": "Universo Bridgerton",
+        "ja": "ブリジャートン家 ユニバース",
+        "ko": "브리저튼 유니버스",
+        "zh-Hans": "布里奇顿宇宙",
+        "ar": "عالم بريدجرتون"
+      },
+      "parentShow": {
+        "title": "Bridgerton",
+        "tmdbId": 91239,
+        "years": "2020-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Queen Charlotte: A Bridgerton Story",
+          "tmdbId": 196454,
+          "years": "2023",
+          "type": "prequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "bosch": {
+      "franchiseName": {
+        "en": "Bosch Universe",
+        "es": "Universo Bosch",
+        "fr": "Univers Bosch",
+        "de": "Bosch-Universum",
+        "pt": "Universo Bosch",
+        "it": "Universo Bosch",
+        "ja": "ボッシュ ユニバース",
+        "ko": "보슈 유니버스",
+        "zh-Hans": "博斯宇宙",
+        "ar": "عالم بوش"
+      },
+      "parentShow": {
+        "title": "Bosch",
+        "tmdbId": 60585,
+        "years": "2014-2021"
+      },
+      "spinoffs": [
+        {
+          "title": "Bosch: Legacy",
+          "tmdbId": 153657,
+          "years": "2022-2025",
+          "type": "sequel",
+          "status": "ended"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "handmaids-tale": {
+      "franchiseName": {
+        "en": "The Handmaid's Tale Universe",
+        "es": "Universo El cuento de la criada",
+        "fr": "Univers La Servante écarlate",
+        "de": "The-Handmaid's-Tale-Universum",
+        "pt": "Universo O Conto da Aia",
+        "it": "Universo The Handmaid's Tale",
+        "ja": "ハンドメイズ・テイル ユニバース",
+        "ko": "핸드메이즈 테일 유니버스",
+        "zh-Hans": "使女的故事宇宙",
+        "ar": "عالم حكاية الجارية"
+      },
+      "parentShow": {
+        "title": "The Handmaid's Tale",
+        "tmdbId": 69478,
+        "years": "2017-2025"
+      },
+      "spinoffs": [
+        {
+          "title": "The Testaments",
+          "tmdbId": 287527,
+          "years": "2026-present",
+          "type": "sequel",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "blue-bloods": {
+      "franchiseName": {
+        "en": "Blue Bloods Universe",
+        "es": "Universo Blue Bloods",
+        "fr": "Univers Blue Bloods",
+        "de": "Blue-Bloods-Universum",
+        "pt": "Universo Blue Bloods",
+        "it": "Universo Blue Bloods",
+        "ja": "ブルー・ブラッド ユニバース",
+        "ko": "블루 블러드 유니버스",
+        "zh-Hans": "警察世家宇宙",
+        "ar": "عالم بلو بلودز"
+      },
+      "parentShow": {
+        "title": "Blue Bloods",
+        "tmdbId": 32692,
+        "years": "2010-2024"
+      },
+      "spinoffs": [
+        {
+          "title": "Boston Blue",
+          "tmdbId": 291171,
+          "years": "2025-present",
+          "type": "sequel",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    },
+    "fire-country": {
+      "franchiseName": {
+        "en": "Fire Country Universe",
+        "es": "Universo Fire Country",
+        "fr": "Univers Fire Country",
+        "de": "Fire-Country-Universum",
+        "pt": "Universo Fire Country",
+        "it": "Universo Fire Country",
+        "ja": "ファイアー・カントリー ユニバース",
+        "ko": "파이어 컨트리 유니버스",
+        "zh-Hans": "火线之地宇宙",
+        "ar": "عالم فاير كانتري"
+      },
+      "parentShow": {
+        "title": "Fire Country",
+        "tmdbId": 202297,
+        "years": "2022-present"
+      },
+      "spinoffs": [
+        {
+          "title": "Sheriff Country",
+          "tmdbId": 291172,
+          "years": "2025-present",
+          "type": "companion",
+          "status": "returning"
+        }
+      ],
+      "watchOrder": {
+        "release": [],
+        "chronological": []
+      }
+    }
+  }
+}

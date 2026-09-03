@@ -14,12 +14,16 @@ struct FollowedShowDetail: View {
     let onUnfollow: () -> Void
     var onSpinoffTap: (Int) -> Void = { _ in }
 
+    @Environment(SeriesManager.self) private var seriesManager
+
     @State private var selectedSeason: Int
     @State private var showShareSheet = false
     @State private var showUnfollowConfirmation = false
     @State private var selectedTab: FollowedDetailTab = .seasonInfo
     @State private var isArchived: Bool = false
     @State private var showAlerts = false
+    @State private var showSpinoffsPaywall = false
+    @State private var spinoffsPaywallPlan = "monthly"
 
     // Data for Show Info tab (fetched on appear)
     @State private var cast: [TMDBCastMember] = []
@@ -35,30 +39,32 @@ struct FollowedShowDetail: View {
         series.toShowData()
     }
 
-    /// Franchise data, resolved LIVE from FranchiseService rather than from the
-    /// Series snapshot. `series.relatedShowIds` is written once in a background
-    /// task at follow-time and guarded by `spinoffsResolved`, which is set even
-    /// when the lookup came back empty — so any show followed before the
-    /// franchise list covered it is stuck at spinoffCount 0 forever, with no
-    /// backfill path. Reading the service directly also keeps the tab and the
-    /// tab's contents (which already read it live) from disagreeing.
-    ///
-    /// Latched into @State because FranchiseService is not @Observable: the
-    /// launch fetch is async, and a plain computed property would not re-render
-    /// this view when it lands.
-    @State private var franchise: Franchise?
-
-    private var spinoffCount: Int {
-        guard let franchise else { return 0 }
-        return franchise.allTmdbIds.filter { $0 != series.id }.count
+    /// Read once, here, and passed down explicitly — kept in this file (rather
+    /// than read inside ShowDetailSpinoffsSection) so the premium-gate-audit
+    /// build script, which greps this exact file for `canViewSpinoffs`, keeps
+    /// proving the check hasn't quietly disappeared from the feature that owns it.
+    private var canViewSpinoffs: Bool {
+        PremiumManager.shared.canViewSpinoffs
     }
 
-    /// Spin-offs are a premium feature, same as on the unfollowed detail view.
-    /// The tab is hidden outright rather than shown locked — a followed show is
-    /// somewhere the user already lives, and a dead tab there reads as broken.
-    private var canShowSpinoffs: Bool {
-        PremiumManager.shared.canViewSpinoffs && spinoffCount > 0
-    }
+    /// Franchise data from the bundled FranchiseCatalog engine (BundledFranchiseProvider),
+    /// resolved live rather than from any Series snapshot — same reasoning as
+    /// the old FranchiseService-backed version this replaced: always asking
+    /// fresh keeps the tab from disagreeing with itself, and there is no
+    /// stored, potentially-stale cache to fall behind.
+    @State private var franchiseGroup: FranchiseGroup?
+    /// Backdrop URL per spin-off entry. Not part of FranchiseEntry itself (the
+    /// engine is image-agnostic) — resolved here from the local Series when
+    /// already followed (no network), or a TMDB fetch otherwise.
+    @State private var spinoffPosterURLs: [MediaKey: URL] = [:]
+    /// Tap targets for the spin-offs list: an already-followed entry pushes
+    /// this same view again (recursively) on its own Series; a not-yet-followed
+    /// one pushes SpinoffUnfollowedDetailHost, which fetches its own ShowData
+    /// by tmdbId — navigation never depends on a background pre-fetch having
+    /// already succeeded (it used to, silently via `try?`, so a slow or failed
+    /// fetch meant tapping the entry did nothing at all).
+    @State private var selectedFollowedSpinoff: Series?
+    @State private var selectedUnfollowedSpinoffTarget: SpinoffTapTarget?
 
     init(series: Series, initialSeason: Int? = nil, onDismiss: @escaping () -> Void, onUnfollow: @escaping () -> Void = {}, onSpinoffTap: @escaping (Int) -> Void = { _ in }) {
         self.series = series
@@ -81,10 +87,7 @@ struct FollowedShowDetail: View {
                     // MARK: - Content Section
                     VStack(spacing: 0) {
                         // MARK: - Segmented Tab Bar
-                        FollowedDetailTabBar(
-                            selectedTab: $selectedTab,
-                            showSpinoffs: canShowSpinoffs
-                        )
+                        FollowedDetailTabBar(selectedTab: $selectedTab)
                         .padding(.top, 18)
                         .padding(.bottom, 16)
 
@@ -113,15 +116,26 @@ struct FollowedShowDetail: View {
                             )
 
                         case .spinoffs:
-                            // Reachable only while the tab is visible; the guard
-                            // covers a downgrade landing mid-view.
-                            if canShowSpinoffs {
-                                ShowDetailSpinoffsSection(
-                                    show: show,
-                                    franchise: franchise,
-                                    onSpinoffTap: onSpinoffTap
-                                )
-                            }
+                            // Always rendered — SpinoffsEraSection itself decides
+                            // no-franchise (empty state, shown to everyone) vs.
+                            // premium (full era card) vs. free (locked era card),
+                            // off the isPremium value computed above.
+                            SpinoffsEraSection(
+                                franchiseGroup: franchiseGroup,
+                                showTitle: series.name,
+                                isPremium: canViewSpinoffs,
+                                posterURLs: spinoffPosterURLs,
+                                onEntryTap: { entry in
+                                    guard entry.isFollowable else { return }
+                                    if let followedSeries = seriesManager.series(id: entry.tmdbId) {
+                                        selectedFollowedSpinoff = followedSeries
+                                    } else {
+                                        selectedUnfollowedSpinoffTarget = SpinoffTapTarget(id: entry.tmdbId)
+                                    }
+                                    onSpinoffTap(entry.tmdbId)
+                                },
+                                onUnlockTap: { showSpinoffsPaywall = true }
+                            )
                         }
 
                         // Unfollow — full-width destructive action at the page bottom
@@ -232,20 +246,38 @@ struct FollowedShowDetail: View {
         .sheet(isPresented: $showAlerts) {
             ShowAlertsSheet(series: series, onDismiss: { showAlerts = false })
         }
+        .sheet(isPresented: $showSpinoffsPaywall) {
+            PaywallView(
+                selectedPlan: $spinoffsPaywallPlan,
+                onDismiss: { showSpinoffsPaywall = false },
+                onContinueFree: nil
+            )
+        }
+        // Spin-off tap targets — pushed locally rather than through the
+        // caller's own NavigationStack path, so this view stays self-contained
+        // regardless of which of the three screens presented it.
+        .navigationDestination(item: $selectedFollowedSpinoff) { spinoffSeries in
+            FollowedShowDetail(
+                series: spinoffSeries,
+                onDismiss: { selectedFollowedSpinoff = nil },
+                onUnfollow: {
+                    let id = spinoffSeries.id
+                    Task { try? await seriesManager.unfollowAwaitingCloud(id: id) }
+                }
+            )
+        }
+        .navigationDestination(item: $selectedUnfollowedSpinoffTarget) { target in
+            SpinoffUnfollowedDetailHost(
+                tmdbId: target.id,
+                onDismiss: { selectedUnfollowedSpinoffTarget = nil }
+            )
+        }
         .task {
-            // No-ops once loaded; covers a detail view opened before the
-            // launch-time fetch finished.
-            await FranchiseService.shared.fetchFranchises()
-            franchise = FranchiseService.shared.franchise(forShowId: series.id)
+            await loadSpinoffs()
             await loadShowInfo()
         }
         .onAppear {
             loadArchiveState()
-            // Premium can lapse while this view is on screen; don't strand the
-            // user on a tab that no longer has a bar entry or any content.
-            if selectedTab == .spinoffs, !canShowSpinoffs {
-                selectedTab = .seasonInfo
-            }
         }
     }
 
@@ -263,6 +295,40 @@ struct FollowedShowDetail: View {
     }
 
     // MARK: - Data Loading
+
+    /// Looks this show up in the bundled franchise catalog, then — regardless
+    /// of premium status, since the locked card still needs to know the
+    /// current era to seal the rest — resolves a backdrop per entry: the
+    /// local Series when already followed (no network), a TMDB fetch
+    /// otherwise. Movie entries are skipped: TMDBServiceProtocol has no
+    /// movie-details endpoint, only TV, so there's nothing real to show for
+    /// them today.
+    private func loadSpinoffs() async {
+        let group = await BundledFranchiseProvider.shared.franchise(forShowId: series.id, locale: Locale.current)
+        franchiseGroup = group
+        guard let group else {
+            spinoffPosterURLs = [:]
+            return
+        }
+
+        // Backdrops only — this is a nice-to-have for the row art, so a
+        // failed fetch here just leaves that one row without a thumbnail.
+        // Tap-to-navigate does NOT depend on this succeeding (see
+        // SpinoffUnfollowedDetailHost, which fetches its own ShowData by
+        // tmdbId on demand instead of relying on this cache).
+        let entries = group.sections.flatMap(\.entries).filter { !$0.isCurrentShow && $0.isFollowable }
+        var resolvedURLs: [MediaKey: URL] = [:]
+        let tmdbService = TMDBService()
+
+        for entry in entries {
+            if let followedSeries = seriesManager.series(id: entry.tmdbId) {
+                resolvedURLs[entry.id] = followedSeries.toShowData().backdropURL
+            } else if let fetched = try? await tmdbService.getShowDetails(id: entry.tmdbId) {
+                resolvedURLs[entry.id] = fetched.backdropURL
+            }
+        }
+        spinoffPosterURLs = resolvedURLs
+    }
 
     private func loadShowInfo() async {
         guard !isLoadingShowInfo else { return }
@@ -370,6 +436,127 @@ private struct ShowInfoTabContent: View {
                 // About
                 ShowDetailAboutSection(show: show)
             }
+        }
+    }
+}
+
+// MARK: - Spin-off Tap Target (not yet followed)
+
+/// Identifies a not-yet-followed spin-off tap by tmdb id only — `ShowData`
+/// itself isn't required to navigate; `SpinoffUnfollowedDetailHost` fetches
+/// it on demand, so a tap always goes somewhere even if nothing was
+/// pre-cached for this id.
+struct SpinoffTapTarget: Identifiable, Hashable {
+    let id: Int
+}
+
+/// Hosts the discover-style `ShowDetailView` for a spin-off entry that isn't
+/// followed yet. Fetches its own `ShowData` (plus cast/videos) by tmdb id —
+/// this is what makes tap-to-navigate reliable: it doesn't depend on
+/// `FollowedShowDetail.loadSpinoffs()` having already succeeded for this
+/// show, which was the actual bug when a tap on an entry did nothing (that
+/// background fetch swallowed its own failures via `try?`, and navigation
+/// was gated on its result). Also wires a minimal, limit-respecting follow
+/// action — a lighter path than the full AddShowModal catch-up flow Discover
+/// uses, since reaching a show through its own franchise doesn't need to ask
+/// which season you've already watched before it can be followed.
+private struct SpinoffUnfollowedDetailHost: View {
+    let tmdbId: Int
+    let onDismiss: () -> Void
+
+    @Environment(SeriesManager.self) private var seriesManager
+
+    @State private var show: ShowData?
+    @State private var cast: [TMDBCastMember] = []
+    @State private var videos: [TMDBVideo] = []
+    @State private var loadFailed = false
+    @State private var isFollowing = false
+    @State private var isLoadingFollow = false
+    @State private var showPaywall = false
+    @State private var paywallPlan = "monthly"
+
+    var body: some View {
+        Group {
+            if let show {
+                ShowDetailView(
+                    show: show,
+                    cast: cast,
+                    videos: videos,
+                    isFollowing: isFollowing,
+                    isLoadingFollow: isLoadingFollow,
+                    onFollowTap: { Task { await toggleFollow() } },
+                    onDismiss: onDismiss
+                )
+            } else if loadFailed {
+                VStack(spacing: 14) {
+                    Text(String(localized: "error_load_shows"))
+                        .font(.system(size: 14))
+                        .foregroundColor(.c2bDim)
+                    Button(String(localized: "button_try_again")) {
+                        Task { await load() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.c2bTeal)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.c2bBackground)
+            } else {
+                ProgressView()
+                    .tint(.c2bTeal)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.c2bBackground)
+            }
+        }
+        .task {
+            isFollowing = seriesManager.series(id: tmdbId) != nil
+            await load()
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(
+                selectedPlan: $paywallPlan,
+                onDismiss: { showPaywall = false },
+                onContinueFree: nil
+            )
+        }
+    }
+
+    private func load() async {
+        loadFailed = false
+        let tmdbService = TMDBService()
+
+        guard let fetchedShow = try? await tmdbService.getShowDetails(id: tmdbId) else {
+            loadFailed = true
+            return
+        }
+        show = fetchedShow
+
+        async let creditsResult = tmdbService.getShowCredits(id: tmdbId)
+        async let videosResult = tmdbService.getShowVideos(id: tmdbId)
+        if let (credits, fetchedVideos) = try? await (creditsResult, videosResult) {
+            cast = credits.cast
+            videos = fetchedVideos
+        }
+    }
+
+    private func toggleFollow() async {
+        guard !isFollowing, let show else { return }
+
+        // Same gates Discover applies before a follow: grace period first,
+        // then the premium show-count limit.
+        guard !PremiumManager.shared.isInGracePeriod else {
+            showPaywall = true
+            return
+        }
+        guard PremiumManager.shared.canAddShow(currentCount: seriesManager.followedCount()) else {
+            showPaywall = true
+            return
+        }
+
+        isLoadingFollow = true
+        defer { isLoadingFollow = false }
+
+        if (try? seriesManager.follow(showData: show, source: .user)) != nil {
+            isFollowing = true
         }
     }
 }
