@@ -21,6 +21,7 @@ final class CloudSettingsStore {
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
         static let hasSeenWalkthrough = "hasSeenWalkthrough"
         static let hasRatedApp = "hasRatedApp"
+        static let hasSeenMyListOnboarding = "hasSeenMyListOnboarding"
     }
 
     // MARK: - Properties
@@ -54,6 +55,17 @@ final class CloudSettingsStore {
         }
     }
 
+    /// Seen the My List intro overlay (Get Started or Maybe Later — either
+    /// way it doesn't come back on its own). Separate from the main app's
+    /// onboarding flags: this is a My-List-specific, re-triggerable prompt,
+    /// not part of first-run.
+    var hasSeenMyListOnboarding: Bool {
+        didSet {
+            store.set(hasSeenMyListOnboarding, forKey: Keys.hasSeenMyListOnboarding)
+            store.synchronize()
+        }
+    }
+
     // MARK: - Init
 
     private init() {
@@ -62,6 +74,7 @@ final class CloudSettingsStore {
         hasCompletedOnboarding = store.bool(forKey: Keys.hasCompletedOnboarding)
         hasSeenWalkthrough = store.bool(forKey: Keys.hasSeenWalkthrough)
         hasRatedApp = store.bool(forKey: Keys.hasRatedApp)
+        hasSeenMyListOnboarding = store.bool(forKey: Keys.hasSeenMyListOnboarding)
 
         // Reflect changes made on other devices back into the observable mirrors.
         NotificationCenter.default.addObserver(
@@ -83,6 +96,8 @@ final class CloudSettingsStore {
         if seen != hasSeenWalkthrough { hasSeenWalkthrough = seen }
         let rated = store.bool(forKey: Keys.hasRatedApp)
         if rated != hasRatedApp { hasRatedApp = rated }
+        let seenMyList = store.bool(forKey: Keys.hasSeenMyListOnboarding)
+        if seenMyList != hasSeenMyListOnboarding { hasSeenMyListOnboarding = seenMyList }
     }
 
     // MARK: - Reset

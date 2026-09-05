@@ -55,6 +55,10 @@ struct ContentView: View {
                 }
                 .badge(badgeManager.bingeReadyBadge ? 1 : 0)
 
+                Tab("tab_my_library", image: "tab-stack-full", value: "mylibrary") {
+                    MyLibraryScreen()
+                }
+
                 Tab("tab_settings", image: "tab-settings", value: "settings") {
                     SettingsScreen()
                 }

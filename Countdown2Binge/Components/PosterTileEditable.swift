@@ -15,8 +15,19 @@ struct PosterTileEditable: View {
     let isEditMode: Bool
     let isLocked: Bool
     let onRemove: () -> Void
+    /// Whole-series watched/total episode counts — shown BELOW the poster
+    /// as a progress bar plus a "XX% ⋯ watched/total" line, not an overlay
+    /// on the art itself. Nil hides the whole block — most callers (e.g.
+    /// plain "add show" grids) have no watch progress to show.
+    var watchedEpisodes: Int? = nil
+    var totalEpisodes: Int? = nil
 
     @State private var jiggling = false
+
+    private var completionPercent: Int? {
+        guard let watchedEpisodes, let totalEpisodes, totalEpisodes > 0 else { return nil }
+        return Int((Double(watchedEpisodes) / Double(totalEpisodes) * 100).rounded())
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -74,6 +85,36 @@ struct PosterTileEditable: View {
                 .font(.custom(.jetbrains.regular, size: 11))
                 .foregroundColor(.white.opacity(0.9))
                 .lineLimit(1)
+
+            // Progress bar + "percent ⋯ watched/total", grouped in their
+            // own VStack so the 6pt bar→row gap is independent of the
+            // outer stack's 8pt spacing (which places this block 8pt
+            // below the title, per spec) — below the poster, never on
+            // top of the art.
+            if let completionPercent, let watchedEpisodes, let totalEpisodes {
+                VStack(alignment: .leading, spacing: 6) {
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(Color.white.opacity(0.13))
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(Color.c2bTeal)
+                                .frame(width: geo.size.width * CGFloat(completionPercent) / 100)
+                        }
+                    }
+                    .frame(height: 4)
+
+                    HStack {
+                        Text("\(completionPercent)%")
+                            .font(.custom(.oswald.bold, size: 13))
+                            .foregroundColor(.c2bTeal)
+                        Spacer()
+                        Text("\(watchedEpisodes)/\(totalEpisodes)")
+                            .font(.custom(.jetbrains.regular, size: 6.5))
+                            .foregroundColor(.white.opacity(0.35))
+                    }
+                }
+            }
         }
     }
 

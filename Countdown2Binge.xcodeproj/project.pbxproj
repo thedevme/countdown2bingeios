@@ -17,6 +17,7 @@
 		469C39E2303EF5830012C456 /* TikTokOpenAuthSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E1303EF5830012C456 /* TikTokOpenAuthSDK */; };
 		469C39E4303EF5830012C456 /* TikTokOpenSDKCore in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E3303EF5830012C456 /* TikTokOpenSDKCore */; };
 		469C39E6303EF5830012C456 /* TikTokOpenShareSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 469C39E5303EF5830012C456 /* TikTokOpenShareSDK */; };
+		469C4185304B86A50012C456 /* BigUIPaging in Frameworks */ = {isa = PBXBuildFile; productRef = 469C4184304B86A50012C456 /* BigUIPaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +86,7 @@
 				469C39E4303EF5830012C456 /* TikTokOpenSDKCore in Frameworks */,
 				469C39E2303EF5830012C456 /* TikTokOpenAuthSDK in Frameworks */,
 				4602CAC930114F62001185C9 /* FirebaseDatabase in Frameworks */,
+				469C4185304B86A50012C456 /* BigUIPaging in Frameworks */,
 				469C39E6303EF5830012C456 /* TikTokOpenShareSDK in Frameworks */,
 				4602CABB30114363001185C9 /* RevenueCatUI in Frameworks */,
 			);
@@ -159,6 +161,7 @@
 				469C39E1303EF5830012C456 /* TikTokOpenAuthSDK */,
 				469C39E3303EF5830012C456 /* TikTokOpenSDKCore */,
 				469C39E5303EF5830012C456 /* TikTokOpenShareSDK */,
+				469C4184304B86A50012C456 /* BigUIPaging */,
 			);
 			productName = Countdown2Binge;
 			productReference = 46AEA11B300005C300F05C7B /* Countdown2Binge.app */;
@@ -264,6 +267,7 @@
 				4602DC8F30245AF3001185C9 /* XCRemoteSwiftPackageReference "UserSpec" */,
 				4602DCB23025880B001185C9 /* XCRemoteSwiftPackageReference "Nuke" */,
 				469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */,
+				469C4183304B86A50012C456 /* XCRemoteSwiftPackageReference "BigUIPaging" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 46AEA11C300005C300F05C7B /* Products */;
@@ -508,7 +512,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Countdown2Binge/Countdown2Binge.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = BCKVL9BZPW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -548,7 +552,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Countdown2Binge/Countdown2Binge.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = BCKVL9BZPW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -763,6 +767,14 @@
 				kind = branch;
 			};
 		};
+		469C4183304B86A50012C456 /* XCRemoteSwiftPackageReference "BigUIPaging" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/notsobigcompany/BigUIPaging";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -815,6 +827,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 469C39E0303EF5830012C456 /* XCRemoteSwiftPackageReference "tiktok-opensdk-ios" */;
 			productName = TikTokOpenShareSDK;
+		};
+		469C4184304B86A50012C456 /* BigUIPaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469C4183304B86A50012C456 /* XCRemoteSwiftPackageReference "BigUIPaging" */;
+			productName = BigUIPaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

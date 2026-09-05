@@ -177,7 +177,7 @@ struct Countdown2BingeApp: App {
 // MARK: - Review Prompt
 
 /// Watches `SeriesManager.pendingReviewRequest` and asks for a rating when it
-/// flips. The cadence itself lives in `ReviewPrompt` (1st, 5th, 10th …).
+/// flips. The cadence itself lives in `ReviewPrompt` (5th, 10th, 15th …).
 private struct ReviewPromptModifier: ViewModifier {
     let seriesManager: SeriesManager
     @Environment(\.requestReview) private var requestReview
@@ -200,7 +200,16 @@ private struct ReviewPromptModifier: ViewModifier {
             .alert(String(localized: "review_prompt_title"), isPresented: $showConfirm) {
                 Button(String(localized: "review_prompt_rate")) {
                     ReviewPrompt.markRated()
-                    requestReview()
+                    // NOT called synchronously here. Firing requestReview()
+                    // in the same instant this alert is dismissing itself
+                    // asks iOS to present its own system sheet before the
+                    // alert's dismissal animation has settled — it silently
+                    // declines rather than queuing it, so the call appeared
+                    // to just do nothing. Give the dismissal a beat first.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(600))
+                        requestReview()
+                    }
                 }
                 Button(String(localized: "review_prompt_later"), role: .cancel) { }
             } message: {

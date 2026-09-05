@@ -1,8 +1,8 @@
 //
-//  CloudSyncViewModel.swift
+//  MyLibraryViewModel.swift
 //  Countdown2Binge
 //
-//  State and logic for the CloudSync view.
+//  State and logic for MyLibraryScreen.
 //  Data comes from @Query in the view; this VM handles UI state only.
 //
 
@@ -11,7 +11,7 @@ import SwiftUI
 
 @MainActor
 @Observable
-final class CloudSyncViewModel {
+final class MyLibraryViewModel {
     // MARK: - UI State
 
     var isEditMode: Bool = false

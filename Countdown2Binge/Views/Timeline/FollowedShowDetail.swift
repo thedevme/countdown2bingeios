@@ -71,9 +71,18 @@ struct FollowedShowDetail: View {
         self.onDismiss = onDismiss
         self.onUnfollow = onUnfollow
         self.onSpinoffTap = onSpinoffTap
-        // Prefer an explicit season (e.g. the season a My List card is on), else
-        // default to the current season (not anticipated), falling back to count.
-        let fallback = series.currentSeason?.seasonNumber ?? series.numberOfSeasons
+        // Prefer an explicit season (e.g. the season a My List card is on).
+        // Otherwise the default pairs with EpisodeTrackerView's own list
+        // order: still airing → newest season (matches the newest-first
+        // list); ended → wherever the user's watch progress actually is
+        // (matches the oldest-first list), falling back to newest when
+        // there's nothing left unwatched.
+        let fallback: Int
+        if series.status.isActive {
+            fallback = series.numberOfSeasons
+        } else {
+            fallback = series.earliestUnwatchedSeason?.seasonNumber ?? series.numberOfSeasons
+        }
         self._selectedSeason = State(initialValue: initialSeason ?? fallback)
     }
 

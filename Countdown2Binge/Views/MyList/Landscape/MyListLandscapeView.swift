@@ -2,12 +2,13 @@
 //  MyListLandscapeView.swift
 //  Countdown2Binge
 //
-//  My List — three tabs over fully-released seasons (still-airing seasons live
-//  on the Timeline):
-//    • Ready    — one landscape card per show = the season you're on.
-//    • Watched  — poster grid of shows you've finished seasons of.
-//    • Archived — poster grid of shows you've set aside.
-//  Archived shows are excluded from Ready/Watched. Bound to live SwiftData.
+//  My List — fully-released seasons, one landscape card per show = the
+//  season you're on (still-airing seasons live on the Timeline). Grouped
+//  into MyListVerdictEngine shelf tiers, or a "Next"/"Upcoming" split in
+//  Straight Through — exactly "My List Cards.html": title, stat line, the
+//  Jump around/Straight through `.bar`, then sections. No separate
+//  Watched/Archived tabs — that switcher isn't part of this design.
+//  Archived shows are still excluded from the list. Bound to live SwiftData.
 //
 
 import SwiftUI
@@ -16,74 +17,108 @@ import SwiftData
 struct MyListLandscapeView: View {
     @Query(sort: \Series.dateAdded, order: .reverse) private var allSeries: [Series]
     @Environment(SeriesManager.self) private var seriesManager
-    @State private var tab: LandscapeListTab = .ready
+    @Environment(\.modelContext) private var modelContext
     @State private var archive = MyListArchiveStore()
     @State private var navigationPath = NavigationPath()
     @State private var notificationSeries: Series?
+    @State private var cloudSettings = CloudSettingsStore.shared
+    @State private var preferences = MyListPreferencesStore.shared
+    @State private var watchOrder = WatchOrderStore.shared
+    @State private var showWatchOrderSheet = false
     /// Show ids that currently have scheduled notifications — drives the bell
     /// glyph so it matches the modal's real "scheduled or not" status.
     @State private var scheduledShowIds: Set<Int> = []
 
-    // MARK: - Ready tab (one card per show = the season you're on)
+    // MARK: - Ready items (one card per show = the season you're on)
 
-    private var readyItems: [(series: Series, display: MyListSeasonDisplay)] {
+    private var readyItems: [(series: Series, season: Season, display: MyListSeasonDisplay)] {
         allSeries
-            .filter { $0.earliestUnwatchedSeason != nil && !archive.isArchived($0.id) }
+            // Stays until the WHOLE series is watched — not just the
+            // current/next season. `firstUnwatchedSeason` is what the
+            // card opens to; combined with `!isFullyWatched` it can never
+            // be nil for an item that actually belongs in this list.
+            .filter { !$0.isFullyWatched && !archive.isArchived($0.id) }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             .compactMap { series in
-                guard let season = series.earliestUnwatchedSeason else { return nil }
+                guard let season = series.firstUnwatchedSeason else { return nil }
                 let display = seasonDisplay(series, season,
-                                            remainingSeasons: series.bingeableUnwatchedSeasonCount)
-                return (series, display)
+                                            remainingSeasons: series.totalUnwatchedSeasonCount)
+                return (series, season, display)
             }
     }
 
-    private var readySeasonTotal: Int { readyItems.reduce(0) { $0 + max(1, $1.series.bingeableUnwatchedSeasonCount) } }
-    private var readySecondsLeft: Int { readyItems.reduce(0) { $0 + $1.display.watchTimeSeconds } }
+    private var readySecondsLeft: Int { readyVerdicts.reduce(0) { $0 + $1.display.watchTimeSeconds } }
 
-    // MARK: - Watched tab (shows with ≥1 fully-watched season)
+    /// Every item paired with its MyListVerdictEngine output — the SAME
+    /// engine the onboarding preview uses, so this screen can never disagree
+    /// with what onboarding promised. `display.watchTimeSeconds` is
+    /// overridden to the WHOLE SERIES' remaining time — every unwatched
+    /// episode in every season, not just the one season this card is
+    /// currently pointed at. This is unconditional: Jump Around vs
+    /// Straight Through does not change it.
+    private var readyVerdicts: [(series: Series, display: MyListSeasonDisplay, verdict: MyListVerdict)] {
+        let answers = preferences.answers
+        return readyItems.map { entry in
+            let epCount = max(1, entry.display.episodeCount)
+            let avgEpisodeSeconds = max(1, entry.display.watchTimeSeconds / epCount)
+            let remaining = entry.series.totalRemainingWatchTimeSeconds
+            let liveVerdict = MyListVerdictEngine.evaluate(
+                remainingSeconds: remaining, answers: answers, avgEpisodeSeconds: avgEpisodeSeconds
+            )
+            var display = entry.display
+            display.watchTimeSeconds = remaining
 
-    private var watchedShows: [WatchedShow] {
-        allSeries
-            .filter { !archive.isArchived($0.id) }
-            .compactMap { series -> WatchedShow? in
-                let done = series.visibleSeasons
-                    .filter { $0.hasWatched }
-                    .sorted { $0.seasonNumber > $1.seasonNumber }
-                guard !done.isEmpty else { return nil }
-                return makeGridShow(series, seasons: done)
+            // Shelf tier is pinned the first time this season is seen —
+            // otherwise it's pure live math off remaining time, so
+            // watching an episode shrinks that number and can silently
+            // move the card to a different section mid-binge. Once
+            // pinned, it keeps that tier no matter how remaining time
+            // moves afterward; a season that finishes and hands off to
+            // the next one starts that next season's tier fresh. A pin
+            // only counts if it was computed under the CURRENT shelf-tier
+            // formula — one from an older version (e.g. the old
+            // session-based formula) is stale and gets recomputed here,
+            // instead of staying stuck on a category that formula no
+            // longer produces.
+            let pinIsCurrent = entry.season.pinnedShelfTierVersion == MyListVerdictEngine.currentShelfTierVersion
+            let verdict: MyListVerdict
+            if pinIsCurrent, let pinnedRaw = entry.season.pinnedShelfTierRaw, let pinned = MyListShelfTier(rawValue: pinnedRaw) {
+                verdict = MyListVerdict(
+                    verdictText: liveVerdict.verdictText,
+                    paceText: liveVerdict.paceText,
+                    shelfTier: pinned,
+                    rawHoursText: liveVerdict.rawHoursText,
+                    shelfDateSuffix: liveVerdict.shelfDateSuffix
+                )
+            } else {
+                verdict = liveVerdict
+                // Deferred to the next runloop tick — writing to the
+                // SwiftData model directly inside a computed property
+                // that's evaluated as part of rendering `body` risks a
+                // "modifying state during view update" cycle.
+                let seasonRef = entry.season
+                let tierRaw = liveVerdict.shelfTier.rawValue
+                let version = MyListVerdictEngine.currentShelfTierVersion
+                DispatchQueue.main.async {
+                    guard seasonRef.pinnedShelfTierVersion != version else { return }
+                    seasonRef.pinnedShelfTierRaw = tierRaw
+                    seasonRef.pinnedShelfTierVersion = version
+                    try? modelContext.save()
+                }
             }
-            .sorted { $0.seasonCount > $1.seasonCount }
+
+            return (series: entry.series, display: display, verdict: verdict)
+        }
     }
 
-    // MARK: - Archived tab (shows set aside)
-
-    private var archivedShows: [WatchedShow] {
-        allSeries
-            .filter { archive.isArchived($0.id) }
-            .map { series in
-                // Released seasons (complete or already watched), newest first.
-                let released = series.visibleSeasons
-                    .filter { $0.isBingeReadyByDate || $0.hasWatched }
-                    .sorted { $0.seasonNumber > $1.seasonNumber }
-                return makeGridShow(series, seasons: released)
-            }
-            .sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+    /// "Most recently watched" for Straight Through's hero — latest episode
+    /// watch anywhere in the show, falling back to when it was followed for
+    /// a show that hasn't been started yet.
+    private func mostRecentActivity(_ series: Series) -> Date {
+        series.seasons.flatMap(\.episodes).compactMap(\.watchedAt).max() ?? series.dateAdded
     }
 
     // MARK: - Builders
-
-    private func makeGridShow(_ series: Series, seasons: [Season]) -> WatchedShow {
-        WatchedShow(
-            id: series.id,
-            series: series,
-            title: series.name,
-            posterURL: series.posterURL,
-            seasons: seasons.map { seasonDisplay(series, $0, remainingSeasons: 1) },
-            episodeCount: seasons.reduce(0) { $0 + max($1.sortedEpisodes.count, $1.episodeCount) },
-            watchTimeSeconds: seasons.reduce(0) { $0 + $1.watchTimeSeconds }
-        )
-    }
 
     /// Map any season → a card display, computing state from watch progress.
     private func seasonDisplay(_ series: Series, _ season: Season, remainingSeasons: Int) -> MyListSeasonDisplay {
@@ -110,17 +145,11 @@ struct MyListLandscapeView: View {
             state: state,
             note: note,
             remainingSeasons: remainingSeasons,
-            watchTimeSeconds: season.watchTimeSeconds,
-            ticks: ticks
+            watchTimeSeconds: season.remainingWatchTimeSeconds,
+            ticks: ticks,
+            network: series.networks.first?.name.uppercased(),
+            nextEpisodeTitle: season.sortedEpisodes.first { !$0.hasWatched }?.name
         )
-    }
-
-    private var shownCount: Int {
-        switch tab {
-        case .ready: return readyItems.count
-        case .watched: return watchedShows.count
-        case .archived: return archivedShows.count
-        }
     }
 
     // MARK: - Body
@@ -140,7 +169,7 @@ struct MyListLandscapeView: View {
                     series: series,
                     // Open on the season the My List card is on (the one you're
                     // catching up), falling back to the detail view's own default.
-                    initialSeason: series.earliestUnwatchedSeason?.seasonNumber,
+                    initialSeason: series.firstUnwatchedSeason?.seasonNumber,
                     onDismiss: { navigationPath.removeLast() },
                     onUnfollow: {
                         // Same detail screen as the timeline's — wait for the
@@ -172,6 +201,18 @@ struct MyListLandscapeView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: notificationSeries)
+        // Center overlay, not a sheet or full-screen cover — shown once, the
+        // first time this screen is seen. Intro and all three questions page
+        // inside this one card; it doesn't come back on its own once done.
+        .overlay {
+            if !cloudSettings.hasSeenMyListOnboarding {
+                MyListOnboardingContainer {
+                    cloudSettings.hasSeenMyListOnboarding = true
+                }
+                .transition(.opacity)
+                .zIndex(200)
+            }
+        }
     }
 
     private func refreshScheduledStatus() async {
@@ -182,26 +223,38 @@ struct MyListLandscapeView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(String(localized: "mylist_ls_title").uppercased())
-                .font(.custom(.oswald.bold, size: 27))
-                .tracking(0.54)
-                .foregroundColor(.white)
+            HStack(alignment: .top) {
+                Text(String(localized: "mylist_ls_title").uppercased())
+                    .font(.custom(.oswald.bold, size: 27))
+                    .tracking(0.54)
+                    .foregroundColor(.white)
 
-            Text(String(format: NSLocalizedString("mylist_ls_shown %lld", comment: ""), shownCount) + " · " + tab.label.uppercased())
-                .font(.custom(.jetbrains.bold, size: 10.5))
-                .tracking(0.95)
-                .foregroundColor(.c2bMuted)
+                Spacer()
+
+                // Jump around/Straight through is now set once during My
+                // List's own onboarding, not switched live from a bar
+                // here — this re-opens that onboarding to change it.
+                Button(action: { cloudSettings.hasSeenMyListOnboarding = false }) {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.7))
+                        .frame(width: 36, height: 36)
+                        .background(Color.white.opacity(0.06))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Redo Onboarding"))
+            }
+
+            // "N shows · 7h:05m:00s left · current season" — one line,
+            // exactly "My List Cards.html"'s `.sub`, not a separate
+            // stats-bar component.
+            readyStatLine
                 .padding(.top, 8)
-
-            Text(tab.desc)
-                .font(.system(size: 14))
-                .foregroundColor(.c2bDim)
-                .lineSpacing(3)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 10)
-
-            segmentedControl
-                .padding(.top, 14)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 52)
@@ -215,106 +268,177 @@ struct MyListLandscapeView: View {
         )
     }
 
-    private var segmentedControl: some View {
-        HStack(spacing: 4) {
-            ForEach(LandscapeListTab.allCases) { item in
-                let selected = item == tab
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) { tab = item }
-                } label: {
-                    Text(item.label.uppercased())
-                        .font(.custom(.jetbrains.bold, size: 11))
-                        .tracking(0.6)
-                        .foregroundColor(selected ? .c2bOnTeal : .c2bDim)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 9)
-                        .background(selected ? Color.c2bTeal : Color.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 9))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(4)
-        .background(Color.white.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
-        )
+    /// "N shows · 7h:05m:00s left · current season" — matches
+    /// "My List Cards.html"'s `.sub` line exactly, including the h:m:s clock
+    /// format (not the rounded "7h 05m" used elsewhere on cards).
+    private var readyStatLine: Text {
+        let secs = readySecondsLeft
+        let h = secs / 3600, m = (secs % 3600) / 60, s = secs % 60
+        let clock = String(format: "%dh:%02dm:%02ds", h, m, s)
+        let scopeText = preferences.answers.scope == .straightThrough
+            ? "all remaining seasons" : "current season"
+
+        return Text(plural(readyItems.count, "show", "shows") + " · ")
+            .font(.custom(.jetbrains.regular, size: 10.5))
+            .foregroundColor(.c2bMuted)
+        + Text(clock)
+            .font(.custom(.jetbrains.bold, size: 10.5))
+            .foregroundColor(.c2bTealBright)
+        + Text(" left · " + scopeText)
+            .font(.custom(.jetbrains.regular, size: 10.5))
+            .foregroundColor(.c2bMuted)
+    }
+
+    private func plural(_ n: Int, _ one: String, _ many: String) -> String {
+        "\(n) \(n == 1 ? one : many)"
     }
 
     // MARK: - Content
 
     @ViewBuilder
     private var content: some View {
-        switch tab {
-        case .ready:
-            if readyItems.isEmpty {
-                emptyState.padding(.horizontal, 20).padding(.top, 40)
-            } else {
-                VStack(spacing: 18) {
-                    MyListSeasonsStatsBar(
-                        seasonCount: readySeasonTotal,
-                        showCount: readyItems.count,
-                        secondsLeft: readySecondsLeft
-                    )
-                    LazyVStack(spacing: 20) {
-                        ForEach(readyItems, id: \.display.id) { entry in
-                            MyListLandscapeCard(
-                                season: entry.display,
-                                onOpen: { navigationPath.append(entry.series) },
-                                onMarkAll: {
-                                    try? seriesManager.markAiredEpisodesWatched(
-                                        seriesId: entry.series.id,
-                                        seasonNumber: entry.display.seasonNumber
-                                    )
-                                },
-                                onToggleEpisode: { tick in
-                                    // Cumulative: tapping an unwatched episode marks
-                                    // everything through it watched; tapping a watched
-                                    // one rolls progress back to just before it.
-                                    let through = tick.watched ? tick.number - 1 : tick.number
-                                    try? seriesManager.setWatchedThrough(
-                                        seriesId: entry.series.id,
-                                        seasonNumber: entry.display.seasonNumber,
-                                        episodeNumber: through
-                                    )
-                                },
-                                notificationsOn: scheduledShowIds.contains(entry.series.id),
-                                onBell: { notificationSeries = entry.series }
-                            )
-                        }
-                    }
+        if readyItems.isEmpty {
+            emptyState.padding(.horizontal, 20).padding(.top, 40)
+        } else {
+            VStack(spacing: 16) {
+                switch preferences.answers.scope {
+                case .straightThrough:
+                    straightThroughReady
+                case .jumpAround:
+                    jumpAroundReady
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
             }
-        case .watched:
-            grid(watchedShows, variant: .watched)
-        case .archived:
-            grid(archivedShows, variant: .archived)
+            .padding(.top, 4)
         }
     }
 
+    /// Jump around — every show grouped into a MyListVerdictEngine shelf,
+    /// each its own tinted/bordered `.sec` card (icon + title + why + count)
+    /// with its own horizontal paginated rail — exactly `sectionsFor()` /
+    /// `listView()` in "My List Cards.html", which never drops the section
+    /// chrome even when only one tier ends up populated.
     @ViewBuilder
-    private func grid(_ shows: [WatchedShow], variant: ShowGridVariant) -> some View {
-        if shows.isEmpty {
-            emptyState.padding(.horizontal, 20).padding(.top, 40)
-        } else {
-            MyListWatchedGrid(shows: shows, variant: variant) { series in
-                navigationPath.append(series)
+    private var jumpAroundReady: some View {
+        let byTier = Dictionary(grouping: readyVerdicts, by: { $0.verdict.shelfTier })
+        let populatedTiers = MyListShelfTier.allCases.filter { !(byTier[$0]?.isEmpty ?? true) }
+
+        VStack(spacing: 16) {
+            ForEach(populatedTiers) { tier in
+                let entries = byTier[tier] ?? []
+                MyListResultsShelfSection(
+                    tier: tier,
+                    items: entries.map(\.display),
+                    onOpen: { openReady(display: $0) },
+                    onMarkAll: { markAllReady(display: $0) },
+                    onToggleEpisode: { toggleEpisodeReady(display: $0, tick: $1) },
+                    notificationsOn: { notificationsOn(display: $0) },
+                    onBell: { onBellReady(display: $0) }
+                )
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 10)
         }
+        .padding(.horizontal, 12)
+    }
+
+    /// Straight through — a "Next" section holding exactly the most
+    /// recently watched show (full-width, no dots — the design's "solo"
+    /// rail), and an "Upcoming" section for the rest, shortest first.
+    /// Next-only when it's the only show — no Upcoming section at all.
+    @ViewBuilder
+    private var straightThroughReady: some View {
+        let sorted = readyVerdicts.sorted { mostRecentActivity($0.series) > mostRecentActivity($1.series) }
+        VStack(spacing: 16) {
+            if let hero = sorted.first {
+                MyListResultsShelfSection(
+                    tier: .oneSitting, items: [hero.display],
+                    labelOverride: "Next", whyOverride: "The one you're closest to finishing",
+                    iconOverride: "next_v1", toneOverride: Color(hex: "#86E7D5"),
+                    onOpen: { openReady(display: $0) },
+                    onMarkAll: { markAllReady(display: $0) },
+                    onToggleEpisode: { toggleEpisodeReady(display: $0, tick: $1) },
+                    notificationsOn: { notificationsOn(display: $0) },
+                    onBell: { onBellReady(display: $0) }
+                )
+            }
+
+            let upcomingEntries = watchOrder.apply(to: Array(sorted.dropFirst()), id: { $0.series.id })
+            let upcoming = upcomingEntries.map(\.display)
+            if !upcoming.isEmpty {
+                MyListResultsShelfSection(
+                    tier: .month, items: upcoming,
+                    labelOverride: "Upcoming",
+                    whyOverride: watchOrder.customOrder != nil ? "Your order" : "Queued behind it, shortest first",
+                    iconOverride: "upcoming_v1", toneOverride: Color(hex: "#A38CF3"),
+                    isEditable: true,
+                    onEdit: { showWatchOrderSheet = true },
+                    // Checking off an episode updates the show's most-
+                    // recent-activity timestamp — exactly what promotes it
+                    // to "Next," so the card being tapped would jump to a
+                    // different section mid-interaction. Confirmed: this is
+                    // what read as "the tick doesn't show / episodes cycle
+                    // wrong" — it was really the whole section reshuffling
+                    // under the tap, not a data bug.
+                    showsNextEpisodeCheckoff: false,
+                    onOpen: { openReady(display: $0) },
+                    onMarkAll: { markAllReady(display: $0) },
+                    onToggleEpisode: { toggleEpisodeReady(display: $0, tick: $1) },
+                    notificationsOn: { notificationsOn(display: $0) },
+                    onBell: { onBellReady(display: $0) }
+                )
+                .sheet(isPresented: $showWatchOrderSheet) {
+                    WatchOrderSheet(
+                        items: upcomingEntries.map {
+                            (id: $0.series.id, posterURL: $0.series.posterURL,
+                             title: $0.series.name, secondsLeft: $0.display.watchTimeSeconds)
+                        },
+                        tone: Color(hex: "#A38CF3")
+                    )
+                    .presentationDetents([.large])
+                    .presentationCornerRadius(24)
+                    .presentationDragIndicator(.hidden)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+    }
+
+    private func readySeries(for display: MyListSeasonDisplay) -> Series? {
+        readyVerdicts.first { $0.display.id == display.id }?.series
+    }
+
+    private func openReady(display: MyListSeasonDisplay) {
+        guard let series = readySeries(for: display) else { return }
+        navigationPath.append(series)
+    }
+
+    private func markAllReady(display: MyListSeasonDisplay) {
+        guard let series = readySeries(for: display) else { return }
+        try? seriesManager.markAiredEpisodesWatched(seriesId: series.id, seasonNumber: display.seasonNumber)
+    }
+
+    private func toggleEpisodeReady(display: MyListSeasonDisplay, tick: EpisodeTick) {
+        guard let series = readySeries(for: display) else { return }
+        // Cumulative: tapping an unwatched episode marks everything through
+        // it watched; tapping a watched one rolls progress back to just
+        // before it.
+        let through = tick.watched ? tick.number - 1 : tick.number
+        try? seriesManager.setWatchedThrough(seriesId: series.id, seasonNumber: display.seasonNumber, episodeNumber: through)
+    }
+
+    private func notificationsOn(display: MyListSeasonDisplay) -> Bool {
+        guard let series = readySeries(for: display) else { return true }
+        return scheduledShowIds.contains(series.id)
+    }
+
+    private func onBellReady(display: MyListSeasonDisplay) {
+        notificationSeries = readySeries(for: display)
     }
 
     private var emptyState: some View {
         VStack(spacing: 8) {
-            Text(emptyTitle)
+            Text(String(localized: "mylist_ls_empty_ready_title"))
                 .font(.custom(.oswald.medium, size: 18))
                 .foregroundColor(.c2bDim)
-            Text(emptySubtitle)
+            Text(String(localized: "mylist_ls_empty_ready_sub"))
                 .font(.system(size: 14))
                 .foregroundColor(.c2bMuted)
                 .multilineTextAlignment(.center)
@@ -325,21 +449,5 @@ struct MyListLandscapeView: View {
             RoundedRectangle(cornerRadius: 18)
                 .stroke(Color.white.opacity(0.12), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
         )
-    }
-
-    private var emptyTitle: String {
-        switch tab {
-        case .ready: return String(localized: "mylist_ls_empty_ready_title")
-        case .watched: return String(localized: "mylist_ls_empty_watched_title")
-        case .archived: return String(localized: "mylist_ls_empty_archived_title")
-        }
-    }
-
-    private var emptySubtitle: String {
-        switch tab {
-        case .ready: return String(localized: "mylist_ls_empty_ready_sub")
-        case .watched: return String(localized: "mylist_ls_empty_watched_sub")
-        case .archived: return String(localized: "mylist_ls_empty_archived_sub")
-        }
     }
 }

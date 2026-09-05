@@ -1,5 +1,5 @@
 {
-  "originHash" : "aff895c38c5bcc72b37a34ffcf4a12693e9384763f6750db5b41988ff5109b2f",
+  "originHash" : "47442bda74ef3cda497f002dbcdb776d6253a5f97b18b5beabf230ca946f0bf8",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "3e33dd27dd4c69bd81c7c81fe61d8ccf58846902",
         "version" : "11.3.1"
+      }
+    },
+    {
+      "identity" : "biguipaging",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/notsobigcompany/BigUIPaging",
+      "state" : {
+        "revision" : "40fa6e1683bd47b962e216c05377bfd1b8f760de",
+        "version" : "0.0.3"
       }
     },
     {

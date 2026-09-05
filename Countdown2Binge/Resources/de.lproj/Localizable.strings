@@ -193,6 +193,11 @@
 "settings_privacy_policy" = "Datenschutzrichtlinie";
 "settings_terms_of_use" = "Nutzungsbedingungen";
 "settings_group_essentials" = "Grundlagen";
+"settings_group_reset" = "Zurücksetzen";
+"settings_reset_app_onboarding" = "App-Einführung zurücksetzen";
+"settings_reset_app_onboarding_subtitle" = "Den Willkommens-Ablauf erneut ansehen";
+"settings_reset_mylist_onboarding" = "„Meine Liste“-Einführung zurücksetzen";
+"settings_reset_mylist_onboarding_subtitle" = "Die Einrichtung von „Meine Liste“ erneut ansehen";
 "settings_group_advanced" = "ERWEITERT";
 "settings_alerts_advanced" = "Erweiterte Benachrichtigungen aktiviert";
 "settings_alerts_basic" = "Nur Marathon-bereit-Benachrichtigungen";
@@ -924,6 +929,7 @@
 "walkthrough_label_finale" = "DAS FINALE LAEUFT";
 
 "tab_my_list" = "Meine Liste";
+"tab_my_library" = "Meine Bibliothek";
 
 
 /* --- Machine-translated backfill --- */

@@ -60,7 +60,7 @@ struct StatusBadge: View {
             .foregroundColor(variant.foregroundColor)
 
             Text(variant.text)
-                .font(.custom(.jetbrains.bold, size: 7))
+                .font(.custom(.jetbrains.bold, size: 6.5))
                 .tracking(0.5)
                 .foregroundColor(variant.foregroundColor)
         }

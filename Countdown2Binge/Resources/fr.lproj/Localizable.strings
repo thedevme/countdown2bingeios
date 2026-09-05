@@ -193,6 +193,11 @@
 "settings_privacy_policy" = "Politique de confidentialité";
 "settings_terms_of_use" = "Conditions d'utilisation";
 "settings_group_essentials" = "Essentiels";
+"settings_group_reset" = "Réinitialiser";
+"settings_reset_app_onboarding" = "Réinitialiser l'intro de l'app";
+"settings_reset_app_onboarding_subtitle" = "Revoir l'écran de bienvenue";
+"settings_reset_mylist_onboarding" = "Réinitialiser l'intro de Ma Liste";
+"settings_reset_mylist_onboarding_subtitle" = "Revoir la configuration de Ma Liste";
 "settings_group_advanced" = "AVANCE";
 "settings_alerts_advanced" = "Alertes avancees activees";
 "settings_alerts_basic" = "Alertes marathon uniquement";
@@ -924,6 +929,7 @@
 "walkthrough_label_finale" = "LA FINALE EST DIFFUSEE";
 
 "tab_my_list" = "Ma liste";
+"tab_my_library" = "Ma bibliothèque";
 
 
 /* --- Machine-translated backfill --- */

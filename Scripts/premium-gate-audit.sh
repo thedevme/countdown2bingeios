@@ -55,7 +55,7 @@ check "iCloud sync/restore/merge"  "Services/Core Engine/SeriesManager.swift"   
 check "Spin-offs (followed)"       "Views/Timeline/FollowedShowDetail.swift"                 "canViewSpinoffs"
 check "Settings rows hidden"       "Views/Settings/SettingsScreen.swift"                     "if isPremium {"
 check "Profile screen"             "Views/Settings/SettingsScreen.swift"                      "ProfileScreen(isPremium:"
-check "Cloud Sync screen"          "Views/Settings/CloudSyncView/CloudSyncView.swift"        "premiumManager.isPremium"
+check "Cloud Sync screen"          "Views/MyLibrary/MyLibraryScreen.swift"                   "premiumManager.isPremium"
 check "Edit profile photo"         "Views/Profile/EditProfileScreen.swift"                   "disabled(!isPremium)"
 check "Share lineup (profile)"     "Views/Profile/ProfileScreen.swift"                       "if showShareSheet, isPremium"
 

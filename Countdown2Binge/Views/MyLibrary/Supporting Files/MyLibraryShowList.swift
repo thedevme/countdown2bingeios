@@ -1,38 +1,45 @@
 //
-//  CloudSyncShowGrid.swift
+//  MyLibraryShowList.swift
 //  Countdown2Binge
 //
-//  3-column grid of show posters for CloudSync view.
+//  List-view alternative to MyLibraryShowGrid — same data, same
+//  edit/remove/select wiring, one row per show with a hairline divider
+//  between rows instead of a 3-column grid.
 //
 
 import SwiftUI
 
-struct CloudSyncShowGrid: View {
+struct MyLibraryShowList: View {
     let shows: [Series]
     let isPremium: Bool
     let isEditMode: Bool
     let onRemove: (Series) -> Void
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
+    var onSelect: (Series) -> Void = { _ in }
 
     var body: some View {
-        if shows.isEmpty && isPremium {
+        if shows.isEmpty {
             emptyState
         } else {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(shows, id: \.id) { series in
-                    PosterTileEditable(
+            VStack(spacing: 0) {
+                ForEach(Array(shows.enumerated()), id: \.element.id) { index, series in
+                    MyLibraryListRow(
                         posterURL: series.posterURL,
                         title: series.name,
+                        watchedEpisodes: series.overallWatchedEpisodeCount,
+                        totalEpisodes: series.overallEpisodeCount,
                         badgeVariant: badgeVariant(for: series),
-                        isEditMode: isEditMode && isPremium,
-                        isLocked: !isPremium,
+                        isEditMode: isEditMode,
                         onRemove: { onRemove(series) }
                     )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        guard !isEditMode else { return }
+                        onSelect(series)
+                    }
+
+                    if index < shows.count - 1 {
+                        Divider().background(Color.white.opacity(0.07))
+                    }
                 }
             }
         }
@@ -40,10 +47,10 @@ struct CloudSyncShowGrid: View {
 
     private var emptyState: some View {
         VStack(spacing: 10) {
-            Image(systemName: "icloud")
+            Image(systemName: isPremium ? "icloud" : "tv")
                 .font(.system(size: 30, weight: .light))
                 .foregroundColor(.white.opacity(0.25))
-            Text("Nothing backed up to iCloud yet")
+            Text(isPremium ? "Nothing backed up to iCloud yet" : "Nothing tracked yet")
                 .font(.custom(.jetbrains.regular, size: 11))
                 .foregroundColor(.white.opacity(0.4))
                 .multilineTextAlignment(.center)
@@ -56,9 +63,6 @@ struct CloudSyncShowGrid: View {
         if !isPremium {
             return .localOnly
         }
-        // No per-show in-flight sync state is tracked here, so an unsynced show
-        // is "local only" (e.g. removed from iCloud, or iCloud unavailable) —
-        // not a perpetual "syncing" spinner.
         return series.isSynced ? .synced : .localOnly
     }
 }
@@ -66,7 +70,6 @@ struct CloudSyncShowGrid: View {
 #Preview {
     ZStack {
         Color.c2bBackground.ignoresSafeArea()
-
         Text("Preview requires Series data")
             .foregroundColor(.white.opacity(0.5))
     }

@@ -163,6 +163,28 @@ final class Series {
         regularSeasons.filter(\.hasPublishedData)
     }
 
+    /// TMDB's stated episode count summed across every visible season —
+    /// the WHOLE-SERIES total, not just the current/next season. Denominator
+    /// for `overallCompletionPercent`.
+    var overallEpisodeCount: Int {
+        visibleSeasons.reduce(0) { $0 + $1.episodeCount }
+    }
+
+    /// Watched episodes summed across every visible season.
+    var overallWatchedEpisodeCount: Int {
+        visibleSeasons.reduce(0) { $0 + $1.watchedEpisodeCount }
+    }
+
+    /// 0–100 completion across the ENTIRE series, not one season — what My
+    /// Library shows under each poster, since a single show-wide number is
+    /// what that grid needs (unlike MyList, which is scoped to one season).
+    /// 0 when there's nothing to watch yet, so an empty show never reads
+    /// as "100% done" from a 0/0 divide.
+    var overallCompletionPercent: Int {
+        guard overallEpisodeCount > 0 else { return 0 }
+        return Int((Double(overallWatchedEpisodeCount) / Double(overallEpisodeCount) * 100).rounded())
+    }
+
     // MARK: - Lifecycle (delegates to BingeEngine — Axis 1)
 
     /// Bridge: build BingeEngine season facts from the SwiftData graph.
@@ -210,6 +232,20 @@ final class Series {
         BingeEngine.bingeableUnwatchedSeasonCount(seasons: seasonFacts)
     }
 
+    /// Whole-show watch-time remaining — sum of every complete-by-date,
+    /// unwatched season's OWN remaining watch-time (the exact same season
+    /// set `bingeableUnwatchedSeasonCount` counts, so the two can't
+    /// disagree). `$1.watchTimeSeconds` (each season's fixed TOTAL) would
+    /// never move no matter how many episodes get checked off — this reads
+    /// `$1.remainingWatchTimeSeconds` so checking off an episode in
+    /// Straight Through mode actually decrements the card's clock.
+    var remainingWatchTimeSeconds: Int {
+        let numbers = Set(BingeEngine.bingeableUnwatchedSeasonNumbers(seasons: seasonFacts))
+        return regularSeasons
+            .filter { numbers.contains($0.seasonNumber) }
+            .reduce(0) { $0 + $1.remainingWatchTimeSeconds }
+    }
+
     /// First season user hasn't fully watched (user-axis, for Binge Ready UI).
     /// Different from currentSeason which is date-based.
     /// "First season with an aired-but-unwatched episode."
@@ -218,6 +254,39 @@ final class Series {
             let aired = season.episodes.filter { $0.hasAired }
             return aired.contains { !$0.hasWatched }
         } ?? regularSeasons.last
+    }
+
+    /// Whether EVERY aired episode in the WHOLE series has been watched —
+    /// not just the current/next season. This is My List's own removal
+    /// condition: a show stays until the entire series is done, not just
+    /// whichever season it's currently pointed at. Deliberately NOT the
+    /// `BingeEngine` "bingeable by date" concept (used by Timeline/Binge
+    /// Ready for a different purpose — don't nudge a still-airing season)
+    /// — a season here counts as done once its aired episodes are watched,
+    /// whether or not it's technically "complete by date" yet.
+    var isFullyWatched: Bool {
+        !regularSeasons.contains { season in
+            season.episodes.contains { $0.hasAired && !$0.hasWatched }
+        }
+    }
+
+    /// Remaining watch-time summed across EVERY unwatched episode in the
+    /// WHOLE series — not one season, and not gated by "bingeable by
+    /// date". This is what My List's countdown shows; checking off an
+    /// episode anywhere in the series visibly decrements it.
+    var totalRemainingWatchTimeSeconds: Int {
+        regularSeasons.reduce(0) { $0 + $1.remainingWatchTimeSeconds }
+    }
+
+    /// Count of seasons in the WHOLE series with at least one unwatched
+    /// aired episode — My List's wallet-deck depth and "Season X of Y"
+    /// line, kept consistent with `totalRemainingWatchTimeSeconds` and
+    /// `isFullyWatched` (same "whole series" scope, not "bingeable by
+    /// date").
+    var totalUnwatchedSeasonCount: Int {
+        regularSeasons.filter { season in
+            season.episodes.contains { $0.hasAired && !$0.hasWatched }
+        }.count
     }
 
     /// Whether this show belongs on the Binge Ready surface right now.
@@ -309,6 +378,25 @@ final class Season {
     /// When the season was marked watched (nil if unwatched).
     var watchedAt: Date?
 
+    /// The MyList shelf tier (One Sitting / Weekend / Month / Commitment)
+    /// this season was FIRST placed into, as a `MyListShelfTier.rawValue`.
+    /// Set once, the first time this season appears as My List's current
+    /// season, and never overwritten after that — without this, the tier
+    /// is pure live math off remaining time, so watching an episode shrinks
+    /// the remaining time and can silently move the card to a different
+    /// section mid-binge. nil until first assigned.
+    var pinnedShelfTierRaw: String?
+
+    /// Which version of `MyListVerdictEngine`'s shelf-tier FORMULA computed
+    /// `pinnedShelfTierRaw` — checked against
+    /// `MyListVerdictEngine.currentShelfTierVersion` before trusting the
+    /// pin. Without this, a pin computed under an OLD formula (e.g. the
+    /// session-based one, before it became fixed-hour bands) stays stuck
+    /// forever even after the formula is fixed, since "never overwritten"
+    /// doesn't know the rule it was pinned under is now wrong. 0 for any
+    /// season pinned before this existed — always stale, always recomputed.
+    var pinnedShelfTierVersion: Int = 0
+
     // MARK: Relationships
 
     var series: Series?
@@ -382,9 +470,17 @@ final class Season {
     }
 
     /// Full-season watch-time in seconds (sum of episode runtimes, average-filling
-    /// any unaired/missing runtimes). Drives the MyList card's runtime clock.
+    /// any unaired/missing runtimes).
     var watchTimeSeconds: Int {
         WatchTime.totalSeconds(runtimesMinutes: sortedEpisodes.map { $0.runtime })
+    }
+
+    /// Same, but only the episodes not yet watched — what's actually LEFT to
+    /// watch. Drives the MyList card's runtime clock, so checking off an
+    /// episode from the card visibly decrements it instead of the total
+    /// staying fixed regardless of progress.
+    var remainingWatchTimeSeconds: Int {
+        WatchTime.totalSeconds(runtimesMinutes: sortedEpisodes.filter { !$0.hasWatched }.map { $0.runtime })
     }
 
     /// Convert Season to SeasonData for compatibility with legacy views.

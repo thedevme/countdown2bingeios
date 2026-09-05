@@ -13,6 +13,7 @@
 "tab_discover" = "Discover";
 "tab_binge_ready" = "Binge Ready";
 "tab_my_list" = "My List";
+"tab_my_library" = "My Library";
 "tab_settings" = "Settings";
 
 // =============================================================================
@@ -242,6 +243,11 @@
 "settings_group_developer" = "Developer";
 "settings_group_about" = "About";
 "settings_group_essentials" = "Essentials";
+"settings_group_reset" = "Reset";
+"settings_reset_app_onboarding" = "Reset App Onboarding";
+"settings_reset_app_onboarding_subtitle" = "See the welcome flow again";
+"settings_reset_mylist_onboarding" = "Reset My List Onboarding";
+"settings_reset_mylist_onboarding_subtitle" = "See the My List setup again";
 
 // About section
 "settings_api_provided_by" = "Data provided by TMDB";

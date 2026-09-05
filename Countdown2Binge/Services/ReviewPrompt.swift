@@ -6,7 +6,7 @@
 //  since `requestReview` is a SwiftUI environment action.
 //
 //  Two independent triggers, each with its own record:
-//    • search  — the 1st show followed, then every 5th: 1, 5, 10, 15, …
+//    • search  — every 5th show followed: 5, 10, 15, 20, …
 //    • import  — the first successful bulk import, once ever
 //
 //  They don't share state. A bulk import doesn't advance the search cadence
@@ -69,9 +69,9 @@ enum ReviewPrompt {
         return isPromptPoint(followCount)
     }
 
-    /// 1, 5, 10, 15, 20 …
+    /// 5, 10, 15, 20 … — not the 1st follow, too early to be asking.
     static func isPromptPoint(_ count: Int) -> Bool {
-        count == 1 || (count > 0 && count % 5 == 0)
+        count > 0 && count % 5 == 0
     }
 
     // MARK: - Bulk import

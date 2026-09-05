@@ -193,6 +193,11 @@
 "settings_privacy_policy" = "Política de privacidad";
 "settings_terms_of_use" = "Términos de uso";
 "settings_group_essentials" = "Esenciales";
+"settings_group_reset" = "Restablecer";
+"settings_reset_app_onboarding" = "Restablecer introducción de la app";
+"settings_reset_app_onboarding_subtitle" = "Ver de nuevo la bienvenida";
+"settings_reset_mylist_onboarding" = "Restablecer introducción de Mi Lista";
+"settings_reset_mylist_onboarding_subtitle" = "Ver de nuevo la configuración de Mi Lista";
 "settings_group_advanced" = "AVANZADO";
 "settings_alerts_advanced" = "Alertas avanzadas activadas";
 "settings_alerts_basic" = "Solo alertas de listo para maratón";
@@ -922,6 +927,7 @@
 "walkthrough_label_finale" = "SE EMITE EL FINAL";
 
 "tab_my_list" = "Mi lista";
+"tab_my_library" = "Mi biblioteca";
 
 
 /* --- Machine-translated backfill --- */

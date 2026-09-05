@@ -1,13 +1,14 @@
 //
-//  CloudSyncStatusCard.swift
+//  MyLibraryStatusCard.swift
 //  Countdown2Binge
 //
-//  Status card showing iCloud sync state (ON/OFF).
+//  Status card showing iCloud sync state (ON/OFF). Premium-only — the
+//  screen doesn't render this at all for free users (see MyLibraryScreen).
 //
 
 import SwiftUI
 
-struct CloudSyncStatusCard: View {
+struct MyLibraryStatusCard: View {
     let isPremium: Bool
     let syncedCount: Int
 
@@ -66,8 +67,8 @@ struct CloudSyncStatusCard: View {
         Color.c2bBackground.ignoresSafeArea()
 
         VStack(spacing: 16) {
-            CloudSyncStatusCard(isPremium: true, syncedCount: 14)
-            CloudSyncStatusCard(isPremium: false, syncedCount: 0)
+            MyLibraryStatusCard(isPremium: true, syncedCount: 14)
+            MyLibraryStatusCard(isPremium: false, syncedCount: 0)
         }
         .padding()
     }

@@ -64,6 +64,10 @@ struct MyListSeasonDisplay: Identifiable {
     var watchTimeSeconds: Int
     /// Per-episode ticks (id, watched, aired) — drives the tappable tick meter.
     var ticks: [EpisodeTick]
+    /// Network/service badge over the art — e.g. "NETFLIX". Nil hides it.
+    var network: String?
+    /// The next unwatched episode's title, for the "Next · S1E2 · Title" line.
+    var nextEpisodeTitle: String?
 
     init(
         id: String,
@@ -77,7 +81,9 @@ struct MyListSeasonDisplay: Identifiable {
         note: String,
         remainingSeasons: Int = 1,
         watchTimeSeconds: Int = 0,
-        ticks: [EpisodeTick] = []
+        ticks: [EpisodeTick] = [],
+        network: String? = nil,
+        nextEpisodeTitle: String? = nil
     ) {
         self.id = id
         self.showTitle = showTitle
@@ -91,6 +97,8 @@ struct MyListSeasonDisplay: Identifiable {
         self.remainingSeasons = remainingSeasons
         self.watchTimeSeconds = watchTimeSeconds
         self.ticks = ticks
+        self.network = network
+        self.nextEpisodeTitle = nextEpisodeTitle
     }
 
     // MARK: Derived
@@ -124,27 +132,6 @@ struct MyListSeasonDisplay: Identifiable {
     var stackDepth: Int { min(max(remainingSeasons, 1), 5) }
 }
 
-// MARK: - Landscape tabs
-
-enum LandscapeListTab: String, CaseIterable, Identifiable {
-    case ready, watched, archived
-    var id: String { rawValue }
-    var label: String {
-        switch self {
-        case .ready: return String(localized: "mylist_ls_tab_ready")
-        case .watched: return String(localized: "mylist_ls_tab_watched")
-        case .archived: return String(localized: "mylist_ls_tab_archived")
-        }
-    }
-    var desc: String {
-        switch self {
-        case .ready: return String(localized: "mylist_ls_desc_ready")
-        case .watched: return String(localized: "mylist_ls_desc_watched")
-        case .archived: return String(localized: "mylist_ls_desc_archived")
-        }
-    }
-}
-
 // MARK: - Sample data (previews only)
 
 enum MyListLandscapeSample {
@@ -159,8 +146,4 @@ enum MyListLandscapeSample {
               watchedCount: 0, state: .ready, note: "READY TO BINGE",
               remainingSeasons: 5, watchTimeSeconds: 2905 * 8),
     ]
-
-    static func items(for tab: LandscapeListTab) -> [MyListSeasonDisplay] {
-        tab == .ready ? active : []
-    }
 }

@@ -251,6 +251,14 @@ enum BingeEngine {
         bingeableUnwatchedSeasons(seasons: seasons, now: now).count
     }
 
+    /// The season NUMBERS behind `bingeableUnwatchedSeasonCount` — the full
+    /// "remaining" set, not just its size. Whole-show (Straight Through)
+    /// watch-time sums exactly this set, so it can never disagree with the
+    /// wallet-deck depth about which seasons count as remaining.
+    static func bingeableUnwatchedSeasonNumbers(seasons: [SeasonFact], now: Date = Date()) -> [Int] {
+        bingeableUnwatchedSeasons(seasons: seasons, now: now).map(\.seasonNumber)
+    }
+
     // MARK: - Countdowns
 
     /// Days until the current season's premiere (nil if started/undated).

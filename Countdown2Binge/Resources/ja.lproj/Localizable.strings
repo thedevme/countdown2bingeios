@@ -193,6 +193,11 @@
 "settings_privacy_policy" = "プライバシーポリシー";
 "settings_terms_of_use" = "利用規約";
 "settings_group_essentials" = "基本設定";
+"settings_group_reset" = "リセット";
+"settings_reset_app_onboarding" = "アプリの初回案内をリセット";
+"settings_reset_app_onboarding_subtitle" = "ウェルカム画面をもう一度見る";
+"settings_reset_mylist_onboarding" = "マイリストの案内をリセット";
+"settings_reset_mylist_onboarding_subtitle" = "マイリストの設定案内をもう一度見る";
 "settings_group_advanced" = "詳細設定";
 "settings_alerts_advanced" = "詳細アラート有効";
 "settings_alerts_basic" = "一気見OKアラートのみ";
@@ -924,6 +929,7 @@
 "walkthrough_label_finale" = "最終回放送";
 
 "tab_my_list" = "マイリスト";
+"tab_my_library" = "マイライブラリ";
 
 
 /* --- Machine-translated backfill --- */

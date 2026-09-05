@@ -8,20 +8,6 @@
 import SwiftUI
 import SwiftData
 import RevenueCat
-/// Sync eligibility state for iCloud sync
-enum SyncEligibility {
-    case eligible
-    case notEligible(SyncIneligibilityReason)
-}
-
-/// Reasons why sync may be unavailable
-enum SyncIneligibilityReason {
-    case noICloudAccount
-    case iCloudRestricted
-    case temporarilyUnavailable
-    case notPremium
-    case unknown
-}
 
 struct SettingsScreen: View {
     @Environment(\.modelContext) private var modelContext
@@ -34,9 +20,6 @@ struct SettingsScreen: View {
     @State private var isRefreshingDiscover = false
     @State private var isSyncing = false
     @State private var syncStatus: String = ""
-    @State private var iCloudAvailable: Bool = true
-    @State private var syncEligibility: SyncEligibility = .eligible
-    @State private var showCloudSync = false
     @State private var showTastePrefs = false
     @State private var showImport = false
     private var profile: UserProfile { ProfileManager.shared.profile }
@@ -147,25 +130,35 @@ struct SettingsScreen: View {
                                 }
                             )
                         }
+                    }
 
-                        // Cloud Sync Group — premium only (sync IS the paid feature, R9)
-                        SettingsGroup(label: String(localized: "settings_cloud_sync")) {
-                            SettingsRowChevron(
-                                icon: iCloudAvailable && isPremium ? "icloud.fill" : "icloud",
-                                iconColor: iCloudAvailable && isPremium ? .c2bTeal : .c2bMuted,
-                                title: iCloudAvailable && isPremium
-                                    ? String(localized: "settings_sync_now")
-                                    : String(localized: "settings_icloud_unavailable"),
-                                subtitle: cloudSyncSubtitle,
-                                isLast: true,
-                                action: {
-                                    showCloudSync = true
-                                }
-                            )
-                        }
-                        .task {
-                            await checkiCloudStatus()
-                        }
+                    // Reset Group — visible to free and premium alike, so
+                    // anyone can go back through either onboarding flow.
+                    // Neither flag is behind isPremium above.
+                    SettingsGroup(label: String(localized: "settings_group_reset")) {
+                        SettingsRowAction(
+                            icon: "arrow.counterclockwise",
+                            title: String(localized: "settings_reset_app_onboarding"),
+                            subtitle: String(localized: "settings_reset_app_onboarding_subtitle"),
+                            action: {
+                                // Reactive: ContentView watches this flag and
+                                // re-presents OnboardingFlow immediately.
+                                cloudSettings.resetOnboarding()
+                            }
+                        )
+
+                        SettingsRowAction(
+                            icon: "arrow.counterclockwise",
+                            title: String(localized: "settings_reset_mylist_onboarding"),
+                            subtitle: String(localized: "settings_reset_mylist_onboarding_subtitle"),
+                            isLast: true,
+                            action: {
+                                // MyListLandscapeView reads this flag directly
+                                // in its overlay, so it reappears next time
+                                // that tab is shown.
+                                cloudSettings.hasSeenMyListOnboarding = false
+                            }
+                        )
                     }
 
                     // About Group
@@ -213,9 +206,6 @@ struct SettingsScreen: View {
             .navigationDestination(isPresented: $showProfile) {
                 ProfileScreen(isPremium: isPremium)
             }
-            .navigationDestination(isPresented: $showCloudSync) {
-                CloudSyncView()
-            }
             .navigationDestination(isPresented: $showImport) {
                 ImportShowsView(onDismiss: { showImport = false })
             }
@@ -258,47 +248,6 @@ struct SettingsScreen: View {
         let cacheService = DiscoverCacheService(modelContext: modelContext)
         await cacheService.refreshCache()
         isRefreshingDiscover = false
-    }
-
-    // MARK: - Cloud Sync
-
-    private var cloudSyncSubtitle: String {
-        // Not premium - show upsell hint
-        if !isPremium {
-            return String(localized: "settings_premium_required")
-        }
-
-        // Show iCloud unavailable reason
-        if !iCloudAvailable {
-            switch syncEligibility {
-            case .eligible:
-                return String(localized: "settings_icloud_checking")
-            case .notEligible(let reason):
-                switch reason {
-                case .noICloudAccount:
-                    return String(localized: "settings_sign_in_icloud")
-                case .iCloudRestricted:
-                    return String(localized: "settings_icloud_restricted")
-                case .temporarilyUnavailable:
-                    return String(localized: "settings_icloud_temp_unavailable")
-                case .notPremium:
-                    return String(localized: "settings_premium_required")
-                case .unknown:
-                    return String(localized: "settings_icloud_error")
-                }
-            }
-        }
-
-        // Premium + iCloud available
-        return String(localized: "settings_cloud_sync_on")
-    }
-
-    @MainActor
-    private func checkiCloudStatus() async {
-        // CloudKit sync is automatic via SwiftData
-        // Check if iCloud is available via FileManager
-        iCloudAvailable = FileManager.default.ubiquityIdentityToken != nil
-        syncEligibility = iCloudAvailable ? .eligible : .notEligible(.noICloudAccount)
     }
 
     @MainActor

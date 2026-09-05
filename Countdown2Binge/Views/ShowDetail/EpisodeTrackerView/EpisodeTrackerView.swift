@@ -42,12 +42,15 @@ struct EpisodeTrackerView: View {
         series.currentSeason?.seasonNumber
     }
 
-    /// Newest season first — season 1 sits at the bottom of the stack.
+    /// Still airing: newest season first (what's new matters most, and
+    /// pairs with opening on the newest season below). Ended: oldest first
+    /// — the normal, chronological reading order — paired with opening on
+    /// wherever the user's watch progress actually is, not the newest.
     /// `visibleSeasons` has already dropped TMDB's empty placeholder for an
     /// ordered-but-unannounced season (Silo S4, say).
     private var seasons: [Season] {
-        series.visibleSeasons
-            .sorted { $0.seasonNumber > $1.seasonNumber }
+        let sorted = series.visibleSeasons.sorted { $0.seasonNumber < $1.seasonNumber }
+        return series.status.isActive ? Array(sorted.reversed()) : sorted
     }
 
     var body: some View {
